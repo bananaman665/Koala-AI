@@ -1,0 +1,21 @@
+{
+  "name": "koala-ai-firebase",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Firebase configuration and Cloud Functions",
+  "scripts": {
+    "serve": "firebase emulators:start",
+    "shell": "firebase functions:shell",
+    "deploy": "firebase deploy",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage:rules",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.7.0"
+  }
+}
