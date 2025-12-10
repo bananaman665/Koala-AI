@@ -399,6 +399,53 @@ app.post('/api/classes', async (req, res) => {
   }
 });
 
+// Search for a class by code
+app.get('/api/classes/search', async (req, res) => {
+  try {
+    const { code } = req.query;
+
+    if (!code || typeof code !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_REQUEST', message: 'Class code is required' },
+      } as ApiResponse);
+    }
+
+    const { data, error } = await supabaseDb.getClient()
+      .from('classes')
+      .select('*')
+      .ilike('code', code.trim())
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No rows returned
+        return res.status(404).json({
+          success: false,
+          error: { code: 'CLASS_NOT_FOUND', message: 'Class not found with that code' },
+        } as ApiResponse);
+      }
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      data,
+      timestamp: new Date().toISOString(),
+    } as ApiResponse);
+  } catch (error) {
+    logger.error('Failed to search class', { error });
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'SEARCH_CLASS_FAILED',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      timestamp: new Date().toISOString(),
+    } as ApiResponse);
+  }
+});
+
 // Join a class
 app.post('/api/classes/:classId/join', async (req, res) => {
   try {

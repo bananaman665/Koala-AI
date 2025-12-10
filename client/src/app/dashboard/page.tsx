@@ -101,6 +101,9 @@ export default function DashboardPage() {
 
   // Classes state
   const [userClasses, setUserClasses] = useState<any[]>([])
+  const [joinClassCode, setJoinClassCode] = useState('')
+  const [isJoiningClass, setIsJoiningClass] = useState(false)
+  const [isLoadingClasses, setIsLoadingClasses] = useState(false)
   const [newCourseData, setNewCourseData] = useState({
     name: '',
     code: '',
@@ -214,6 +217,34 @@ export default function DashboardPage() {
     fetchLectures()
   }, [user])
 
+  // Fetch user classes
+  useEffect(() => {
+    if (!user?.id) {
+      setUserClasses([])
+      return
+    }
+
+    async function fetchUserClasses() {
+      setIsLoadingClasses(true)
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes`, {
+          headers: {
+            'x-user-id': user!.id,
+          },
+        })
+        const result = await response.json()
+        if (result.success) {
+          setUserClasses(result.data || [])
+        }
+      } catch (error) {
+        console.error('Error fetching classes:', error)
+      }
+      setIsLoadingClasses(false)
+    }
+
+    fetchUserClasses()
+  }, [user])
+
   // Fetch selected lecture data and notes
   useEffect(() => {
     if (!selectedLecture || !lectures.length) {
@@ -318,6 +349,127 @@ export default function DashboardPage() {
       alert(`Failed to create course: ${error.message}`)
     } finally {
       setIsCreatingCourse(false)
+    }
+  }
+
+  // Create a new class
+  const handleCreateClass = async () => {
+    if (!newCourseData.name.trim()) {
+      alert('Please enter a class name')
+      return
+    }
+    if (!newCourseData.code.trim()) {
+      alert('Please enter a class code')
+      return
+    }
+    if (!user?.id) {
+      alert('User not authenticated')
+      return
+    }
+
+    setIsCreatingCourse(true)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': user.id,
+        },
+        body: JSON.stringify({
+          name: newCourseData.name.trim(),
+          code: newCourseData.code.trim(),
+          professor: newCourseData.professor.trim(),
+          description: '',
+          color: newCourseData.color,
+        }),
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        setUserClasses(prev => [result.data, ...prev])
+        setNewCourseData({
+          name: '',
+          code: '',
+          professor: '',
+          color: 'blue',
+          category: 'Computer Science'
+        })
+        setShowNewCourseModal(false)
+      } else {
+        alert(`Failed to create class: ${result.error?.message || 'Unknown error'}`)
+      }
+    } catch (error: any) {
+      console.error('Error creating class:', error)
+      alert(`Failed to create class: ${error.message}`)
+    } finally {
+      setIsCreatingCourse(false)
+    }
+  }
+
+  // Join an existing class by code
+  const handleJoinClass = async () => {
+    if (!joinClassCode.trim()) {
+      alert('Please enter a class code')
+      return
+    }
+    if (!user?.id) {
+      alert('User not authenticated')
+      return
+    }
+
+    setIsJoiningClass(true)
+    try {
+      // First, find the class by code
+      const searchResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes/search?code=${encodeURIComponent(joinClassCode.trim())}`, {
+        headers: {
+          'x-user-id': user.id,
+        },
+      })
+
+      // If search endpoint doesn't exist, try to join directly using the code as class ID
+      // For now, we'll show an error since we need the class ID to join
+      const searchResult = await searchResponse.json()
+
+      if (!searchResult.success || !searchResult.data) {
+        alert('Class not found. Please check the code and try again.')
+        setIsJoiningClass(false)
+        return
+      }
+
+      const classId = searchResult.data.id
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes/${classId}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': user.id,
+        },
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        // Refresh the classes list
+        const classesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes`, {
+          headers: {
+            'x-user-id': user.id,
+          },
+        })
+        const classesResult = await classesResponse.json()
+        if (classesResult.success) {
+          setUserClasses(classesResult.data || [])
+        }
+        setJoinClassCode('')
+        alert('Successfully joined the class!')
+      } else if (result.error?.code === 'ALREADY_MEMBER') {
+        alert('You are already a member of this class')
+      } else {
+        alert(`Failed to join class: ${result.error?.message || 'Unknown error'}`)
+      }
+    } catch (error: any) {
+      console.error('Error joining class:', error)
+      alert(`Failed to join class: ${error.message}`)
+    } finally {
+      setIsJoiningClass(false)
     }
   }
 
@@ -2007,13 +2159,18 @@ export default function DashboardPage() {
                     </label>
                     <input
                       type="text"
-                      id="classCode"
+                      value={joinClassCode}
+                      onChange={(e) => setJoinClassCode(e.target.value)}
                       placeholder="e.g., CS101"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
                     />
                   </div>
-                  <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
-                    Join Class
+                  <button
+                    onClick={handleJoinClass}
+                    disabled={isJoiningClass || !joinClassCode.trim()}
+                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isJoiningClass ? 'Joining...' : 'Join Class'}
                   </button>
                 </div>
               </div>
@@ -2394,15 +2551,15 @@ export default function DashboardPage() {
               <span className="text-[10px] font-medium leading-tight">Analytics</span>
             </Link>
 
-            {/* Feed */}
+            {/* Classes */}
             <button
               onClick={() => setActiveScreen('feed')}
               className={`flex flex-col items-center justify-center gap-0 transition-colors ${
                 activeScreen === 'feed' ? 'text-blue-600' : 'text-gray-600'
               }`}
             >
-              <FiBook className="text-lg" />
-              <span className="text-[10px] font-medium leading-tight">Feed</span>
+              <FiUsers className="text-lg" />
+              <span className="text-[10px] font-medium leading-tight">Classes</span>
             </button>
           </div>
         </div>
