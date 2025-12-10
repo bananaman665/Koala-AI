@@ -10,6 +10,7 @@ import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
 import { ScreenTransition } from '@/components/ScreenTransition'
 import { AudioPlayer } from '@/components/AudioPlayer'
+import { StreakDisplay, useStreak } from '@/components/StreakDisplay'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
 import { supabase } from '@/lib/supabase'
@@ -29,6 +30,7 @@ export default function DashboardPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user } = useAuth()
+  const { streak, recordActivity, isActiveToday } = useStreak()
   const [isMounted, setIsMounted] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const {
@@ -547,6 +549,9 @@ export default function DashboardPage() {
         setLectures(updatedLectures)
       }
 
+      // Record study activity for streak
+      recordActivity()
+
       // Show success message
       alert('✅ Lecture saved to library!')
 
@@ -759,6 +764,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
+              <StreakDisplay streak={streak} size="sm" />
               <Link
                 href="/settings"
                 className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg"
@@ -2699,6 +2705,9 @@ export default function DashboardPage() {
                     if (updatedLectures) {
                       setLectures(updatedLectures)
                     }
+
+                    // Record study activity for streak
+                    recordActivity()
 
                     alert('✅ Lecture saved to ' + courses.find((c) => c.id === selectedCourseForRecording)?.name)
                     setShowCourseSelectionModal(false)
