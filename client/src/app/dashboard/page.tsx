@@ -91,6 +91,7 @@ export default function DashboardPage() {
   const [isSavingRecording, setIsSavingRecording] = useState(false)
   const [showReadyToRecordModal, setShowReadyToRecordModal] = useState(false)
   const [isStoppingRecording, setIsStoppingRecording] = useState(false)
+  const [showStreakModal, setShowStreakModal] = useState(false)
 
   // Library search state
   const [librarySearchQuery, setLibrarySearchQuery] = useState('')
@@ -764,7 +765,9 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <StreakDisplay streak={streak} size="sm" />
+              <button onClick={() => { hapticButton(); setShowStreakModal(true) }}>
+                <StreakDisplay streak={streak} size="sm" />
+              </button>
               <Link
                 href="/settings"
                 className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg"
@@ -2726,6 +2729,117 @@ export default function DashboardPage() {
                 {isSavingRecording ? 'Saving...' : 'Save Lecture'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Streak Detail Modal */}
+      {showStreakModal && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center"
+          onClick={() => setShowStreakModal(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-white rounded-t-3xl p-6 pb-10 animate-slide-in-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Handle bar */}
+            <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6" />
+
+            {/* Large streak display */}
+            <div className="text-center mb-6">
+              <StreakDisplay streak={streak} size="lg" />
+            </div>
+
+            {/* Title & Description */}
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {streak === 0 ? 'Start Your Streak!' : `${streak} Day Streak!`}
+              </h2>
+              <p className="text-gray-600">
+                {streak === 0
+                  ? 'Record your first lecture today to begin your study streak.'
+                  : streak < 7
+                  ? 'Keep going! Record a lecture every day to build your streak.'
+                  : streak < 30
+                  ? "You're on fire! Keep up the great work."
+                  : "Amazing dedication! You're a study champion!"}
+              </p>
+            </div>
+
+            {/* Weekly calendar */}
+            <div className="bg-gray-50 rounded-2xl p-4 mb-6">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">This Week</h3>
+              <div className="flex justify-between">
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
+                  const today = new Date().getDay()
+                  const adjustedToday = today === 0 ? 6 : today - 1 // Convert to Mon=0 format
+                  const isToday = i === adjustedToday
+                  const isPast = i < adjustedToday
+                  const isActive = (isPast && streak > 0) || (isToday && isActiveToday())
+
+                  return (
+                    <div key={day} className="flex flex-col items-center gap-1">
+                      <span className={`text-xs ${isToday ? 'font-bold text-blue-600' : 'text-gray-500'}`}>
+                        {day}
+                      </span>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        isActive
+                          ? 'bg-gradient-to-br from-orange-400 to-red-500'
+                          : isToday
+                          ? 'bg-blue-100 border-2 border-blue-400'
+                          : 'bg-gray-200'
+                      }`}>
+                        {isActive ? (
+                          <span className="text-white text-lg">🔥</span>
+                        ) : (
+                          <span className={`text-sm ${isToday ? 'text-blue-600 font-bold' : 'text-gray-400'}`}>
+                            {isToday ? '?' : ''}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Milestones */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Milestones</h3>
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {[
+                  { days: 3, label: '3 days', emoji: '🌱' },
+                  { days: 7, label: '1 week', emoji: '⭐' },
+                  { days: 14, label: '2 weeks', emoji: '🌟' },
+                  { days: 30, label: '1 month', emoji: '🏆' },
+                  { days: 60, label: '2 months', emoji: '💎' },
+                  { days: 100, label: '100 days', emoji: '👑' },
+                ].map(({ days, label, emoji }) => (
+                  <div
+                    key={days}
+                    className={`flex-shrink-0 px-4 py-3 rounded-xl text-center ${
+                      streak >= days
+                        ? 'bg-gradient-to-br from-orange-100 to-red-100 border border-orange-200'
+                        : 'bg-gray-100 border border-gray-200'
+                    }`}
+                  >
+                    <span className="text-2xl">{streak >= days ? emoji : '🔒'}</span>
+                    <p className={`text-xs mt-1 font-medium ${streak >= days ? 'text-orange-700' : 'text-gray-500'}`}>
+                      {label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Close button */}
+            <button
+              onClick={() => { hapticButton(); setShowStreakModal(false) }}
+              className="w-full py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
+            >
+              Keep Studying!
+            </button>
           </div>
         </div>
       )}
