@@ -92,6 +92,7 @@ export default function DashboardPage() {
   const [showReadyToRecordModal, setShowReadyToRecordModal] = useState(false)
   const [isStoppingRecording, setIsStoppingRecording] = useState(false)
   const [showStreakModal, setShowStreakModal] = useState(false)
+  const [successBanner, setSuccessBanner] = useState<{ message: string; show: boolean }>({ message: '', show: false })
 
   // Library search state
   const [librarySearchQuery, setLibrarySearchQuery] = useState('')
@@ -167,6 +168,15 @@ export default function DashboardPage() {
 
     return () => clearTimeout(timer)
   }, [user, router])
+
+  // Show success banner with auto-dismiss
+  const showSuccess = (message: string) => {
+    setSuccessBanner({ message, show: true })
+    hapticSuccess()
+    setTimeout(() => {
+      setSuccessBanner({ message: '', show: false })
+    }, 3000)
+  }
 
   // Fetch courses
   useEffect(() => {
@@ -554,7 +564,7 @@ export default function DashboardPage() {
       recordActivity()
 
       // Show success message
-      alert('✅ Lecture saved to library!')
+      showSuccess('Lecture saved to library!')
 
       // Clear the current recording
       reset()
@@ -781,6 +791,18 @@ export default function DashboardPage() {
           </div>
         </div>
       </nav>
+
+      {/* Success Banner */}
+      {successBanner.show && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 animate-slide-in-up">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="font-medium">{successBanner.message}</span>
+          </div>
+        </div>
+      )}
 
       {/* Learn Mode Progress Bar - Attached to Top */}
       {activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0 && (
@@ -2712,7 +2734,7 @@ export default function DashboardPage() {
                     // Record study activity for streak
                     recordActivity()
 
-                    alert('✅ Lecture saved to ' + courses.find((c) => c.id === selectedCourseForRecording)?.name)
+                    showSuccess('Lecture saved to ' + courses.find((c) => c.id === selectedCourseForRecording)?.name)
                     setShowCourseSelectionModal(false)
                     setSelectedCourseForRecording(null)
                     reset()
