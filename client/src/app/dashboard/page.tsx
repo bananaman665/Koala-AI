@@ -11,6 +11,7 @@ import { useScreenTransition } from '@/hooks/useScreenTransition'
 import { ScreenTransition } from '@/components/ScreenTransition'
 import { AudioPlayer } from '@/components/AudioPlayer'
 import { useAuth } from '@/contexts/AuthContext'
+import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 
@@ -1076,25 +1077,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Record New Lecture Button */}
-            {!isRecording && !isTranscribing && (
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 mb-6">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div className="text-white">
-                    <h3 className="text-xl font-semibold mb-1">Ready to record?</h3>
-                    <p className="text-blue-100 text-sm">Start a new lecture for this course</p>
-                  </div>
-                  <button
-                    onClick={startRecording}
-                    className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-shadow flex items-center justify-center space-x-2 whitespace-nowrap"
-                  >
-                    <FiMic />
-                    <span>Record Lecture</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* Recording Interface (when recording) */}
             {isRecording && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -2092,8 +2074,8 @@ export default function DashboardPage() {
         {/* Classes Screen - Join & Share Lectures */}
         {activeScreen === 'feed' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex-1 min-w-0">
                 <h2 className="text-2xl font-bold text-gray-900">Classes</h2>
                 <p className="text-gray-600 text-sm mt-1">Manage your classes and share lectures with classmates</p>
               </div>
@@ -2101,7 +2083,7 @@ export default function DashboardPage() {
                 onClick={() => {
                   setShowNewCourseModal(true);
                 }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm flex items-center space-x-2"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm flex items-center justify-center space-x-2 w-full sm:w-auto shrink-0"
               >
                 <FiPlus className="w-4 h-4" />
                 <span>New Class</span>
@@ -2519,14 +2501,17 @@ export default function DashboardPage() {
           {/* Center Record Button */}
           <button
             onClick={async () => {
+              hapticImpact('medium')
               if (!isRecording) {
                 setShowReadyToRecordModal(true)
               } else {
                 setIsStoppingRecording(true)
                 const result = await stopAndGenerateNotes()
                 if (result && result.transcript && result.notes) {
+                  hapticSuccess()
                   setShowCourseSelectionModal(true)
                 } else {
+                  hapticError()
                   alert('Error: Unable to generate notes. Please try again.')
                 }
                 setIsStoppingRecording(false)
@@ -2560,7 +2545,7 @@ export default function DashboardPage() {
 
             {/* Classes */}
             <button
-              onClick={() => setActiveScreen('feed')}
+              onClick={() => { hapticSelection(); setActiveScreen('feed') }}
               className={`flex flex-col items-center justify-center gap-0 transition-colors ${
                 activeScreen === 'feed' ? 'text-blue-600' : 'text-gray-600'
               }`}
@@ -2586,6 +2571,7 @@ export default function DashboardPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => {
+                  hapticButton()
                   setShowReadyToRecordModal(false)
                 }}
                 className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors"
@@ -2594,6 +2580,7 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => {
+                  hapticImpact('heavy')
                   startRecording()
                   setShowReadyToRecordModal(false)
                 }}
