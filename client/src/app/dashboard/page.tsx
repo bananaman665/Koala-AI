@@ -88,6 +88,7 @@ export default function DashboardPage() {
   // Course selection modal state for floating record button
   const [showCourseSelectionModal, setShowCourseSelectionModal] = useState(false)
   const [selectedCourseForRecording, setSelectedCourseForRecording] = useState<string | null>(null)
+  const [lectureTitle, setLectureTitle] = useState('')
   const [isSavingRecording, setIsSavingRecording] = useState(false)
   const [showReadyToRecordModal, setShowReadyToRecordModal] = useState(false)
   const [isStoppingRecording, setIsStoppingRecording] = useState(false)
@@ -497,7 +498,7 @@ export default function DashboardPage() {
         .insert({
           user_id: user.id,
           course_id: selectedCourse,
-          title: `Lecture ${new Date().toLocaleDateString()}`,
+          title: lectureTitle.trim() || `Lecture ${new Date().toLocaleDateString()}`,
           duration: duration,
           transcription_status: 'completed',
           audio_url: '',
@@ -557,6 +558,7 @@ export default function DashboardPage() {
       hapticSuccess()
 
       // Clear the current recording
+      setLectureTitle('')
       reset()
     } catch (error: any) {
       console.error('Error saving lecture:', error)
@@ -2607,8 +2609,19 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
           <div className="w-full bg-white rounded-t-2xl p-6 pb-8 space-y-4 animate-slide-in-up">
             <div className="space-y-2">
-              <h3 className="text-xl font-bold text-gray-900">Save Recording To Course</h3>
-              <p className="text-sm text-gray-600">Select which course you want to save this lecture to</p>
+              <h3 className="text-xl font-bold text-gray-900">Save Lecture</h3>
+              <p className="text-sm text-gray-600">Name your lecture and select a course</p>
+            </div>
+
+            {/* Lecture Title Input */}
+            <div>
+              <input
+                type="text"
+                value={lectureTitle}
+                onChange={(e) => setLectureTitle(e.target.value)}
+                placeholder={`Lecture ${new Date().toLocaleDateString()}`}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-900 placeholder-gray-400"
+              />
             </div>
 
             {/* Course List */}
@@ -2649,6 +2662,7 @@ export default function DashboardPage() {
                 onClick={() => {
                   setShowCourseSelectionModal(false)
                   setSelectedCourseForRecording(null)
+                  setLectureTitle('')
                   reset()
                 }}
                 className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors"
@@ -2668,7 +2682,7 @@ export default function DashboardPage() {
                       .insert({
                         user_id: user!.id,
                         course_id: selectedCourseForRecording,
-                        title: `Lecture ${new Date().toLocaleDateString()}`,
+                        title: lectureTitle.trim() || `Lecture ${new Date().toLocaleDateString()}`,
                         duration: duration,
                         transcription_status: 'completed',
                         audio_url: '',
@@ -2715,6 +2729,7 @@ export default function DashboardPage() {
 
                     setShowCourseSelectionModal(false)
                     setSelectedCourseForRecording(null)
+                    setLectureTitle('')
                     reset()
                   } catch (error) {
                     console.error('Error saving recording:', error)
