@@ -9,6 +9,7 @@ import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
 import { ScreenTransition } from '@/components/ScreenTransition'
+import { AudioPlayer } from '@/components/AudioPlayer'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
@@ -1739,6 +1740,12 @@ export default function DashboardPage() {
                 </span>
               </div>
             </div>
+
+            {/* Audio Player */}
+            <AudioPlayer
+              audioUrl={selectedLectureData?.audio_url || null}
+              duration={selectedLectureData?.duration || 0}
+            />
 
             {/* Notes */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
