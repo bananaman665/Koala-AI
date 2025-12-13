@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers } from 'react-icons/fi'
+import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { Lightbulb, Mic } from 'lucide-react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
@@ -11,6 +11,7 @@ import { useScreenTransition } from '@/hooks/useScreenTransition'
 import { ScreenTransition } from '@/components/ScreenTransition'
 import { AudioPlayer } from '@/components/AudioPlayer'
 import { StreakDisplay, useStreak } from '@/components/StreakDisplay'
+import { OnboardingCarousel } from '@/components/OnboardingCarousel'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
 import { supabase } from '@/lib/supabase'
@@ -61,6 +62,9 @@ export default function DashboardPage() {
   const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false)
   const [flashcardsError, setFlashcardsError] = useState<string | null>(null)
   const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set())
+  const [isFlashcardModeActive, setIsFlashcardModeActive] = useState(false)
+  const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0)
+  const [isCardFlipped, setIsCardFlipped] = useState(false)
 
   // Learn Mode State
   const [learnModeQuestions, setLearnModeQuestions] = useState<Array<{
@@ -83,7 +87,7 @@ export default function DashboardPage() {
 
   // Mobile bottom nav state
   const [activeScreen, setActiveScreen] = useState<'dashboard' | 'library' | 'analytics' | 'feed'>('dashboard')
-  const { animationType } = useScreenTransition(activeScreen as any)
+  const { animationType, animationKey } = useScreenTransition(activeScreen as any)
 
   // Course selection modal state for floating record button
   const [showCourseSelectionModal, setShowCourseSelectionModal] = useState(false)
@@ -93,10 +97,11 @@ export default function DashboardPage() {
   const [showReadyToRecordModal, setShowReadyToRecordModal] = useState(false)
   const [isStoppingRecording, setIsStoppingRecording] = useState(false)
   const [showStreakModal, setShowStreakModal] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
 
   // Library search state
   const [librarySearchQuery, setLibrarySearchQuery] = useState('')
-  const [libraryFilter, setLibraryFilter] = useState<'all' | 'week' | 'favorites'>('all')
+  const [libraryFilter, setLibraryFilter] = useState<'all' | 'week'>('all')
 
   // Analytics filter state
   const [analyticsTimeFilter, setAnalyticsTimeFilter] = useState<'week' | 'month' | 'all'>('week')
@@ -144,6 +149,21 @@ export default function DashboardPage() {
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  // Check if user has completed onboarding
+  useEffect(() => {
+    if (user && !isCheckingAuth) {
+      const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true'
+      if (!hasCompletedOnboarding) {
+        setShowOnboarding(true)
+      }
+    }
+  }, [user, isCheckingAuth])
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('onboarding_completed', 'true')
+    setShowOnboarding(false)
+  }
 
   // Handle screen query parameter for redirects
   useEffect(() => {
@@ -715,10 +735,10 @@ export default function DashboardPage() {
   // Show loading screen while checking authentication
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <FiLoader className="text-blue-600 text-5xl mx-auto animate-spin mb-4" />
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">Loading...</p>
         </div>
       </div>
     )
@@ -730,10 +750,17 @@ export default function DashboardPage() {
   }
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-center"><FiLoader className="text-blue-600 text-5xl mx-auto animate-spin mb-4" /><p className="text-gray-600">Loading...</p></div></div>}>
-      <div className="h-screen-safe bg-gray-50">
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><FiLoader className="text-blue-600 text-5xl mx-auto animate-spin mb-4" /><p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">Loading...</p></div></div>}>
+      <div className="h-screen-safe bg-gray-50 dark:bg-gray-900">
+        {/* Onboarding Carousel for first-time users */}
+        {showOnboarding && (
+          <OnboardingCarousel
+            onComplete={handleOnboardingComplete}
+            onSkip={handleOnboardingComplete}
+          />
+        )}
         {/* Top Navigation */}
-        <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center space-x-3 sm:space-x-8">
@@ -748,19 +775,19 @@ export default function DashboardPage() {
               <div className="hidden md:flex space-x-4 lg:space-x-6">
                 <Link
                   href="/dashboard"
-                  className={`text-sm lg:text-base ${activeScreen === 'dashboard' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`text-sm lg:text-base ${activeScreen === 'dashboard' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900 dark:text-white'}`}
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/dashboard/library"
-                  className={`text-sm lg:text-base ${activeScreen === 'library' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`text-sm lg:text-base ${activeScreen === 'library' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900 dark:text-white'}`}
                 >
                   Library
                 </Link>
                 <Link
                   href="/dashboard/analytics"
-                  className={`text-sm lg:text-base ${activeScreen === 'analytics' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`text-sm lg:text-base ${activeScreen === 'analytics' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900 dark:text-white'}`}
                 >
                   Analytics
                 </Link>
@@ -786,7 +813,7 @@ export default function DashboardPage() {
 
       {/* Learn Mode Progress Bar - Attached to Top */}
       {activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0 && (
-        <div className="fixed top-14 sm:top-16 left-0 right-0 bg-white border-b border-gray-200 z-40 px-3 sm:px-6 py-2">
+        <div className="fixed top-14 sm:top-16 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
           <div className="max-w-7xl mx-auto">
             <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
               <div
@@ -794,7 +821,7 @@ export default function DashboardPage() {
                 style={{ width: `${((currentQuestionIndex + (showExplanation ? 1 : 0)) / learnModeQuestions.length) * 100}%` }}
               ></div>
             </div>
-            <div className="flex justify-between text-xs text-gray-600">
+            <div className="flex justify-between text-xs text-gray-600 dark:text-gray-300">
               <span>Question {currentQuestionIndex + 1} of {learnModeQuestions.length}</span>
               <span>{correctAnswers.size} correct</span>
             </div>
@@ -802,16 +829,43 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Flashcard Mode Progress Bar - Attached to Top */}
+      {activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0 && (
+        <div className="fixed top-14 sm:top-16 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
+          <div className="max-w-7xl mx-auto">
+            <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+              <div
+                className="bg-gradient-to-r from-purple-500 to-purple-600 h-1.5 rounded-full transition-all duration-300"
+                style={{ width: `${((currentFlashcardIndex + 1) / flashcards.length) * 100}%` }}
+              ></div>
+            </div>
+            <div className="flex justify-between text-xs text-gray-600 dark:text-gray-300">
+              <span>Card {currentFlashcardIndex + 1} of {flashcards.length}</span>
+              <button
+                onClick={() => {
+                  setIsFlashcardModeActive(false)
+                  setCurrentFlashcardIndex(0)
+                  setIsCardFlipped(false)
+                }}
+                className="text-purple-600 hover:text-purple-700 font-medium"
+              >
+                Exit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main scrollable content area */}
-      <div className={`flex-1 ${activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0 ? 'overflow-hidden pt-40 sm:pt-44' : 'overflow-y-auto pt-32 sm:pt-36'}`}>
-        <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-20 md:pb-8 ${animationType ? (animationType.enter === 'slideRight' ? 'animate-slide-in-right' : animationType.enter === 'slideLeft' ? 'animate-slide-in-left' : 'animate-fade-in') : ''}`}>
+      <div className={`flex-1 ${(activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'overflow-hidden pt-40 sm:pt-44' : 'overflow-y-auto pt-32 sm:pt-36'}`}>
+        <div key={animationKey} className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 ${animationType ? (animationType.enter === 'slideRight' ? 'animate-slide-in-right' : animationType.enter === 'slideLeft' ? 'animate-slide-in-left' : 'animate-fade-in') : ''}`}>
         {/* Dashboard Screen */}
         {activeScreen === 'dashboard' && !selectedCourse && (
           <>
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Courses</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Courses</h1>
                 <p className="text-gray-600 text-sm mt-1">Organize your lectures by course</p>
               </div>
               <button
@@ -825,11 +879,11 @@ export default function DashboardPage() {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
-          <div className="bg-white rounded-lg p-3 sm:p-6 border border-gray-200">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
               <div>
-                <p className="text-xs sm:text-sm text-gray-500">Total Lectures</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900">24</p>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Total Lectures</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.length}</p>
               </div>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                 <FiFileText className="text-blue-600 text-base sm:text-xl" />
@@ -837,11 +891,11 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-3 sm:p-6 border border-gray-200">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
               <div>
-                <p className="text-xs sm:text-sm text-gray-500">Hours Recorded</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900">48.5</p>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Hours Recorded</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{(lectures.reduce((sum, l) => sum + (l.duration || 0), 0) / 3600).toFixed(1)}</p>
               </div>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                 <FiClock className="text-purple-600 text-base sm:text-xl" />
@@ -849,11 +903,16 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-3 sm:p-6 border border-gray-200">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
               <div>
-                <p className="text-xs sm:text-sm text-gray-500">This Week</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900">6</p>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">This Week</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.filter(l => {
+                  const lectureDate = new Date(l.created_at)
+                  const now = new Date()
+                  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+                  return lectureDate >= weekAgo
+                }).length}</p>
               </div>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <FiMic className="text-green-600 text-base sm:text-xl" />
@@ -861,14 +920,14 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-3 sm:p-6 border border-gray-200">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
               <div>
-                <p className="text-xs sm:text-sm text-gray-500">Storage Used</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900">2.4GB</p>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Study Streak</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{streak} {streak === 1 ? 'day' : 'days'}</p>
               </div>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <FiFolder className="text-orange-600 text-base sm:text-xl" />
+                <FiTrendingUp className="text-orange-600 text-base sm:text-xl" />
               </div>
             </div>
           </div>
@@ -882,10 +941,10 @@ export default function DashboardPage() {
               {isLoadingCourses ? (
                 <div className="col-span-2 text-center py-12">
                   <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
-                  <p className="text-gray-500">Loading courses...</p>
+                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Loading courses...</p>
                 </div>
               ) : courses.length === 0 ? (
-                <div className="col-span-2 text-center py-12 bg-white rounded-xl border border-gray-200">
+                <div className="col-span-2 text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                   <FiBook className="text-gray-300 text-5xl mx-auto mb-3" />
                   <h3 className="text-lg font-medium text-gray-900 mb-1">No courses yet</h3>
                   <p className="text-sm text-gray-500 mb-4">Create your first course to get started</p>
@@ -902,18 +961,18 @@ export default function DashboardPage() {
                   <div
                     key={course.id}
                     onClick={() => setSelectedCourse(course.id)}
-                    className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all cursor-pointer group"
+                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all cursor-pointer group"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className={`w-12 h-12 bg-${course.color}-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         <FiBook className={`text-${course.color}-600 text-xl`} />
                       </div>
-                      <span className="text-xs text-gray-500">{course.lectures} lectures</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{course.lectures} lectures</span>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
                       {course.name}
                     </h3>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       {course.code && `${course.code} • `}
                       {course.professor || 'No professor set'}
                     </p>
@@ -923,9 +982,9 @@ export default function DashboardPage() {
             </div>
 
             {/* Recent Lectures */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mt-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mt-6">
               <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900">Recent Lectures</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Recent Lectures</h3>
                 <button
                   onClick={() => setActiveScreen('library')}
                   className="text-blue-600 text-xs sm:text-sm font-medium hover:text-blue-700"
@@ -961,7 +1020,7 @@ export default function DashboardPage() {
                       : `${Math.floor(diffHours / 24)} days ago`
 
                     return (
-                      <div key={lecture.id} className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                      <div key={lecture.id} className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
                         <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
                           <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                             lecture.transcription_status === 'completed' ? 'bg-green-100' :
@@ -973,8 +1032,8 @@ export default function DashboardPage() {
                             }`} />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="font-medium text-gray-900 text-sm sm:text-base truncate">{lecture.title}</div>
-                            <div className="text-xs sm:text-sm text-gray-500">{dateDisplay} • {formattedDuration}</div>
+                            <div className="font-medium text-gray-900 dark:text-white text-sm sm:text-base truncate">{lecture.title}</div>
+                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{dateDisplay} • {formattedDuration}</div>
                           </div>
                         </div>
                         <div className="flex-shrink-0 ml-2">
@@ -1003,7 +1062,7 @@ export default function DashboardPage() {
           {/* Sidebar */}
           <div className="hidden lg:block space-y-6">
             {/* Quick Actions */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">
                 <button
@@ -1013,13 +1072,13 @@ export default function DashboardPage() {
                   <FiPlus className="text-white" />
                   <span className="font-medium text-white">New Course</span>
                 </button>
-                <button className="w-full flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                  <FiSearch className="text-gray-600" />
-                  <span className="font-medium text-gray-900">Search Notes</span>
+                <button className="w-full flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <FiSearch className="text-gray-600 dark:text-gray-300" />
+                  <span className="font-medium text-gray-900 dark:text-white">Search Notes</span>
                 </button>
-                <button className="w-full flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                  <FiFolder className="text-gray-600" />
-                  <span className="font-medium text-gray-900">Browse Library</span>
+                <button className="w-full flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <FiFolder className="text-gray-600 dark:text-gray-300" />
+                  <span className="font-medium text-gray-900 dark:text-white">Browse Library</span>
                 </button>
               </div>
             </div>
@@ -1036,12 +1095,12 @@ export default function DashboardPage() {
             </div>
 
             {/* Storage */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Storage</h3>
               <div className="mb-3">
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-600">2.4 GB used</span>
-                  <span className="text-gray-600">of 10 GB</span>
+                  <span className="text-gray-600 dark:text-gray-300">2.4 GB used</span>
+                  <span className="text-gray-600 dark:text-gray-300">of 10 GB</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full" style={{ width: '24%' }}></div>
@@ -1077,7 +1136,7 @@ export default function DashboardPage() {
               </button>
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                     {course.code ? `${course.code} - ${course.name}` : course.name}
                   </h1>
                   <p className="text-gray-600 text-sm mt-1">
@@ -1090,7 +1149,7 @@ export default function DashboardPage() {
 
             {/* Recording Interface (when recording) */}
             {isRecording && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
                 <div className="text-center">
                   <div className="mb-6">
                     <div className={`w-32 h-32 mx-auto bg-red-500 rounded-full flex items-center justify-center mb-4 ${!isPaused && 'recording-indicator'}`}>
@@ -1102,7 +1161,7 @@ export default function DashboardPage() {
                     <h3 className="text-xl font-semibold text-gray-900 mb-1">
                       Recording Lecture
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-300">
                       {isPaused ? 'Recording Paused' : 'Recording in Progress...'}
                     </p>
                   </div>
@@ -1144,15 +1203,15 @@ export default function DashboardPage() {
 
             {/* Study Mode Tabs */}
             {notes && !isRecording && (flashcards.length > 0 || learnModeQuestions.length > 0) && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6 overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden">
                 {/* Tab Navigation */}
-                <div className="flex border-b border-gray-200">
+                <div className="flex border-b border-gray-200 dark:border-gray-700">
                   <button
                     onClick={() => setStudyViewMode('notes')}
                     className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 font-semibold transition-colors text-sm sm:text-base ${
                       studyViewMode === 'notes'
                         ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                        : 'text-gray-600 hover:text-gray-900'
+                        : 'text-gray-600 hover:text-gray-900 dark:text-white'
                     }`}
                   >
                     📝 Notes
@@ -1163,7 +1222,7 @@ export default function DashboardPage() {
                       className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 font-semibold transition-colors text-sm sm:text-base border-l border-gray-200 ${
                         studyViewMode === 'flashcards'
                           ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                          : 'text-gray-600 hover:text-gray-900'
+                          : 'text-gray-600 hover:text-gray-900 dark:text-white'
                       }`}
                     >
                       🎴 Flashcards
@@ -1175,7 +1234,7 @@ export default function DashboardPage() {
                       className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 font-semibold transition-colors text-sm sm:text-base border-l border-gray-200 ${
                         studyViewMode === 'learn'
                           ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
-                          : 'text-gray-600 hover:text-gray-900'
+                          : 'text-gray-600 hover:text-gray-900 dark:text-white'
                       }`}
                     >
                       ✓ Learn
@@ -1234,17 +1293,17 @@ export default function DashboardPage() {
                               flippedCards.has(index) ? 'rotate-y-180' : ''
                             }`}>
                               {/* Front of card */}
-                              <div className="absolute w-full h-full backface-hidden bg-white border-2 border-gray-200 rounded-lg p-4 sm:p-6 flex items-center justify-center text-center">
+                              <div className="absolute w-full h-full backface-hidden bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 flex items-center justify-center text-center">
                                 <div>
-                                  <p className="text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2">Question {index + 1}</p>
-                                  <p className="text-black font-medium text-sm sm:text-base">{card.question}</p>
+                                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1 sm:mb-2">Question {index + 1}</p>
+                                  <p className="text-black dark:text-white font-medium text-sm sm:text-base">{card.question}</p>
                                 </div>
                               </div>
                               {/* Back of card */}
-                              <div className="absolute w-full h-full backface-hidden bg-white border-2 border-gray-200 rounded-lg p-4 sm:p-6 flex items-center justify-center text-center rotate-y-180">
+                              <div className="absolute w-full h-full backface-hidden bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 flex items-center justify-center text-center rotate-y-180">
                                 <div>
-                                  <p className="text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2">Answer</p>
-                                  <p className="text-black text-sm sm:text-base">{card.answer}</p>
+                                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1 sm:mb-2">Answer</p>
+                                  <p className="text-black dark:text-white text-sm sm:text-base">{card.answer}</p>
                                 </div>
                               </div>
                             </div>
@@ -1260,8 +1319,8 @@ export default function DashboardPage() {
                         <div className="mt-4 p-4 sm:p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg">
                           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
                             <div>
-                              <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Learn Mode</h3>
-                              <p className="text-xs sm:text-sm text-gray-600">Round {round} • Question {currentQuestionIndex + 1} of {learnModeQuestions.length}</p>
+                              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Learn Mode</h3>
+                              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Round {round} • Question {currentQuestionIndex + 1} of {learnModeQuestions.length}</p>
                             </div>
                             <button
                               onClick={exitLearnMode}
@@ -1279,20 +1338,20 @@ export default function DashboardPage() {
                                 style={{ width: `${((currentQuestionIndex + (showExplanation ? 1 : 0)) / learnModeQuestions.length) * 100}%` }}
                               ></div>
                             </div>
-                            <div className="flex justify-between mt-2 text-xs text-gray-600">
+                            <div className="flex justify-between mt-2 text-xs text-gray-600 dark:text-gray-300">
                               <span>{correctAnswers.size} correct</span>
                               <span>{answeredQuestions.size} / {learnModeQuestions.length} answered</span>
                             </div>
                           </div>
 
                           {/* Question Card */}
-                          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md mb-4 sm:mb-6">
+                          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 shadow-md mb-4 sm:mb-6">
                             <div className="mb-3 sm:mb-2">
-                              <span className="px-2.5 py-1 sm:px-3 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                              <span className="px-2.5 py-1 sm:px-3 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full">
                                 {learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ? 'Multiple Choice' : 'True/False'}
                               </span>
                             </div>
-                            <h4 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
+                            <h4 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">
                               {learnModeQuestions[currentQuestionIndex].question}
                             </h4>
 
@@ -1316,7 +1375,7 @@ export default function DashboardPage() {
                                         ? 'bg-red-50 border-red-500 text-red-900'
                                         : isSelected
                                         ? 'bg-blue-50 border-blue-500 text-blue-900'
-                                        : 'bg-white border-gray-200 text-gray-900 hover:border-blue-300 hover:bg-blue-50'
+                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-gray-700'
                                     } ${showExplanation ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                                   >
                                     <div className="flex items-center justify-between gap-2">
@@ -1478,7 +1537,7 @@ export default function DashboardPage() {
             )}
 
             {/* Lectures in this Course */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mt-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4">All Lectures</h3>
               <div className="space-y-3">
                 {(() => {
@@ -1508,9 +1567,9 @@ export default function DashboardPage() {
                       : `${Math.floor(diffHours / 24)} days ago`
 
                     return (
-                      <div key={lecture.id} className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                      <div key={lecture.id} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-gray-900">{lecture.title}</h4>
+                          <h4 className="font-semibold text-gray-900 dark:text-white">{lecture.title}</h4>
                           <span className={`text-xs px-3 py-1 rounded-full ${
                             lecture.transcription_status === 'completed' ? 'bg-green-100 text-green-700' :
                             lecture.transcription_status === 'failed' ? 'bg-red-100 text-red-700' :
@@ -1542,11 +1601,11 @@ export default function DashboardPage() {
         {activeScreen === 'library' && !selectedLecture && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">My Library</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Library</h2>
               {librarySearchQuery && (
                 <button
                   onClick={() => setLibrarySearchQuery('')}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900"
+                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 dark:text-white"
                 >
                   Clear
                 </button>
@@ -1560,9 +1619,9 @@ export default function DashboardPage() {
                 placeholder="Search lectures..."
                 value={librarySearchQuery}
                 onChange={(e) => setLibrarySearchQuery(e.target.value)}
-                className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                className="w-full px-4 py-3 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-800"
               />
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
             </div>
 
             {/* Filter Tabs */}
@@ -1572,7 +1631,7 @@ export default function DashboardPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
                   libraryFilter === 'all'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 All Lectures
@@ -1582,20 +1641,10 @@ export default function DashboardPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
                   libraryFilter === 'week'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 This Week
-              </button>
-              <button
-                onClick={() => setLibraryFilter('favorites')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
-                  libraryFilter === 'favorites'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700'
-                }`}
-              >
-                Favorites
               </button>
             </div>
 
@@ -1606,7 +1655,7 @@ export default function DashboardPage() {
                   return (
                     <div className="text-center py-12">
                       <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
-                      <p className="text-gray-500">Loading lectures...</p>
+                      <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Loading lectures...</p>
                     </div>
                   )
                 }
@@ -1619,15 +1668,12 @@ export default function DashboardPage() {
                     lecture.courses?.name?.toLowerCase().includes(query)
                   )
 
-                  // Filter by time/category
+                  // Filter by time
                   if (libraryFilter === 'week') {
                     const oneWeekAgo = new Date()
                     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
                     const lectureDate = new Date(lecture.created_at)
                     return matchesSearch && lectureDate >= oneWeekAgo
-                  } else if (libraryFilter === 'favorites') {
-                    // For now, favorites is not implemented, so return none
-                    return false
                   }
 
                   return matchesSearch
@@ -1638,7 +1684,7 @@ export default function DashboardPage() {
                     <div className="text-center py-12">
                       <FiSearch className="text-gray-300 text-5xl mx-auto mb-3" />
                       <h3 className="text-lg font-medium text-gray-900 mb-1">No lectures found</h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         {librarySearchQuery ? `No results for "${librarySearchQuery}"` : 'Your library is empty. Start recording your first lecture!'}
                       </p>
                     </div>
@@ -1662,12 +1708,12 @@ export default function DashboardPage() {
                     <div
                       key={lecture.id}
                       onClick={() => setSelectedLecture(lecture.id)}
-                      className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
+                      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer"
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900 mb-1">{lecture.title}</h3>
-                          <p className="text-sm text-gray-500">{lecture.courses?.name || 'No course'}</p>
+                          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{lecture.title}</h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{lecture.courses?.name || 'No course'}</p>
                         </div>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           lecture.transcription_status === 'completed' ? 'bg-green-100 text-green-700' :
@@ -1679,7 +1725,7 @@ export default function DashboardPage() {
                            lecture.transcription_status === 'processing' ? 'Processing' : 'Pending'}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         <span className="flex items-center">
                           <FiClock className="mr-1" />
                           {formattedDuration}
@@ -1695,23 +1741,23 @@ export default function DashboardPage() {
         )}
 
         {/* Library Lecture Detail View */}
-        {activeScreen === 'library' && selectedLecture && !isLearnModeActive && (
+        {activeScreen === 'library' && selectedLecture && !isLearnModeActive && !isFlashcardModeActive && (
           <div className="space-y-4 pb-20">
             {/* Back Button */}
             <button
               onClick={() => setSelectedLecture(null)}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-white"
             >
               <span>←</span>
               <span>Back to Library</span>
             </button>
 
             {/* Lecture Header */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {selectedLectureData?.title || 'Lecture'}
               </h1>
-              <div className="flex items-center space-x-4 text-sm text-gray-500">
+              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 <span className="flex items-center">
                   <FiClock className="mr-1" />
                   {selectedLectureData ? (() => {
@@ -1741,7 +1787,7 @@ export default function DashboardPage() {
             />
 
             {/* Notes */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4">AI Generated Notes</h3>
               {isLoadingLectureNotes ? (
                 <div className="flex items-center justify-center py-8">
@@ -1752,7 +1798,7 @@ export default function DashboardPage() {
                   {selectedLectureNotes}
                 </div>
               ) : (
-                <p className="text-gray-500">No notes available for this lecture.</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">No notes available for this lecture.</p>
               )}
             </div>
 
@@ -1767,37 +1813,73 @@ export default function DashboardPage() {
                   }
                 }}
                 disabled={isGeneratingLearnMode}
-                className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-4 rounded-xl hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isGeneratingLearnMode ? (
-                  <FiLoader className="animate-spin" />
+                  <FiLoader className="animate-spin text-lg" />
                 ) : (
-                  <FiFileText />
+                  <FiFileText className="text-lg" />
                 )}
                 <span>{isGeneratingLearnMode ? 'Generating...' : 'Learn Mode'}</span>
               </button>
-              <button className="flex items-center justify-center space-x-2 bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 font-medium">
-                <FiBook />
-                <span>Study Flashcards</span>
+              <button
+                onClick={async () => {
+                  if (flashcards.length > 0) {
+                    setCurrentFlashcardIndex(0)
+                    setIsCardFlipped(false)
+                    setIsFlashcardModeActive(true)
+                  } else {
+                    // Generate flashcards first
+                    setIsGeneratingFlashcards(true)
+                    setFlashcardsError(null)
+                    try {
+                      const response = await fetch('/api/ai/generate-flashcards', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content: selectedLectureNotes || notes, numberOfCards: 10 }),
+                      })
+                      const data = await response.json()
+                      if (!response.ok) {
+                        throw new Error(data.error || 'Failed to generate flashcards')
+                      }
+                      setFlashcards(data.flashcards)
+                      setCurrentFlashcardIndex(0)
+                      setIsCardFlipped(false)
+                      setIsFlashcardModeActive(true)
+                    } catch (err: any) {
+                      setFlashcardsError(err.message || 'Failed to generate flashcards')
+                    }
+                    setIsGeneratingFlashcards(false)
+                  }
+                }}
+                disabled={isGeneratingFlashcards}
+                className="flex items-center justify-center space-x-2 bg-purple-600 text-white px-4 py-4 rounded-xl hover:bg-purple-700 font-medium disabled:opacity-50"
+              >
+                {isGeneratingFlashcards ? (
+                  <FiLoader className="text-lg animate-spin" />
+                ) : (
+                  <FiBook className="text-lg" />
+                )}
+                <span>{isGeneratingFlashcards ? 'Generating...' : 'Flashcards'}</span>
               </button>
             </div>
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-3">
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                <FiFileText className="text-blue-600 text-xl mb-2" />
-                <p className="text-2xl font-bold text-blue-900">145</p>
-                <p className="text-xs text-blue-700">Notes</p>
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+                <FiFileText className="text-blue-600 dark:text-blue-400 text-xl mb-2" />
+                <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{selectedLectureNotes ? selectedLectureNotes.split(/\s+/).length : 0}</p>
+                <p className="text-xs text-blue-700 dark:text-blue-300">Words</p>
               </div>
-              <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                <FiBook className="text-purple-600 text-xl mb-2" />
-                <p className="text-2xl font-bold text-purple-900">12</p>
-                <p className="text-xs text-purple-700">Flashcards</p>
+              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-200 dark:border-purple-800">
+                <FiBook className="text-purple-600 dark:text-purple-400 text-xl mb-2" />
+                <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{flashcards.length}</p>
+                <p className="text-xs text-purple-700 dark:text-purple-300">Flashcards</p>
               </div>
-              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                <FiCheckCircle className="text-green-600 text-xl mb-2" />
-                <p className="text-2xl font-bold text-green-900">95%</p>
-                <p className="text-xs text-green-700">Accuracy</p>
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
+                <FiCheckCircle className="text-green-600 dark:text-green-400 text-xl mb-2" />
+                <p className="text-2xl font-bold text-green-900 dark:text-green-100">{learnModeQuestions.length}</p>
+                <p className="text-xs text-green-700 dark:text-green-300">Quiz Questions</p>
               </div>
             </div>
           </div>
@@ -1807,13 +1889,13 @@ export default function DashboardPage() {
         {activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0 && (
           <div className="space-y-4 pb-20">
             {/* Question Card */}
-            <div className="bg-white rounded-lg p-6 shadow-md space-y-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md space-y-4">
               <div>
                 <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
                   {learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ? 'Multiple Choice' : 'True/False'}
                 </span>
               </div>
-              <h4 className="text-xl font-semibold text-gray-900">
+              <h4 className="text-xl font-semibold text-gray-900 dark:text-white">
                 {learnModeQuestions[currentQuestionIndex].question}
               </h4>
 
@@ -1875,10 +1957,96 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* Library Flashcard Mode View */}
+        {activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0 && (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] pb-20">
+            {/* Flashcard */}
+            <div
+              className="w-full max-w-md perspective-1000 cursor-pointer"
+              onClick={() => setIsCardFlipped(!isCardFlipped)}
+            >
+              <div
+                className={`relative w-full h-64 transition-transform duration-500 transform-style-3d ${isCardFlipped ? 'rotate-y-180' : ''}`}
+                style={{
+                  transformStyle: 'preserve-3d',
+                  transform: isCardFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                }}
+              >
+                {/* Front - Question */}
+                <div
+                  className="absolute inset-0 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 flex flex-col items-center justify-center backface-hidden"
+                  style={{ backfaceVisibility: 'hidden' }}
+                >
+                  <span className="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-4">Question</span>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white text-center">
+                    {flashcards[currentFlashcardIndex].question}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-6">Tap to flip</p>
+                </div>
+
+                {/* Back - Answer */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl shadow-lg border border-purple-200 dark:border-purple-700 p-6 flex flex-col items-center justify-center backface-hidden rotate-y-180"
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    transform: 'rotateY(180deg)'
+                  }}
+                >
+                  <span className="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-4">Answer</span>
+                  <p className="text-lg font-semibold text-purple-900 dark:text-purple-100 text-center">
+                    {flashcards[currentFlashcardIndex].answer}
+                  </p>
+                  <p className="text-xs text-purple-500 dark:text-purple-400 mt-6">Tap to flip back</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-center space-x-6 mt-8">
+              <button
+                onClick={() => {
+                  if (currentFlashcardIndex > 0) {
+                    setCurrentFlashcardIndex(currentFlashcardIndex - 1)
+                    setIsCardFlipped(false)
+                  }
+                }}
+                disabled={currentFlashcardIndex === 0}
+                className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <FiChevronLeft className="text-xl text-gray-700 dark:text-gray-300" />
+              </button>
+
+              <div className="text-center">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  {currentFlashcardIndex + 1} / {flashcards.length}
+                </span>
+              </div>
+
+              <button
+                onClick={() => {
+                  if (currentFlashcardIndex < flashcards.length - 1) {
+                    setCurrentFlashcardIndex(currentFlashcardIndex + 1)
+                    setIsCardFlipped(false)
+                  }
+                }}
+                disabled={currentFlashcardIndex === flashcards.length - 1}
+                className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <FiChevronRight className="text-xl text-gray-700 dark:text-gray-300" />
+              </button>
+            </div>
+
+            {/* Keyboard Hint */}
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
+              Use arrow keys or swipe to navigate
+            </p>
+          </div>
+        )}
+
         {/* Analytics Screen */}
         {activeScreen === 'analytics' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Analytics</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
 
             {/* Time Period Selector */}
             <div className="flex space-x-2 overflow-x-auto pb-2">
@@ -1887,7 +2055,7 @@ export default function DashboardPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
                   analyticsTimeFilter === 'week'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 This Week
@@ -1897,7 +2065,7 @@ export default function DashboardPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
                   analyticsTimeFilter === 'month'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 This Month
@@ -1907,7 +2075,7 @@ export default function DashboardPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
                   analyticsTimeFilter === 'all'
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 All Time
@@ -1985,29 +2153,37 @@ export default function DashboardPage() {
             </div>
 
             {/* Study Streak */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Study Streak</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Study Streak</h3>
               <div className="flex items-center space-x-2 mb-3">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                  <FiTrendingUp className="text-orange-600 text-2xl" />
+                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                  <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-2xl" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">7 Days</p>
-                  <p className="text-sm text-gray-500">Keep it up!</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{streak} {streak === 1 ? 'Day' : 'Days'}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{streak === 0 ? 'Start your streak!' : streak >= 7 ? 'Amazing progress!' : 'Keep it up!'}</p>
                 </div>
               </div>
               <div className="flex space-x-1">
-                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
-                  <div key={i} className="flex-1 text-center">
-                    <div className={`w-full h-8 rounded ${i < 5 ? 'bg-green-500' : 'bg-gray-200'} mb-1`}></div>
-                    <p className="text-xs text-gray-500">{day}</p>
-                  </div>
-                ))}
+                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => {
+                  // Calculate which days should be active based on streak
+                  const today = new Date().getDay()
+                  const adjustedToday = today === 0 ? 6 : today - 1 // Convert Sunday=0 to index 6, Monday=1 to index 0
+                  const isActive = isActiveToday()
+                    ? i <= adjustedToday && (adjustedToday - i) < streak
+                    : i < adjustedToday && (adjustedToday - 1 - i) < streak
+                  return (
+                    <div key={i} className="flex-1 text-center">
+                      <div className={`w-full h-8 rounded ${isActive ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'} mb-1`}></div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{day}</p>
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
             {/* Top Courses */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Top Courses</h3>
               <div className="space-y-3">
                 {courses.length === 0 ? (
@@ -2023,8 +2199,8 @@ export default function DashboardPage() {
                     return (
                       <div key={course.id}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium text-gray-700">{course.name}</span>
-                          <span className="text-sm text-gray-500">{totalHours.toFixed(1)}h</span>
+                          <span className="text-sm font-medium text-gray-700 dark:text-white">{course.name}</span>
+                          <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{totalHours.toFixed(1)}h</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
@@ -2040,7 +2216,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Recent Activity</h3>
               <div className="space-y-3">
                 {lectures.length === 0 ? (
@@ -2070,8 +2246,8 @@ export default function DashboardPage() {
                           <FiMic className={`text-${statusColor}-600 text-lg`} />
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">{statusText}</p>
-                          <p className="text-xs text-gray-500">{lecture.title} • {timeDisplay}</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">{statusText}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{lecture.title} • {timeDisplay}</p>
                         </div>
                       </div>
                     )
@@ -2087,7 +2263,7 @@ export default function DashboardPage() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <h2 className="text-2xl font-bold text-gray-900">Classes</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Classes</h2>
                 <p className="text-gray-600 text-sm mt-1">Manage your classes and share lectures with classmates</p>
               </div>
               <button
@@ -2103,15 +2279,15 @@ export default function DashboardPage() {
 
             {/* Your Classes */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Your Classes</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Your Classes</h3>
               {userClasses && userClasses.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4">
                   {userClasses.map((cls: any) => (
-                    <div key={cls.id} className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow">
+                    <div key={cls.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900 text-lg">{cls.name}</h4>
-                          <p className="text-sm text-gray-600 mt-1">{cls.professor} • {cls.code}</p>
+                          <h4 className="font-semibold text-gray-900 dark:text-white text-lg">{cls.name}</h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{cls.professor} • {cls.code}</p>
                           {cls.description && (
                             <p className="text-sm text-gray-600 mt-2">{cls.description}</p>
                           )}
@@ -2122,10 +2298,10 @@ export default function DashboardPage() {
                           <FiUsers className={`text-${cls.color}-600`} />
                         </div>
                       </div>
-                      <div className="flex items-center justify-between text-sm text-gray-600 pt-3 border-t border-gray-200">
+                      <div className="flex items-center justify-between text-sm text-gray-600 pt-3 border-t border-gray-200 dark:border-gray-700">
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-1">
-                            <FiUsers className="text-gray-600" />
+                            <FiUsers className="text-gray-600 dark:text-gray-300" />
                             <span>{cls.class_memberships?.length || 0} members</span>
                           </div>
                         </div>
@@ -2150,8 +2326,8 @@ export default function DashboardPage() {
 
             {/* Join a Class */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Join a Class</h3>
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Join a Class</h3>
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -2182,7 +2358,7 @@ export default function DashboardPage() {
       {/* New Course Modal */}
       {showNewCourseModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Create New Course</h2>
             <div className="space-y-4">
               <div>
@@ -2275,7 +2451,7 @@ export default function DashboardPage() {
       {/* Edit Profile Modal */}
       {showEditProfileModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Edit Profile</h2>
             <div className="space-y-4">
               <div>
@@ -2323,7 +2499,7 @@ export default function DashboardPage() {
       {/* Change Password Modal */}
       {showChangePasswordModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Change Password</h2>
             <div className="space-y-4">
               <div>
@@ -2378,7 +2554,7 @@ export default function DashboardPage() {
       {/* Audio Quality Modal */}
       {showAudioQualityModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Audio Quality</h2>
             <div className="space-y-3">
               {(['low', 'medium', 'high'] as const).map((quality) => (
@@ -2391,13 +2567,13 @@ export default function DashboardPage() {
                   className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
                     audioQuality === quality
                       ? 'border-blue-600 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-gray-200 hover:border-gray-300 dark:border-gray-600'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-gray-900 capitalize">{quality}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         {quality === 'low' && '48 kbps - Saves space'}
                         {quality === 'medium' && '128 kbps - Balanced'}
                         {quality === 'high' && '320 kbps - Best quality'}
@@ -2423,7 +2599,7 @@ export default function DashboardPage() {
       {/* Notes Detail Level Modal */}
       {showNotesDetailModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Notes Detail Level</h2>
             <div className="space-y-3">
               {(['brief', 'detailed', 'comprehensive'] as const).map((level) => (
@@ -2436,13 +2612,13 @@ export default function DashboardPage() {
                   className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
                     notesDetailLevel === level
                       ? 'border-blue-600 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-gray-200 hover:border-gray-300 dark:border-gray-600'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-gray-900 capitalize">{level}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         {level === 'brief' && 'Key points and summaries'}
                         {level === 'detailed' && 'Comprehensive with examples'}
                         {level === 'comprehensive' && 'In-depth with all details'}
@@ -2482,32 +2658,29 @@ export default function DashboardPage() {
       `}</style>
 
       {/* Mobile Bottom Navigation with Center Record Button */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50" style={{ overflow: 'visible', paddingBottom: '10px' }}>
-        <div className="flex items-center justify-between h-20 relative px-3" style={{ overflow: 'visible' }}>
-          {/* Left Group - Home & Library */}
-          <div className="flex items-center gap-10 ml-2">
-            {/* Home */}
-            <Link
-              href="/dashboard"
-              className={`flex flex-col items-center justify-center gap-0 transition-colors ${
-                activeScreen === 'dashboard' ? 'text-blue-600' : 'text-gray-600'
-              }`}
-            >
-              <FiHome className="text-lg" />
-              <span className="text-[10px] font-medium leading-tight">Home</span>
-            </Link>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50 pb-8">
+        <div className="flex items-end justify-evenly h-16 px-4 pt-2">
+          {/* Home */}
+          <button
+            onClick={() => { hapticSelection(); setActiveScreen('dashboard') }}
+            className={`flex flex-col items-center justify-center gap-0.5 transition-colors min-w-[48px] ${
+              activeScreen === 'dashboard' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-300'
+            }`}
+          >
+            <FiHome className="text-xl" />
+            <span className="text-[10px] font-medium">Home</span>
+          </button>
 
-            {/* Library */}
-            <Link
-              href="/dashboard/library"
-              className={`flex flex-col items-center justify-center gap-0 transition-colors ${
-                activeScreen === 'library' ? 'text-blue-600' : 'text-gray-600'
-              }`}
-            >
-              <FiBook className="text-lg" />
-              <span className="text-[10px] font-medium leading-tight">Library</span>
-            </Link>
-          </div>
+          {/* Library */}
+          <button
+            onClick={() => { hapticSelection(); setActiveScreen('library') }}
+            className={`flex flex-col items-center justify-center gap-0.5 transition-colors min-w-[48px] ${
+              activeScreen === 'library' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-300'
+            }`}
+          >
+            <FiBook className="text-xl" />
+            <span className="text-[10px] font-medium">Library</span>
+          </button>
 
           {/* Center Record Button */}
           <button
@@ -2529,10 +2702,9 @@ export default function DashboardPage() {
               }
             }}
             disabled={isStoppingRecording || isGeneratingNotes || isTranscribing}
-            className={`absolute rounded-full shadow-lg flex items-center justify-center transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`rounded-full shadow-lg flex items-center justify-center transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 mb-[-8px] ${
               isRecording ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
             }`}
-            style={{ left: '50%', transform: 'translateX(-50%)', bottom: '10px', width: '56px', height: '56px' }}
           >
             {isStoppingRecording || isGeneratingNotes || isTranscribing ? (
               <FiLoader className="w-5 h-5 text-white animate-spin" />
@@ -2541,41 +2713,119 @@ export default function DashboardPage() {
             )}
           </button>
 
-          {/* Right Group - Analytics & Settings */}
-          <div className="flex items-center gap-10 mr-2">
-            {/* Analytics */}
-            <Link
-              href="/dashboard/analytics"
-              className={`flex flex-col items-center justify-center gap-0 transition-colors ${
-                activeScreen === 'analytics' ? 'text-blue-600' : 'text-gray-600'
-              }`}
-            >
-              <FiBarChart2 className="text-lg" />
-              <span className="text-[10px] font-medium leading-tight">Analytics</span>
-            </Link>
+          {/* Analytics */}
+          <button
+            onClick={() => { hapticSelection(); setActiveScreen('analytics') }}
+            className={`flex flex-col items-center justify-center gap-0.5 transition-colors min-w-[48px] ${
+              activeScreen === 'analytics' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-300'
+            }`}
+          >
+            <FiBarChart2 className="text-xl" />
+            <span className="text-[10px] font-medium">Analytics</span>
+          </button>
 
-            {/* Classes */}
-            <button
-              onClick={() => { hapticSelection(); setActiveScreen('feed') }}
-              className={`flex flex-col items-center justify-center gap-0 transition-colors ${
-                activeScreen === 'feed' ? 'text-blue-600' : 'text-gray-600'
-              }`}
-            >
-              <FiUsers className="text-lg" />
-              <span className="text-[10px] font-medium leading-tight">Classes</span>
-            </button>
-          </div>
+          {/* Classes */}
+          <button
+            onClick={() => { hapticSelection(); setActiveScreen('feed') }}
+            className={`flex flex-col items-center justify-center gap-0.5 transition-colors min-w-[48px] ${
+              activeScreen === 'feed' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-300'
+            }`}
+          >
+            <FiUsers className="text-xl" />
+            <span className="text-[10px] font-medium">Classes</span>
+          </button>
         </div>
       </nav>
+
+      
+      {/* Floating Recording Panel with Live Transcript */}
+      {isRecording && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50">
+          {/* Modal */}
+          <div className="relative w-full sm:max-w-md bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-in-up overflow-hidden">
+            {/* Handle bar for mobile */}
+            <div className="sm:hidden flex justify-center pt-3">
+              <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
+            </div>
+
+            {/* Content */}
+            <div className="px-8 pt-6 pb-6">
+              {/* Recording Icon with gradient background */}
+              <div className={`mx-auto w-32 h-32 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white mb-6 ${!isPaused && 'recording-indicator'}`}>
+                <FiMic className="w-14 h-14" />
+              </div>
+
+              {/* Timer and Status */}
+              <div className="text-center mb-6">
+                <h2 className="text-4xl font-bold text-gray-900 dark:text-white font-mono mb-2">
+                  {formatDuration(duration)}
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300 text-base">
+                  {isPaused ? 'Recording Paused' : 'Recording in Progress...'}
+                </p>
+              </div>
+
+              {/* Live Transcript */}
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 mb-6 max-h-32 overflow-y-auto">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-2 h-2 rounded-full ${!isPaused ? 'bg-red-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Live Transcript</span>
+                </div>
+                {transcript || interimTranscript ? (
+                  <p className="text-sm text-gray-900 dark:text-white leading-relaxed">
+                    {transcript}
+                    {interimTranscript && (
+                      <span className="text-gray-500 dark:text-gray-400 italic"> {interimTranscript}</span>
+                    )}
+                  </p>
+                ) : (
+                  <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+                    Start speaking... your words will appear here
+                  </p>
+                )}
+              </div>
+
+              {/* Recording Controls */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { hapticSelection(); isPaused ? resumeRecording() : pauseRecording() }}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                  {isPaused ? <><FiPlay className="w-5 h-5" /> Resume</> : <><FiPause className="w-5 h-5" /> Pause</>}
+                </button>
+                <button
+                  onClick={async () => {
+                    hapticImpact('medium')
+                    setIsStoppingRecording(true)
+                    const result = await stopAndGenerateNotes()
+                    if (result && result.transcript && result.notes) {
+                      hapticSuccess()
+                      setShowCourseSelectionModal(true)
+                    } else {
+                      hapticError()
+                    }
+                    setIsStoppingRecording(false)
+                  }}
+                  disabled={isStoppingRecording || isGeneratingNotes}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50"
+                >
+                  <FiSquare className="w-5 h-5" />
+                  {isStoppingRecording || isGeneratingNotes ? 'Processing...' : 'Stop'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Ready to Record Confirmation Modal */}
       {showReadyToRecordModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
             <div className="text-center space-y-2">
               <Mic className="w-12 h-12 mx-auto text-blue-600" strokeWidth={1.5} />
-              <h3 className="text-2xl font-bold text-gray-900">Ready to Record?</h3>
-              <p className="text-sm text-gray-600">Your lecture will be saved with transcript and AI notes</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Ready to Record?</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Your lecture will be saved with transcript and AI notes</p>
             </div>
 
             {/* Action Buttons */}
@@ -2607,10 +2857,10 @@ export default function DashboardPage() {
       {/* Course Selection Modal for Recording */}
       {showCourseSelectionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
-          <div className="w-full bg-white rounded-t-2xl p-6 pb-8 space-y-4 animate-slide-in-up">
+          <div className="w-full bg-white dark:bg-gray-800 rounded-t-2xl p-6 pb-8 space-y-4 animate-slide-in-up">
             <div className="space-y-2">
-              <h3 className="text-xl font-bold text-gray-900">Save Lecture</h3>
-              <p className="text-sm text-gray-600">Name your lecture and select a course</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Save Lecture</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Name your lecture and select a course</p>
             </div>
 
             {/* Lecture Title Input */}
@@ -2635,7 +2885,7 @@ export default function DashboardPage() {
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     selectedCourseForRecording === course.id
                       ? 'border-blue-600 bg-blue-50'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
+                      : 'border-gray-200 bg-white hover:border-gray-300 dark:border-gray-600'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -2648,8 +2898,8 @@ export default function DashboardPage() {
                       }}
                     />
                     <div>
-                      <p className="font-semibold text-gray-900">{course.name}</p>
-                      <p className="text-xs text-gray-500">{course.code}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{course.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{course.code}</p>
                     </div>
                   </div>
                 </button>
@@ -2755,7 +3005,7 @@ export default function DashboardPage() {
           onClick={() => setShowStreakModal(false)}
         >
           <div
-            className="w-full max-w-lg bg-white rounded-t-3xl p-6 pb-10 animate-slide-in-up"
+            className="w-full max-w-lg bg-white dark:bg-gray-800 rounded-t-3xl p-6 pb-10 animate-slide-in-up"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Handle bar */}
@@ -2771,7 +3021,7 @@ export default function DashboardPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 {streak === 0 ? 'Start Your Streak!' : `${streak} Day Streak!`}
               </h2>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 {streak === 0
                   ? 'Record your first lecture today to begin your study streak.'
                   : streak < 7
@@ -2795,7 +3045,7 @@ export default function DashboardPage() {
 
                   return (
                     <div key={day} className="flex flex-col items-center gap-1">
-                      <span className={`text-xs ${isToday ? 'font-bold text-blue-600' : 'text-gray-500'}`}>
+                      <span className={`text-xs ${isToday ? 'font-bold text-blue-600' : 'text-gray-500 dark:text-gray-400'}`}>
                         {day}
                       </span>
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -2836,11 +3086,11 @@ export default function DashboardPage() {
                     className={`flex-shrink-0 px-4 py-3 rounded-xl text-center ${
                       streak >= days
                         ? 'bg-gradient-to-br from-orange-100 to-red-100 border border-orange-200'
-                        : 'bg-gray-100 border border-gray-200'
+                        : 'bg-gray-100 border border-gray-200 dark:border-gray-700'
                     }`}
                   >
                     <span className="text-2xl">{streak >= days ? emoji : '🔒'}</span>
-                    <p className={`text-xs mt-1 font-medium ${streak >= days ? 'text-orange-700' : 'text-gray-500'}`}>
+                    <p className={`text-xs mt-1 font-medium ${streak >= days ? 'text-orange-700' : 'text-gray-500 dark:text-gray-400'}`}>
                       {label}
                     </p>
                   </div>
