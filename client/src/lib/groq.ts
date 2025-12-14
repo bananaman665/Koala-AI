@@ -34,9 +34,6 @@ export async function generateNotesFromTranscript(
   }
 ) {
   try {
-    console.log('[GROQ] Initializing Groq API call...')
-    console.log('[GROQ] API Key present:', !!process.env.GROQ_API_KEY)
-    console.log('[GROQ] Transcript length:', transcript.length)
 
     const completion = await groq.chat.completions.create({
       messages: [
@@ -61,24 +58,11 @@ Make the notes easy to study from and understand.`,
       max_tokens: options?.maxTokens || DEFAULT_GROQ_CONFIG.max_tokens,
     })
 
-    console.log('[GROQ] API call successful')
-    console.log('[GROQ] Response choices count:', completion.choices?.length || 0)
 
     const notes = completion.choices[0]?.message?.content || ''
-    console.log('[GROQ] Notes content length:', notes.length)
-
-    if (!notes) {
-      console.error('[GROQ] No content in response')
-    }
 
     return notes
   } catch (error: any) {
-    console.error('[GROQ] Error calling API:', error?.message || error)
-    console.error('[GROQ] Error details:', {
-      status: error?.status,
-      statusText: error?.statusText,
-      code: error?.code,
-    })
     throw error
   }
 }
@@ -175,7 +159,6 @@ export async function generateFlashcards(
     const jsonString = jsonMatch ? jsonMatch[1] : response
     return JSON.parse(jsonString)
   } catch (error) {
-    console.error('Failed to parse flashcards JSON:', error)
     // Return empty array if parsing fails
     return []
   }
@@ -226,7 +209,6 @@ ${content}`,
     const jsonString = jsonMatch ? jsonMatch[1] : response
     return JSON.parse(jsonString)
   } catch (error) {
-    console.error('Failed to parse learn mode questions JSON:', error)
     // Return empty array if parsing fails
     return []
   }

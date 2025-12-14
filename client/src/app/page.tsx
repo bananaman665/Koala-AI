@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { FiMic, FiFileText, FiZap, FiCheck } from 'react-icons/fi'
+import AppIcon from '@/components/AppIcon'
 
 export default function HomePage() {
   return (
@@ -9,7 +10,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 pt-safe-header">
             <div className="flex items-center space-x-2">
-              <span className="text-3xl">🐨</span>
+              <AppIcon size="lg" />
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Koala.ai
               </span>
@@ -242,7 +243,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <span className="text-3xl">🐨</span>
+                <AppIcon size="lg" />
                 <span className="text-xl font-bold text-white">Koala.ai</span>
               </div>
               <p className="text-sm">

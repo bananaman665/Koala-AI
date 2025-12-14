@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { FiCheck, FiZap, FiStar, FiTrendingUp } from 'react-icons/fi'
+import AppIcon from '@/components/AppIcon'
 
 export default function PricingPage() {
   const plans = [
@@ -65,7 +66,7 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl">🐨</span>
+              <AppIcon size="md" />
               <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Koala.ai
               </span>

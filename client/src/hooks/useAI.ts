@@ -35,7 +35,6 @@ export function useAINotes(): UseAINotesResult {
       setNotes(data.notes)
     } catch (err: any) {
       setError(err.message || 'Failed to generate notes')
-      console.error('Error generating notes:', err)
     } finally {
       setIsGenerating(false)
     }
@@ -91,7 +90,6 @@ export function useAISummary(): UseAISummaryResult {
       setSummary(data.summary)
     } catch (err: any) {
       setError(err.message || 'Failed to generate summary')
-      console.error('Error generating summary:', err)
     } finally {
       setIsGenerating(false)
     }

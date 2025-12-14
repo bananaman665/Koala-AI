@@ -92,7 +92,6 @@ export function useAudioRecording(): UseAudioRecordingResult {
       }))
     } catch (err: any) {
       setError(err.message || 'Failed to start recording')
-      console.error('Recording error:', err)
     }
   }, [])
 

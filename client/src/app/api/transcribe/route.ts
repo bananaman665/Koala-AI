@@ -26,17 +26,9 @@ export async function POST(request: NextRequest) {
     }
 
     // === DIAGNOSTIC LOGGING START ===
-    console.log('='.repeat(50))
-    console.log('TRANSCRIPTION REQUEST RECEIVED')
-    console.log('='.repeat(50))
-    console.log('File name:', audioFile.name)
-    console.log('File type (MIME):', audioFile.type)
-    console.log('File size:', audioFile.size, 'bytes')
-    console.log('File constructor:', audioFile.constructor.name)
 
     // Check if file has content
     const arrayBuffer = await audioFile.arrayBuffer()
-    console.log('ArrayBuffer size:', arrayBuffer.byteLength, 'bytes')
 
     // Recreate file from buffer to ensure it's properly formed
     const fileBlob = new Blob([arrayBuffer], { type: audioFile.type || 'audio/webm' })
@@ -44,10 +36,6 @@ export async function POST(request: NextRequest) {
       type: audioFile.type || 'audio/webm'
     })
 
-    console.log('Reconstructed file name:', reconstructedFile.name)
-    console.log('Reconstructed file type:', reconstructedFile.type)
-    console.log('Reconstructed file size:', reconstructedFile.size)
-    console.log('='.repeat(50))
     // === DIAGNOSTIC LOGGING END ===
 
     // Transcribe audio using Groq Whisper
@@ -60,7 +48,6 @@ export async function POST(request: NextRequest) {
 
     const transcriptText = transcription.text
 
-    console.log('Transcription complete:', transcriptText.substring(0, 100) + '...')
 
     // Save transcript to database if userId and courseId provided
     if (userId && courseId) {
@@ -78,7 +65,6 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (lectureError) {
-        console.error('Error saving lecture:', lectureError)
       } else {
         // Save transcript
         const { error: transcriptError } = await supabase.from('transcripts').insert({
@@ -88,7 +74,6 @@ export async function POST(request: NextRequest) {
         })
 
         if (transcriptError) {
-          console.error('Error saving transcript:', transcriptError)
         }
       }
     }
@@ -99,24 +84,13 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     // === DIAGNOSTIC ERROR LOGGING START ===
-    console.log('='.repeat(50))
-    console.log('TRANSCRIPTION ERROR')
-    console.log('='.repeat(50))
-    console.log('Error name:', error?.name)
-    console.log('Error message:', error?.message)
-    console.log('Error status:', error?.status)
-    console.log('Error type:', error?.constructor?.name)
 
     // Log Groq-specific error details
     if (error?.error) {
-      console.log('Groq error object:', JSON.stringify(error.error, null, 2))
     }
     if (error?.headers) {
-      console.log('Response headers:', JSON.stringify(Object.fromEntries(error.headers?.entries?.() || []), null, 2))
     }
 
-    console.log('Full error:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2))
-    console.log('='.repeat(50))
     // === DIAGNOSTIC ERROR LOGGING END ===
 
     // Extract the actual Groq error message

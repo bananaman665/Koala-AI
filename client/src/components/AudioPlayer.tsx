@@ -59,7 +59,6 @@ export function AudioPlayer({
       audioRef.current.pause()
     } else {
       audioRef.current.play().catch((err) => {
-        console.error('Error playing audio:', err)
         setError('Unable to play audio')
       })
     }
@@ -130,7 +129,6 @@ export function AudioPlayer({
     setCurrentTime(time)
 
     if (!isPlaying) {
-      audioRef.current.play().catch(console.error)
     }
   }, [isPlaying])
 

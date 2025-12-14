@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import AppIcon from '@/components/AppIcon'
 
 export default function TermsPage() {
   return (
@@ -8,7 +9,7 @@ export default function TermsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl">🐨</span>
+              <AppIcon size="md" />
               <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Koala.ai
               </span>
@@ -41,7 +42,7 @@ export default function TermsPage() {
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
               <li>Audio recording capabilities through your web browser</li>
-              <li>AI-powered transcription using OpenAI Whisper technology</li>
+              <li>AI-powered transcription using Groq Whisper technology</li>
               <li>Automated note generation and organization</li>
               <li>Cloud storage for your recordings and notes</li>
               <li>Analytics and study tracking features</li>
@@ -95,7 +96,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Data Usage and Privacy</h2>
             <p className="text-gray-700 leading-relaxed">
-              We process your recordings using OpenAI's Whisper API for transcription. Please review our{' '}
+              We process your recordings using Groq's Whisper API for transcription. Please review our{' '}
               <Link href="/privacy" className="text-blue-600 hover:text-blue-700 font-medium">
                 Privacy Policy
               </Link>{' '}
@@ -143,8 +144,8 @@ export default function TermsPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">12. Contact Information</h2>
             <p className="text-gray-700 leading-relaxed">
               If you have questions about these Terms of Service, please contact us at:{' '}
-              <a href="mailto:legal@koala.ai" className="text-blue-600 hover:text-blue-700 font-medium">
-                legal@koala.ai
+              <a href="mailto:andrewsahakian9@gmail.com" className="text-blue-600 hover:text-blue-700 font-medium">
+                andrewsahakian9@gmail.com
               </a>
             </p>
           </section>

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import AppIcon from '@/components/AppIcon'
 
 export default function PrivacyPage() {
   return (
@@ -8,7 +9,7 @@ export default function PrivacyPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl">🐨</span>
+              <AppIcon size="md" />
               <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Koala.ai
               </span>
@@ -91,10 +92,10 @@ export default function PrivacyPage() {
               We use the following third-party services to provide our functionality:
             </p>
             
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">OpenAI Whisper API</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Groq API</h3>
             <p className="text-gray-700 leading-relaxed mb-4">
-              Your audio recordings are processed through OpenAI's Whisper API for transcription. OpenAI's data 
-              usage policy applies to this processing. Audio sent to OpenAI is not used to train their models.
+              Your audio recordings are processed through Groq's Whisper API for transcription. Groq's data
+              usage policy applies to this processing. Audio sent to Groq is not used to train their models.
             </p>
 
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Supabase</h3>
@@ -137,8 +138,8 @@ export default function PrivacyPage() {
             </ul>
             <p className="text-gray-700 leading-relaxed mt-4">
               To exercise these rights, visit your account settings or contact us at{' '}
-              <a href="mailto:privacy@koala.ai" className="text-blue-600 hover:text-blue-700 font-medium">
-                privacy@koala.ai
+              <a href="mailto:andrewsahakian9@gmail.com" className="text-blue-600 hover:text-blue-700 font-medium">
+                andrewsahakian9@gmail.com
               </a>
             </p>
           </section>
@@ -201,8 +202,8 @@ export default function PrivacyPage() {
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <p className="text-gray-700">
                 <strong>Email:</strong>{' '}
-                <a href="mailto:privacy@koala.ai" className="text-blue-600 hover:text-blue-700">
-                  privacy@koala.ai
+                <a href="mailto:andrewsahakian9@gmail.com" className="text-blue-600 hover:text-blue-700">
+                  andrewsahakian9@gmail.com
                 </a>
               </p>
               <p className="text-gray-700 mt-2">

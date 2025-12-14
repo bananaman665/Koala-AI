@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { FiMail, FiArrowLeft, FiCheckCircle } from 'react-icons/fi'
 import { useAuth } from '@/contexts/AuthContext'
+import AppIcon from '@/components/AppIcon'
 
 export default function ForgotPasswordPage() {
   const { resetPassword } = useAuth()
@@ -32,7 +33,7 @@ export default function ForgotPasswordPage() {
       <div className="max-w-md w-full">
         {/* Logo */}
         <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
-          <span className="text-4xl">🐨</span>
+          <AppIcon size="xl" />
           <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Koala.ai
           </span>

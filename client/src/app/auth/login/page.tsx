@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi'
 import { useAuth } from '@/contexts/AuthContext'
+import AppIcon from '@/components/AppIcon'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -69,17 +70,22 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* Logo */}
-        <div className="flex items-center justify-center space-x-2 mb-8">
-          <span className="text-4xl">🐨</span>
-          <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Koala.ai
-          </span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Top Bar */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="max-w-md mx-auto px-4 py-3">
+          <Link href="/" className="flex items-center space-x-2">
+            <AppIcon size="md" />
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Koala.ai
+            </span>
+          </Link>
         </div>
+      </div>
 
-        {/* Login Card */}
+      <div className="flex items-center justify-center p-4 py-8">
+        <div className="max-w-md w-full">
+          {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
@@ -220,6 +226,7 @@ export default function LoginPage() {
               Sign up for free
             </Link>
           </p>
+        </div>
         </div>
       </div>
     </div>

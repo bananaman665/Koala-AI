@@ -69,6 +69,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
   const audioChunksRef = useRef<Blob[]>([])
   const streamRef = useRef<MediaStream | null>(null)
   const capacitorMediaRef = useRef<string | null>(null) // Store recording ID
+  const transcriptRef = useRef<string>('') // Track transcript in ref to avoid stale closures
+  const isRecordingRef = useRef<boolean>(false) // Track recording state in ref
+  const isPausedRef = useRef<boolean>(false) // Track paused state in ref
 
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const startTimeRef = useRef<number>(0)
@@ -97,12 +100,10 @@ export function useHybridRecording(): UseHybridRecordingResult {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
 
       if (!SpeechRecognition) {
-        console.error('Web Speech API not available')
         setError('Web Speech API not available on this device')
         return
       }
 
-      console.log('Creating SpeechRecognition instance...')
       const recognition = new SpeechRecognition()
 
       recognition.continuous = true
@@ -111,55 +112,50 @@ export function useHybridRecording(): UseHybridRecordingResult {
       recognition.maxAlternatives = 1
 
       recognition.onstart = () => {
-        console.log('✅ Speech recognition STARTED - listening for audio')
       }
 
       recognition.onresult = (event: any) => {
-        console.log('📝 Got result event', event.results.length, 'results')
         let interimTranscript = ''
-        let finalTranscript = state.transcript
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript
-          console.log(`Result ${i}: "${transcript}" (final: ${event.results[i].isFinal})`)
+          const resultTranscript = event.results[i][0].transcript
 
           if (event.results[i].isFinal) {
-            finalTranscript += transcript + ' '
+            // Append to ref to avoid stale closure issues
+            transcriptRef.current += resultTranscript + ' '
           } else {
-            interimTranscript += transcript
+            interimTranscript += resultTranscript
           }
         }
 
         setState(prev => ({
           ...prev,
-          transcript: finalTranscript,
+          transcript: transcriptRef.current,
           interimTranscript,
         }))
       }
 
       recognition.onerror = (event: any) => {
-        console.error('❌ Speech recognition ERROR:', event.error)
         setError(`Recognition error: ${event.error}`)
       }
 
       recognition.onend = () => {
-        console.log('⏹️ Speech recognition ENDED')
         // Auto-restart if still recording (not paused or stopped)
-        if (state.isRecording && !state.isPaused) {
-          console.log('Auto-restarting recognition...')
-          recognition.start()
+        // Use refs to avoid stale closure issues
+        if (isRecordingRef.current && !isPausedRef.current) {
+          try {
+            recognition.start()
+          } catch (e) {
+          }
         }
       }
 
-      console.log('Starting recognition.start()...')
       recognition.start()
       recognitionRef.current = recognition
-      console.log('Recognition instance assigned to ref')
     } catch (err: any) {
-      console.error('Error in startSpeechRecognition:', err.message)
       setError(err.message || 'Failed to start speech recognition')
     }
-  }, [state.isRecording, state.isPaused, state.transcript])
+  }, [])
 
   // Capacitor Voice Recorder Methods (Native Mobile)
   const startCapacitorVoiceRecorder = useCallback(async () => {
@@ -221,6 +217,8 @@ export function useHybridRecording(): UseHybridRecordingResult {
         return
       }
 
+      isRecordingRef.current = true
+      isPausedRef.current = false
       setState(prev => ({
         ...prev,
         isRecording: true,
@@ -238,7 +236,6 @@ export function useHybridRecording(): UseHybridRecordingResult {
       if (useCapacitorMedia && useSpeechRecognition) {
         await startCapacitorVoiceRecorder().catch(() => {
           // Capacitor recording is optional, don't fail if it doesn't start
-          console.warn('Capacitor recording failed to start, will use Speech Recognition only')
         })
       } else if (useCapacitorMedia) {
         await startCapacitorVoiceRecorder()
@@ -250,7 +247,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
       }
     } catch (err: any) {
       setError(err.message || 'Failed to start recording')
-      console.error('Recording error:', err)
+      isRecordingRef.current = false
       setState(prev => ({ ...prev, isRecording: false }))
       stopTimer()
     }
@@ -267,6 +264,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
     pausedTimeRef.current = Date.now() - startTimeRef.current
     stopTimer()
+    isPausedRef.current = true
     setState(prev => ({ ...prev, isPaused: true }))
   }, [useSpeechRecognition, useWebMediaRecorder, stopTimer])
 
@@ -280,6 +278,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
     // Note: Capacitor VoiceRecorder doesn't support resume
 
     startTimer()
+    isPausedRef.current = false
     setState(prev => ({ ...prev, isPaused: false }))
   }, [useSpeechRecognition, useWebMediaRecorder, startTimer])
 
@@ -291,12 +290,10 @@ export function useHybridRecording(): UseHybridRecordingResult {
         return audioBlob
       }
 
-      console.log('Converting audio to MP3 from format:', inputMimeType)
 
       const ffmpeg = new FFmpeg()
 
       if (!ffmpeg.loaded) {
-        console.log('Loading FFmpeg...')
         await ffmpeg.load()
       }
 
@@ -315,10 +312,8 @@ export function useHybridRecording(): UseHybridRecordingResult {
       ffmpeg.deleteFile(inputFileName)
       ffmpeg.deleteFile('output.mp3')
 
-      console.log('Converted to MP3, size:', mp3Blob.size)
       return mp3Blob
     } catch (err: any) {
-      console.error('FFmpeg conversion error:', err)
       // If conversion fails, return original blob
       return audioBlob
     }
@@ -334,18 +329,11 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
       // Convert to MP3 if it's AAC or other unsupported format
       if (fileMimeType.toLowerCase() === 'audio/aac' || fileMimeType.toLowerCase() === 'audio/x-m4a') {
-        console.log('Converting AAC to MP3...')
         audioToSend = await convertAudioToMp3(audioBlob, fileMimeType)
       }
 
       const fileName = `recording.mp3`
       const audioFile = new File([audioToSend], fileName, { type: 'audio/mpeg' })
-
-      console.log('Transcribing audio:', {
-        fileName,
-        mimeType: fileMimeType,
-        size: audioFile.size,
-      })
 
       const formData = new FormData()
       formData.append('audio', audioFile)
@@ -355,23 +343,18 @@ export function useHybridRecording(): UseHybridRecordingResult {
         body: formData,
       })
 
-      console.log('Transcribe response status:', response.status)
 
       const data = await response.json()
 
-      console.log('Transcribe response:', JSON.stringify(data, null, 2))
 
       if (!response.ok) {
         const errorMsg = data.message || data.error || 'Failed to transcribe audio'
-        console.error('Transcription API error:', errorMsg)
         throw new Error(errorMsg)
       }
 
       const transcript = data.transcript || ''
-      console.log('Got transcript:', transcript.substring(0, 100))
       return transcript
     } catch (err: any) {
-      console.error('❌ Transcription error:', err.message)
       setError(`Transcription failed: ${err.message}`)
       return ''
     } finally {
@@ -391,18 +374,19 @@ export function useHybridRecording(): UseHybridRecordingResult {
       // Stop Capacitor recording in background
       if (capacitorMediaRef.current) {
         VoiceRecorder.stopRecording().catch(() => {
-          console.log('Capacitor recording stopped')
         })
         capacitorMediaRef.current = null
       }
 
+      isRecordingRef.current = false
+      isPausedRef.current = false
       setState(prev => ({
         ...prev,
         isRecording: false,
         isPaused: false,
       }))
 
-      return state.transcript.trim()
+      return transcriptRef.current.trim()
     }
 
     // Native Platform: Use Capacitor recording + Groq transcription
@@ -411,7 +395,6 @@ export function useHybridRecording(): UseHybridRecordingResult {
         const result = await VoiceRecorder.stopRecording()
         capacitorMediaRef.current = null
 
-        console.log('Capacitor recording stopped. Audio format:', result.value.mimeType)
 
         // Convert base64 to blob
         const base64Response = await fetch(`data:${result.value.mimeType};base64,${result.value.recordDataBase64}`)
@@ -420,6 +403,8 @@ export function useHybridRecording(): UseHybridRecordingResult {
         // Transcribe the audio
         const transcribedText = await transcribeAudio(audioBlob, result.value.mimeType)
 
+        isRecordingRef.current = false
+        isPausedRef.current = false
         setState(prev => ({
           ...prev,
           transcript: transcribedText,
@@ -429,8 +414,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
         return transcribedText
       } catch (err: any) {
-        console.error('Error stopping Capacitor recording:', err)
         capacitorMediaRef.current = null
+        isRecordingRef.current = false
+        isPausedRef.current = false
         setState(prev => ({
           ...prev,
           isRecording: false,
@@ -461,6 +447,8 @@ export function useHybridRecording(): UseHybridRecordingResult {
           // Transcribe the audio
           const transcribedText = await transcribeAudio(audioBlob, 'audio/webm')
 
+          isRecordingRef.current = false
+          isPausedRef.current = false
           setState(prev => ({
             ...prev,
             transcript: transcribedText,
@@ -476,6 +464,8 @@ export function useHybridRecording(): UseHybridRecordingResult {
       })
     }
 
+    isRecordingRef.current = false
+    isPausedRef.current = false
     setState(prev => ({
       ...prev,
       isRecording: false,
@@ -483,7 +473,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
     }))
 
     return ''
-  }, [useSpeechRecognition, useCapacitorMedia, useWebMediaRecorder, state.transcript, stopTimer, transcribeAudio])
+  }, [useSpeechRecognition, useCapacitorMedia, useWebMediaRecorder, stopTimer, transcribeAudio])
 
   // Reset recording
   const resetRecording = useCallback(() => {
@@ -511,6 +501,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
     stopTimer()
 
+    isRecordingRef.current = false
+    isPausedRef.current = false
+    transcriptRef.current = ''
     setState({
       isRecording: false,
       isPaused: false,

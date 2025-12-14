@@ -3,8 +3,8 @@
 import { Suspense, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
-import { Lightbulb, Mic } from 'lucide-react'
+import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2 } from 'react-icons/fi'
+import { Lightbulb, Mic, Lock } from 'lucide-react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
@@ -16,6 +16,10 @@ import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
+import { useToast } from '@/components/Toast'
+import { SkeletonLectureCard, SkeletonCourseCard, SkeletonStats } from '@/components/Skeleton'
+import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
+import { SwipeToDelete } from '@/components/SwipeToDelete'
 
 type Course = Database['public']['Tables']['courses']['Row']
 type Lecture = Database['public']['Tables']['lectures']['Row']
@@ -31,6 +35,7 @@ export default function DashboardPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user } = useAuth()
+  const toast = useToast()
   const { streak, recordActivity, isActiveToday } = useStreak()
   const [isMounted, setIsMounted] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
@@ -87,7 +92,7 @@ export default function DashboardPage() {
 
   // Mobile bottom nav state
   const [activeScreen, setActiveScreen] = useState<'dashboard' | 'library' | 'analytics' | 'feed'>('dashboard')
-  const { animationType, animationKey } = useScreenTransition(activeScreen as any)
+  const { animationType, animationKey, isTransitioning, previousScreen } = useScreenTransition(activeScreen as any)
 
   // Course selection modal state for floating record button
   const [showCourseSelectionModal, setShowCourseSelectionModal] = useState(false)
@@ -98,6 +103,9 @@ export default function DashboardPage() {
   const [isStoppingRecording, setIsStoppingRecording] = useState(false)
   const [showStreakModal, setShowStreakModal] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showDeleteLectureModal, setShowDeleteLectureModal] = useState(false)
+  const [isDeletingLecture, setIsDeletingLecture] = useState(false)
+  const [showMicPermissionModal, setShowMicPermissionModal] = useState(false)
 
   // Library search state
   const [librarySearchQuery, setLibrarySearchQuery] = useState('')
@@ -149,6 +157,13 @@ export default function DashboardPage() {
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  // Watch for microphone permission errors
+  useEffect(() => {
+    if (recordingError && recordingError.toLowerCase().includes('permission')) {
+      setShowMicPermissionModal(true)
+    }
+  }, [recordingError])
 
   // Check if user has completed onboarding
   useEffect(() => {
@@ -206,7 +221,6 @@ export default function DashboardPage() {
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Error fetching courses:', error)
       } else {
         setCourses(data || [])
       }
@@ -233,7 +247,6 @@ export default function DashboardPage() {
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Error fetching lectures:', error)
       } else {
         setLectures(data || [])
       }
@@ -242,6 +255,47 @@ export default function DashboardPage() {
 
     fetchLectures()
   }, [user])
+
+  // Delete lecture function
+  const deleteLecture = async (lectureId: string) => {
+    if (!user?.id) return
+
+    setIsDeletingLecture(true)
+    try {
+      // First delete associated notes
+      await supabase
+        .from('notes')
+        .delete()
+        .eq('lecture_id', lectureId)
+
+      // Then delete the lecture
+      const { error } = await supabase
+        .from('lectures')
+        .delete()
+        .eq('id', lectureId)
+        .eq('user_id', user.id)
+
+      if (error) {
+        hapticError()
+        toast.error('Failed to delete lecture')
+      } else {
+        hapticSuccess()
+        toast.success('Lecture deleted')
+        // Remove from local state
+        setLectures(prev => prev.filter(l => l.id !== lectureId))
+        // Close the lecture detail view
+        setSelectedLecture(null)
+        setSelectedLectureData(null)
+        setSelectedLectureNotes(null)
+      }
+    } catch (error) {
+      hapticError()
+      toast.error('Failed to delete lecture')
+    } finally {
+      setIsDeletingLecture(false)
+      setShowDeleteLectureModal(false)
+    }
+  }
 
   // Fetch user classes
   useEffect(() => {
@@ -263,7 +317,6 @@ export default function DashboardPage() {
           setUserClasses(result.data || [])
         }
       } catch (error) {
-        console.error('Error fetching classes:', error)
       }
       setIsLoadingClasses(false)
     }
@@ -295,14 +348,12 @@ export default function DashboardPage() {
             .single()
 
           if (notesError) {
-            console.error('Error fetching notes:', notesError)
             setSelectedLectureNotes(null)
           } else {
             setSelectedLectureNotes(notesData?.content || null)
           }
         }
       } catch (error) {
-        console.error('Error fetching lecture data:', error)
         setSelectedLectureData(null)
         setSelectedLectureNotes(null)
       } finally {
@@ -371,7 +422,6 @@ export default function DashboardPage() {
       })
       setShowNewCourseModal(false)
     } catch (error: any) {
-      console.error('Error creating course:', error)
       alert(`Failed to create course: ${error.message}`)
     } finally {
       setIsCreatingCourse(false)
@@ -425,7 +475,6 @@ export default function DashboardPage() {
         alert(`Failed to create class: ${result.error?.message || 'Unknown error'}`)
       }
     } catch (error: any) {
-      console.error('Error creating class:', error)
       alert(`Failed to create class: ${error.message}`)
     } finally {
       setIsCreatingCourse(false)
@@ -492,7 +541,6 @@ export default function DashboardPage() {
         alert(`Failed to join class: ${result.error?.message || 'Unknown error'}`)
       }
     } catch (error: any) {
-      console.error('Error joining class:', error)
       alert(`Failed to join class: ${error.message}`)
     } finally {
       setIsJoiningClass(false)
@@ -542,7 +590,6 @@ export default function DashboardPage() {
           })
 
         if (transcriptError) {
-          console.error('Error saving transcript:', transcriptError)
         }
       }
 
@@ -581,7 +628,6 @@ export default function DashboardPage() {
       setLectureTitle('')
       reset()
     } catch (error: any) {
-      console.error('Error saving lecture:', error)
       alert(`Failed to save lecture: ${error.message}`)
     }
   }
@@ -613,7 +659,6 @@ export default function DashboardPage() {
       setFlashcards(data.flashcards)
     } catch (err: any) {
       setFlashcardsError(err.message || 'Failed to generate flashcards')
-      console.error('Flashcard generation error:', err)
     } finally {
       setIsGeneratingFlashcards(false)
     }
@@ -668,7 +713,6 @@ export default function DashboardPage() {
       setRound(1)
     } catch (err: any) {
       setLearnModeError(err.message || 'Failed to generate learn mode questions')
-      console.error('Learn mode generation error:', err)
     } finally {
       setIsGeneratingLearnMode(false)
     }
@@ -857,8 +901,13 @@ export default function DashboardPage() {
       )}
 
       {/* Main scrollable content area */}
-      <div className={`flex-1 ${(activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'overflow-hidden pt-40 sm:pt-44' : 'overflow-y-auto pt-32 sm:pt-36'}`}>
-        <div key={animationKey} className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 ${animationType ? (animationType.enter === 'slideRight' ? 'animate-slide-in-right' : animationType.enter === 'slideLeft' ? 'animate-slide-in-left' : 'animate-fade-in') : ''}`}>
+      <div className={`flex-1 relative overflow-hidden ${(activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'pt-40 sm:pt-44' : 'pt-32 sm:pt-36'}`}>
+        {/* Screen transition container */}
+        <div 
+          key={animationKey} 
+          className={`absolute inset-0 overflow-y-auto bg-gray-50 dark:bg-gray-900 ${animationType ? (animationType.enter === 'slideRight' ? 'animate-slide-in-right' : animationType.enter === 'slideLeft' ? 'animate-slide-in-left' : 'animate-fade-in') : ''}`}
+        >
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8">
         {/* Dashboard Screen */}
         {activeScreen === 'dashboard' && !selectedCourse && (
           <>
@@ -950,7 +999,7 @@ export default function DashboardPage() {
                   <p className="text-sm text-gray-500 mb-4">Create your first course to get started</p>
                   <button
                     onClick={() => setShowNewCourseModal(true)}
-                    className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700"
                   >
                     <FiPlus />
                     <span>Create Course</span>
@@ -995,9 +1044,10 @@ export default function DashboardPage() {
 
               <div className="space-y-2 sm:space-y-3">
                 {isLoadingLectures ? (
-                  <div className="text-center py-8 sm:py-12">
-                    <FiLoader className="text-gray-400 text-3xl sm:text-4xl mx-auto animate-spin mb-3 sm:mb-4" />
-                    <p className="text-gray-500 text-sm sm:text-base">Loading...</p>
+                  <div className="space-y-3">
+                    <SkeletonLectureCard />
+                    <SkeletonLectureCard />
+                    <SkeletonLectureCard />
                   </div>
                 ) : lectures.length === 0 ? (
                   <div className="text-center py-8">
@@ -1005,7 +1055,7 @@ export default function DashboardPage() {
                     <p className="text-gray-500 text-sm">No lectures recorded yet</p>
                   </div>
                 ) : (
-                  lectures.slice(0, 3).map((lecture) => {
+                  lectures.slice(0, 3).map((lecture, index) => {
                     const durationMinutes = Math.floor(lecture.duration / 60)
                     const formattedDuration = durationMinutes >= 60
                       ? `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`
@@ -1020,7 +1070,7 @@ export default function DashboardPage() {
                       : `${Math.floor(diffHours / 24)} days ago`
 
                     return (
-                      <div key={lecture.id} className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+                      <div key={lecture.id} className={`flex items-center justify-between p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer card-press animate-list-item stagger-${index + 1}`}>
                         <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
                           <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                             lecture.transcription_status === 'completed' ? 'bg-green-100' :
@@ -1129,10 +1179,10 @@ export default function DashboardPage() {
             <div className="mb-6">
               <button
                 onClick={() => setSelectedCourse(null)}
-                className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4"
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors mb-4"
               >
-                <span>←</span>
-                <span>Back to Courses</span>
+                <FiHome className="text-lg" />
+                <span>Back to Home</span>
               </button>
               <div className="flex items-center justify-between">
                 <div>
@@ -1254,20 +1304,20 @@ export default function DashboardPage() {
                       <div className="flex gap-3 flex-wrap">
                         <button
                           onClick={saveNotesToLibrary}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700">
                           Save to Library
                         </button>
                         <button
                           onClick={generateFlashcards}
                           disabled={isGeneratingFlashcards}
-                          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                          className="px-4 py-2 bg-purple-600 text-white btn-press rounded-lg hover:bg-purple-700 disabled:opacity-50"
                         >
                           {isGeneratingFlashcards ? 'Generating...' : 'Generate Flashcards'}
                         </button>
                         <button
                           onClick={() => generateLearnMode()}
                           disabled={isGeneratingLearnMode}
-                          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                          className="px-4 py-2 bg-green-600 text-white btn-press rounded-lg hover:bg-green-700 disabled:opacity-50"
                         >
                           {isGeneratingLearnMode ? 'Generating...' : 'Generate Learn Mode'}
                         </button>
@@ -1431,14 +1481,14 @@ export default function DashboardPage() {
                                 <button
                                   onClick={handleSubmitAnswer}
                                   disabled={!selectedAnswer}
-                                  className="flex-1 px-4 py-2.5 sm:px-6 sm:py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
+                                  className="flex-1 px-4 py-2.5 sm:px-6 sm:py-3 bg-green-600 text-white btn-press rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
                                 >
                                   Submit Answer
                                 </button>
                               ) : (
                                 <button
                                   onClick={handleNextQuestion}
-                                  className="flex-1 px-4 py-2.5 sm:px-6 sm:py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm sm:text-base"
+                                  className="flex-1 px-4 py-2.5 sm:px-6 sm:py-3 bg-blue-600 text-white rounded-lg btn-press font-semibold hover:bg-blue-700 transition-colors text-sm sm:text-base"
                                 >
                                   {currentQuestionIndex < learnModeQuestions.length - 1 ? 'Next Question' : incorrectQuestions.length > 0 ? 'Start Next Round' : 'Complete!'}
                                 </button>
@@ -1691,7 +1741,7 @@ export default function DashboardPage() {
                   )
                 }
 
-                return filteredLectures.map((lecture) => {
+                return filteredLectures.map((lecture, index) => {
                   const durationMinutes = Math.floor(lecture.duration / 60)
                   const formattedDuration = durationMinutes >= 60
                     ? `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`
@@ -1705,34 +1755,39 @@ export default function DashboardPage() {
                   })
 
                   return (
-                    <div
+                    <SwipeToDelete
                       key={lecture.id}
-                      onClick={() => setSelectedLecture(lecture.id)}
-                      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer"
+                      onDelete={() => deleteLecture(lecture.id)}
+                      className={`animate-list-item stagger-${Math.min(index + 1, 10)}`}
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{lecture.title}</h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">{lecture.courses?.name || 'No course'}</p>
+                      <div
+                        onClick={() => setSelectedLecture(lecture.id)}
+                        className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer card-press"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{lecture.title}</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{lecture.courses?.name || 'No course'}</p>
+                          </div>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            lecture.transcription_status === 'completed' ? 'bg-green-100 text-green-700' :
+                            lecture.transcription_status === 'failed' ? 'bg-red-100 text-red-700' :
+                            'bg-yellow-100 text-yellow-700'
+                          }`}>
+                            {lecture.transcription_status === 'completed' ? 'Ready' :
+                             lecture.transcription_status === 'failed' ? 'Failed' :
+                             lecture.transcription_status === 'processing' ? 'Processing' : 'Pending'}
+                          </span>
                         </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          lecture.transcription_status === 'completed' ? 'bg-green-100 text-green-700' :
-                          lecture.transcription_status === 'failed' ? 'bg-red-100 text-red-700' :
-                          'bg-yellow-100 text-yellow-700'
-                        }`}>
-                          {lecture.transcription_status === 'completed' ? 'Ready' :
-                           lecture.transcription_status === 'failed' ? 'Failed' :
-                           lecture.transcription_status === 'processing' ? 'Processing' : 'Pending'}
-                        </span>
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                          <span className="flex items-center">
+                            <FiClock className="mr-1" />
+                            {formattedDuration}
+                          </span>
+                          <span>{formattedDate}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                        <span className="flex items-center">
-                          <FiClock className="mr-1" />
-                          {formattedDuration}
-                        </span>
-                        <span>{formattedDate}</span>
-                      </div>
-                    </div>
+                    </SwipeToDelete>
                   )
                 })
               })()}
@@ -1746,10 +1801,10 @@ export default function DashboardPage() {
             {/* Back Button */}
             <button
               onClick={() => setSelectedLecture(null)}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 dark:text-white"
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
             >
-              <span>←</span>
-              <span>Back to Library</span>
+              <FiHome className="text-lg" />
+              <span>Back to Home</span>
             </button>
 
             {/* Lecture Header */}
@@ -1853,7 +1908,7 @@ export default function DashboardPage() {
                   }
                 }}
                 disabled={isGeneratingFlashcards}
-                className="flex items-center justify-center space-x-2 bg-purple-600 text-white px-4 py-4 rounded-xl hover:bg-purple-700 font-medium disabled:opacity-50"
+                className="flex items-center justify-center space-x-2 bg-purple-600 text-white btn-press px-4 py-4 rounded-xl hover:bg-purple-700 font-medium disabled:opacity-50"
               >
                 {isGeneratingFlashcards ? (
                   <FiLoader className="text-lg animate-spin" />
@@ -1882,6 +1937,18 @@ export default function DashboardPage() {
                 <p className="text-xs text-green-700 dark:text-green-300">Quiz Questions</p>
               </div>
             </div>
+
+            {/* Delete Lecture Button */}
+            <button
+              onClick={() => {
+                hapticButton()
+                setShowDeleteLectureModal(true)
+              }}
+              className="w-full flex items-center justify-center space-x-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-4 py-4 rounded-xl border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/40 font-medium transition-colors"
+            >
+              <FiTrash2 className="text-lg" />
+              <span>Delete Lecture</span>
+            </button>
           </div>
         )}
 
@@ -2270,7 +2337,7 @@ export default function DashboardPage() {
                 onClick={() => {
                   setShowNewCourseModal(true);
                 }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm flex items-center justify-center space-x-2 w-full sm:w-auto shrink-0"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium text-sm flex items-center justify-center space-x-2 w-full sm:w-auto shrink-0"
               >
                 <FiPlus className="w-4 h-4" />
                 <span>New Class</span>
@@ -2344,7 +2411,7 @@ export default function DashboardPage() {
                   <button
                     onClick={handleJoinClass}
                     disabled={isJoiningClass || !joinClassCode.trim()}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isJoiningClass ? 'Joining...' : 'Join Class'}
                   </button>
@@ -2353,7 +2420,9 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
-      </div>
+          </div> {/* Close max-w-7xl container */}
+        </div> {/* Close screen transition container */}
+      </div> {/* Close flex-1 container */}
 
       {/* New Course Modal */}
       {showNewCourseModal && (
@@ -2438,7 +2507,7 @@ export default function DashboardPage() {
                 <button
                   onClick={handleCreateCourse}
                   disabled={isCreatingCourse}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreatingCourse ? 'Creating...' : 'Create Course'}
                 </button>
@@ -2486,7 +2555,7 @@ export default function DashboardPage() {
                     // Handle profile update
                     setShowEditProfileModal(false)
                   }}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium"
                 >
                   Save Changes
                 </button>
@@ -2541,7 +2610,7 @@ export default function DashboardPage() {
                     // Handle password change
                     setShowChangePasswordModal(false)
                   }}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium"
                 >
                   Change Password
                 </button>
@@ -2845,9 +2914,90 @@ export default function DashboardPage() {
                   startRecording()
                   setShowReadyToRecordModal(false)
                 }}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg btn-press font-medium hover:bg-blue-700 transition-colors"
               >
                 Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Microphone Permission Modal */}
+      {showMicPermissionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
+            <div className="text-center space-y-2">
+              <div className="w-16 h-16 mx-auto bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                <FiMic className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Microphone Access Required</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                To record lectures, please enable microphone access in your device settings.
+              </p>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-left">
+                <p className="text-xs text-gray-600 dark:text-gray-300 font-medium mb-2">How to enable:</p>
+                <ol className="text-xs text-gray-500 dark:text-gray-400 space-y-1 list-decimal list-inside">
+                  <li>Open Settings on your device</li>
+                  <li>Find Koala.ai in your apps</li>
+                  <li>Enable Microphone permission</li>
+                  <li>Return and try recording again</li>
+                </ol>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <button
+              onClick={() => {
+                hapticButton()
+                setShowMicPermissionModal(false)
+                reset()
+              }}
+              className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg btn-press font-medium hover:bg-blue-700 transition-colors"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Lecture Confirmation Modal */}
+      {showDeleteLectureModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
+            <div className="text-center space-y-2">
+              <FiTrash2 className="w-12 h-12 mx-auto text-red-600" strokeWidth={1.5} />
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Lecture?</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">This action cannot be undone. All notes and data will be permanently removed.</p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  hapticButton()
+                  setShowDeleteLectureModal(false)
+                }}
+                disabled={isDeletingLecture}
+                className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  hapticImpact('heavy')
+                  if (selectedLecture) {
+                    deleteLecture(selectedLecture)
+                  }
+                }}
+                disabled={isDeletingLecture}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg btn-press font-medium hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+              >
+                {isDeletingLecture ? (
+                  <FiLoader className="animate-spin text-lg" />
+                ) : (
+                  'Delete'
+                )}
               </button>
             </div>
           </div>
@@ -2982,14 +3132,13 @@ export default function DashboardPage() {
                     setLectureTitle('')
                     reset()
                   } catch (error) {
-                    console.error('Error saving recording:', error)
                     alert('Failed to save recording. Please try again.')
                   } finally {
                     setIsSavingRecording(false)
                   }
                 }}
                 disabled={!selectedCourseForRecording || isSavingRecording}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg btn-press font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isSavingRecording ? 'Saving...' : 'Save Lecture'}
               </button>
@@ -3089,7 +3238,11 @@ export default function DashboardPage() {
                         : 'bg-gray-100 border border-gray-200 dark:border-gray-700'
                     }`}
                   >
-                    <span className="text-2xl">{streak >= days ? emoji : '🔒'}</span>
+                    {streak >= days ? (
+                      <span className="text-2xl">{emoji}</span>
+                    ) : (
+                      <Lock className="w-6 h-6 mx-auto text-gray-400" />
+                    )}
                     <p className={`text-xs mt-1 font-medium ${streak >= days ? 'text-orange-700' : 'text-gray-500 dark:text-gray-400'}`}>
                       {label}
                     </p>
@@ -3109,8 +3262,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      </div> {/* Close scrollable content wrapper */}
-      </div>
+      </div> {/* Close h-screen-safe */}
     </Suspense>
   )
 }

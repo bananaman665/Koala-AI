@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { FiSearch, FiFilter, FiBook, FiClock, FiStar, FiTrendingUp, FiPlus, FiX } from 'react-icons/fi'
+import AppIcon from '@/components/AppIcon'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
@@ -50,7 +51,6 @@ export default function CoursesPage() {
         // Check if Supabase is configured
         if (!isSupabaseConfigured) {
           // Supabase not configured - use local storage for testing
-          console.log('⚠️ Supabase not configured. Using local storage for testing.')
           const savedCourses = localStorage.getItem('koala_courses')
           if (savedCourses) {
             setCourses(JSON.parse(savedCourses))
@@ -82,7 +82,6 @@ export default function CoursesPage() {
 
         setCourses(coursesData)
       } catch (error) {
-        console.error('Error fetching courses:', error)
         // Fallback to local storage on error
         const savedCourses = localStorage.getItem('koala_courses')
         if (savedCourses) {
@@ -121,7 +120,6 @@ export default function CoursesPage() {
         const updatedCourses = [...courses, newCourse]
         setCourses(updatedCourses)
         localStorage.setItem('koala_courses', JSON.stringify(updatedCourses))
-        console.log('✅ Course added to local storage (Supabase not configured)')
       } else {
         // Use Supabase
         const { data, error } = await supabase
@@ -152,7 +150,6 @@ export default function CoursesPage() {
           lastUpdated: 'Just now'
         }
         setCourses([...courses, newCourse])
-        console.log('✅ Course added to Supabase')
       }
 
       // Reset form and close modal
@@ -165,7 +162,6 @@ export default function CoursesPage() {
       })
       setShowAddModal(false)
     } catch (error) {
-      console.error('Error adding course:', error)
       alert('Failed to add course. Check console for details.')
     } finally {
       setSubmitting(false)
@@ -182,7 +178,6 @@ export default function CoursesPage() {
         const updatedCourses = courses.filter(c => c.id !== courseId)
         setCourses(updatedCourses)
         localStorage.setItem('koala_courses', JSON.stringify(updatedCourses))
-        console.log('✅ Course deleted from local storage')
       } else {
         // Use Supabase
         const { error } = await supabase
@@ -193,10 +188,8 @@ export default function CoursesPage() {
         if (error) throw error
 
         setCourses(courses.filter(c => c.id !== courseId))
-        console.log('✅ Course deleted from Supabase')
       }
     } catch (error) {
-      console.error('Error deleting course:', error)
       alert('Failed to delete course')
     }
   }
@@ -240,7 +233,7 @@ export default function CoursesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl">🐨</span>
+              <AppIcon size="md" />
               <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Koala.ai
               </span>

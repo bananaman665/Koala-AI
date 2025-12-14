@@ -92,7 +92,6 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       if (!recognition) return
 
       recognition.onstart = () => {
-        console.log('Speech recognition started')
       }
 
       recognition.onresult = (event: any) => {
@@ -117,7 +116,6 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       }
 
       recognition.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error)
         setError(`Recognition error: ${event.error}`)
       }
 
@@ -145,7 +143,6 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       }))
     } catch (err: any) {
       setError(err.message || 'Failed to start recording')
-      console.error('Recording error:', err)
     }
   }, [isSupported, initializeRecognition, state.isRecording, state.isPaused, state.transcript])
 

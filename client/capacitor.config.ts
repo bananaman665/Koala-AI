@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.koala.ai',
   appName: 'Koala.ai',
-  webDir: 'public',
+  webDir: 'out',
   server: {
     url: 'http://10.200.1.31:3000',
     cleartext: true,

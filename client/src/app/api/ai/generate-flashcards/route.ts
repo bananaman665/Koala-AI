@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
       generatedAt: new Date().toISOString(),
     })
   } catch (error: any) {
-    console.error('Error generating flashcards:', error)
 
     return NextResponse.json(
       {

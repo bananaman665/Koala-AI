@@ -78,7 +78,6 @@ export function useLectureRecording(): UseLectureRecordingResult {
       
     } catch (err: any) {
       setTranscriptionError(err.message || 'Failed to transcribe audio')
-      console.error('Transcription error:', err)
     } finally {
       setIsTranscribing(false)
     }
@@ -106,7 +105,6 @@ export function useLectureRecording(): UseLectureRecordingResult {
       setNotes(data.notes)
     } catch (err: any) {
       setNotesError(err.message || 'Failed to generate notes')
-      console.error('Notes generation error:', err)
     } finally {
       setIsGeneratingNotes(false)
     }

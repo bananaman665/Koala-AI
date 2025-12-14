@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiCheck } from 'react-icons/fi'
+import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi'
 import { useAuth } from '@/contexts/AuthContext'
+import AppIcon from '@/components/AppIcon'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -69,13 +70,11 @@ export default function SignupPage() {
       
       router.push('/dashboard')
     } catch (err: any) {
-      console.error('Signup error:', err)
       const errorMessage = err.message || err.toString() || 'Failed to create account'
       setError(`Error: ${errorMessage}`)
       
       // Show detailed error in console for debugging
       if (err.status) {
-        console.error('Status:', err.status)
       }
     } finally {
       setLoading(false)
@@ -111,18 +110,23 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* Logo */}
-        <div className="flex items-center justify-center space-x-2 mb-8">
-          <span className="text-4xl">🐨</span>
-          <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Koala.ai
-          </span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Top Bar */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="max-w-md mx-auto px-4 py-3">
+          <Link href="/" className="flex items-center space-x-2">
+            <AppIcon size="md" />
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Koala.ai
+            </span>
+          </Link>
         </div>
+      </div>
 
-        {/* Signup Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
+      <div className="flex items-center justify-center p-4 py-8">
+        <div className="max-w-md w-full">
+          {/* Signup Card */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
             <p className="text-gray-600">Start your AI-powered learning journey</p>
@@ -357,6 +361,7 @@ export default function SignupPage() {
               Sign in
             </Link>
           </p>
+        </div>
         </div>
       </div>
     </div>

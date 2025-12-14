@@ -1,14 +1,20 @@
-import { useEffect, useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 export type ScreenType = 'dashboard' | 'library' | 'analytics' | 'feed' | 'settings'
 
 export type AnimationType = 'slideRight' | 'slideLeft' | 'fade'
 
+// Screen order for determining slide direction
+const screenOrder: Record<ScreenType, number> = {
+  dashboard: 0,
+  library: 1,
+  analytics: 2,
+  feed: 3,
+  settings: 4,
+}
+
 /**
  * Determines animation type based on navigation flow
- * dashboard -> library/feed: slide right
- * dashboard -> analytics: slide left
- * any -> dashboard: slide/fade based on origin
  */
 export const getAnimationType = (
   previousScreen: ScreenType | null,
@@ -19,34 +25,10 @@ export const getAnimationType = (
     return { enter: 'fade', exit: 'fade' }
   }
 
-  // Navigation flow mapping
-  const screenOrder: Record<ScreenType, number> = {
-    dashboard: 0,
-    library: 1,
-    analytics: 2,
-    feed: 3,
-    settings: 4,
-  }
-
   const fromIndex = screenOrder[previousScreen]
   const toIndex = screenOrder[currentScreen]
 
-  // Going back to dashboard - use slide based on direction
-  if (currentScreen === 'dashboard') {
-    return { enter: fromIndex > toIndex ? 'slideLeft' : 'slideRight', exit: fromIndex > toIndex ? 'slideRight' : 'slideLeft' }
-  }
-
-  // Going away from dashboard to library, feed, or settings
-  if (previousScreen === 'dashboard' && (currentScreen === 'library' || currentScreen === 'feed' || currentScreen === 'settings')) {
-    return { enter: 'slideRight', exit: 'slideLeft' }
-  }
-
-  // Going away from dashboard to analytics
-  if (previousScreen === 'dashboard' && currentScreen === 'analytics') {
-    return { enter: 'slideLeft', exit: 'slideRight' }
-  }
-
-  // Moving between other screens
+  // Moving right (higher index)
   if (toIndex > fromIndex) {
     return { enter: 'slideRight', exit: 'slideLeft' }
   } else {
@@ -56,21 +38,60 @@ export const getAnimationType = (
 
 /**
  * Hook to manage screen transitions and animations
+ * Returns both previous and current screen to enable simultaneous rendering during transitions
  */
 export const useScreenTransition = (currentScreen: ScreenType) => {
-  const previousScreenRef = useRef<ScreenType | null>(null)
-  const animationRef = useRef<{ enter: AnimationType; exit: AnimationType } | null>(null)
+  const [transitionState, setTransitionState] = useState<{
+    previousScreen: ScreenType | null
+    animationType: { enter: AnimationType; exit: AnimationType } | null
+    key: number
+    isTransitioning: boolean
+  }>({ previousScreen: null, animationType: null, key: 0, isTransitioning: false })
 
-  // Determine animation when screen changes
+  const previousScreenRef = useRef<ScreenType>(currentScreen)
+  const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   useEffect(() => {
     if (previousScreenRef.current !== currentScreen) {
-      animationRef.current = getAnimationType(previousScreenRef.current, currentScreen)
+      const prevScreen = previousScreenRef.current
+      const newAnimation = getAnimationType(prevScreen, currentScreen)
+      
+      // Clear any existing timeout
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current)
+      }
+      
+      // Start transition - keep both screens visible
+      setTransitionState(prev => ({
+        previousScreen: prevScreen,
+        animationType: newAnimation,
+        key: prev.key + 1,
+        isTransitioning: true
+      }))
+      
       previousScreenRef.current = currentScreen
+      
+      // End transition after animation completes
+      transitionTimeoutRef.current = setTimeout(() => {
+        setTransitionState(prev => ({
+          ...prev,
+          previousScreen: null,
+          isTransitioning: false
+        }))
+      }, 300) // Match animation duration
+    }
+    
+    return () => {
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current)
+      }
     }
   }, [currentScreen])
 
   return {
-    previousScreen: previousScreenRef.current,
-    animationType: animationRef.current,
+    previousScreen: transitionState.previousScreen,
+    animationType: transitionState.animationType,
+    animationKey: transitionState.key,
+    isTransitioning: transitionState.isTransitioning,
   }
 }
