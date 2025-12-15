@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useAINotes, useAISummary } from '@/hooks/useAI'
 
+export const dynamic = 'force-dynamic'
+
 export default function GroqTestPage() {
   const [transcript, setTranscript] = useState(
     `In today's lecture, we'll cover binary search trees, a fundamental data structure in computer science. 

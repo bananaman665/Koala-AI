@@ -7,6 +7,8 @@ import AppIcon from '@/components/AppIcon'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 interface Course {
   id: string
   name: string

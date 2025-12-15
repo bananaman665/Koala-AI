@@ -7,6 +7,8 @@ import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi'
 import { useAuth } from '@/contexts/AuthContext'
 import AppIcon from '@/components/AppIcon'
 
+export const dynamic = 'force-dynamic'
+
 export default function SignupPage() {
   const router = useRouter()
   const { user, signUp, signInWithGoogle, signInWithGithub } = useAuth()

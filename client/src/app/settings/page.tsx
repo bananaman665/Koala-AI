@@ -8,6 +8,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { hapticButton, hapticSelection, hapticSuccess } from '@/lib/haptics'
 
+export const dynamic = 'force-dynamic'
+
 export default function SettingsPage() {
   const router = useRouter()
   const { user, logout } = useAuth()

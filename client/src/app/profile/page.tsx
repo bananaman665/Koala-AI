@@ -13,6 +13,8 @@ import {
 } from 'react-icons/fi'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
+
+export const dynamic = 'force-dynamic'
 import { useStreak } from '@/components/StreakDisplay'
 import AppIcon from '@/components/AppIcon'
 

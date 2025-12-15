@@ -6,6 +6,8 @@ import { FiMail, FiArrowLeft, FiCheckCircle } from 'react-icons/fi'
 import { useAuth } from '@/contexts/AuthContext'
 import AppIcon from '@/components/AppIcon'
 
+export const dynamic = 'force-dynamic'
+
 export default function ForgotPasswordPage() {
   const { resetPassword } = useAuth()
   const [email, setEmail] = useState('')

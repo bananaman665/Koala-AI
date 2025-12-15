@@ -7,6 +7,8 @@ import { FiLock, FiArrowLeft, FiCheckCircle, FiEye, FiEyeOff } from 'react-icons
 import { useAuth } from '@/contexts/AuthContext'
 import AppIcon from '@/components/AppIcon'
 
+export const dynamic = 'force-dynamic'
+
 export default function ChangePasswordPage() {
   const router = useRouter()
   const { updatePassword, user } = useAuth()
