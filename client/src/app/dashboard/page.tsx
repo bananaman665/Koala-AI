@@ -899,13 +899,13 @@ export default function DashboardPage() {
       )}
 
       {/* Main scrollable content area */}
-      <div className={`flex-1 relative overflow-hidden ${(activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'pt-40 sm:pt-44' : 'pt-32 sm:pt-36'}`}>
+      <div className="flex-1 relative overflow-hidden">
         {/* Screen transition container */}
-        <div 
-          key={animationKey} 
+        <div
+          key={animationKey}
           className={`absolute inset-0 overflow-y-auto bg-gray-50 dark:bg-gray-900 ${animationType ? (animationType.enter === 'slideRight' ? 'animate-slide-in-right' : animationType.enter === 'slideLeft' ? 'animate-slide-in-left' : 'animate-fade-in') : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8">
+          <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 ${(activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'pt-40 sm:pt-44' : 'pt-32 sm:pt-36'}`}>
         {/* Dashboard Screen */}
         {activeScreen === 'dashboard' && !selectedCourse && (
           <>
