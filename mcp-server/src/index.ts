@@ -344,8 +344,8 @@ app.get('/api/classes', async (req, res) => {
     if (memberError) throw memberError;
 
     // Combine and deduplicate
-    const memberClassData = memberClasses?.map(m => m.classes).filter(Boolean) || [];
-    const allClasses = [...(ownedClasses || [])];
+    const memberClassData = (memberClasses?.map(m => m.classes).filter(Boolean) || []) as any[];
+    const allClasses = [...(ownedClasses || [])] as any[];
     const ownedIds = new Set(allClasses.map(c => c.id));
     for (const c of memberClassData) {
       if (c && !ownedIds.has(c.id)) {
