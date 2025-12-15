@@ -327,11 +327,33 @@ app.get('/api/classes', async (req, res) => {
       });
     }
 
-    const { data, error } = await supabaseDb.getClient()
+    // Get classes owned by user
+    const { data: ownedClasses, error: ownedError } = await supabaseDb.getClient()
       .from('classes')
       .select('*, class_memberships(user_id, role)')
-      .or(`owner_id.eq.${userId},class_memberships.user_id.eq.${userId}`)
+      .eq('owner_id', userId)
       .order('created_at', { ascending: false });
+
+    // Get classes user is a member of
+    const { data: memberClasses, error: memberError } = await supabaseDb.getClient()
+      .from('class_memberships')
+      .select('classes(*, class_memberships(user_id, role))')
+      .eq('user_id', userId);
+
+    if (ownedError) throw ownedError;
+    if (memberError) throw memberError;
+
+    // Combine and deduplicate
+    const memberClassData = memberClasses?.map(m => m.classes).filter(Boolean) || [];
+    const allClasses = [...(ownedClasses || [])];
+    const ownedIds = new Set(allClasses.map(c => c.id));
+    for (const c of memberClassData) {
+      if (c && !ownedIds.has(c.id)) {
+        allClasses.push(c);
+      }
+    }
+    const data = allClasses;
+    const error = null;
 
     if (error) throw error;
 
