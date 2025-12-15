@@ -13,20 +13,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
-  // Load theme preference from localStorage on mount
+  // Load theme preference from localStorage on mount (default to light mode)
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme-preference')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
 
     if (savedTheme === 'dark') {
       setIsDark(true)
       document.documentElement.classList.add('dark')
-    } else if (savedTheme === 'light') {
+    } else {
+      // Default to light mode (ignore system preference)
       setIsDark(false)
       document.documentElement.classList.remove('dark')
-    } else if (prefersDark) {
-      setIsDark(true)
-      document.documentElement.classList.add('dark')
     }
 
     setIsMounted(true)
