@@ -184,9 +184,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const screen = searchParams.get('screen')
     if (screen && ['dashboard', 'library', 'analytics', 'feed'].includes(screen)) {
-      setActiveScreen(screen as 'dashboard' | 'library' | 'analytics' | 'feed')
-    } else {
-      setActiveScreen('dashboard')
+      setActiveScreen(prev => prev !== screen ? screen as 'dashboard' | 'library' | 'analytics' | 'feed' : prev)
     }
   }, [searchParams])
 
