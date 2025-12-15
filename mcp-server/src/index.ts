@@ -340,6 +340,14 @@ app.get('/api/classes', async (req, res) => {
       .select('classes(*, class_memberships(user_id, role))')
       .eq('user_id', userId);
 
+    // If tables don't exist yet, return empty array
+    if (ownedError?.code === 'PGRST205' || memberError?.code === 'PGRST205') {
+      return res.json({
+        success: true,
+        data: [],
+        timestamp: new Date().toISOString(),
+      } as ApiResponse);
+    }
     if (ownedError) throw ownedError;
     if (memberError) throw memberError;
 
