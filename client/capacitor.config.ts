@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Koala.ai',
   webDir: 'out',
   server: {
-    url: 'http://10.200.1.145:3002',
+    url: 'http://10.200.1.145:3001',
     cleartext: true,
   },
   plugins: {
