@@ -31,7 +31,7 @@ type LectureWithCourse = Lecture & {
   } | null
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user } = useAuth()
@@ -3261,6 +3261,14 @@ export default function DashboardPage() {
       )}
 
       </div> {/* Close h-screen-safe */}
+    </Suspense>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen"><FiLoader className="animate-spin h-8 w-8" /></div>}>
+      <DashboardContent />
     </Suspense>
   )
 }

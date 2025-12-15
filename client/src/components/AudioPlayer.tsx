@@ -371,7 +371,7 @@ export function TranscriptViewer({
   onSegmentClick,
   className = '',
 }: TranscriptViewerProps) {
-  const activeSegmentRef = useRef<HTMLSpanElement>(null)
+  const activeSegmentRef = useRef<HTMLDivElement>(null)
 
   // Auto-scroll to active segment
   useEffect(() => {
