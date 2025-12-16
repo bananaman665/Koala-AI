@@ -2789,13 +2789,29 @@ function DashboardContent() {
                 setShowReadyToRecordModal(true)
               } else {
                 setIsStoppingRecording(true)
-                const result = await stopAndGenerateNotes()
-                if (result && result.transcript && result.notes) {
-                  hapticSuccess()
-                  setShowCourseSelectionModal(true)
-                } else {
+                try {
+                  const result = await stopAndGenerateNotes()
+                  if (result && result.transcript) {
+                    hapticSuccess()
+                    setShowCourseSelectionModal(true)
+                  } else {
+                    hapticError()
+                    // Show modal anyway if we have any transcript from the recording state
+                    if (transcript && transcript.trim().length > 0) {
+                      setShowCourseSelectionModal(true)
+                    } else {
+                      alert('No audio was recorded. Please ensure microphone permissions are granted and try again.')
+                    }
+                  }
+                } catch (error) {
+                  console.error('Recording error:', error)
                   hapticError()
-                  alert('Error: Unable to generate notes. Please try again.')
+                  // Still show modal if we have transcript
+                  if (transcript && transcript.trim().length > 0) {
+                    setShowCourseSelectionModal(true)
+                  } else {
+                    alert('Recording failed. Please try again.')
+                  }
                 }
                 setIsStoppingRecording(false)
               }
@@ -2896,12 +2912,28 @@ function DashboardContent() {
                   onClick={async () => {
                     hapticImpact('medium')
                     setIsStoppingRecording(true)
-                    const result = await stopAndGenerateNotes()
-                    if (result && result.transcript && result.notes) {
-                      hapticSuccess()
-                      setShowCourseSelectionModal(true)
-                    } else {
-                      hapticError()
+                    try {
+                      const result = await stopAndGenerateNotes()
+                      if (result && result.transcript) {
+                        hapticSuccess()
+                        setShowCourseSelectionModal(true)
+                      } else {
+                        // Show modal anyway if we have any transcript
+                        if (transcript && transcript.trim().length > 0) {
+                          setShowCourseSelectionModal(true)
+                        } else {
+                          hapticError()
+                          alert('No audio was recorded. Please try again.')
+                        }
+                      }
+                    } catch (error) {
+                      console.error('Recording error:', error)
+                      if (transcript && transcript.trim().length > 0) {
+                        setShowCourseSelectionModal(true)
+                      } else {
+                        hapticError()
+                        alert('Recording failed. Please try again.')
+                      }
                     }
                     setIsStoppingRecording(false)
                   }}
