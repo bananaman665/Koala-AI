@@ -1,8 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { VoiceRecorder } from 'capacitor-voice-recorder'
-import { FFmpeg } from '@ffmpeg/ffmpeg'
-import { fetchFile } from '@ffmpeg/util'
 
 interface HybridRecordingState {
   isRecording: boolean
@@ -234,8 +232,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
       // Also start Capacitor recording for audio backup on native platforms
       if (useCapacitorMedia && useSpeechRecognition) {
-        await startCapacitorVoiceRecorder().catch(() => {
-          // Capacitor recording is optional, don't fail if it doesn't start
+        await startCapacitorVoiceRecorder().catch((err) => {
+          // Log Capacitor recording error - important for debugging
+          console.warn('Capacitor recording failed to start (backup):', err.message)
         })
       } else if (useCapacitorMedia) {
         await startCapacitorVoiceRecorder()
@@ -282,58 +281,25 @@ export function useHybridRecording(): UseHybridRecordingResult {
     setState(prev => ({ ...prev, isPaused: false }))
   }, [useSpeechRecognition, useWebMediaRecorder, startTimer])
 
-  // Convert audio to MP3 using FFmpeg
-  const convertAudioToMp3 = useCallback(async (audioBlob: Blob, inputMimeType: string): Promise<Blob> => {
-    try {
-      // If already MP3, return as is
-      if (inputMimeType === 'audio/mpeg') {
-        return audioBlob
-      }
-
-
-      const ffmpeg = new FFmpeg()
-
-      if (!ffmpeg.loaded) {
-        await ffmpeg.load()
-      }
-
-      // Write input file
-      const inputFileName = 'input.aac'
-      await ffmpeg.writeFile(inputFileName, await fetchFile(audioBlob))
-
-      // Convert to MP3
-      await ffmpeg.exec(['-i', inputFileName, '-q:a', '9', 'output.mp3'])
-
-      // Read output file
-      const mp3Data = await ffmpeg.readFile('output.mp3')
-      const mp3Blob = new Blob([Buffer.from(mp3Data)], { type: 'audio/mpeg' })
-
-      // Clean up
-      ffmpeg.deleteFile(inputFileName)
-      ffmpeg.deleteFile('output.mp3')
-
-      return mp3Blob
-    } catch (err: any) {
-      // If conversion fails, return original blob
-      return audioBlob
-    }
-  }, [])
-
   // Transcribe audio via API
   const transcribeAudio = useCallback(async (audioBlob: Blob, mimeType?: string): Promise<string> => {
     setState(prev => ({ ...prev, isTranscribing: true }))
 
     try {
-      let audioToSend = audioBlob
       const fileMimeType = mimeType || audioBlob.type || 'audio/wav'
+      
+      // Determine appropriate file extension based on mime type
+      let extension = 'mp3'
+      if (fileMimeType.includes('webm')) extension = 'webm'
+      else if (fileMimeType.includes('aac') || fileMimeType.includes('m4a')) extension = 'm4a'
+      else if (fileMimeType.includes('wav')) extension = 'wav'
+      else if (fileMimeType.includes('ogg')) extension = 'ogg'
+      else if (fileMimeType.includes('flac')) extension = 'flac'
+      
+      const fileName = `recording.${extension}`
+      const audioFile = new File([audioBlob], fileName, { type: fileMimeType })
 
-      // Convert to MP3 if it's AAC or other unsupported format
-      if (fileMimeType.toLowerCase() === 'audio/aac' || fileMimeType.toLowerCase() === 'audio/x-m4a') {
-        audioToSend = await convertAudioToMp3(audioBlob, fileMimeType)
-      }
-
-      const fileName = `recording.mp3`
-      const audioFile = new File([audioToSend], fileName, { type: 'audio/mpeg' })
+      console.log('Transcribing audio:', { fileName, mimeType: fileMimeType, size: audioBlob.size })
 
       const formData = new FormData()
       formData.append('audio', audioFile)
@@ -355,12 +321,13 @@ export function useHybridRecording(): UseHybridRecordingResult {
       const transcript = data.transcript || ''
       return transcript
     } catch (err: any) {
+      console.error('Transcription error:', err)
       setError(`Transcription failed: ${err.message}`)
       return ''
     } finally {
       setState(prev => ({ ...prev, isTranscribing: false }))
     }
-  }, [convertAudioToMp3])
+  }, [])
 
   // Stop recording
   const stopRecording = useCallback(async (): Promise<string> => {
@@ -371,7 +338,39 @@ export function useHybridRecording(): UseHybridRecordingResult {
       recognitionRef.current.stop()
       recognitionRef.current = null
 
-      // Stop Capacitor recording in background
+      const speechTranscript = transcriptRef.current.trim()
+
+      // If we have a Capacitor recording AND the speech transcript is empty,
+      // use the Capacitor recording for transcription instead
+      if (capacitorMediaRef.current && !speechTranscript) {
+        try {
+          const result = await VoiceRecorder.stopRecording()
+          capacitorMediaRef.current = null
+
+          // Convert base64 to blob
+          const base64Response = await fetch(`data:${result.value.mimeType};base64,${result.value.recordDataBase64}`)
+          const audioBlob = await base64Response.blob()
+
+          // Transcribe the audio
+          const transcribedText = await transcribeAudio(audioBlob, result.value.mimeType)
+
+          isRecordingRef.current = false
+          isPausedRef.current = false
+          setState(prev => ({
+            ...prev,
+            transcript: transcribedText,
+            isRecording: false,
+            isPaused: false,
+          }))
+
+          return transcribedText
+        } catch (err: any) {
+          // If Capacitor transcription fails, continue with empty transcript
+          console.error('Capacitor transcription fallback failed:', err)
+        }
+      }
+
+      // Stop Capacitor recording in background if not used for transcription
       if (capacitorMediaRef.current) {
         VoiceRecorder.stopRecording().catch(() => {
         })
@@ -386,7 +385,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
         isPaused: false,
       }))
 
-      return transcriptRef.current.trim()
+      return speechTranscript
     }
 
     // Native Platform: Use Capacitor recording + Groq transcription
