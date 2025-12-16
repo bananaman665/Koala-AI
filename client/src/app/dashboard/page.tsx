@@ -900,14 +900,15 @@ function DashboardContent() {
 
       {/* Main scrollable content area */}
       <div className="flex-1 relative overflow-hidden">
-        {/* Screen transition container */}
-        <div
-          key={animationKey}
-          className={`absolute inset-0 overflow-y-auto bg-gray-50 dark:bg-gray-900 ${animationType ? (animationType.enter === 'slideRight' ? 'animate-slide-in-right' : animationType.enter === 'slideLeft' ? 'animate-slide-in-left' : 'animate-fade-in') : ''}`}
-        >
-          <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 ${(activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'pt-40 sm:pt-44' : 'pt-32 sm:pt-36'}`}>
         {/* Dashboard Screen */}
-        {activeScreen === 'dashboard' && !selectedCourse && (
+        {(activeScreen === 'dashboard' || (isTransitioning && previousScreen === 'dashboard')) && (
+          <ScreenTransition
+            animationType={activeScreen === 'dashboard' ? (animationType?.enter || 'fade') : (animationType?.exit || 'fade')}
+            isActive={activeScreen === 'dashboard'}
+          >
+            <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
+              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
+        {!selectedCourse && (
           <>
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -1644,9 +1645,20 @@ function DashboardContent() {
           </div>
           )
         })()}
+              </div>
+            </div>
+          </ScreenTransition>
+        )}
 
         {/* Library Screen */}
-        {activeScreen === 'library' && !selectedLecture && (
+        {(activeScreen === 'library' || (isTransitioning && previousScreen === 'library')) && (
+          <ScreenTransition
+            animationType={activeScreen === 'library' ? (animationType?.enter || 'fade') : (animationType?.exit || 'fade')}
+            isActive={activeScreen === 'library'}
+          >
+            <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
+              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 ${(selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'pt-40 sm:pt-44' : 'pt-32 sm:pt-36'}`}>
+        {!selectedLecture && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Library</h2>
@@ -2107,9 +2119,19 @@ function DashboardContent() {
             </p>
           </div>
         )}
+              </div>
+            </div>
+          </ScreenTransition>
+        )}
 
         {/* Analytics Screen */}
-        {activeScreen === 'analytics' && (
+        {(activeScreen === 'analytics' || (isTransitioning && previousScreen === 'analytics')) && (
+          <ScreenTransition
+            animationType={activeScreen === 'analytics' ? (animationType?.enter || 'fade') : (animationType?.exit || 'fade')}
+            isActive={activeScreen === 'analytics'}
+          >
+            <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
+              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
 
@@ -2321,10 +2343,19 @@ function DashboardContent() {
               </div>
             </div>
           </div>
+              </div>
+            </div>
+          </ScreenTransition>
         )}
 
         {/* Classes Screen - Join & Share Lectures */}
-        {activeScreen === 'feed' && (
+        {(activeScreen === 'feed' || (isTransitioning && previousScreen === 'feed')) && (
+          <ScreenTransition
+            animationType={activeScreen === 'feed' ? (animationType?.enter || 'fade') : (animationType?.exit || 'fade')}
+            isActive={activeScreen === 'feed'}
+          >
+            <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
+              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -2417,9 +2448,10 @@ function DashboardContent() {
               </div>
             </div>
           </div>
+              </div>
+            </div>
+          </ScreenTransition>
         )}
-          </div> {/* Close max-w-7xl container */}
-        </div> {/* Close screen transition container */}
       </div> {/* Close flex-1 container */}
 
       {/* New Course Modal */}

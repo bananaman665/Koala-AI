@@ -4,10 +4,9 @@ const config: CapacitorConfig = {
   appId: 'com.koala.ai',
   appName: 'Koala.ai',
   webDir: 'out',
-  // Enable for live development - point to your local dev server
+  // Production - use Vercel deployment
   server: {
-    url: 'http://10.200.1.145:3000',
-    cleartext: true,
+    url: 'https://koala-ai-client.vercel.app',
   },
   plugins: {
     SplashScreen: {

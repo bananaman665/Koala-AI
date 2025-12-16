@@ -41,9 +41,13 @@ export const ScreenTransition: React.FC<ScreenTransitionProps> = ({
   }
 
   return (
-    <div className={`w-full ${getAnimationClass()}`} style={{
-      pointerEvents: isActive ? 'auto' : 'none',
-    }}>
+    <div
+      className={`absolute inset-0 w-full h-full ${getAnimationClass()}`}
+      style={{
+        pointerEvents: isActive ? 'auto' : 'none',
+        zIndex: isActive ? 1 : 0,
+      }}
+    >
       {children}
     </div>
   )
