@@ -53,9 +53,10 @@ export function useHybridRecording(): UseHybridRecordingResult {
     typeof MediaRecorder !== 'undefined')
 
   // Use Web Speech API for transcription whenever available (primary method)
-  // Use Capacitor Media to record audio for storage on native platforms (backup)
+  // BUT: Disable on native platforms - Web Speech API in WKWebView conflicts with native recording
+  // Use Capacitor Media to record audio for storage on native platforms (primary on native)
   // Use Web Media Recorder as fallback for mobile web
-  const useSpeechRecognition = hasSpeechRecognition
+  const useSpeechRecognition = hasSpeechRecognition && !isNativePlatform
   const useCapacitorMedia = isNativePlatform
   const useWebMediaRecorder = isMobile && !isNativePlatform
 

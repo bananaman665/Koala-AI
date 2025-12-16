@@ -1,0 +1,42 @@
+diff --git a/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift b/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift
+index 79d79a4..8bd1b3a 100644
+--- a/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift
++++ b/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift
+@@ -44,14 +44,31 @@ class CustomMediaRecorder {
+             options = recordOptions
+             recordingSession = AVAudioSession.sharedInstance()
+             originalRecordingSessionCategory = recordingSession.category
+-            try recordingSession.setCategory(AVAudioSession.Category.playAndRecord)
+-            try recordingSession.setActive(true)
+-            audioFilePath = getDirectoryToSaveAudioFile().appendingPathComponent("recording-\(Int(Date().timeIntervalSince1970 * 1000)).aac")
++
++            // Configure for recording with proper options to avoid conflicts
++            try recordingSession.setCategory(
++                AVAudioSession.Category.playAndRecord,
++                mode: .default,
++                options: [.defaultToSpeaker, .allowBluetooth]
++            )
++            try recordingSession.setActive(true, options: .notifyOthersOnDeactivation)
++
++            audioFilePath = getDirectoryToSaveAudioFile()
++                .appendingPathComponent("recording-\(Int(Date().timeIntervalSince1970 * 1000)).aac")
++
+             audioRecorder = try AVAudioRecorder(url: audioFilePath, settings: settings)
+-            audioRecorder.record()
+-            status = CurrentRecordingStatus.RECORDING
+-            return true
++            audioRecorder.prepareToRecord()  // Prepare audio hardware before recording
++            let started = audioRecorder.record()
++
++            if started {
++                status = CurrentRecordingStatus.RECORDING
++                return true
++            } else {
++                print("AVAudioRecorder.record() returned false")
++                return false
++            }
+         } catch {
++            print("Recording setup error: \(error)")
+             return false
+         }
+     }

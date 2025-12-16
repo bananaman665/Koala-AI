@@ -9,6 +9,7 @@
     "shared"
   ],
   "scripts": {
+    "postinstall": "patch-package",
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "dev:client": "cd client && npm run dev",
     "dev:server": "cd mcp-server && npm run dev",
