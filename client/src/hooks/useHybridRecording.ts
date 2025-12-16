@@ -159,16 +159,22 @@ export function useHybridRecording(): UseHybridRecordingResult {
   // Capacitor Voice Recorder Methods (Native Mobile)
   const startCapacitorVoiceRecorder = useCallback(async () => {
     try {
+      console.log('[Capacitor Recording] Requesting permission...')
       // Request microphone permission
       const hasPermission = await VoiceRecorder.requestAudioRecordingPermission()
+      console.log('[Capacitor Recording] Permission result:', hasPermission)
       if (!hasPermission.value) {
         throw new Error('Microphone permission denied')
       }
 
       // Start recording
-      await VoiceRecorder.startRecording()
+      console.log('[Capacitor Recording] Starting recording...')
+      const startResult = await VoiceRecorder.startRecording()
+      console.log('[Capacitor Recording] Start result:', startResult)
       capacitorMediaRef.current = 'recording' // Just a flag
+      console.log('[Capacitor Recording] Recording started successfully')
     } catch (err: any) {
+      console.error('[Capacitor Recording] Failed to start:', err)
       throw new Error(err.message || 'Failed to start Capacitor recording')
     }
   }, [])
@@ -206,6 +212,14 @@ export function useHybridRecording(): UseHybridRecordingResult {
     try {
       setError(null)
 
+      console.log('[Recording] Starting...', {
+        isNativePlatform,
+        useSpeechRecognition,
+        useCapacitorMedia,
+        useWebMediaRecorder,
+        isSupported
+      })
+
       if (!isSupported) {
         throw new Error('Recording is not supported on this device')
       }
@@ -226,32 +240,39 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
       startTimer()
 
-      // Start Web Speech Recognition for transcription (primary)
+      // Start Web Speech Recognition for transcription (primary - disabled on native)
       if (useSpeechRecognition) {
+        console.log('[Recording] Using Web Speech Recognition')
         await startSpeechRecognition()
       }
 
       // Also start Capacitor recording for audio backup on native platforms
       if (useCapacitorMedia && useSpeechRecognition) {
+        console.log('[Recording] Starting Capacitor as backup')
         await startCapacitorVoiceRecorder().catch((err) => {
           // Log Capacitor recording error - important for debugging
           console.warn('Capacitor recording failed to start (backup):', err.message)
         })
       } else if (useCapacitorMedia) {
+        console.log('[Recording] Using Capacitor as PRIMARY (native platform)')
         await startCapacitorVoiceRecorder()
       }
 
       // Web Media Recorder as fallback if Speech Recognition not available
       if (useWebMediaRecorder && !useSpeechRecognition) {
+        console.log('[Recording] Using Web MediaRecorder fallback')
         await startWebMediaRecorder()
       }
+
+      console.log('[Recording] Started successfully')
     } catch (err: any) {
+      console.error('[Recording] Failed to start:', err)
       setError(err.message || 'Failed to start recording')
       isRecordingRef.current = false
       setState(prev => ({ ...prev, isRecording: false }))
       stopTimer()
     }
-  }, [isSupported, useSpeechRecognition, useCapacitorMedia, useWebMediaRecorder, startSpeechRecognition, startCapacitorVoiceRecorder, startWebMediaRecorder, startTimer, stopTimer])
+  }, [isSupported, isNativePlatform, useSpeechRecognition, useCapacitorMedia, useWebMediaRecorder, startSpeechRecognition, startCapacitorVoiceRecorder, startWebMediaRecorder, startTimer, stopTimer, state.isRecording])
 
   // Pause recording
   const pauseRecording = useCallback(() => {
@@ -392,16 +413,37 @@ export function useHybridRecording(): UseHybridRecordingResult {
     // Native Platform: Use Capacitor recording + Groq transcription
     if (useCapacitorMedia && capacitorMediaRef.current) {
       try {
+        console.log('[Capacitor Recording] Stopping recording...')
         const result = await VoiceRecorder.stopRecording()
+        console.log('[Capacitor Recording] Stop result:', {
+          mimeType: result.value.mimeType,
+          msDuration: result.value.msDuration,
+          hasBase64: !!result.value.recordDataBase64,
+          base64Length: result.value.recordDataBase64?.length || 0
+        })
         capacitorMediaRef.current = null
 
+        // Check if we got any audio data
+        if (!result.value.recordDataBase64 || result.value.recordDataBase64.length === 0) {
+          console.error('[Capacitor Recording] No audio data received!')
+          throw new Error('No audio data captured. Please check microphone permissions.')
+        }
+
+        if (result.value.msDuration <= 0) {
+          console.error('[Capacitor Recording] Duration is 0 or negative!')
+          throw new Error('Recording duration is 0. Audio capture may have failed.')
+        }
 
         // Convert base64 to blob
+        console.log('[Capacitor Recording] Converting base64 to blob...')
         const base64Response = await fetch(`data:${result.value.mimeType};base64,${result.value.recordDataBase64}`)
         const audioBlob = await base64Response.blob()
+        console.log('[Capacitor Recording] Blob size:', audioBlob.size)
 
         // Transcribe the audio
+        console.log('[Capacitor Recording] Sending to transcription API...')
         const transcribedText = await transcribeAudio(audioBlob, result.value.mimeType)
+        console.log('[Capacitor Recording] Transcription result length:', transcribedText.length)
 
         isRecordingRef.current = false
         isPausedRef.current = false
