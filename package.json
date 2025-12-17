@@ -9,7 +9,7 @@
     "shared"
   ],
   "scripts": {
-    "postinstall": "patch-package || true",
+    "postinstall": "patch-package",
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "dev:client": "cd client && npm run dev",
     "dev:server": "cd mcp-server && npm run dev",
@@ -25,7 +25,8 @@
     "lint:server": "cd mcp-server && npm run lint"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "patch-package": "^8.0.1"
   },
   "engines": {
     "node": ">=18.0.0",
