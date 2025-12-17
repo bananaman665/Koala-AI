@@ -1,21 +1,20 @@
 diff --git a/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift b/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift
-index 79d79a4..4f8e2c1 100644
+index 79d79a4..95479dc 100644
 --- a/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift
 +++ b/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift
-@@ -1,9 +1,11 @@
+@@ -1,9 +1,10 @@
  import Foundation
  import AVFoundation
-
+ 
 -class CustomMediaRecorder {
 +class CustomMediaRecorder: NSObject, AVAudioRecorderDelegate {
-
+ 
      var options: RecordOptions!
 +    private var recordingStartTime: Date?
-+    private var isRecordingActive = false
      private var recordingSession: AVAudioSession!
      private var audioRecorder: AVAudioRecorder!
      private var audioFilePath: URL!
-@@ -44,22 +46,68 @@ class CustomMediaRecorder {
+@@ -44,20 +45,64 @@ class CustomMediaRecorder {
              options = recordOptions
              recordingSession = AVAudioSession.sharedInstance()
              originalRecordingSessionCategory = recordingSession.category
@@ -56,7 +55,6 @@ index 79d79a4..4f8e2c1 100644
 +            let started = audioRecorder.record()
 +
 +            if started {
-+                isRecordingActive = true
 +                recordingStartTime = Date()
 +                status = CurrentRecordingStatus.RECORDING
 +                print("[VoiceRecorder] Recording started successfully")
@@ -70,13 +68,12 @@ index 79d79a4..4f8e2c1 100644
              return false
          }
      }
-+
+ 
 +    // AVAudioRecorderDelegate method
 +    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
 +        print("[VoiceRecorder] Recording finished, success: \(flag)")
-+        isRecordingActive = false
 +    }
-
++
      func stopRecording() {
 +        print("[VoiceRecorder] Stopping recording...")
          do {
@@ -86,129 +83,17 @@ index 79d79a4..4f8e2c1 100644
 +            print("[VoiceRecorder] Final peak power: \(peakPower) dB")
 +
              audioRecorder.stop()
-+            isRecordingActive = false
              try recordingSession.setActive(false)
              try recordingSession.setCategory(originalRecordingSessionCategory)
-             originalRecordingSessionCategory = nil
-@@ -68,10 +116,28 @@ class CustomMediaRecorder {
-             status = CurrentRecordingStatus.NONE
+@@ -68,6 +113,11 @@ class CustomMediaRecorder {
          } catch {}
      }
-+
+ 
 +    func getRecordingDuration() -> TimeInterval {
 +        guard let startTime = recordingStartTime else { return 0 }
 +        return Date().timeIntervalSince(startTime)
 +    }
-
++
      func getOutputFile() -> URL {
          return audioFilePath
      }
-+
-+    func validateRecordingFile() -> Bool {
-+        let fileManager = FileManager.default
-+        guard fileManager.fileExists(atPath: audioFilePath.path) else {
-+            print("[VoiceRecorder] File does not exist at path: \(audioFilePath.path)")
-+            return false
-+        }
-+
-+        return true
-+    }
-
-     func getDirectory(directory: String?) -> FileManager.SearchPathDirectory? {
-         if let directory = directory {
-diff --git a/node_modules/capacitor-voice-recorder/ios/Plugin/VoiceRecorder.swift b/node_modules/capacitor-voice-recorder/ios/Plugin/VoiceRecorder.swift
-index 8a1b7c0..9e8d4f1 100644
---- a/node_modules/capacitor-voice-recorder/ios/Plugin/VoiceRecorder.swift
-+++ b/node_modules/capacitor-voice-recorder/ios/Plugin/VoiceRecorder.swift
-@@ -52,20 +52,45 @@ public class VoiceRecorder: CAPPlugin {
-     }
-
-     @objc func stopRecording(_ call: CAPPluginCall) {
-+        print("[VoiceRecorder] stopRecording called")
-+
-         if customMediaRecorder == nil {
-+            print("[VoiceRecorder] Error: Recording has not started")
-             call.reject(Messages.RECORDING_HAS_NOT_STARTED)
-             return
-         }
-+
-+        let recordingDuration = customMediaRecorder?.getRecordingDuration() ?? 0
-+        print("[VoiceRecorder] Recording duration: \(recordingDuration) seconds")
-
-         customMediaRecorder?.stopRecording()
-+
-+        // Small delay to ensure file is fully written
-+        Thread.sleep(forTimeInterval: 0.1)
-
-         let audioFileUrl = customMediaRecorder?.getOutputFile()
-         if audioFileUrl == nil {
-+            print("[VoiceRecorder] Error: No audio file URL")
-             customMediaRecorder = nil
-             call.reject(Messages.FAILED_TO_FETCH_RECORDING)
-             return
-         }
-+
-+        // Validate file exists and has content
-+        let fileManager = FileManager.default
-+        if let filePath = audioFileUrl?.path {
-+            if fileManager.fileExists(atPath: filePath) {
-+                if let attrs = try? fileManager.attributesOfItem(atPath: filePath),
-+                   let fileSize = attrs[.size] as? Int64 {
-+                    print("[VoiceRecorder] File size: \(fileSize) bytes")
-+                } else {
-+                    print("[VoiceRecorder] Could not get file attributes")
-+                }
-+            } else {
-+                print("[VoiceRecorder] File does not exist at path: \(filePath)")
-+            }
-+        }
-
-         var path = audioFileUrl!.lastPathComponent
-         if let subDirectory = customMediaRecorder?.options?.subDirectory {
-@@ -73,6 +98,8 @@ public class VoiceRecorder: CAPPlugin {
-         }
-
-         let sendDataAsBase64 = customMediaRecorder?.options?.directory == nil
-+        print("[VoiceRecorder] sendDataAsBase64: \(sendDataAsBase64)")
-+
-         let recordData = RecordData(
-             recordDataBase64: sendDataAsBase64 ? readFileAsBase64(audioFileUrl) : nil,
-             mimeType: "audio/aac",
-@@ -80,6 +107,9 @@ public class VoiceRecorder: CAPPlugin {
-             path: sendDataAsBase64 ? nil : path
-         )
-         customMediaRecorder = nil
-+
-+        print("[VoiceRecorder] recordDataBase64 length: \(recordData.recordDataBase64?.count ?? 0)")
-+        print("[VoiceRecorder] msDuration: \(recordData.msDuration)")
-+
-         if (sendDataAsBase64 && recordData.recordDataBase64 == nil) || recordData.msDuration < 0 {
-             call.reject(Messages.EMPTY_RECORDING)
-         } else {
-@@ -114,13 +144,22 @@ public class VoiceRecorder: CAPPlugin {
-     }
-
-     func readFileAsBase64(_ filePath: URL?) -> String? {
--        if filePath == nil {
-+        guard let filePath = filePath else {
-+            print("[VoiceRecorder] readFileAsBase64: filePath is nil")
-             return nil
-         }
--
-+
-+        print("[VoiceRecorder] Reading file: \(filePath.path)")
-+
-         do {
--            let fileData = try Data.init(contentsOf: filePath!)
--            let fileStream = fileData.base64EncodedString(options: NSData.Base64EncodingOptions.init(rawValue: 0))
-+            let fileData = try Data(contentsOf: filePath)
-+            print("[VoiceRecorder] File data size: \(fileData.count) bytes")
-+
-+            if fileData.count == 0 {
-+                print("[VoiceRecorder] Warning: File data is empty!")
-+                return nil
-+            }
-+            let fileStream = fileData.base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
-             return fileStream
-         } catch {}
-
