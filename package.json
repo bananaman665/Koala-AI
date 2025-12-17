@@ -9,7 +9,7 @@
     "shared"
   ],
   "scripts": {
-    "postinstall": "patch-package",
+    "postinstall": "patch-package || true",
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "dev:client": "cd client && npm run dev",
     "dev:server": "cd mcp-server && npm run dev",
@@ -30,5 +30,8 @@
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "capacitor-voice-recorder": "^7.0.6"
   }
 }
