@@ -1,0 +1,99 @@
+diff --git a/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift b/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift
+index 79d79a4..95479dc 100644
+--- a/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift
++++ b/node_modules/capacitor-voice-recorder/ios/Plugin/CustomMediaRecorder.swift
+@@ -1,9 +1,10 @@
+ import Foundation
+ import AVFoundation
+ 
+-class CustomMediaRecorder {
++class CustomMediaRecorder: NSObject, AVAudioRecorderDelegate {
+ 
+     var options: RecordOptions!
++    private var recordingStartTime: Date?
+     private var recordingSession: AVAudioSession!
+     private var audioRecorder: AVAudioRecorder!
+     private var audioFilePath: URL!
+@@ -44,20 +45,64 @@ class CustomMediaRecorder {
+             options = recordOptions
+             recordingSession = AVAudioSession.sharedInstance()
+             originalRecordingSessionCategory = recordingSession.category
+-            try recordingSession.setCategory(AVAudioSession.Category.playAndRecord)
+-            try recordingSession.setActive(true)
+-            audioFilePath = getDirectoryToSaveAudioFile().appendingPathComponent("recording-\(Int(Date().timeIntervalSince1970 * 1000)).aac")
++
++            print("[VoiceRecorder] Configuring audio session...")
++
++            // Configure for recording with proper options to avoid conflicts
++            try recordingSession.setCategory(
++                AVAudioSession.Category.playAndRecord,
++                mode: .default,
++                options: [.defaultToSpeaker, .allowBluetooth]
++            )
++            try recordingSession.setActive(true, options: .notifyOthersOnDeactivation)
++
++            // Set preferred input to the built-in microphone
++            if let inputs = recordingSession.availableInputs, !inputs.isEmpty {
++                print("[VoiceRecorder] Available inputs: \(inputs.map { $0.portName })")
++                try recordingSession.setPreferredInput(inputs.first)
++            }
++
++            audioFilePath = getDirectoryToSaveAudioFile()
++                .appendingPathComponent("recording-\(Int(Date().timeIntervalSince1970 * 1000)).aac")
++
++            print("[VoiceRecorder] Audio file path: \(audioFilePath.path)")
++
+             audioRecorder = try AVAudioRecorder(url: audioFilePath, settings: settings)
+-            audioRecorder.record()
+-            status = CurrentRecordingStatus.RECORDING
+-            return true
++            audioRecorder.delegate = self
++            audioRecorder.isMeteringEnabled = true
++            audioRecorder.prepareToRecord()
++
++            print("[VoiceRecorder] Starting recording...")
++            let started = audioRecorder.record()
++
++            if started {
++                recordingStartTime = Date()
++                status = CurrentRecordingStatus.RECORDING
++                print("[VoiceRecorder] Recording started successfully")
++                return true
++            } else {
++                print("[VoiceRecorder] AVAudioRecorder.record() returned false")
++                return false
++            }
+         } catch {
++            print("[VoiceRecorder] Recording setup error: \(error)")
+             return false
+         }
+     }
+ 
++    // AVAudioRecorderDelegate method
++    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
++        print("[VoiceRecorder] Recording finished, success: \(flag)")
++    }
++
+     func stopRecording() {
++        print("[VoiceRecorder] Stopping recording...")
+         do {
++            // Update metering one last time to verify audio was captured
++            audioRecorder.updateMeters()
++            let peakPower = audioRecorder.peakPower(forChannel: 0)
++            print("[VoiceRecorder] Final peak power: \(peakPower) dB")
++
+             audioRecorder.stop()
+             try recordingSession.setActive(false)
+             try recordingSession.setCategory(originalRecordingSessionCategory)
+@@ -68,6 +113,11 @@ class CustomMediaRecorder {
+         } catch {}
+     }
+ 
++    func getRecordingDuration() -> TimeInterval {
++        guard let startTime = recordingStartTime else { return 0 }
++        return Date().timeIntervalSince(startTime)
++    }
++
+     func getOutputFile() -> URL {
+         return audioFilePath
+     }
