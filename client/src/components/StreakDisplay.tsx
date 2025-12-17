@@ -90,8 +90,8 @@ export function StreakDisplay({
       <div
         className={`flex items-center gap-1.5 ${config.container} rounded-full
           ${streak > 0
-            ? 'bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200'
-            : 'bg-gray-100 border border-gray-200'
+            ? 'bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-200 dark:border-orange-800'
+            : 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
           }
           transition-all duration-300 ${isAnimating ? 'scale-110' : 'scale-100'}
         `}
@@ -146,9 +146,9 @@ export function StreakDisplay({
 
       {/* Detailed view */}
       {showDetails && (
-        <div className="mt-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+        <div className="mt-3 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-semibold text-gray-900">Study Streak</h4>
+            <h4 className="font-semibold text-gray-900 dark:text-white">Study Streak</h4>
             <div className="flex items-center gap-1 text-orange-500">
               <Lightning size={16} weight="fill" />
               <span className="text-sm font-medium">{streak} days</span>
@@ -165,17 +165,17 @@ export function StreakDisplay({
                     className={`w-8 h-8 rounded-full flex items-center justify-center
                       ${isActive
                         ? 'bg-gradient-to-br from-orange-400 to-red-500'
-                        : 'bg-gray-100'
+                        : 'bg-gray-100 dark:bg-gray-700'
                       }
                     `}
                   >
                     {isActive ? (
                       <Fire size={16} weight="fill" className="text-white" />
                     ) : (
-                      <div className="w-2 h-2 rounded-full bg-gray-300" />
+                      <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-500" />
                     )}
                   </div>
-                  <span className="text-xs text-gray-500">{day}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{day}</span>
                 </div>
               )
             })}
@@ -184,7 +184,7 @@ export function StreakDisplay({
           {/* Next milestone */}
           {streak > 0 && (
             <div className="text-center">
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 {(() => {
                   const nextMilestone = milestones.find(m => m > streak)
                   if (!nextMilestone) return "You've reached the top!"

@@ -780,7 +780,7 @@ function DashboardContent() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <FiLoader className="text-blue-600 text-5xl mx-auto animate-spin mb-4" />
-          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">Loading...</p>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
       </div>
     )
@@ -792,7 +792,7 @@ function DashboardContent() {
   }
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><FiLoader className="text-blue-600 text-5xl mx-auto animate-spin mb-4" /><p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">Loading...</p></div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><FiLoader className="text-blue-600 text-5xl mx-auto animate-spin mb-4" /><p className="text-gray-600 dark:text-gray-400">Loading...</p></div></div>}>
       <div className="h-screen-safe bg-gray-50 dark:bg-gray-900 flex flex-col">
         {/* Onboarding Carousel for first-time users */}
         {showOnboarding && (
@@ -989,7 +989,7 @@ function DashboardContent() {
               {isLoadingCourses ? (
                 <div className="col-span-2 text-center py-12">
                   <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Loading courses...</p>
+                  <p className="text-gray-500 dark:text-gray-400">Loading courses...</p>
                 </div>
               ) : courses.length === 0 ? (
                 <div className="col-span-2 text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -1015,12 +1015,12 @@ function DashboardContent() {
                       <div className={`w-12 h-12 bg-${course.color}-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         <FiBook className={`text-${course.color}-600 text-xl`} />
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{course.lectures} lectures</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{course.lectures} lectures</span>
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
                       {course.name}
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       {course.code && `${course.code} • `}
                       {course.professor || 'No professor set'}
                     </p>
@@ -1082,7 +1082,7 @@ function DashboardContent() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="font-medium text-gray-900 dark:text-white text-sm sm:text-base truncate">{lecture.title}</div>
-                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{dateDisplay} • {formattedDuration}</div>
+                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{dateDisplay} • {formattedDuration}</div>
                           </div>
                         </div>
                         <div className="flex-shrink-0 ml-2">
@@ -1681,7 +1681,7 @@ function DashboardContent() {
                 onChange={(e) => setLibrarySearchQuery(e.target.value)}
                 className="w-full px-4 py-3 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-800"
               />
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
 
             {/* Filter Tabs */}
@@ -1715,7 +1715,7 @@ function DashboardContent() {
                   return (
                     <div className="text-center py-12">
                       <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
-                      <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Loading lectures...</p>
+                      <p className="text-gray-500 dark:text-gray-400">Loading lectures...</p>
                     </div>
                   )
                 }
@@ -1744,7 +1744,7 @@ function DashboardContent() {
                     <div className="text-center py-12">
                       <FiSearch className="text-gray-300 text-5xl mx-auto mb-3" />
                       <h3 className="text-lg font-medium text-gray-900 mb-1">No lectures found</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         {librarySearchQuery ? `No results for "${librarySearchQuery}"` : 'Your library is empty. Start recording your first lecture!'}
                       </p>
                     </div>
@@ -1789,7 +1789,7 @@ function DashboardContent() {
                              lecture.transcription_status === 'processing' ? 'Processing' : 'Pending'}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                           <span className="flex items-center">
                             <FiClock className="mr-1" />
                             {formattedDuration}
@@ -1822,7 +1822,7 @@ function DashboardContent() {
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {selectedLectureData?.title || 'Lecture'}
               </h1>
-              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                 <span className="flex items-center">
                   <FiClock className="mr-1" />
                   {selectedLectureData ? (() => {
@@ -1863,7 +1863,7 @@ function DashboardContent() {
                   {selectedLectureNotes}
                 </div>
               ) : (
-                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">No notes available for this lecture.</p>
+                <p className="text-gray-500 dark:text-gray-400">No notes available for this lecture.</p>
               )}
             </div>
 
@@ -2287,7 +2287,7 @@ function DashboardContent() {
                       <div key={course.id}>
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm font-medium text-gray-700 dark:text-white">{course.name}</span>
-                          <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{totalHours.toFixed(1)}h</span>
+                          <span className="text-sm text-gray-500 dark:text-gray-400">{totalHours.toFixed(1)}h</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
@@ -2334,7 +2334,7 @@ function DashboardContent() {
                         </div>
                         <div className="flex-1">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">{statusText}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{lecture.title} • {timeDisplay}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{lecture.title} • {timeDisplay}</p>
                         </div>
                       </div>
                     )
@@ -2672,7 +2672,7 @@ function DashboardContent() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-gray-900 capitalize">{quality}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         {quality === 'low' && '48 kbps - Saves space'}
                         {quality === 'medium' && '128 kbps - Balanced'}
                         {quality === 'high' && '320 kbps - Best quality'}
@@ -2717,7 +2717,7 @@ function DashboardContent() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-gray-900 capitalize">{level}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         {level === 'brief' && 'Key points and summaries'}
                         {level === 'detailed' && 'Comprehensive with examples'}
                         {level === 'comprehensive' && 'In-depth with all details'}
@@ -2894,7 +2894,7 @@ function DashboardContent() {
                     )}
                   </p>
                 ) : (
-                  <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+                  <p className="text-sm text-gray-400 italic">
                     Start speaking... your words will appear here
                   </p>
                 )}
@@ -2966,7 +2966,7 @@ function DashboardContent() {
                   hapticButton()
                   setShowReadyToRecordModal(false)
                 }}
-                className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 No
               </button>
@@ -3041,7 +3041,7 @@ function DashboardContent() {
                   setShowDeleteLectureModal(false)
                 }}
                 disabled={isDeletingLecture}
-                className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -3082,7 +3082,7 @@ function DashboardContent() {
                 value={lectureTitle}
                 onChange={(e) => setLectureTitle(e.target.value)}
                 placeholder={`Lecture ${new Date().toLocaleDateString()}`}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-900 placeholder-gray-400"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
 
@@ -3096,8 +3096,8 @@ function DashboardContent() {
                   }}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     selectedCourseForRecording === course.id
-                      ? 'border-blue-600 bg-blue-50'
-                      : 'border-gray-200 bg-white hover:border-gray-300 dark:border-gray-600'
+                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -3111,7 +3111,7 @@ function DashboardContent() {
                     />
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-white">{course.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{course.code}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{course.code}</p>
                     </div>
                   </div>
                 </button>
@@ -3127,7 +3127,7 @@ function DashboardContent() {
                   setLectureTitle('')
                   reset()
                 }}
-                className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 Cancel
               </button>

@@ -60,9 +60,9 @@ export default function PricingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
+      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2">
@@ -72,7 +72,7 @@ export default function PricingPage() {
               </span>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link href="/auth/login" className="text-gray-700 hover:text-gray-900 px-3 py-2">
+              <Link href="/auth/login" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">
                 Sign In
               </Link>
               <Link
@@ -88,10 +88,10 @@ export default function PricingPage() {
 
       {/* Hero */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h1 className="text-5xl font-bold text-gray-900 mb-4">
+        <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
           Simple, transparent pricing
         </h1>
-        <p className="text-xl text-gray-600 mb-8">
+        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
           Choose the plan that's right for you. All plans include a 14-day free trial.
         </p>
       </div>
@@ -102,8 +102,8 @@ export default function PricingPage() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`bg-white rounded-2xl shadow-xl overflow-hidden ${
-                plan.popular ? 'ring-2 ring-blue-600 scale-105' : 'border border-gray-200'
+              className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden ${
+                plan.popular ? 'ring-2 ring-blue-600 scale-105' : 'border border-gray-200 dark:border-gray-700'
               }`}
             >
               {plan.popular && (
@@ -111,14 +111,14 @@ export default function PricingPage() {
                   {plan.badge}
                 </div>
               )}
-              
+
               <div className="p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                <p className="text-gray-600 mb-6">{plan.description}</p>
-                
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">{plan.description}</p>
+
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-900">${plan.price}</span>
-                  <span className="text-gray-600">/month</span>
+                  <span className="text-5xl font-bold text-gray-900 dark:text-white">${plan.price}</span>
+                  <span className="text-gray-600 dark:text-gray-400">/month</span>
                 </div>
 
                 <Link
@@ -126,7 +126,7 @@ export default function PricingPage() {
                   className={`block w-full py-3 rounded-lg font-semibold text-center transition-all ${
                     plan.popular
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg'
-                      : 'border-2 border-gray-300 text-gray-700 hover:border-gray-400'
+                      : 'border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
                   }`}
                 >
                   {plan.cta}
@@ -135,8 +135,8 @@ export default function PricingPage() {
                 <ul className="mt-8 space-y-4">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start">
-                      <FiCheck className="w-5 h-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
+                      <FiCheck className="w-5 h-5 text-green-600 dark:text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -147,39 +147,39 @@ export default function PricingPage() {
       </div>
 
       {/* Features Comparison */}
-      <div className="bg-white py-16">
+      <div className="bg-white dark:bg-gray-800 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
             All plans include
           </h2>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-                <FiZap className="w-8 h-8 text-blue-600" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
+                <FiZap className="w-8 h-8 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">AI-Powered</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">AI-Powered</h3>
+              <p className="text-gray-600 dark:text-gray-400">
                 State-of-the-art transcription and note generation using OpenAI technology
               </p>
             </div>
 
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
-                <FiStar className="w-8 h-8 text-purple-600" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full mb-4">
+                <FiStar className="w-8 h-8 text-purple-600 dark:text-purple-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">High Quality</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">High Quality</h3>
+              <p className="text-gray-600 dark:text-gray-400">
                 95%+ transcription accuracy with support for multiple languages and accents
               </p>
             </div>
 
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                <FiTrendingUp className="w-8 h-8 text-green-600" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
+                <FiTrendingUp className="w-8 h-8 text-green-600 dark:text-green-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Analytics</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Analytics</h3>
+              <p className="text-gray-600 dark:text-gray-400">
                 Track your study patterns, progress, and optimize your learning habits
               </p>
             </div>
@@ -189,10 +189,10 @@ export default function PricingPage() {
 
       {/* FAQ */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
           Frequently Asked Questions
         </h2>
-        
+
         <div className="space-y-6">
           {[
             {
@@ -212,9 +212,9 @@ export default function PricingPage() {
               a: 'Absolutely. Cancel your subscription anytime with no questions asked. You\'ll retain access until the end of your billing period.'
             },
           ].map((faq, i) => (
-            <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{faq.q}</h3>
-              <p className="text-gray-600">{faq.a}</p>
+            <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{faq.q}</h3>
+              <p className="text-gray-600 dark:text-gray-300">{faq.a}</p>
             </div>
           ))}
         </div>

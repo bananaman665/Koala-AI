@@ -75,9 +75,9 @@ export default function HelpPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
+      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2">
@@ -87,7 +87,7 @@ export default function HelpPage() {
               </span>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link href="/dashboard" className="text-gray-700 hover:text-gray-900 px-3 py-2">
+              <Link href="/dashboard" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">
                 Dashboard
               </Link>
             </div>
@@ -119,57 +119,57 @@ export default function HelpPage() {
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <Link
             href="/help/contact"
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow"
           >
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <FiMail className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4">
+              <FiMail className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Contact Support</h3>
-            <p className="text-gray-600 text-sm">Get help from our support team</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Contact Support</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">Get help from our support team</p>
           </Link>
 
           <Link
             href="/help/community"
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow"
           >
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-              <FiMessageCircle className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-4">
+              <FiMessageCircle className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Community Forum</h3>
-            <p className="text-gray-600 text-sm">Connect with other students</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Community Forum</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">Connect with other students</p>
           </Link>
 
           <Link
             href="/help/guides"
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow"
           >
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-              <FiBook className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4">
+              <FiBook className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Video Tutorials</h3>
-            <p className="text-gray-600 text-sm">Watch step-by-step guides</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Video Tutorials</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">Watch step-by-step guides</p>
           </Link>
         </div>
 
         {/* Categories */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Browse by Category</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Browse by Category</h2>
           <div className="grid md:grid-cols-2 gap-6">
             {categories.map((category, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center space-x-3 mb-4">
                   <span className="text-3xl">{category.icon}</span>
-                  <h3 className="text-xl font-semibold text-gray-900">{category.title}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{category.title}</h3>
                 </div>
                 <ul className="space-y-2">
                   {category.articles.map((article, j) => (
                     <li key={j}>
                       <Link
                         href={`/help/article/${i}-${j}`}
-                        className="flex items-center justify-between text-gray-700 hover:text-blue-600 py-2 group"
+                        className="flex items-center justify-between text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 py-2 group"
                       >
                         <span className="text-sm">{article}</span>
-                        <FiChevronRight className="text-gray-400 group-hover:text-blue-600" />
+                        <FiChevronRight className="text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
                       </Link>
                     </li>
                   ))}
@@ -181,18 +181,18 @@ export default function HelpPage() {
 
         {/* FAQs */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {faqs.map((faq, i) => (
               <details
                 key={i}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden group"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden group"
               >
-                <summary className="px-6 py-4 cursor-pointer hover:bg-gray-50 flex items-center justify-between">
-                  <span className="font-semibold text-gray-900">{faq.question}</span>
+                <summary className="px-6 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-between">
+                  <span className="font-semibold text-gray-900 dark:text-white">{faq.question}</span>
                   <FiChevronRight className="text-gray-400 transform group-open:rotate-90 transition-transform" />
                 </summary>
-                <div className="px-6 py-4 border-t border-gray-200 text-gray-600">
+                <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300">
                   {faq.answer}
                 </div>
               </details>
@@ -201,10 +201,10 @@ export default function HelpPage() {
         </div>
 
         {/* Still Need Help */}
-        <div className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 text-center">
-          <FiHelpCircle className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Still need help?</h3>
-          <p className="text-gray-600 mb-6">Our support team is here to assist you</p>
+        <div className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-8 text-center">
+          <FiHelpCircle className="w-12 h-12 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Still need help?</h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">Our support team is here to assist you</p>
           <Link
             href="/help/contact"
             className="inline-block px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-shadow font-semibold"

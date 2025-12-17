@@ -316,7 +316,7 @@ export default function SettingsPage() {
 
         {/* App Version */}
         <div className="text-center py-4">
-          <p className="text-sm text-gray-400 dark:text-gray-500">Koala.ai v1.0.0</p>
+          <p className="text-sm text-gray-400">Koala.ai v1.0.0</p>
         </div>
       </div>
     </div>

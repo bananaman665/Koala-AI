@@ -211,8 +211,8 @@ export function AudioPlayer({
 
   if (!audioUrl) {
     return (
-      <div className={`bg-gray-100 rounded-xl p-4 ${className}`}>
-        <p className="text-gray-500 text-center text-sm">No audio available for this lecture</p>
+      <div className={`bg-gray-100 dark:bg-gray-800 rounded-xl p-4 ${className}`}>
+        <p className="text-gray-500 dark:text-gray-400 text-center text-sm">No audio available for this lecture</p>
       </div>
     )
   }
@@ -397,14 +397,14 @@ export function TranscriptViewer({
               onClick={() => onSegmentClick(segment.start)}
               className={`p-3 rounded-lg cursor-pointer transition-all ${
                 isActive
-                  ? 'bg-blue-100 border-l-4 border-blue-500'
-                  : 'hover:bg-gray-100'
+                  ? 'bg-blue-100 dark:bg-blue-900/30 border-l-4 border-blue-500'
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               <span className="text-xs text-gray-400 font-mono mr-2">
                 {formatTimestamp(segment.start)}
               </span>
-              <span className={isActive ? 'text-gray-900' : 'text-gray-700'}>
+              <span className={isActive ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}>
                 {segment.text}
               </span>
             </div>
@@ -416,7 +416,7 @@ export function TranscriptViewer({
 
   // Fallback to plain transcript
   return (
-    <div className={`prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap ${className}`}>
+    <div className={`prose prose-sm max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-wrap ${className}`}>
       {transcript}
     </div>
   )
