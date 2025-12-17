@@ -71,6 +71,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
   const transcriptRef = useRef<string>('') // Track transcript in ref to avoid stale closures
   const isRecordingRef = useRef<boolean>(false) // Track recording state in ref
   const isPausedRef = useRef<boolean>(false) // Track paused state in ref
+  const capacitorStartTimeRef = useRef<number>(0) // Track when Capacitor recording started
 
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const startTimeRef = useRef<number>(0)
@@ -164,15 +165,21 @@ export function useHybridRecording(): UseHybridRecordingResult {
       const hasPermission = await VoiceRecorder.requestAudioRecordingPermission()
       console.log('[Capacitor Recording] Permission result:', hasPermission)
       if (!hasPermission.value) {
-        throw new Error('Microphone permission denied')
+        throw new Error('Microphone permission denied. Please enable microphone access in Settings.')
       }
 
       // Start recording
       console.log('[Capacitor Recording] Starting recording...')
       const startResult = await VoiceRecorder.startRecording()
       console.log('[Capacitor Recording] Start result:', startResult)
+
+      if (!startResult.value) {
+        throw new Error('Failed to start native recording. Please restart the app and try again.')
+      }
+
       capacitorMediaRef.current = 'recording' // Just a flag
-      console.log('[Capacitor Recording] Recording started successfully')
+      capacitorStartTimeRef.current = Date.now() // Track when recording started
+      console.log('[Capacitor Recording] Recording started successfully at', capacitorStartTimeRef.current)
     } catch (err: any) {
       console.error('[Capacitor Recording] Failed to start:', err)
       throw new Error(err.message || 'Failed to start Capacitor recording')
@@ -308,16 +315,20 @@ export function useHybridRecording(): UseHybridRecordingResult {
     setState(prev => ({ ...prev, isTranscribing: true }))
 
     try {
-      const fileMimeType = mimeType || audioBlob.type || 'audio/wav'
-      
+      let fileMimeType = mimeType || audioBlob.type || 'audio/wav'
+
       // Determine appropriate file extension based on mime type
       let extension = 'mp3'
       if (fileMimeType.includes('webm')) extension = 'webm'
-      else if (fileMimeType.includes('aac') || fileMimeType.includes('m4a')) extension = 'm4a'
+      else if (fileMimeType.includes('aac') || fileMimeType.includes('m4a')) {
+        extension = 'm4a'
+        // IMPORTANT: Groq Whisper expects 'audio/mp4' for .m4a files, not 'audio/aac'
+        fileMimeType = 'audio/mp4'
+      }
       else if (fileMimeType.includes('wav')) extension = 'wav'
       else if (fileMimeType.includes('ogg')) extension = 'ogg'
       else if (fileMimeType.includes('flac')) extension = 'flac'
-      
+
       const fileName = `recording.${extension}`
       const audioFile = new File([audioBlob], fileName, { type: fileMimeType })
 
@@ -413,6 +424,15 @@ export function useHybridRecording(): UseHybridRecordingResult {
     // Native Platform: Use Capacitor recording + Groq transcription
     if (useCapacitorMedia && capacitorMediaRef.current) {
       try {
+        // Check minimum recording duration (at least 1 second)
+        const recordingDurationMs = Date.now() - capacitorStartTimeRef.current
+        console.log('[Capacitor Recording] Recording duration:', recordingDurationMs, 'ms')
+
+        if (recordingDurationMs < 1000) {
+          console.warn('[Capacitor Recording] Recording too short:', recordingDurationMs, 'ms')
+          // Still try to stop, but warn the user
+        }
+
         console.log('[Capacitor Recording] Stopping recording...')
         const result = await VoiceRecorder.stopRecording()
         console.log('[Capacitor Recording] Stop result:', {
@@ -422,16 +442,21 @@ export function useHybridRecording(): UseHybridRecordingResult {
           base64Length: result.value.recordDataBase64?.length || 0
         })
         capacitorMediaRef.current = null
+        capacitorStartTimeRef.current = 0
 
         // Check if we got any audio data
         if (!result.value.recordDataBase64 || result.value.recordDataBase64.length === 0) {
           console.error('[Capacitor Recording] No audio data received!')
-          throw new Error('No audio data captured. Please check microphone permissions.')
+          // Provide more helpful error message based on recording duration
+          if (recordingDurationMs < 1000) {
+            throw new Error('Recording was too short. Please record for at least 2 seconds.')
+          }
+          throw new Error('No audio was captured. Please restart the app and try again. If the issue persists, check that no other apps are using the microphone.')
         }
 
         if (result.value.msDuration <= 0) {
           console.error('[Capacitor Recording] Duration is 0 or negative!')
-          throw new Error('Recording duration is 0. Audio capture may have failed.')
+          throw new Error('Recording failed to capture audio. Please close and reopen the app.')
         }
 
         // Convert base64 to blob
@@ -527,6 +552,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
     if (capacitorMediaRef.current) {
       VoiceRecorder.stopRecording().catch(() => {}) // Stop if recording
       capacitorMediaRef.current = null
+      capacitorStartTimeRef.current = 0
     }
 
     if (mediaRecorderRef.current) {
