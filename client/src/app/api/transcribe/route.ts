@@ -39,11 +39,21 @@ export async function POST(request: NextRequest) {
     // === DIAGNOSTIC LOGGING END ===
 
     // Transcribe audio using Groq Whisper
+    console.log('Sending to Groq Whisper:', {
+      fileName: audioFile.name,
+      fileSize: reconstructedFile.size,
+      fileType: reconstructedFile.type,
+    })
+
     const transcription = await groq.audio.transcriptions.create({
       file: reconstructedFile,
       model: 'whisper-large-v3',
       response_format: 'verbose_json',
       language: 'en',
+    })
+
+    console.log('Groq transcription successful:', {
+      textLength: transcription.text?.length || 0,
     })
 
     const transcriptText = transcription.text
@@ -85,11 +95,23 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     // === DIAGNOSTIC ERROR LOGGING START ===
 
+    console.error('Transcription API error caught:', {
+      name: error?.name,
+      message: error?.message,
+      status: error?.status,
+      type: error?.constructor?.name,
+    })
+
     // Log Groq-specific error details
     if (error?.error) {
+      console.error('Groq error object:', error.error)
     }
     if (error?.headers) {
+      console.error('Error headers:', error.headers)
     }
+
+    // Log the full error for debugging
+    console.error('Full error object:', JSON.stringify(error, null, 2))
 
     // === DIAGNOSTIC ERROR LOGGING END ===
 

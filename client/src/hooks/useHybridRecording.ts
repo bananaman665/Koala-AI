@@ -342,12 +342,13 @@ export function useHybridRecording(): UseHybridRecordingResult {
         body: formData,
       })
 
-
+      console.log('Transcription response status:', response.status)
       const data = await response.json()
-
+      console.log('Transcription response data:', data)
 
       if (!response.ok) {
-        const errorMsg = data.message || data.error || 'Failed to transcribe audio'
+        const errorMsg = data.message || data.error || data.errorType || 'Failed to transcribe audio'
+        console.error('Transcription API error details:', { status: response.status, ...data })
         throw new Error(errorMsg)
       }
 
@@ -355,6 +356,8 @@ export function useHybridRecording(): UseHybridRecordingResult {
       return transcript
     } catch (err: any) {
       console.error('Transcription error:', err)
+      console.error('Transcription error message:', err.message)
+      console.error('Transcription error stack:', err.stack)
       setError(`Transcription failed: ${err.message}`)
       return ''
     } finally {
