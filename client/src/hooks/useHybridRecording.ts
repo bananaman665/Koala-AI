@@ -322,9 +322,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
       let extension = 'mp3'
       if (fileMimeType.includes('webm')) extension = 'webm'
       else if (fileMimeType.includes('aac') || fileMimeType.includes('m4a')) {
-        // iOS records as m4a with AAC codec
-        // m4a is the container format, audio/mp4 is the correct MIME type for Groq
-        extension = 'm4a'
+        // iOS records as m4a with AAC codec (MP4 container format)
+        // Try .mp4 extension which Groq explicitly lists as supported
+        extension = 'mp4'
         fileMimeType = 'audio/mp4'
       }
       else if (fileMimeType.includes('wav')) extension = 'wav'
