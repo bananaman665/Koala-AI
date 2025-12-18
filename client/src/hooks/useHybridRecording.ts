@@ -316,21 +316,27 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
     try {
       let fileMimeType = mimeType || audioBlob.type || 'audio/wav'
+      let audioToSend = audioBlob
 
       // Determine appropriate file extension based on mime type
       let extension = 'mp3'
       if (fileMimeType.includes('webm')) extension = 'webm'
-      else if (fileMimeType.includes('aac') || fileMimeType.includes('m4a')) {
+      else if (fileMimeType.includes('aac')) {
+        // iOS records as m4a with AAC codec
         extension = 'm4a'
-        // IMPORTANT: Groq Whisper expects 'audio/mp4' for .m4a files, not 'audio/aac'
-        fileMimeType = 'audio/mp4'
+        // Use audio/aac MIME type which Groq Whisper should support
+        fileMimeType = 'audio/aac'
+      }
+      else if (fileMimeType.includes('m4a')) {
+        extension = 'm4a'
+        fileMimeType = 'audio/aac'
       }
       else if (fileMimeType.includes('wav')) extension = 'wav'
       else if (fileMimeType.includes('ogg')) extension = 'ogg'
       else if (fileMimeType.includes('flac')) extension = 'flac'
 
       const fileName = `recording.${extension}`
-      const audioFile = new File([audioBlob], fileName, { type: fileMimeType })
+      const audioFile = new File([audioToSend], fileName, { type: fileMimeType })
 
       console.log('Transcribing audio:', { fileName, mimeType: fileMimeType, size: audioBlob.size })
 
