@@ -54,11 +54,11 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
   // Use Web Speech API for transcription whenever available (primary method)
   // BUT: Disable on native platforms - Web Speech API in WKWebView conflicts with native recording
-  // Use Capacitor Media to record audio for storage on native platforms (primary on native)
-  // Use Web Media Recorder as fallback for mobile web
+  // Use Web Media Recorder as primary on iOS (produces webm/opus which Groq supports)
+  // Capacitor m4a format is rejected by Groq Whisper
   const useSpeechRecognition = hasSpeechRecognition && !isNativePlatform
-  const useCapacitorMedia = isNativePlatform
-  const useWebMediaRecorder = isMobile && !isNativePlatform
+  const useWebMediaRecorder = isMobile // Use Web MediaRecorder on all mobile platforms
+  const useCapacitorMedia = isNativePlatform && !isMobile // Only use Capacitor on non-mobile native (shouldn't happen)
 
   const isSupported = hasSpeechRecognition || hasMediaRecorder || isNativePlatform
 
@@ -319,17 +319,16 @@ export function useHybridRecording(): UseHybridRecordingResult {
       let audioToSend = audioBlob
 
       // Determine appropriate file extension based on mime type
-      let extension = 'mp3'
+      let extension = 'webm' // Default to webm for web media recorder
       if (fileMimeType.includes('webm')) extension = 'webm'
       else if (fileMimeType.includes('aac') || fileMimeType.includes('m4a')) {
-        // iOS records as m4a with AAC codec (MP4 container format)
-        // Try .mp4 extension which Groq explicitly lists as supported
-        extension = 'mp4'
+        extension = 'm4a'
         fileMimeType = 'audio/mp4'
       }
       else if (fileMimeType.includes('wav')) extension = 'wav'
       else if (fileMimeType.includes('ogg')) extension = 'ogg'
       else if (fileMimeType.includes('flac')) extension = 'flac'
+      else if (fileMimeType.includes('mp3')) extension = 'mp3'
 
       const fileName = `recording.${extension}`
       const audioFile = new File([audioToSend], fileName, { type: fileMimeType })
