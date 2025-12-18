@@ -2412,10 +2412,10 @@ function DashboardContent() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-gray-50 rounded-lg border border-gray-200 p-8 text-center">
-                  <FiBook className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-600 font-medium">No classes yet</p>
-                  <p className="text-gray-500 text-sm mt-1">Create a new class or join an existing one to get started</p>
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
+                  <FiBook className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
+                  <p className="text-gray-600 dark:text-white font-medium">No classes yet</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Create a new class or join an existing one to get started</p>
                 </div>
               )}
             </div>
