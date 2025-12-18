@@ -71,8 +71,8 @@ export function SwipeToDelete({
         // After collapse animation, trigger delete
         setTimeout(() => {
           onDelete()
-        }, 300)
-      }, 300)
+        }, 150)
+      }, 150)
     } else {
       // Snap back
       setTranslateX(0)

@@ -53,7 +53,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     // Then remove after animation completes
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id))
-    }, 300)
+    }, 150)
   }, [])
 
   const showToast = useCallback((message: string, type: ToastType = 'info') => {

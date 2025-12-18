@@ -78,7 +78,7 @@ export const useScreenTransition = (currentScreen: ScreenType) => {
           previousScreen: null,
           isTransitioning: false
         }))
-      }, 300) // Match animation duration
+      }, 150) // Match animation duration
     }
     
     return () => {
