@@ -110,7 +110,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
   const slide = slides[currentSlide]
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 pb-20 sm:pb-0">
       {/* Backdrop */}
       <div
         className="absolute inset-0"
@@ -118,7 +118,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
       />
 
       {/* Modal */}
-      <div className="relative w-full sm:max-w-md bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-in-up overflow-hidden">
+      <div className="relative w-full sm:max-w-md bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-in-up overflow-hidden mb-safe">
         {/* Handle bar for mobile */}
         <div className="sm:hidden flex justify-center pt-3">
           <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
