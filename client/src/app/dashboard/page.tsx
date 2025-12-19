@@ -1588,7 +1588,7 @@ function DashboardContent() {
 
             {/* Lectures in this Course */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mt-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">All Lectures</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">All Lectures</h3>
               <div className="space-y-3">
                 {(() => {
                   const courseLectures = lectures.filter(l => l.course_id === selectedCourse)
