@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2 } from 'react-icons/fi'
 import { Lightbulb, Mic, Lock } from 'lucide-react'
+import { Fire } from '@phosphor-icons/react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
@@ -3267,7 +3268,7 @@ function DashboardContent() {
                           : 'bg-gray-200'
                       }`}>
                         {isActive ? (
-                          <span className="text-white text-lg">🔥</span>
+                          <Fire size={20} weight="fill" className="text-white" />
                         ) : (
                           <span className={`text-sm ${isToday ? 'text-blue-600 font-bold' : 'text-gray-400'}`}>
                             {isToday ? '?' : ''}
