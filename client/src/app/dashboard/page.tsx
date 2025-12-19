@@ -2361,7 +2361,7 @@ function DashboardContent() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Classes</h2>
-                <p className="text-gray-600 text-sm mt-1">Manage your classes and share lectures with classmates</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Manage your classes and share lectures with classmates</p>
               </div>
               <button
                 onClick={() => {
@@ -2427,7 +2427,7 @@ function DashboardContent() {
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
                       Class Code
                     </label>
                     <input
