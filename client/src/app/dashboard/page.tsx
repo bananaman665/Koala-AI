@@ -3283,7 +3283,7 @@ function DashboardContent() {
 
             {/* Milestones */}
             <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Milestones</h3>
+              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3">Milestones</h3>
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {[
                   { days: 3, label: '3 days', emoji: '🌱' },
