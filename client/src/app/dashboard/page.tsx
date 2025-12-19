@@ -915,7 +915,7 @@ function DashboardContent() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Courses</h1>
-                <p className="text-gray-600 text-sm mt-1">Organize your lectures by course</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Organize your lectures by course</p>
               </div>
               <button
                 onClick={() => setShowNewCourseModal(true)}
