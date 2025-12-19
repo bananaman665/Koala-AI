@@ -841,9 +841,9 @@ function DashboardContent() {
               </button>
               <Link
                 href="/settings"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg"
+                className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
               >
-                <FiSettings className="text-gray-600 text-lg sm:text-base" />
+                <FiSettings className="text-gray-600 dark:text-white text-lg sm:text-base" />
               </Link>
               <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-semibold">
                 {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
@@ -2271,7 +2271,7 @@ function DashboardContent() {
 
             {/* Top Courses */}
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Top Courses</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Top Courses</h3>
               <div className="space-y-3">
                 {courses.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-4">No courses yet</p>
@@ -2304,7 +2304,7 @@ function DashboardContent() {
 
             {/* Recent Activity */}
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Recent Activity</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Recent Activity</h3>
               <div className="space-y-3">
                 {lectures.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-4">No activity yet</p>
