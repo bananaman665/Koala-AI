@@ -227,17 +227,6 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
           </button>
         </div>
 
-        {/* Skip link */}
-        {!isLastSlide && (
-          <div className="pb-6 text-center">
-            <button
-              onClick={handleSkip}
-              className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            >
-              Skip tutorial
-            </button>
-          </div>
-        )}
       </div>
     </div>
   )
