@@ -1,6 +1,8 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
+import { StatusBar, Style } from '@capacitor/status-bar'
+import { Capacitor } from '@capacitor/core'
 
 interface ThemeContextType {
   isDark: boolean
@@ -25,17 +27,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     metaThemeColor.setAttribute('content', themeColor)
   }
 
-  // Update iOS status bar style (text/icon color)
-  const updateStatusBarStyle = (dark: boolean) => {
-    // black-translucent = white text, default = black text
-    const style = dark ? 'black-translucent' : 'default'
-    let metaStatusBar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
-    if (!metaStatusBar) {
-      metaStatusBar = document.createElement('meta')
-      metaStatusBar.setAttribute('name', 'apple-mobile-web-app-status-bar-style')
-      document.head.appendChild(metaStatusBar)
+  // Update iOS status bar style (text/icon color) using Capacitor
+  const updateStatusBarStyle = async (dark: boolean) => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        // Style.Dark = white text (for dark backgrounds)
+        // Style.Light = black text (for light backgrounds)
+        await StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light })
+      } catch (error) {
+        console.error('Failed to update status bar style:', error)
+      }
     }
-    metaStatusBar.setAttribute('content', style)
   }
 
   // Load theme preference from localStorage on mount (default to light mode)
