@@ -45,9 +45,20 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
       const result = await recording.stopRecording()
       const finalTranscript = result.transcript
       const capturedAudioBlob = result.audioBlob
-      console.log('[V2 Hook] After stopRecording, audioBlob:', capturedAudioBlob ? `${capturedAudioBlob.size} bytes` : 'null')
+      console.log('[V2 Hook] After stopRecording:', {
+        transcript: finalTranscript ? `${finalTranscript.length} chars` : 'null',
+        audioBlob: capturedAudioBlob ? `${capturedAudioBlob.size} bytes` : 'null'
+      })
 
+      // If we have audio but no transcript, still allow saving (transcription might have failed)
       if (!finalTranscript || finalTranscript.trim().length === 0) {
+        // Check if we at least have audio
+        if (capturedAudioBlob && capturedAudioBlob.size > 0) {
+          console.log('[V2 Hook] No transcript but have audio blob, allowing save')
+          setNotesError('Transcription failed, but audio was captured. You can still save the recording.')
+          // Return with empty notes so user can still save
+          return { transcript: '[Transcription unavailable]', notes: 'Notes could not be generated - transcription failed.', audioBlob: capturedAudioBlob }
+        }
         setNotesError('Nothing recorded. Please try again.')
         return null
       }

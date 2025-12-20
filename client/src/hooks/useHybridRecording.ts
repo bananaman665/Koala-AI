@@ -318,7 +318,15 @@ export function useHybridRecording(): UseHybridRecordingResult {
         })
       } else if (useCapacitorMedia) {
         console.log('[Recording] Using Capacitor as PRIMARY (native platform)')
-        await startCapacitorVoiceRecorder()
+        try {
+          await startCapacitorVoiceRecorder()
+          console.log('[Recording] Capacitor started successfully')
+        } catch (capacitorErr: any) {
+          console.error('[Recording] Capacitor PRIMARY failed:', capacitorErr)
+          // Don't throw - try to continue with error message
+          setError(`Recording failed to start: ${capacitorErr.message}`)
+          throw capacitorErr // Re-throw to trigger outer catch
+        }
       }
 
       // Web Media Recorder as fallback if Speech Recognition not available
