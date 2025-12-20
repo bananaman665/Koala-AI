@@ -7,6 +7,7 @@ import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPl
 import { Lightbulb, Mic, Lock } from 'lucide-react'
 import { Fire } from '@phosphor-icons/react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
+import { useAudioCapture } from '@/hooks/useAudioCapture'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
 import { ScreenTransition } from '@/components/ScreenTransition'
@@ -72,6 +73,9 @@ function DashboardContent() {
     isSupported,
     isMobile: isRecordingMobile,
   } = useLectureRecordingV2()
+
+  // Separate audio capture for playback (iOS native only)
+  const audioCapture = useAudioCapture()
 
   // Ref to store captured audio blob for saving
   const capturedAudioBlobRef = useRef<Blob | null>(null)
@@ -2839,14 +2843,15 @@ function DashboardContent() {
               } else {
                 setIsStoppingRecording(true)
                 try {
-                  const result = await stopAndGenerateNotes()
-                  console.log('[Dashboard] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length, audioBlob: result.audioBlob?.size } : 'null')
-
-                  // Always capture audioBlob if available
-                  if (result?.audioBlob) {
-                    capturedAudioBlobRef.current = result.audioBlob
-                    console.log('[Dashboard] Captured audioBlob in ref:', result.audioBlob.size, 'bytes')
+                  // Stop separate audio capture first (iOS native)
+                  const capturedAudio = await audioCapture.stopCapture()
+                  if (capturedAudio) {
+                    capturedAudioBlobRef.current = capturedAudio
+                    console.log('[Dashboard] Captured audio from native recorder:', capturedAudio.size, 'bytes')
                   }
+
+                  const result = await stopAndGenerateNotes()
+                  console.log('[Dashboard] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length } : 'null')
 
                   if (result && result.transcript) {
                     hapticSuccess()
@@ -2863,6 +2868,8 @@ function DashboardContent() {
                 } catch (error) {
                   console.error('Recording error:', error)
                   hapticError()
+                  // Cancel audio capture on error
+                  await audioCapture.cancelCapture()
                   // Still show modal if we have transcript
                   if (transcript && transcript.trim().length > 0) {
                     setShowCourseSelectionModal(true)
@@ -3028,9 +3035,11 @@ function DashboardContent() {
                 No
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   hapticImpact('heavy')
                   startRecording()
+                  // Start separate audio capture for playback (iOS native)
+                  await audioCapture.startCapture()
                   setShowReadyToRecordModal(false)
                 }}
                 className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg btn-press font-medium hover:bg-blue-700 transition-colors"
