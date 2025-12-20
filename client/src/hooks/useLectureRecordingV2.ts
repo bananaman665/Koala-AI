@@ -20,7 +20,7 @@ interface UseLectureRecordingV2Result {
   startRecording: () => Promise<void>
   pauseRecording: () => void
   resumeRecording: () => void
-  stopAndGenerateNotes: () => Promise<{ transcript: string; notes: string } | null>
+  stopAndGenerateNotes: () => Promise<{ transcript: string; notes: string; audioBlob: Blob | null } | null>
   generateNotes: () => Promise<void>
   reset: () => void
   clearAudioBlob: () => void
@@ -38,12 +38,14 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
   const [notes, setNotes] = useState<string | null>(null)
   const [notesError, setNotesError] = useState<string | null>(null)
 
-  const stopAndGenerateNotes = async (): Promise<{ transcript: string; notes: string } | null> => {
+  const stopAndGenerateNotes = async (): Promise<{ transcript: string; notes: string; audioBlob: Blob | null } | null> => {
     try {
-      // Stop recording and get final transcript
+      // Stop recording and get final transcript + audio blob
       console.log('[V2 Hook] Calling stopRecording...')
-      const finalTranscript = await recording.stopRecording()
-      console.log('[V2 Hook] After stopRecording, audioBlob:', recording.audioBlob ? `${recording.audioBlob.size} bytes` : 'null')
+      const result = await recording.stopRecording()
+      const finalTranscript = result.transcript
+      const capturedAudioBlob = result.audioBlob
+      console.log('[V2 Hook] After stopRecording, audioBlob:', capturedAudioBlob ? `${capturedAudioBlob.size} bytes` : 'null')
 
       if (!finalTranscript || finalTranscript.trim().length === 0) {
         setNotesError('Nothing recorded. Please try again.')
@@ -85,7 +87,7 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
         setIsGeneratingNotes(false)
       }
 
-      return { transcript: finalTranscript, notes: generatedNotes }
+      return { transcript: finalTranscript, notes: generatedNotes, audioBlob: capturedAudioBlob }
     } catch (err) {
       // Only reset on error - let dashboard reset after saving audio
       recording.resetRecording()

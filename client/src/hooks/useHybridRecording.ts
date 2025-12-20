@@ -12,11 +12,16 @@ interface HybridRecordingState {
   audioBlob: Blob | null
 }
 
+interface StopRecordingResult {
+  transcript: string
+  audioBlob: Blob | null
+}
+
 interface UseHybridRecordingResult extends HybridRecordingState {
   startRecording: () => Promise<void>
   pauseRecording: () => void
   resumeRecording: () => void
-  stopRecording: () => Promise<string>
+  stopRecording: () => Promise<StopRecordingResult>
   resetRecording: () => void
   clearAudioBlob: () => void
   isSupported: boolean
@@ -370,7 +375,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
   }, [])
 
   // Stop recording
-  const stopRecording = useCallback(async (): Promise<string> => {
+  const stopRecording = useCallback(async (): Promise<StopRecordingResult> => {
     stopTimer()
 
     // Primary: Use Web Speech API transcript (if available and working)
@@ -404,7 +409,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
             audioBlob: audioBlob,
           }))
 
-          return transcribedText
+          return { transcript: transcribedText, audioBlob }
         } catch (err: any) {
           // If Capacitor transcription fails, continue with empty transcript
           console.error('Capacitor transcription fallback failed:', err)
@@ -426,7 +431,8 @@ export function useHybridRecording(): UseHybridRecordingResult {
         isPaused: false,
       }))
 
-      return speechTranscript
+      // Web Speech API doesn't provide audio blob
+      return { transcript: speechTranscript, audioBlob: null }
     }
 
     // Native Platform: Use Capacitor recording + Groq transcription
@@ -489,7 +495,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
           audioBlob: audioBlob,
         }))
 
-        return transcribedText
+        return { transcript: transcribedText, audioBlob }
       } catch (err: any) {
         capacitorMediaRef.current = null
         isRecordingRef.current = false
@@ -502,15 +508,15 @@ export function useHybridRecording(): UseHybridRecordingResult {
           audioBlob: null,
         }))
         setError(err.message || 'Failed to stop recording')
-        return ''
+        return { transcript: '', audioBlob: null }
       }
     }
 
     // Web: Use Web Media Recorder
     if (useWebMediaRecorder && mediaRecorderRef.current) {
-      return new Promise(async (resolve) => {
+      return new Promise<StopRecordingResult>(async (resolve) => {
         if (!mediaRecorderRef.current) {
-          resolve('')
+          resolve({ transcript: '', audioBlob: null })
           return
         }
 
@@ -538,7 +544,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
             audioBlob: audioBlob,
           }))
 
-          resolve(transcribedText)
+          resolve({ transcript: transcribedText, audioBlob })
         }
 
         mediaRecorderRef.current.stop()
@@ -554,7 +560,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
       isPaused: false,
     }))
 
-    return ''
+    return { transcript: '', audioBlob: null }
   }, [useSpeechRecognition, useCapacitorMedia, useWebMediaRecorder, stopTimer, transcribeAudio])
 
   // Reset recording

@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2 } from 'react-icons/fi'
@@ -72,6 +72,9 @@ function DashboardContent() {
     isSupported,
     isMobile: isRecordingMobile,
   } = useLectureRecordingV2()
+
+  // Ref to store captured audio blob for saving
+  const capturedAudioBlobRef = useRef<Blob | null>(null)
 
   const [showTranscript, setShowTranscript] = useState(false)
   const [showNotes, setShowNotes] = useState(false)
@@ -589,12 +592,13 @@ function DashboardContent() {
         throw lectureError
       }
 
-      // Upload audio if available
-      console.log('[SaveLecture] audioBlob:', audioBlob ? `Blob size: ${audioBlob.size}, type: ${audioBlob.type}` : 'null')
-      if (audioBlob) {
+      // Upload audio if available (use ref which has the captured blob)
+      const audioBlobToUpload = capturedAudioBlobRef.current
+      console.log('[SaveLecture] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
+      if (audioBlobToUpload) {
         try {
           console.log('[SaveLecture] Uploading audio to storage...')
-          const audioUrl = await uploadAudioFile(user.id, lecture.id, audioBlob)
+          const audioUrl = await uploadAudioFile(user.id, lecture.id, audioBlobToUpload)
           console.log('[SaveLecture] Audio uploaded, URL:', audioUrl)
           // Update lecture with audio URL
           // @ts-ignore - Supabase typing issue with Database generic
@@ -661,8 +665,9 @@ function DashboardContent() {
       // Haptic feedback for success
       hapticSuccess()
 
-      // Clear the current recording
+      // Clear the current recording and audio blob
       setLectureTitle('')
+      capturedAudioBlobRef.current = null
       reset()
     } catch (error: any) {
       alert(`Failed to save lecture: ${error.message}`)
@@ -2831,6 +2836,9 @@ function DashboardContent() {
                 try {
                   const result = await stopAndGenerateNotes()
                   if (result && result.transcript) {
+                    // Store the audio blob for saving later
+                    capturedAudioBlobRef.current = result.audioBlob
+                    console.log('[Dashboard] Captured audioBlob:', result.audioBlob ? `${result.audioBlob.size} bytes` : 'null')
                     hapticSuccess()
                     setShowCourseSelectionModal(true)
                   } else {
