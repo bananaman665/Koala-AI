@@ -41,7 +41,9 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
   const stopAndGenerateNotes = async (): Promise<{ transcript: string; notes: string } | null> => {
     try {
       // Stop recording and get final transcript
+      console.log('[V2 Hook] Calling stopRecording...')
       const finalTranscript = await recording.stopRecording()
+      console.log('[V2 Hook] After stopRecording, audioBlob:', recording.audioBlob ? `${recording.audioBlob.size} bytes` : 'null')
 
       if (!finalTranscript || finalTranscript.trim().length === 0) {
         setNotesError('Nothing recorded. Please try again.')

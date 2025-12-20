@@ -590,19 +590,29 @@ function DashboardContent() {
       }
 
       // Upload audio if available
+      console.log('[SaveLecture] audioBlob:', audioBlob ? `Blob size: ${audioBlob.size}, type: ${audioBlob.type}` : 'null')
       if (audioBlob) {
         try {
+          console.log('[SaveLecture] Uploading audio to storage...')
           const audioUrl = await uploadAudioFile(user.id, lecture.id, audioBlob)
+          console.log('[SaveLecture] Audio uploaded, URL:', audioUrl)
           // Update lecture with audio URL
           // @ts-ignore - Supabase typing issue with Database generic
-          await (supabase as any)
+          const { error: updateError } = await (supabase as any)
             .from('lectures')
             .update({ audio_url: audioUrl })
             .eq('id', lecture.id)
+          if (updateError) {
+            console.error('[SaveLecture] Failed to update lecture with audio URL:', updateError)
+          } else {
+            console.log('[SaveLecture] Lecture updated with audio URL successfully')
+          }
         } catch (audioError) {
-          console.error('Failed to upload audio:', audioError)
+          console.error('[SaveLecture] Failed to upload audio:', audioError)
           // Continue saving even if audio upload fails
         }
+      } else {
+        console.log('[SaveLecture] No audioBlob available to upload')
       }
 
       // Save transcript if available

@@ -480,6 +480,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
         isRecordingRef.current = false
         isPausedRef.current = false
+        console.log('[Capacitor Recording] Setting audioBlob in state:', audioBlob.size, 'bytes')
         setState(prev => ({
           ...prev,
           transcript: transcribedText,
@@ -493,6 +494,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
         capacitorMediaRef.current = null
         isRecordingRef.current = false
         isPausedRef.current = false
+        console.log('[Capacitor Recording] Error, setting audioBlob to null')
         setState(prev => ({
           ...prev,
           isRecording: false,
@@ -514,6 +516,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
         mediaRecorderRef.current.onstop = async () => {
           const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+          console.log('[HybridRecording] WebMediaRecorder audioBlob created:', audioBlob.size, 'bytes')
 
           // Stop all tracks
           if (streamRef.current) {
@@ -526,6 +529,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
           isRecordingRef.current = false
           isPausedRef.current = false
+          console.log('[HybridRecording] Setting audioBlob in state:', audioBlob.size, 'bytes')
           setState(prev => ({
             ...prev,
             transcript: transcribedText,
