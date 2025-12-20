@@ -594,7 +594,8 @@ function DashboardContent() {
         try {
           const audioUrl = await uploadAudioFile(user.id, lecture.id, audioBlob)
           // Update lecture with audio URL
-          await supabase
+          // @ts-ignore - Supabase typing issue with Database generic
+          await (supabase as any)
             .from('lectures')
             .update({ audio_url: audioUrl })
             .eq('id', lecture.id)
