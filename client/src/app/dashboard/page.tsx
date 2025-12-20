@@ -1297,9 +1297,9 @@ function DashboardContent() {
                   {/* Notes Tab */}
                   {studyViewMode === 'notes' && (
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">AI Generated Notes</h3>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">AI Generated Notes</h3>
                       <div className="prose prose-sm max-w-none mb-4">
-                        <pre className="whitespace-pre-wrap text-gray-700 font-sans">{notes}</pre>
+                        <pre className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 font-sans">{notes}</pre>
                       </div>
                       <div className="flex gap-3 flex-wrap">
                         <button
@@ -1854,13 +1854,13 @@ function DashboardContent() {
 
             {/* Notes */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">AI Generated Notes</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">AI Generated Notes</h3>
               {isLoadingLectureNotes ? (
                 <div className="flex items-center justify-center py-8">
                   <FiLoader className="text-gray-400 text-4xl animate-spin" />
                 </div>
               ) : selectedLectureNotes ? (
-                <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap">
+                <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                   {selectedLectureNotes}
                 </div>
               ) : (
