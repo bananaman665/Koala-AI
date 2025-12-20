@@ -2835,10 +2835,15 @@ function DashboardContent() {
                 setIsStoppingRecording(true)
                 try {
                   const result = await stopAndGenerateNotes()
-                  if (result && result.transcript) {
-                    // Store the audio blob for saving later
+                  console.log('[Dashboard] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length, audioBlob: result.audioBlob?.size } : 'null')
+
+                  // Always capture audioBlob if available
+                  if (result?.audioBlob) {
                     capturedAudioBlobRef.current = result.audioBlob
-                    console.log('[Dashboard] Captured audioBlob:', result.audioBlob ? `${result.audioBlob.size} bytes` : 'null')
+                    console.log('[Dashboard] Captured audioBlob in ref:', result.audioBlob.size, 'bytes')
+                  }
+
+                  if (result && result.transcript) {
                     hapticSuccess()
                     setShowCourseSelectionModal(true)
                   } else {

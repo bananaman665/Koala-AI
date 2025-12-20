@@ -196,30 +196,68 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
   // Web MediaRecorder Methods (Mobile Web)
   const startWebMediaRecorder = useCallback(async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
+    console.log('[WebMediaRecorder] Starting...')
+    
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        }
+      })
+      console.log('[WebMediaRecorder] Got media stream')
+
+      streamRef.current = stream
+
+      // Determine supported mime type (iOS Safari doesn't support webm)
+      let mimeType = 'audio/webm;codecs=opus'
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        console.log('[WebMediaRecorder] webm not supported, trying mp4')
+        mimeType = 'audio/mp4'
       }
-    })
-
-    streamRef.current = stream
-
-    const mediaRecorder = new MediaRecorder(stream, {
-      mimeType: 'audio/webm;codecs=opus',
-    })
-
-    audioChunksRef.current = []
-
-    mediaRecorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        audioChunksRef.current.push(event.data)
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        console.log('[WebMediaRecorder] mp4 not supported, trying wav')
+        mimeType = 'audio/wav'
       }
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        console.log('[WebMediaRecorder] wav not supported, using default')
+        mimeType = '' // Use default
+      }
+      console.log('[WebMediaRecorder] Using mimeType:', mimeType || 'default')
+
+      const mediaRecorderOptions: MediaRecorderOptions = {}
+      if (mimeType) {
+        mediaRecorderOptions.mimeType = mimeType
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions)
+      console.log('[WebMediaRecorder] MediaRecorder created, actual mimeType:', mediaRecorder.mimeType)
+
+      audioChunksRef.current = []
+
+      mediaRecorder.ondataavailable = (event) => {
+        console.log('[WebMediaRecorder] Data available:', event.data.size, 'bytes')
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data)
+        }
+      }
+
+      mediaRecorder.onerror = (event: any) => {
+        console.error('[WebMediaRecorder] Error:', event.error)
+      }
+
+      mediaRecorder.onstart = () => {
+        console.log('[WebMediaRecorder] Recording started')
+      }
+
+      mediaRecorder.start(1000) // Collect data every second
+      mediaRecorderRef.current = mediaRecorder
+      console.log('[WebMediaRecorder] Started successfully')
+    } catch (err: any) {
+      console.error('[WebMediaRecorder] Failed to start:', err)
+      throw err
     }
-
-    mediaRecorder.start(1000) // Collect data every second
-    mediaRecorderRef.current = mediaRecorder
   }, [])
 
   // Start recording
@@ -514,15 +552,20 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
     // Web: Use Web Media Recorder
     if (useWebMediaRecorder && mediaRecorderRef.current) {
+      const recorderMimeType = mediaRecorderRef.current.mimeType || 'audio/webm'
+      console.log('[WebMediaRecorder] Stopping, mimeType:', recorderMimeType)
+      
       return new Promise<StopRecordingResult>(async (resolve) => {
         if (!mediaRecorderRef.current) {
+          console.log('[WebMediaRecorder] No recorder ref, returning empty')
           resolve({ transcript: '', audioBlob: null })
           return
         }
 
         mediaRecorderRef.current.onstop = async () => {
-          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
-          console.log('[HybridRecording] WebMediaRecorder audioBlob created:', audioBlob.size, 'bytes')
+          console.log('[WebMediaRecorder] onstop called, chunks:', audioChunksRef.current.length)
+          const audioBlob = new Blob(audioChunksRef.current, { type: recorderMimeType })
+          console.log('[HybridRecording] WebMediaRecorder audioBlob created:', audioBlob.size, 'bytes, type:', audioBlob.type)
 
           // Stop all tracks
           if (streamRef.current) {
@@ -530,8 +573,8 @@ export function useHybridRecording(): UseHybridRecordingResult {
             streamRef.current = null
           }
 
-          // Transcribe the audio
-          const transcribedText = await transcribeAudio(audioBlob, 'audio/webm')
+          // Transcribe the audio using the actual mime type
+          const transcribedText = await transcribeAudio(audioBlob, recorderMimeType)
 
           isRecordingRef.current = false
           isPausedRef.current = false
