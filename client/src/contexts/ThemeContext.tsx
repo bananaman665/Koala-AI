@@ -25,6 +25,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     metaThemeColor.setAttribute('content', themeColor)
   }
 
+  // Update iOS status bar style (text/icon color)
+  const updateStatusBarStyle = (dark: boolean) => {
+    // black-translucent = white text, default = black text
+    const style = dark ? 'black-translucent' : 'default'
+    let metaStatusBar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
+    if (!metaStatusBar) {
+      metaStatusBar = document.createElement('meta')
+      metaStatusBar.setAttribute('name', 'apple-mobile-web-app-status-bar-style')
+      document.head.appendChild(metaStatusBar)
+    }
+    metaStatusBar.setAttribute('content', style)
+  }
+
   // Load theme preference from localStorage on mount (default to light mode)
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme-preference')
@@ -33,11 +46,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setIsDark(true)
       document.documentElement.classList.add('dark')
       updateThemeColor(true)
+      updateStatusBarStyle(true)
     } else {
       // Default to light mode (ignore system preference)
       setIsDark(false)
       document.documentElement.classList.remove('dark')
       updateThemeColor(false)
+      updateStatusBarStyle(false)
     }
 
     setIsMounted(true)
@@ -55,6 +70,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('theme-preference', 'light')
     }
     updateThemeColor(newDarkMode)
+    updateStatusBarStyle(newDarkMode)
   }
 
   // Prevent hydration mismatch
