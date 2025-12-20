@@ -780,7 +780,7 @@ function DashboardContent() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <FiLoader className="text-blue-600 text-5xl mx-auto animate-spin mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">Loading...</p>
         </div>
       </div>
     )
@@ -792,7 +792,7 @@ function DashboardContent() {
   }
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><FiLoader className="text-blue-600 text-5xl mx-auto animate-spin mb-4" /><p className="text-gray-600 dark:text-gray-400">Loading...</p></div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><FiLoader className="text-blue-600 text-5xl mx-auto animate-spin mb-4" /><p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">Loading...</p></div></div>}>
       <div className="h-screen-safe bg-gray-50 dark:bg-gray-900 flex flex-col">
         {/* Onboarding Carousel for first-time users */}
         {showOnboarding && (
@@ -900,15 +900,14 @@ function DashboardContent() {
 
       {/* Main scrollable content area */}
       <div className="flex-1 relative overflow-hidden">
+        {/* Screen transition container */}
+        <div
+          key={animationKey}
+          className={`absolute inset-0 overflow-y-auto bg-gray-50 dark:bg-gray-900 ${animationType ? (animationType.enter === 'slideRight' ? 'animate-slide-in-right' : animationType.enter === 'slideLeft' ? 'animate-slide-in-left' : 'animate-fade-in') : ''}`}
+        >
+          <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 ${(activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'pt-40 sm:pt-44' : 'pt-32 sm:pt-36'}`}>
         {/* Dashboard Screen */}
-        {(activeScreen === 'dashboard' || (isTransitioning && previousScreen === 'dashboard')) && (
-          <ScreenTransition
-            animationType={activeScreen === 'dashboard' ? (animationType?.enter || 'fade') : (animationType?.exit || 'fade')}
-            isActive={activeScreen === 'dashboard'}
-          >
-            <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
-        {!selectedCourse && (
+        {activeScreen === 'dashboard' && !selectedCourse && (
           <>
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -989,7 +988,7 @@ function DashboardContent() {
               {isLoadingCourses ? (
                 <div className="col-span-2 text-center py-12">
                   <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400">Loading courses...</p>
+                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Loading courses...</p>
                 </div>
               ) : courses.length === 0 ? (
                 <div className="col-span-2 text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -1015,12 +1014,12 @@ function DashboardContent() {
                       <div className={`w-12 h-12 bg-${course.color}-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         <FiBook className={`text-${course.color}-600 text-xl`} />
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{course.lectures} lectures</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{course.lectures} lectures</span>
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
                       {course.name}
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       {course.code && `${course.code} • `}
                       {course.professor || 'No professor set'}
                     </p>
@@ -1082,7 +1081,7 @@ function DashboardContent() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="font-medium text-gray-900 dark:text-white text-sm sm:text-base truncate">{lecture.title}</div>
-                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{dateDisplay} • {formattedDuration}</div>
+                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{dateDisplay} • {formattedDuration}</div>
                           </div>
                         </div>
                         <div className="flex-shrink-0 ml-2">
@@ -1645,20 +1644,9 @@ function DashboardContent() {
           </div>
           )
         })()}
-              </div>
-            </div>
-          </ScreenTransition>
-        )}
 
         {/* Library Screen */}
-        {(activeScreen === 'library' || (isTransitioning && previousScreen === 'library')) && (
-          <ScreenTransition
-            animationType={activeScreen === 'library' ? (animationType?.enter || 'fade') : (animationType?.exit || 'fade')}
-            isActive={activeScreen === 'library'}
-          >
-            <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 ${(selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'pt-40 sm:pt-44' : 'pt-32 sm:pt-36'}`}>
-        {!selectedLecture && (
+        {activeScreen === 'library' && !selectedLecture && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Library</h2>
@@ -1681,7 +1669,7 @@ function DashboardContent() {
                 onChange={(e) => setLibrarySearchQuery(e.target.value)}
                 className="w-full px-4 py-3 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-800"
               />
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
             </div>
 
             {/* Filter Tabs */}
@@ -1715,7 +1703,7 @@ function DashboardContent() {
                   return (
                     <div className="text-center py-12">
                       <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
-                      <p className="text-gray-500 dark:text-gray-400">Loading lectures...</p>
+                      <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Loading lectures...</p>
                     </div>
                   )
                 }
@@ -1744,7 +1732,7 @@ function DashboardContent() {
                     <div className="text-center py-12">
                       <FiSearch className="text-gray-300 text-5xl mx-auto mb-3" />
                       <h3 className="text-lg font-medium text-gray-900 mb-1">No lectures found</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         {librarySearchQuery ? `No results for "${librarySearchQuery}"` : 'Your library is empty. Start recording your first lecture!'}
                       </p>
                     </div>
@@ -1789,7 +1777,7 @@ function DashboardContent() {
                              lecture.transcription_status === 'processing' ? 'Processing' : 'Pending'}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                           <span className="flex items-center">
                             <FiClock className="mr-1" />
                             {formattedDuration}
@@ -1822,7 +1810,7 @@ function DashboardContent() {
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {selectedLectureData?.title || 'Lecture'}
               </h1>
-              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 <span className="flex items-center">
                   <FiClock className="mr-1" />
                   {selectedLectureData ? (() => {
@@ -1863,7 +1851,7 @@ function DashboardContent() {
                   {selectedLectureNotes}
                 </div>
               ) : (
-                <p className="text-gray-500 dark:text-gray-400">No notes available for this lecture.</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">No notes available for this lecture.</p>
               )}
             </div>
 
@@ -2119,19 +2107,9 @@ function DashboardContent() {
             </p>
           </div>
         )}
-              </div>
-            </div>
-          </ScreenTransition>
-        )}
 
         {/* Analytics Screen */}
-        {(activeScreen === 'analytics' || (isTransitioning && previousScreen === 'analytics')) && (
-          <ScreenTransition
-            animationType={activeScreen === 'analytics' ? (animationType?.enter || 'fade') : (animationType?.exit || 'fade')}
-            isActive={activeScreen === 'analytics'}
-          >
-            <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
+        {activeScreen === 'analytics' && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
 
@@ -2287,7 +2265,7 @@ function DashboardContent() {
                       <div key={course.id}>
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm font-medium text-gray-700 dark:text-white">{course.name}</span>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">{totalHours.toFixed(1)}h</span>
+                          <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{totalHours.toFixed(1)}h</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
@@ -2334,7 +2312,7 @@ function DashboardContent() {
                         </div>
                         <div className="flex-1">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">{statusText}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{lecture.title} • {timeDisplay}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{lecture.title} • {timeDisplay}</p>
                         </div>
                       </div>
                     )
@@ -2343,19 +2321,10 @@ function DashboardContent() {
               </div>
             </div>
           </div>
-              </div>
-            </div>
-          </ScreenTransition>
         )}
 
         {/* Classes Screen - Join & Share Lectures */}
-        {(activeScreen === 'feed' || (isTransitioning && previousScreen === 'feed')) && (
-          <ScreenTransition
-            animationType={activeScreen === 'feed' ? (animationType?.enter || 'fade') : (animationType?.exit || 'fade')}
-            isActive={activeScreen === 'feed'}
-          >
-            <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
+        {activeScreen === 'feed' && (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -2448,10 +2417,9 @@ function DashboardContent() {
               </div>
             </div>
           </div>
-              </div>
-            </div>
-          </ScreenTransition>
         )}
+          </div> {/* Close max-w-7xl container */}
+        </div> {/* Close screen transition container */}
       </div> {/* Close flex-1 container */}
 
       {/* New Course Modal */}
@@ -2672,7 +2640,7 @@ function DashboardContent() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-gray-900 capitalize">{quality}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         {quality === 'low' && '48 kbps - Saves space'}
                         {quality === 'medium' && '128 kbps - Balanced'}
                         {quality === 'high' && '320 kbps - Best quality'}
@@ -2717,7 +2685,7 @@ function DashboardContent() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-gray-900 capitalize">{level}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         {level === 'brief' && 'Key points and summaries'}
                         {level === 'detailed' && 'Comprehensive with examples'}
                         {level === 'comprehensive' && 'In-depth with all details'}
@@ -2789,29 +2757,13 @@ function DashboardContent() {
                 setShowReadyToRecordModal(true)
               } else {
                 setIsStoppingRecording(true)
-                try {
-                  const result = await stopAndGenerateNotes()
-                  if (result && result.transcript) {
-                    hapticSuccess()
-                    setShowCourseSelectionModal(true)
-                  } else {
-                    hapticError()
-                    // Show modal anyway if we have any transcript from the recording state
-                    if (transcript && transcript.trim().length > 0) {
-                      setShowCourseSelectionModal(true)
-                    } else {
-                      alert('No audio was recorded. Please ensure microphone permissions are granted and try again.')
-                    }
-                  }
-                } catch (error) {
-                  console.error('Recording error:', error)
+                const result = await stopAndGenerateNotes()
+                if (result && result.transcript && result.notes) {
+                  hapticSuccess()
+                  setShowCourseSelectionModal(true)
+                } else {
                   hapticError()
-                  // Still show modal if we have transcript
-                  if (transcript && transcript.trim().length > 0) {
-                    setShowCourseSelectionModal(true)
-                  } else {
-                    alert('Recording failed. Please try again.')
-                  }
+                  alert('Error: Unable to generate notes. Please try again.')
                 }
                 setIsStoppingRecording(false)
               }
@@ -2894,7 +2846,7 @@ function DashboardContent() {
                     )}
                   </p>
                 ) : (
-                  <p className="text-sm text-gray-400 italic">
+                  <p className="text-sm text-gray-400 dark:text-gray-500 italic">
                     Start speaking... your words will appear here
                   </p>
                 )}
@@ -2912,28 +2864,12 @@ function DashboardContent() {
                   onClick={async () => {
                     hapticImpact('medium')
                     setIsStoppingRecording(true)
-                    try {
-                      const result = await stopAndGenerateNotes()
-                      if (result && result.transcript) {
-                        hapticSuccess()
-                        setShowCourseSelectionModal(true)
-                      } else {
-                        // Show modal anyway if we have any transcript
-                        if (transcript && transcript.trim().length > 0) {
-                          setShowCourseSelectionModal(true)
-                        } else {
-                          hapticError()
-                          alert('No audio was recorded. Please try again.')
-                        }
-                      }
-                    } catch (error) {
-                      console.error('Recording error:', error)
-                      if (transcript && transcript.trim().length > 0) {
-                        setShowCourseSelectionModal(true)
-                      } else {
-                        hapticError()
-                        alert('Recording failed. Please try again.')
-                      }
+                    const result = await stopAndGenerateNotes()
+                    if (result && result.transcript && result.notes) {
+                      hapticSuccess()
+                      setShowCourseSelectionModal(true)
+                    } else {
+                      hapticError()
                     }
                     setIsStoppingRecording(false)
                   }}
@@ -2966,7 +2902,7 @@ function DashboardContent() {
                   hapticButton()
                   setShowReadyToRecordModal(false)
                 }}
-                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors"
               >
                 No
               </button>
@@ -3041,7 +2977,7 @@ function DashboardContent() {
                   setShowDeleteLectureModal(false)
                 }}
                 disabled={isDeletingLecture}
-                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -3082,7 +3018,7 @@ function DashboardContent() {
                 value={lectureTitle}
                 onChange={(e) => setLectureTitle(e.target.value)}
                 placeholder={`Lecture ${new Date().toLocaleDateString()}`}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-900 placeholder-gray-400"
               />
             </div>
 
@@ -3096,8 +3032,8 @@ function DashboardContent() {
                   }}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     selectedCourseForRecording === course.id
-                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                      : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 bg-white hover:border-gray-300 dark:border-gray-600'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -3111,7 +3047,7 @@ function DashboardContent() {
                     />
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-white">{course.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{course.code}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{course.code}</p>
                     </div>
                   </div>
                 </button>
@@ -3127,7 +3063,7 @@ function DashboardContent() {
                   setLectureTitle('')
                   reset()
                 }}
-                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors"
               >
                 Cancel
               </button>
