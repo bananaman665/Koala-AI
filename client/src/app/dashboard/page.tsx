@@ -1118,7 +1118,7 @@ function DashboardContent() {
                       : `${Math.floor(diffHours / 24)} days ago`
 
                     return (
-                      <div key={lecture.id} className={`flex items-center justify-between p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer card-press animate-list-item stagger-${index + 1}`}>
+                      <div key={lecture.id} className={`flex items-center justify-between p-3 sm:p-4 bg-gray-100 dark:bg-gray-700/50 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer card-press animate-list-item stagger-${index + 1}`}>
                         <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
                           <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                             lecture.transcription_status === 'completed' ? 'bg-green-100' :
