@@ -15,7 +15,7 @@ import { StreakDisplay, useStreak } from '@/components/StreakDisplay'
 import { OnboardingCarousel } from '@/components/OnboardingCarousel'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
-import { supabase } from '@/lib/supabase'
+import { supabase, uploadAudioFile } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
 import { SkeletonLectureCard, SkeletonCourseCard, SkeletonStats } from '@/components/Skeleton'
@@ -59,12 +59,14 @@ function DashboardContent() {
     isTranscribing,
     isGeneratingNotes,
     notes,
+    audioBlob,
     startRecording,
     pauseRecording,
     resumeRecording,
     stopAndGenerateNotes,
     generateNotes,
     reset,
+    clearAudioBlob,
     recordingError,
     notesError,
     isSupported,
@@ -585,6 +587,21 @@ function DashboardContent() {
 
       if (lectureError) {
         throw lectureError
+      }
+
+      // Upload audio if available
+      if (audioBlob) {
+        try {
+          const audioUrl = await uploadAudioFile(user.id, lecture.id, audioBlob)
+          // Update lecture with audio URL
+          await supabase
+            .from('lectures')
+            .update({ audio_url: audioUrl })
+            .eq('id', lecture.id)
+        } catch (audioError) {
+          console.error('Failed to upload audio:', audioError)
+          // Continue saving even if audio upload fails
+        }
       }
 
       // Save transcript if available

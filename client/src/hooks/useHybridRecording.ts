@@ -9,6 +9,7 @@ interface HybridRecordingState {
   transcript: string
   interimTranscript: string
   isTranscribing: boolean
+  audioBlob: Blob | null
 }
 
 interface UseHybridRecordingResult extends HybridRecordingState {
@@ -17,6 +18,7 @@ interface UseHybridRecordingResult extends HybridRecordingState {
   resumeRecording: () => void
   stopRecording: () => Promise<string>
   resetRecording: () => void
+  clearAudioBlob: () => void
   isSupported: boolean
   isMobile: boolean
   error: string | null
@@ -38,6 +40,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
     transcript: '',
     interimTranscript: '',
     isTranscribing: false,
+    audioBlob: null,
   })
   const [error, setError] = useState<string | null>(null)
 
@@ -398,6 +401,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
             transcript: transcribedText,
             isRecording: false,
             isPaused: false,
+            audioBlob: audioBlob,
           }))
 
           return transcribedText
@@ -481,6 +485,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
           transcript: transcribedText,
           isRecording: false,
           isPaused: false,
+          audioBlob: audioBlob,
         }))
 
         return transcribedText
@@ -492,6 +497,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
           ...prev,
           isRecording: false,
           isPaused: false,
+          audioBlob: null,
         }))
         setError(err.message || 'Failed to stop recording')
         return ''
@@ -525,6 +531,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
             transcript: transcribedText,
             isRecording: false,
             isPaused: false,
+            audioBlob: audioBlob,
           }))
 
           resolve(transcribedText)
@@ -583,12 +590,18 @@ export function useHybridRecording(): UseHybridRecordingResult {
       transcript: '',
       interimTranscript: '',
       isTranscribing: false,
+      audioBlob: null,
     })
 
     audioChunksRef.current = []
     pausedTimeRef.current = 0
     setError(null)
   }, [stopTimer])
+
+  // Clear audio blob (call after saving lecture)
+  const clearAudioBlob = useCallback(() => {
+    setState(prev => ({ ...prev, audioBlob: null }))
+  }, [])
 
   // Cleanup on unmount
   useEffect(() => {
@@ -618,6 +631,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
     resumeRecording,
     stopRecording,
     resetRecording,
+    clearAudioBlob,
     isSupported,
     isMobile,
     error,

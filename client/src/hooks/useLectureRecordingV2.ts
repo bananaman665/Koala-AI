@@ -9,6 +9,7 @@ interface UseLectureRecordingV2Result {
   transcript: string
   interimTranscript: string
   isTranscribing: boolean
+  audioBlob: Blob | null
 
   // Notes generation state
   isGeneratingNotes: boolean
@@ -22,6 +23,7 @@ interface UseLectureRecordingV2Result {
   stopAndGenerateNotes: () => Promise<{ transcript: string; notes: string } | null>
   generateNotes: () => Promise<void>
   reset: () => void
+  clearAudioBlob: () => void
 
   // Errors
   recordingError: string | null
@@ -82,9 +84,10 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
       }
 
       return { transcript: finalTranscript, notes: generatedNotes }
-    } finally {
-      // Always reset recording state after stopping
+    } catch (err) {
+      // Only reset on error - let dashboard reset after saving audio
       recording.resetRecording()
+      return null
     }
   }
 
@@ -146,6 +149,7 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
     transcript: recording.transcript,
     interimTranscript: recording.interimTranscript,
     isTranscribing: recording.isTranscribing,
+    audioBlob: recording.audioBlob,
     recordingError: recording.error,
     isSupported: recording.isSupported,
     isMobile: recording.isMobile,
@@ -162,5 +166,6 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
     stopAndGenerateNotes,
     generateNotes,
     reset,
+    clearAudioBlob: recording.clearAudioBlob,
   }
 }
