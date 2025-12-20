@@ -934,8 +934,8 @@ function DashboardContent() {
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Total Lectures</p>
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.length}</p>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FiFileText className="text-blue-600 text-base sm:text-xl" />
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <FiFileText className="text-blue-600 dark:text-blue-400 text-base sm:text-xl" />
               </div>
             </div>
           </div>
@@ -946,8 +946,8 @@ function DashboardContent() {
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Hours Recorded</p>
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{(lectures.reduce((sum, l) => sum + (l.duration || 0), 0) / 3600).toFixed(1)}</p>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <FiClock className="text-purple-600 text-base sm:text-xl" />
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                <FiClock className="text-purple-600 dark:text-purple-400 text-base sm:text-xl" />
               </div>
             </div>
           </div>
@@ -963,8 +963,8 @@ function DashboardContent() {
                   return lectureDate >= weekAgo
                 }).length}</p>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <FiMic className="text-green-600 text-base sm:text-xl" />
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <FiMic className="text-green-600 dark:text-green-400 text-base sm:text-xl" />
               </div>
             </div>
           </div>
@@ -975,8 +975,8 @@ function DashboardContent() {
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Study Streak</p>
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{streak} {streak === 1 ? 'day' : 'days'}</p>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <FiTrendingUp className="text-orange-600 text-base sm:text-xl" />
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-base sm:text-xl" />
               </div>
             </div>
           </div>
