@@ -163,24 +163,48 @@ export async function uploadAudioFile(
   lectureId: string,
   audioBlob: Blob
 ): Promise<string> {
-  const fileName = `${lectureId}.wav`
+  // Determine file extension based on actual blob type
+  const mimeType = audioBlob.type || 'audio/webm'
+  let extension = 'webm'
+  if (mimeType.includes('mp4') || mimeType.includes('m4a')) extension = 'm4a'
+  else if (mimeType.includes('wav')) extension = 'wav'
+  else if (mimeType.includes('mp3') || mimeType.includes('mpeg')) extension = 'mp3'
+  else if (mimeType.includes('ogg')) extension = 'ogg'
+  
+  console.log('[uploadAudioFile] Starting upload:', {
+    userId,
+    lectureId,
+    blobSize: audioBlob.size,
+    blobType: audioBlob.type,
+    mimeType,
+    extension
+  })
+
+  const fileName = `${lectureId}.${extension}`
   const filePath = `audio-recordings/${userId}/${fileName}`
+
+  console.log('[uploadAudioFile] Uploading to path:', filePath)
 
   const { data, error } = await supabase.storage
     .from('audio-recordings')
     .upload(filePath, audioBlob, {
-      contentType: 'audio/wav',
+      contentType: mimeType,
       upsert: true,
     })
 
   if (error) {
+    console.error('[uploadAudioFile] Upload failed:', error)
     throw new Error(`Failed to upload audio: ${error.message}`)
   }
+
+  console.log('[uploadAudioFile] Upload successful:', data)
 
   // Get public URL
   const { data: { publicUrl } } = supabase.storage
     .from('audio-recordings')
     .getPublicUrl(filePath)
+
+  console.log('[uploadAudioFile] Public URL:', publicUrl)
 
   return publicUrl
 }

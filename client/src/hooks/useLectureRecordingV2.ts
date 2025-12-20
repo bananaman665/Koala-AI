@@ -9,6 +9,7 @@ interface UseLectureRecordingV2Result {
   transcript: string
   interimTranscript: string
   isTranscribing: boolean
+  audioBlob: Blob | null
 
   // Notes generation state
   isGeneratingNotes: boolean
@@ -19,9 +20,10 @@ interface UseLectureRecordingV2Result {
   startRecording: () => Promise<void>
   pauseRecording: () => void
   resumeRecording: () => void
-  stopAndGenerateNotes: () => Promise<{ transcript: string; notes: string } | null>
+  stopAndGenerateNotes: () => Promise<{ transcript: string; notes: string; audioBlob: Blob | null } | null>
   generateNotes: () => Promise<void>
   reset: () => void
+  clearAudioBlob: () => void
 
   // Errors
   recordingError: string | null
@@ -36,10 +38,14 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
   const [notes, setNotes] = useState<string | null>(null)
   const [notesError, setNotesError] = useState<string | null>(null)
 
-  const stopAndGenerateNotes = async (): Promise<{ transcript: string; notes: string } | null> => {
+  const stopAndGenerateNotes = async (): Promise<{ transcript: string; notes: string; audioBlob: Blob | null } | null> => {
     try {
-      // Stop recording and get final transcript
-      const finalTranscript = await recording.stopRecording()
+      // Stop recording and get final transcript + audio blob
+      console.log('[V2 Hook] Calling stopRecording...')
+      const result = await recording.stopRecording()
+      const finalTranscript = result.transcript
+      const capturedAudioBlob = result.audioBlob
+      console.log('[V2 Hook] After stopRecording, audioBlob:', capturedAudioBlob ? `${capturedAudioBlob.size} bytes` : 'null')
 
       if (!finalTranscript || finalTranscript.trim().length === 0) {
         setNotesError('Nothing recorded. Please try again.')
@@ -81,10 +87,11 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
         setIsGeneratingNotes(false)
       }
 
-      return { transcript: finalTranscript, notes: generatedNotes }
-    } finally {
-      // Always reset recording state after stopping
+      return { transcript: finalTranscript, notes: generatedNotes, audioBlob: capturedAudioBlob }
+    } catch (err) {
+      // Only reset on error - let dashboard reset after saving audio
       recording.resetRecording()
+      return null
     }
   }
 
@@ -146,6 +153,7 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
     transcript: recording.transcript,
     interimTranscript: recording.interimTranscript,
     isTranscribing: recording.isTranscribing,
+    audioBlob: recording.audioBlob,
     recordingError: recording.error,
     isSupported: recording.isSupported,
     isMobile: recording.isMobile,
@@ -162,5 +170,6 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
     stopAndGenerateNotes,
     generateNotes,
     reset,
+    clearAudioBlob: recording.clearAudioBlob,
   }
 }

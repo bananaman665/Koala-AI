@@ -39,11 +39,21 @@ export async function POST(request: NextRequest) {
     // === DIAGNOSTIC LOGGING END ===
 
     // Transcribe audio using Groq Whisper
+    console.log('Sending to Groq Whisper:', {
+      fileName: audioFile.name,
+      fileSize: reconstructedFile.size,
+      fileType: reconstructedFile.type,
+    })
+
     const transcription = await groq.audio.transcriptions.create({
       file: reconstructedFile,
       model: 'whisper-large-v3',
       response_format: 'verbose_json',
       language: 'en',
+    })
+
+    console.log('Groq transcription successful:', {
+      textLength: transcription.text?.length || 0,
     })
 
     const transcriptText = transcription.text
@@ -65,7 +75,36 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (lectureError) {
+        console.error('Failed to create lecture:', lectureError)
       } else {
+        // Upload audio to Supabase storage
+        const audioFileName = `${lecture.id}.wav`
+        const audioFilePath = `audio-recordings/${userId}/${audioFileName}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('audio-recordings')
+          .upload(audioFilePath, fileBlob, {
+            contentType: audioFile.type || 'audio/webm',
+            upsert: true,
+          })
+
+        if (uploadError) {
+          console.error('Failed to upload audio:', uploadError)
+        } else {
+          // Get public URL and update lecture
+          const { data: { publicUrl } } = supabase.storage
+            .from('audio-recordings')
+            .getPublicUrl(audioFilePath)
+
+          // Update lecture with audio URL
+          await supabase
+            .from('lectures')
+            .update({ audio_url: publicUrl })
+            .eq('id', lecture.id)
+
+          console.log('Audio uploaded successfully:', publicUrl)
+        }
+
         // Save transcript
         const { error: transcriptError } = await supabase.from('transcripts').insert({
           lecture_id: lecture.id,
@@ -74,6 +113,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (transcriptError) {
+          console.error('Failed to save transcript:', transcriptError)
         }
       }
     }
@@ -85,11 +125,23 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     // === DIAGNOSTIC ERROR LOGGING START ===
 
+    console.error('Transcription API error caught:', {
+      name: error?.name,
+      message: error?.message,
+      status: error?.status,
+      type: error?.constructor?.name,
+    })
+
     // Log Groq-specific error details
     if (error?.error) {
+      console.error('Groq error object:', error.error)
     }
     if (error?.headers) {
+      console.error('Error headers:', error.headers)
     }
+
+    // Log the full error for debugging
+    console.error('Full error object:', JSON.stringify(error, null, 2))
 
     // === DIAGNOSTIC ERROR LOGGING END ===
 
