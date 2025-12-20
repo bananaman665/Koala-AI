@@ -35,14 +35,21 @@ export async function POST(request: NextRequest) {
     // Check if file has content
     const arrayBuffer = await audioFile.arrayBuffer()
 
-    // Handle AAC audio from iOS - convert mime type to m4a which Groq accepts
+    // Handle AAC audio from iOS - convert mime type to mp4 which Groq accepts
+    // AAC is the codec, M4A/MP4 is the container format
     let finalMimeType = audioFile.type || 'audio/webm'
     let finalFileName = audioFile.name
     
     if (finalMimeType.includes('aac')) {
-      finalMimeType = 'audio/m4a'
+      finalMimeType = 'audio/mp4'
       finalFileName = finalFileName.replace('.aac', '.m4a')
-      console.log('Converting AAC to m4a format for Groq:', { finalMimeType, finalFileName })
+      if (!finalFileName.endsWith('.m4a')) {
+        finalFileName = finalFileName.replace(/\.[^.]+$/, '.m4a')
+      }
+      console.log('Converting AAC to m4a/mp4 format for Groq:', { finalMimeType, finalFileName })
+    } else if (finalMimeType.includes('m4a')) {
+      finalMimeType = 'audio/mp4'
+      console.log('Using mp4 mime type for m4a:', { finalMimeType, finalFileName })
     }
 
     // Recreate file from buffer to ensure it's properly formed
