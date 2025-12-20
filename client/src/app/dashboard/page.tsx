@@ -1121,12 +1121,12 @@ function DashboardContent() {
                       <div key={lecture.id} className={`flex items-center justify-between p-3 sm:p-4 bg-gray-100 dark:bg-gray-700/50 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer card-press animate-list-item stagger-${index + 1}`}>
                         <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
                           <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                            lecture.transcription_status === 'completed' ? 'bg-green-100' :
-                            lecture.transcription_status === 'failed' ? 'bg-red-100' : 'bg-yellow-100'
+                            lecture.transcription_status === 'completed' ? 'bg-green-100 dark:bg-green-900/30' :
+                            lecture.transcription_status === 'failed' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30'
                           }`}>
                             <FiFileText className={`text-base sm:text-lg ${
-                              lecture.transcription_status === 'completed' ? 'text-green-600' :
-                              lecture.transcription_status === 'failed' ? 'text-red-600' : 'text-yellow-600'
+                              lecture.transcription_status === 'completed' ? 'text-green-600 dark:text-green-400' :
+                              lecture.transcription_status === 'failed' ? 'text-red-600 dark:text-red-400' : 'text-yellow-600 dark:text-yellow-400'
                             }`} />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -1136,15 +1136,15 @@ function DashboardContent() {
                         </div>
                         <div className="flex-shrink-0 ml-2">
                           {lecture.transcription_status === 'completed' ? (
-                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">
                               Ready
                             </span>
                           ) : lecture.transcription_status === 'failed' ? (
-                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-medium rounded-full">
                               Failed
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full hidden sm:inline">
+                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-medium rounded-full hidden sm:inline">
                               Processing
                             </span>
                           )}
