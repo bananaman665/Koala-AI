@@ -75,7 +75,36 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (lectureError) {
+        console.error('Failed to create lecture:', lectureError)
       } else {
+        // Upload audio to Supabase storage
+        const audioFileName = `${lecture.id}.wav`
+        const audioFilePath = `audio-recordings/${userId}/${audioFileName}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('audio-recordings')
+          .upload(audioFilePath, fileBlob, {
+            contentType: audioFile.type || 'audio/webm',
+            upsert: true,
+          })
+
+        if (uploadError) {
+          console.error('Failed to upload audio:', uploadError)
+        } else {
+          // Get public URL and update lecture
+          const { data: { publicUrl } } = supabase.storage
+            .from('audio-recordings')
+            .getPublicUrl(audioFilePath)
+
+          // Update lecture with audio URL
+          await supabase
+            .from('lectures')
+            .update({ audio_url: publicUrl })
+            .eq('id', lecture.id)
+
+          console.log('Audio uploaded successfully:', publicUrl)
+        }
+
         // Save transcript
         const { error: transcriptError } = await supabase.from('transcripts').insert({
           lecture_id: lecture.id,
@@ -84,6 +113,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (transcriptError) {
+          console.error('Failed to save transcript:', transcriptError)
         }
       }
     }
