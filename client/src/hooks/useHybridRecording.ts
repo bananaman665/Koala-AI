@@ -553,16 +553,17 @@ export function useHybridRecording(): UseHybridRecordingResult {
     // Web: Use Web Media Recorder
     if (useWebMediaRecorder && mediaRecorderRef.current) {
       const recorderMimeType = mediaRecorderRef.current.mimeType || 'audio/webm'
+      const recorder = mediaRecorderRef.current // Capture reference before nulling
       console.log('[WebMediaRecorder] Stopping, mimeType:', recorderMimeType)
       
       return new Promise<StopRecordingResult>(async (resolve) => {
-        if (!mediaRecorderRef.current) {
+        if (!recorder) {
           console.log('[WebMediaRecorder] No recorder ref, returning empty')
           resolve({ transcript: '', audioBlob: null })
           return
         }
 
-        mediaRecorderRef.current.onstop = async () => {
+        recorder.onstop = async () => {
           console.log('[WebMediaRecorder] onstop called, chunks:', audioChunksRef.current.length)
           const audioBlob = new Blob(audioChunksRef.current, { type: recorderMimeType })
           console.log('[HybridRecording] WebMediaRecorder audioBlob created:', audioBlob.size, 'bytes, type:', audioBlob.type)
@@ -590,7 +591,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
           resolve({ transcript: transcribedText, audioBlob })
         }
 
-        mediaRecorderRef.current.stop()
+        recorder.stop()
         mediaRecorderRef.current = null
       })
     }
