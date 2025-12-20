@@ -61,12 +61,12 @@ export function useHybridRecording(): UseHybridRecordingResult {
     typeof MediaRecorder !== 'undefined')
 
   // STRATEGY:
-  // 1. Use Web Speech API for transcription (fast, real-time) when available
-  // 2. ALWAYS run WebMediaRecorder in parallel to capture audio for playback
-  // 3. On native iOS, use Capacitor VoiceRecorder as backup for audio capture
+  // 1. Use Web Speech API for transcription (fast, real-time) when available (desktop only)
+  // 2. On desktop: use WebMediaRecorder for audio capture
+  // 3. On native iOS: use Capacitor VoiceRecorder for transcription (via Groq) - NO WebMediaRecorder (iOS only allows one audio session)
   const useSpeechRecognition = hasSpeechRecognition && !isNativePlatform
-  const useWebMediaRecorder = hasMediaRecorder // ALWAYS use WebMediaRecorder when available for audio capture
-  const useCapacitorMedia = isNativePlatform // Use Capacitor on native as backup
+  const useWebMediaRecorder = hasMediaRecorder && !isNativePlatform // Desktop only - iOS can't run 2 audio sessions
+  const useCapacitorMedia = isNativePlatform // Native iOS uses Capacitor for everything
 
   const isSupported = hasSpeechRecognition || hasMediaRecorder || isNativePlatform
 
