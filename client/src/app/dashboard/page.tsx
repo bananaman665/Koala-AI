@@ -22,6 +22,16 @@ import { SkeletonLectureCard, SkeletonCourseCard, SkeletonStats } from '@/compon
 import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 
+// Color classes for course icons (full class names for Tailwind to detect)
+const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
+  blue: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', bar: 'bg-blue-500' },
+  purple: { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-600 dark:text-purple-400', bar: 'bg-purple-500' },
+  green: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400', bar: 'bg-green-500' },
+  orange: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', bar: 'bg-orange-500' },
+  pink: { bg: 'bg-pink-100 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-400', bar: 'bg-pink-500' },
+  yellow: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-600 dark:text-yellow-400', bar: 'bg-yellow-500' },
+}
+
 type Course = Database['public']['Tables']['courses']['Row']
 type Lecture = Database['public']['Tables']['lectures']['Row']
 type LectureWithCourse = Lecture & {
@@ -1013,8 +1023,8 @@ function DashboardContent() {
                     className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all cursor-pointer group"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <div className={`w-12 h-12 bg-${course.color}-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <FiBook className={`text-${course.color}-600 text-xl`} />
+                      <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl`} />
                       </div>
                       <span className="text-xs text-gray-500 dark:text-gray-400">{course.lectures} lectures</span>
                     </div>
@@ -2292,7 +2302,7 @@ function DashboardContent() {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className={`bg-${course.color}-500 h-2 rounded-full`}
+                            className={`${courseColorClasses[course.color]?.bar || courseColorClasses.blue.bar} h-2 rounded-full`}
                             style={{ width: `${(totalHours / maxHours) * 100}%` }}
                           ></div>
                         </div>
@@ -2390,9 +2400,9 @@ function DashboardContent() {
                           )}
                         </div>
                         <div
-                          className={`w-12 h-12 bg-${cls.color}-100 rounded-lg flex items-center justify-center flex-shrink-0`}
+                          className={`w-12 h-12 ${courseColorClasses[cls.color]?.bg || courseColorClasses.blue.bg} rounded-lg flex items-center justify-center flex-shrink-0`}
                         >
-                          <FiUsers className={`text-${cls.color}-600`} />
+                          <FiUsers className={`${courseColorClasses[cls.color]?.text || courseColorClasses.blue.text}`} />
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-sm text-gray-600 pt-3 border-t border-gray-200 dark:border-gray-700">
