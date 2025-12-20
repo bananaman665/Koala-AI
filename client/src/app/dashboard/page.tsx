@@ -2193,11 +2193,11 @@ function DashboardContent() {
 
                 return (
                   <>
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg p-4 border border-blue-200 dark:border-blue-700/50">
                       <div className="flex items-center justify-between mb-2">
-                        <FiClock className="text-blue-600 text-xl" />
+                        <FiClock className="text-blue-600 dark:text-blue-400 text-xl" />
                       </div>
-                      <p className="text-2xl font-bold text-blue-900">
+                      <p className="text-2xl font-bold text-blue-900 dark:text-blue-300">
                         {(() => {
                           const totalSeconds = filteredAnalyticsLectures.reduce((sum, lec) => sum + lec.duration, 0)
                           const hours = Math.floor(totalSeconds / 3600)
@@ -2205,35 +2205,35 @@ function DashboardContent() {
                           return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
                         })()}
                       </p>
-                      <p className="text-xs text-blue-700">Study Time</p>
+                      <p className="text-xs text-blue-700 dark:text-blue-400">Study Time</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-lg p-4 border border-purple-200 dark:border-purple-700/50">
                       <div className="flex items-center justify-between mb-2">
-                        <FiFileText className="text-purple-600 text-xl" />
+                        <FiFileText className="text-purple-600 dark:text-purple-400 text-xl" />
                       </div>
-                      <p className="text-2xl font-bold text-purple-900">{filteredAnalyticsLectures.length}</p>
-                      <p className="text-xs text-purple-700">Lectures</p>
+                      <p className="text-2xl font-bold text-purple-900 dark:text-purple-300">{filteredAnalyticsLectures.length}</p>
+                      <p className="text-xs text-purple-700 dark:text-purple-400">Lectures</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-lg p-4 border border-green-200 dark:border-green-700/50">
                       <div className="flex items-center justify-between mb-2">
-                        <FiBook className="text-green-600 text-xl" />
+                        <FiBook className="text-green-600 dark:text-green-400 text-xl" />
                       </div>
-                      <p className="text-2xl font-bold text-green-900">{courses.length}</p>
-                      <p className="text-xs text-green-700">Courses</p>
+                      <p className="text-2xl font-bold text-green-900 dark:text-green-300">{courses.length}</p>
+                      <p className="text-xs text-green-700 dark:text-green-400">Courses</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-lg p-4 border border-orange-200 dark:border-orange-700/50">
                       <div className="flex items-center justify-between mb-2">
-                        <FiMic className="text-orange-600 text-xl" />
+                        <FiMic className="text-orange-600 dark:text-orange-400 text-xl" />
                       </div>
-                      <p className="text-2xl font-bold text-orange-900">
+                      <p className="text-2xl font-bold text-orange-900 dark:text-orange-300">
                         {filteredAnalyticsLectures.length > 0
                           ? `${Math.round((filteredAnalyticsLectures.filter(l => l.transcription_status === 'completed').length / filteredAnalyticsLectures.length) * 100)}%`
                           : '0%'}
                       </p>
-                      <p className="text-xs text-orange-700">Completed</p>
+                      <p className="text-xs text-orange-700 dark:text-orange-400">Completed</p>
                     </div>
                   </>
                 )
