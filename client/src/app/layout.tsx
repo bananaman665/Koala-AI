@@ -10,6 +10,11 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Koala.ai - AI Lecture Notes',
   description: 'Record lectures and generate intelligent notes with AI',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Koala.ai',
+  },
 }
 
 export const viewport = {
