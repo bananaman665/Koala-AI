@@ -174,6 +174,11 @@ function DashboardContent() {
     setIsMounted(true)
   }, [])
 
+  // Debug: Log audioBlob changes from hook
+  useEffect(() => {
+    console.log('[Dashboard] audioBlob from hook changed:', audioBlob ? `${audioBlob.size} bytes, type: ${audioBlob.type}` : 'null')
+  }, [audioBlob])
+
   // Watch for microphone permission errors
   useEffect(() => {
     if (recordingError && recordingError.toLowerCase().includes('permission')) {
