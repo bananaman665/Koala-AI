@@ -9,21 +9,14 @@ interface HybridRecordingState {
   transcript: string
   interimTranscript: string
   isTranscribing: boolean
-  audioBlob: Blob | null
-}
-
-interface StopRecordingResult {
-  transcript: string
-  audioBlob: Blob | null
 }
 
 interface UseHybridRecordingResult extends HybridRecordingState {
   startRecording: () => Promise<void>
   pauseRecording: () => void
   resumeRecording: () => void
-  stopRecording: () => Promise<StopRecordingResult>
+  stopRecording: () => Promise<string>
   resetRecording: () => void
-  clearAudioBlob: () => void
   isSupported: boolean
   isMobile: boolean
   error: string | null
@@ -45,7 +38,6 @@ export function useHybridRecording(): UseHybridRecordingResult {
     transcript: '',
     interimTranscript: '',
     isTranscribing: false,
-    audioBlob: null,
   })
   const [error, setError] = useState<string | null>(null)
 
@@ -57,26 +49,16 @@ export function useHybridRecording(): UseHybridRecordingResult {
   const hasSpeechRecognition = typeof window !== 'undefined' &&
     (window.SpeechRecognition || window.webkitSpeechRecognition)
 
-  const hasMediaRecorder = typeof window !== 'undefined' &&
-    typeof MediaRecorder !== 'undefined'
+  const hasMediaRecorder = isNativePlatform || (typeof window !== 'undefined' &&
+    typeof MediaRecorder !== 'undefined')
 
-  // Recording method selection:
-  // - Native iOS/Android: Use Capacitor VoiceRecorder (handles audio session properly)
-  // - Mobile Web (not native): Use WebMediaRecorder
-  // - Desktop: Use Web Speech API for live transcription
-  const useSpeechRecognition = hasSpeechRecognition && !isNativePlatform && !isMobile
-  const useCapacitorMedia = isNativePlatform // Use native recording on iOS/Android
-  const useWebMediaRecorder = isMobile && !isNativePlatform // Only for mobile web browsers
-
-  console.log('[HybridRecording] Platform detection:', {
-    isNativePlatform,
-    isMobile,
-    hasSpeechRecognition,
-    hasMediaRecorder,
-    useSpeechRecognition,
-    useCapacitorMedia,
-    useWebMediaRecorder
-  })
+  // Use Web Speech API for transcription whenever available (primary method)
+  // BUT: Disable on native platforms - Web Speech API in WKWebView conflicts with native recording
+  // Use Web Media Recorder as primary on iOS (produces webm/opus which Groq supports)
+  // Capacitor m4a format is rejected by Groq Whisper
+  const useSpeechRecognition = hasSpeechRecognition && !isNativePlatform
+  const useWebMediaRecorder = isMobile // Use Web MediaRecorder on all mobile platforms
+  const useCapacitorMedia = isNativePlatform && !isMobile // Only use Capacitor on non-mobile native (shouldn't happen)
 
   const isSupported = hasSpeechRecognition || hasMediaRecorder || isNativePlatform
 
@@ -206,68 +188,30 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
   // Web MediaRecorder Methods (Mobile Web)
   const startWebMediaRecorder = useCallback(async () => {
-    console.log('[WebMediaRecorder] Starting...')
-    
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        }
-      })
-      console.log('[WebMediaRecorder] Got media stream')
-
-      streamRef.current = stream
-
-      // Determine supported mime type (iOS Safari doesn't support webm)
-      let mimeType = 'audio/webm;codecs=opus'
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        console.log('[WebMediaRecorder] webm not supported, trying mp4')
-        mimeType = 'audio/mp4'
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
       }
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        console.log('[WebMediaRecorder] mp4 not supported, trying wav')
-        mimeType = 'audio/wav'
+    })
+
+    streamRef.current = stream
+
+    const mediaRecorder = new MediaRecorder(stream, {
+      mimeType: 'audio/webm;codecs=opus',
+    })
+
+    audioChunksRef.current = []
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunksRef.current.push(event.data)
       }
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        console.log('[WebMediaRecorder] wav not supported, using default')
-        mimeType = '' // Use default
-      }
-      console.log('[WebMediaRecorder] Using mimeType:', mimeType || 'default')
-
-      const mediaRecorderOptions: MediaRecorderOptions = {}
-      if (mimeType) {
-        mediaRecorderOptions.mimeType = mimeType
-      }
-
-      const mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions)
-      console.log('[WebMediaRecorder] MediaRecorder created, actual mimeType:', mediaRecorder.mimeType)
-
-      audioChunksRef.current = []
-
-      mediaRecorder.ondataavailable = (event) => {
-        console.log('[WebMediaRecorder] Data available:', event.data.size, 'bytes')
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data)
-        }
-      }
-
-      mediaRecorder.onerror = (event: any) => {
-        console.error('[WebMediaRecorder] Error:', event.error)
-      }
-
-      mediaRecorder.onstart = () => {
-        console.log('[WebMediaRecorder] Recording started')
-      }
-
-      mediaRecorder.start(1000) // Collect data every second
-      mediaRecorderRef.current = mediaRecorder
-      console.log('[WebMediaRecorder] Started successfully')
-    } catch (err: any) {
-      console.error('[WebMediaRecorder] Failed to start:', err)
-      throw err
     }
+
+    mediaRecorder.start(1000) // Collect data every second
+    mediaRecorderRef.current = mediaRecorder
   }, [])
 
   // Start recording
@@ -318,15 +262,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
         })
       } else if (useCapacitorMedia) {
         console.log('[Recording] Using Capacitor as PRIMARY (native platform)')
-        try {
-          await startCapacitorVoiceRecorder()
-          console.log('[Recording] Capacitor started successfully')
-        } catch (capacitorErr: any) {
-          console.error('[Recording] Capacitor PRIMARY failed:', capacitorErr)
-          // Don't throw - try to continue with error message
-          setError(`Recording failed to start: ${capacitorErr.message}`)
-          throw capacitorErr // Re-throw to trigger outer catch
-        }
+        await startCapacitorVoiceRecorder()
       }
 
       // Web Media Recorder as fallback if Speech Recognition not available
@@ -380,47 +316,24 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
     try {
       let fileMimeType = mimeType || audioBlob.type || 'audio/wav'
+      let audioToSend = audioBlob
 
       // Determine appropriate file extension based on mime type
-      // Groq Whisper supports: flac, mp3, mp4, mpeg, mpga, m4a, ogg, opus, wav, webm
-      let extension = 'wav' // Default fallback
-      
-      if (fileMimeType.includes('webm')) {
-        extension = 'webm'
-      } else if (fileMimeType.includes('aac')) {
-        // AAC audio from iOS - use m4a extension which Groq accepts
-        // AAC is the codec, M4A is the container - they're compatible
-        extension = 'm4a'
-        fileMimeType = 'audio/mp4' // Use audio/mp4 which is the proper MIME for m4a
-      } else if (fileMimeType.includes('m4a')) {
+      let extension = 'webm' // Default to webm for web media recorder
+      if (fileMimeType.includes('webm')) extension = 'webm'
+      else if (fileMimeType.includes('aac') || fileMimeType.includes('m4a')) {
         extension = 'm4a'
         fileMimeType = 'audio/mp4'
-      } else if (fileMimeType.includes('mp4')) {
-        extension = 'mp4'
-      } else if (fileMimeType.includes('mp3') || fileMimeType.includes('mpeg')) {
-        extension = 'mp3'
-      } else if (fileMimeType.includes('wav')) {
-        extension = 'wav'
-      } else if (fileMimeType.includes('ogg')) {
-        extension = 'ogg'
-      } else if (fileMimeType.includes('opus')) {
-        extension = 'opus'
-      } else if (fileMimeType.includes('flac')) {
-        extension = 'flac'
       }
+      else if (fileMimeType.includes('wav')) extension = 'wav'
+      else if (fileMimeType.includes('ogg')) extension = 'ogg'
+      else if (fileMimeType.includes('flac')) extension = 'flac'
+      else if (fileMimeType.includes('mp3')) extension = 'mp3'
 
-      // Create a new blob with the correct mime type
-      const convertedBlob = new Blob([audioBlob], { type: fileMimeType })
       const fileName = `recording.${extension}`
-      const audioFile = new File([convertedBlob], fileName, { type: fileMimeType })
+      const audioFile = new File([audioToSend], fileName, { type: fileMimeType })
 
-      console.log('Transcribing audio:', { 
-        fileName, 
-        finalMimeType: fileMimeType, 
-        originalMimeType: mimeType,
-        originalBlobType: audioBlob.type,
-        size: audioBlob.size 
-      })
+      console.log('Transcribing audio:', { fileName, mimeType: fileMimeType, size: audioBlob.size })
 
       const formData = new FormData()
       formData.append('audio', audioFile)
@@ -454,7 +367,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
   }, [])
 
   // Stop recording
-  const stopRecording = useCallback(async (): Promise<StopRecordingResult> => {
+  const stopRecording = useCallback(async (): Promise<string> => {
     stopTimer()
 
     // Primary: Use Web Speech API transcript (if available and working)
@@ -485,10 +398,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
             transcript: transcribedText,
             isRecording: false,
             isPaused: false,
-            audioBlob: audioBlob,
           }))
 
-          return { transcript: transcribedText, audioBlob }
+          return transcribedText
         } catch (err: any) {
           // If Capacitor transcription fails, continue with empty transcript
           console.error('Capacitor transcription fallback failed:', err)
@@ -510,8 +422,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
         isPaused: false,
       }))
 
-      // Web Speech API doesn't provide audio blob
-      return { transcript: speechTranscript, audioBlob: null }
+      return speechTranscript
     }
 
     // Native Platform: Use Capacitor recording + Groq transcription
@@ -565,49 +476,38 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
         isRecordingRef.current = false
         isPausedRef.current = false
-        console.log('[Capacitor Recording] Setting audioBlob in state:', audioBlob.size, 'bytes')
         setState(prev => ({
           ...prev,
           transcript: transcribedText,
           isRecording: false,
           isPaused: false,
-          audioBlob: audioBlob,
         }))
 
-        return { transcript: transcribedText, audioBlob }
+        return transcribedText
       } catch (err: any) {
         capacitorMediaRef.current = null
         isRecordingRef.current = false
         isPausedRef.current = false
-        console.log('[Capacitor Recording] Error, setting audioBlob to null')
         setState(prev => ({
           ...prev,
           isRecording: false,
           isPaused: false,
-          audioBlob: null,
         }))
         setError(err.message || 'Failed to stop recording')
-        return { transcript: '', audioBlob: null }
+        return ''
       }
     }
 
     // Web: Use Web Media Recorder
     if (useWebMediaRecorder && mediaRecorderRef.current) {
-      const recorderMimeType = mediaRecorderRef.current.mimeType || 'audio/webm'
-      const recorder = mediaRecorderRef.current // Capture reference before nulling
-      console.log('[WebMediaRecorder] Stopping, mimeType:', recorderMimeType)
-      
-      return new Promise<StopRecordingResult>(async (resolve) => {
-        if (!recorder) {
-          console.log('[WebMediaRecorder] No recorder ref, returning empty')
-          resolve({ transcript: '', audioBlob: null })
+      return new Promise(async (resolve) => {
+        if (!mediaRecorderRef.current) {
+          resolve('')
           return
         }
 
-        recorder.onstop = async () => {
-          console.log('[WebMediaRecorder] onstop called, chunks:', audioChunksRef.current.length)
-          const audioBlob = new Blob(audioChunksRef.current, { type: recorderMimeType })
-          console.log('[HybridRecording] WebMediaRecorder audioBlob created:', audioBlob.size, 'bytes, type:', audioBlob.type)
+        mediaRecorderRef.current.onstop = async () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
 
           // Stop all tracks
           if (streamRef.current) {
@@ -615,24 +515,22 @@ export function useHybridRecording(): UseHybridRecordingResult {
             streamRef.current = null
           }
 
-          // Transcribe the audio using the actual mime type
-          const transcribedText = await transcribeAudio(audioBlob, recorderMimeType)
+          // Transcribe the audio
+          const transcribedText = await transcribeAudio(audioBlob, 'audio/webm')
 
           isRecordingRef.current = false
           isPausedRef.current = false
-          console.log('[HybridRecording] Setting audioBlob in state:', audioBlob.size, 'bytes')
           setState(prev => ({
             ...prev,
             transcript: transcribedText,
             isRecording: false,
             isPaused: false,
-            audioBlob: audioBlob,
           }))
 
-          resolve({ transcript: transcribedText, audioBlob })
+          resolve(transcribedText)
         }
 
-        recorder.stop()
+        mediaRecorderRef.current.stop()
         mediaRecorderRef.current = null
       })
     }
@@ -645,7 +543,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
       isPaused: false,
     }))
 
-    return { transcript: '', audioBlob: null }
+    return ''
   }, [useSpeechRecognition, useCapacitorMedia, useWebMediaRecorder, stopTimer, transcribeAudio])
 
   // Reset recording
@@ -685,18 +583,12 @@ export function useHybridRecording(): UseHybridRecordingResult {
       transcript: '',
       interimTranscript: '',
       isTranscribing: false,
-      audioBlob: null,
     })
 
     audioChunksRef.current = []
     pausedTimeRef.current = 0
     setError(null)
   }, [stopTimer])
-
-  // Clear audio blob (call after saving lecture)
-  const clearAudioBlob = useCallback(() => {
-    setState(prev => ({ ...prev, audioBlob: null }))
-  }, [])
 
   // Cleanup on unmount
   useEffect(() => {
@@ -726,7 +618,6 @@ export function useHybridRecording(): UseHybridRecordingResult {
     resumeRecording,
     stopRecording,
     resetRecording,
-    clearAudioBlob,
     isSupported,
     isMobile,
     error,

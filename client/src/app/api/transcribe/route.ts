@@ -26,43 +26,21 @@ export async function POST(request: NextRequest) {
     }
 
     // === DIAGNOSTIC LOGGING START ===
-    console.log('Received audio file:', {
-      name: audioFile.name,
-      type: audioFile.type,
-      size: audioFile.size,
-    })
 
     // Check if file has content
     const arrayBuffer = await audioFile.arrayBuffer()
 
-    // Handle AAC audio from iOS - convert mime type to mp4 which Groq accepts
-    // AAC is the codec, M4A/MP4 is the container format
-    let finalMimeType = audioFile.type || 'audio/webm'
-    let finalFileName = audioFile.name
-    
-    if (finalMimeType.includes('aac')) {
-      finalMimeType = 'audio/mp4'
-      finalFileName = finalFileName.replace('.aac', '.m4a')
-      if (!finalFileName.endsWith('.m4a')) {
-        finalFileName = finalFileName.replace(/\.[^.]+$/, '.m4a')
-      }
-      console.log('Converting AAC to m4a/mp4 format for Groq:', { finalMimeType, finalFileName })
-    } else if (finalMimeType.includes('m4a')) {
-      finalMimeType = 'audio/mp4'
-      console.log('Using mp4 mime type for m4a:', { finalMimeType, finalFileName })
-    }
-
     // Recreate file from buffer to ensure it's properly formed
-    const fileBlob = new Blob([arrayBuffer], { type: finalMimeType })
-    const reconstructedFile = new File([fileBlob], finalFileName, {
-      type: finalMimeType
+    const fileBlob = new Blob([arrayBuffer], { type: audioFile.type || 'audio/webm' })
+    const reconstructedFile = new File([fileBlob], audioFile.name, {
+      type: audioFile.type || 'audio/webm'
     })
 
     // === DIAGNOSTIC LOGGING END ===
 
     // Transcribe audio using Groq Whisper
     console.log('Sending to Groq Whisper:', {
-      fileName: reconstructedFile.name,
+      fileName: audioFile.name,
       fileSize: reconstructedFile.size,
       fileType: reconstructedFile.type,
     })
@@ -97,36 +75,7 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (lectureError) {
-        console.error('Failed to create lecture:', lectureError)
       } else {
-        // Upload audio to Supabase storage
-        const audioFileName = `${lecture.id}.wav`
-        const audioFilePath = `audio-recordings/${userId}/${audioFileName}`
-
-        const { error: uploadError } = await supabase.storage
-          .from('audio-recordings')
-          .upload(audioFilePath, fileBlob, {
-            contentType: audioFile.type || 'audio/webm',
-            upsert: true,
-          })
-
-        if (uploadError) {
-          console.error('Failed to upload audio:', uploadError)
-        } else {
-          // Get public URL and update lecture
-          const { data: { publicUrl } } = supabase.storage
-            .from('audio-recordings')
-            .getPublicUrl(audioFilePath)
-
-          // Update lecture with audio URL
-          await supabase
-            .from('lectures')
-            .update({ audio_url: publicUrl })
-            .eq('id', lecture.id)
-
-          console.log('Audio uploaded successfully:', publicUrl)
-        }
-
         // Save transcript
         const { error: transcriptError } = await supabase.from('transcripts').insert({
           lecture_id: lecture.id,
@@ -135,7 +84,6 @@ export async function POST(request: NextRequest) {
         })
 
         if (transcriptError) {
-          console.error('Failed to save transcript:', transcriptError)
         }
       }
     }

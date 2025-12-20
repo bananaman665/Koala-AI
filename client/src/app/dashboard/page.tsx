@@ -1,11 +1,10 @@
 'use client'
 
-import { Suspense, useState, useEffect, useRef } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2 } from 'react-icons/fi'
 import { Lightbulb, Mic, Lock } from 'lucide-react'
-import { Fire } from '@phosphor-icons/react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
@@ -15,22 +14,12 @@ import { StreakDisplay, useStreak } from '@/components/StreakDisplay'
 import { OnboardingCarousel } from '@/components/OnboardingCarousel'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
-import { supabase, uploadAudioFile } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
 import { SkeletonLectureCard, SkeletonCourseCard, SkeletonStats } from '@/components/Skeleton'
 import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
-
-// Color classes for course icons (full class names for Tailwind to detect)
-const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
-  blue: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', bar: 'bg-blue-500' },
-  purple: { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-600 dark:text-purple-400', bar: 'bg-purple-500' },
-  green: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400', bar: 'bg-green-500' },
-  orange: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', bar: 'bg-orange-500' },
-  pink: { bg: 'bg-pink-100 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-400', bar: 'bg-pink-500' },
-  yellow: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-600 dark:text-yellow-400', bar: 'bg-yellow-500' },
-}
 
 type Course = Database['public']['Tables']['courses']['Row']
 type Lecture = Database['public']['Tables']['lectures']['Row']
@@ -59,22 +48,17 @@ function DashboardContent() {
     isTranscribing,
     isGeneratingNotes,
     notes,
-    audioBlob,
     startRecording,
     pauseRecording,
     resumeRecording,
     stopAndGenerateNotes,
     generateNotes,
     reset,
-    clearAudioBlob,
     recordingError,
     notesError,
     isSupported,
     isMobile: isRecordingMobile,
   } = useLectureRecordingV2()
-
-  // Ref to store captured audio blob for saving
-  const capturedAudioBlobRef = useRef<Blob | null>(null)
 
   const [showTranscript, setShowTranscript] = useState(false)
   const [showNotes, setShowNotes] = useState(false)
@@ -173,11 +157,6 @@ function DashboardContent() {
   useEffect(() => {
     setIsMounted(true)
   }, [])
-
-  // Debug: Log audioBlob changes from hook
-  useEffect(() => {
-    console.log('[Dashboard] audioBlob from hook changed:', audioBlob ? `${audioBlob.size} bytes, type: ${audioBlob.type}` : 'null')
-  }, [audioBlob])
 
   // Watch for microphone permission errors
   useEffect(() => {
@@ -597,33 +576,6 @@ function DashboardContent() {
         throw lectureError
       }
 
-      // Upload audio if available (use ref which has the captured blob)
-      const audioBlobToUpload = capturedAudioBlobRef.current
-      console.log('[SaveLecture] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
-      if (audioBlobToUpload) {
-        try {
-          console.log('[SaveLecture] Uploading audio to storage...')
-          const audioUrl = await uploadAudioFile(user.id, lecture.id, audioBlobToUpload)
-          console.log('[SaveLecture] Audio uploaded, URL:', audioUrl)
-          // Update lecture with audio URL
-          // @ts-ignore - Supabase typing issue with Database generic
-          const { error: updateError } = await (supabase as any)
-            .from('lectures')
-            .update({ audio_url: audioUrl })
-            .eq('id', lecture.id)
-          if (updateError) {
-            console.error('[SaveLecture] Failed to update lecture with audio URL:', updateError)
-          } else {
-            console.log('[SaveLecture] Lecture updated with audio URL successfully')
-          }
-        } catch (audioError) {
-          console.error('[SaveLecture] Failed to upload audio:', audioError)
-          // Continue saving even if audio upload fails
-        }
-      } else {
-        console.log('[SaveLecture] No audioBlob available to upload')
-      }
-
       // Save transcript if available
       if (transcript) {
         // @ts-ignore - Supabase typing issue with Database generic
@@ -670,9 +622,8 @@ function DashboardContent() {
       // Haptic feedback for success
       hapticSuccess()
 
-      // Clear the current recording and audio blob
+      // Clear the current recording
       setLectureTitle('')
-      capturedAudioBlobRef.current = null
       reset()
     } catch (error: any) {
       alert(`Failed to save lecture: ${error.message}`)
@@ -890,9 +841,9 @@ function DashboardContent() {
               </button>
               <Link
                 href="/settings"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg"
               >
-                <FiSettings className="text-gray-600 dark:text-white text-lg sm:text-base" />
+                <FiSettings className="text-gray-600 text-lg sm:text-base" />
               </Link>
               <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-semibold">
                 {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
@@ -963,7 +914,7 @@ function DashboardContent() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Courses</h1>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Organize your lectures by course</p>
+                <p className="text-gray-600 text-sm mt-1">Organize your lectures by course</p>
               </div>
               <button
                 onClick={() => setShowNewCourseModal(true)}
@@ -982,8 +933,8 @@ function DashboardContent() {
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Total Lectures</p>
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.length}</p>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <FiFileText className="text-blue-600 dark:text-blue-400 text-base sm:text-xl" />
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <FiFileText className="text-blue-600 text-base sm:text-xl" />
               </div>
             </div>
           </div>
@@ -994,8 +945,8 @@ function DashboardContent() {
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Hours Recorded</p>
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{(lectures.reduce((sum, l) => sum + (l.duration || 0), 0) / 3600).toFixed(1)}</p>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                <FiClock className="text-purple-600 dark:text-purple-400 text-base sm:text-xl" />
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <FiClock className="text-purple-600 text-base sm:text-xl" />
               </div>
             </div>
           </div>
@@ -1011,8 +962,8 @@ function DashboardContent() {
                   return lectureDate >= weekAgo
                 }).length}</p>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <FiMic className="text-green-600 dark:text-green-400 text-base sm:text-xl" />
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <FiMic className="text-green-600 text-base sm:text-xl" />
               </div>
             </div>
           </div>
@@ -1023,8 +974,8 @@ function DashboardContent() {
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Study Streak</p>
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{streak} {streak === 1 ? 'day' : 'days'}</p>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-base sm:text-xl" />
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <FiTrendingUp className="text-orange-600 text-base sm:text-xl" />
               </div>
             </div>
           </div>
@@ -1061,8 +1012,8 @@ function DashboardContent() {
                     className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all cursor-pointer group"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl`} />
+                      <div className={`w-12 h-12 bg-${course.color}-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <FiBook className={`text-${course.color}-600 text-xl`} />
                       </div>
                       <span className="text-xs text-gray-500 dark:text-gray-400">{course.lectures} lectures</span>
                     </div>
@@ -1345,9 +1296,9 @@ function DashboardContent() {
                   {/* Notes Tab */}
                   {studyViewMode === 'notes' && (
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">AI Generated Notes</h3>
+                      <h3 className="text-xl font-bold text-gray-900 mb-4">AI Generated Notes</h3>
                       <div className="prose prose-sm max-w-none mb-4">
-                        <pre className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 font-sans">{notes}</pre>
+                        <pre className="whitespace-pre-wrap text-gray-700 font-sans">{notes}</pre>
                       </div>
                       <div className="flex gap-3 flex-wrap">
                         <button
@@ -1636,7 +1587,7 @@ function DashboardContent() {
 
             {/* Lectures in this Course */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mt-6">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">All Lectures</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">All Lectures</h3>
               <div className="space-y-3">
                 {(() => {
                   const courseLectures = lectures.filter(l => l.course_id === selectedCourse)
@@ -1902,13 +1853,13 @@ function DashboardContent() {
 
             {/* Notes */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">AI Generated Notes</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">AI Generated Notes</h3>
               {isLoadingLectureNotes ? (
                 <div className="flex items-center justify-center py-8">
                   <FiLoader className="text-gray-400 text-4xl animate-spin" />
                 </div>
               ) : selectedLectureNotes ? (
-                <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap">
                   {selectedLectureNotes}
                 </div>
               ) : (
@@ -2241,11 +2192,11 @@ function DashboardContent() {
 
                 return (
                   <>
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg p-4 border border-blue-200 dark:border-blue-700/50">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
                       <div className="flex items-center justify-between mb-2">
-                        <FiClock className="text-blue-600 dark:text-blue-400 text-xl" />
+                        <FiClock className="text-blue-600 text-xl" />
                       </div>
-                      <p className="text-2xl font-bold text-blue-900 dark:text-blue-300">
+                      <p className="text-2xl font-bold text-blue-900">
                         {(() => {
                           const totalSeconds = filteredAnalyticsLectures.reduce((sum, lec) => sum + lec.duration, 0)
                           const hours = Math.floor(totalSeconds / 3600)
@@ -2253,35 +2204,35 @@ function DashboardContent() {
                           return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
                         })()}
                       </p>
-                      <p className="text-xs text-blue-700 dark:text-blue-400">Study Time</p>
+                      <p className="text-xs text-blue-700">Study Time</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-lg p-4 border border-purple-200 dark:border-purple-700/50">
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
                       <div className="flex items-center justify-between mb-2">
-                        <FiFileText className="text-purple-600 dark:text-purple-400 text-xl" />
+                        <FiFileText className="text-purple-600 text-xl" />
                       </div>
-                      <p className="text-2xl font-bold text-purple-900 dark:text-purple-300">{filteredAnalyticsLectures.length}</p>
-                      <p className="text-xs text-purple-700 dark:text-purple-400">Lectures</p>
+                      <p className="text-2xl font-bold text-purple-900">{filteredAnalyticsLectures.length}</p>
+                      <p className="text-xs text-purple-700">Lectures</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-lg p-4 border border-green-200 dark:border-green-700/50">
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                       <div className="flex items-center justify-between mb-2">
-                        <FiBook className="text-green-600 dark:text-green-400 text-xl" />
+                        <FiBook className="text-green-600 text-xl" />
                       </div>
-                      <p className="text-2xl font-bold text-green-900 dark:text-green-300">{courses.length}</p>
-                      <p className="text-xs text-green-700 dark:text-green-400">Courses</p>
+                      <p className="text-2xl font-bold text-green-900">{courses.length}</p>
+                      <p className="text-xs text-green-700">Courses</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-lg p-4 border border-orange-200 dark:border-orange-700/50">
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
                       <div className="flex items-center justify-between mb-2">
-                        <FiMic className="text-orange-600 dark:text-orange-400 text-xl" />
+                        <FiMic className="text-orange-600 text-xl" />
                       </div>
-                      <p className="text-2xl font-bold text-orange-900 dark:text-orange-300">
+                      <p className="text-2xl font-bold text-orange-900">
                         {filteredAnalyticsLectures.length > 0
                           ? `${Math.round((filteredAnalyticsLectures.filter(l => l.transcription_status === 'completed').length / filteredAnalyticsLectures.length) * 100)}%`
                           : '0%'}
                       </p>
-                      <p className="text-xs text-orange-700 dark:text-orange-400">Completed</p>
+                      <p className="text-xs text-orange-700">Completed</p>
                     </div>
                   </>
                 )
@@ -2320,7 +2271,7 @@ function DashboardContent() {
 
             {/* Top Courses */}
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Top Courses</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Top Courses</h3>
               <div className="space-y-3">
                 {courses.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-4">No courses yet</p>
@@ -2340,7 +2291,7 @@ function DashboardContent() {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className={`${courseColorClasses[course.color]?.bar || courseColorClasses.blue.bar} h-2 rounded-full`}
+                            className={`bg-${course.color}-500 h-2 rounded-full`}
                             style={{ width: `${(totalHours / maxHours) * 100}%` }}
                           ></div>
                         </div>
@@ -2353,7 +2304,7 @@ function DashboardContent() {
 
             {/* Recent Activity */}
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Recent Activity</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Recent Activity</h3>
               <div className="space-y-3">
                 {lectures.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-4">No activity yet</p>
@@ -2409,7 +2360,7 @@ function DashboardContent() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Classes</h2>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Manage your classes and share lectures with classmates</p>
+                <p className="text-gray-600 text-sm mt-1">Manage your classes and share lectures with classmates</p>
               </div>
               <button
                 onClick={() => {
@@ -2438,9 +2389,9 @@ function DashboardContent() {
                           )}
                         </div>
                         <div
-                          className={`w-12 h-12 ${courseColorClasses[cls.color]?.bg || courseColorClasses.blue.bg} rounded-lg flex items-center justify-center flex-shrink-0`}
+                          className={`w-12 h-12 bg-${cls.color}-100 rounded-lg flex items-center justify-center flex-shrink-0`}
                         >
-                          <FiUsers className={`${courseColorClasses[cls.color]?.text || courseColorClasses.blue.text}`} />
+                          <FiUsers className={`text-${cls.color}-600`} />
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-sm text-gray-600 pt-3 border-t border-gray-200 dark:border-gray-700">
@@ -2461,10 +2412,10 @@ function DashboardContent() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
-                  <FiBook className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
-                  <p className="text-gray-600 dark:text-white font-medium">No classes yet</p>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Create a new class or join an existing one to get started</p>
+                <div className="bg-gray-50 rounded-lg border border-gray-200 p-8 text-center">
+                  <FiBook className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600 font-medium">No classes yet</p>
+                  <p className="text-gray-500 text-sm mt-1">Create a new class or join an existing one to get started</p>
                 </div>
               )}
             </div>
@@ -2475,7 +2426,7 @@ function DashboardContent() {
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Class Code
                     </label>
                     <input
@@ -2505,9 +2456,9 @@ function DashboardContent() {
 
       {/* New Course Modal */}
       {showNewCourseModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Create New Course</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Create New Course</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -2840,14 +2791,6 @@ function DashboardContent() {
                 setIsStoppingRecording(true)
                 try {
                   const result = await stopAndGenerateNotes()
-                  console.log('[Dashboard] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length, audioBlob: result.audioBlob?.size } : 'null')
-
-                  // Always capture audioBlob if available
-                  if (result?.audioBlob) {
-                    capturedAudioBlobRef.current = result.audioBlob
-                    console.log('[Dashboard] Captured audioBlob in ref:', result.audioBlob.size, 'bytes')
-                  }
-
                   if (result && result.transcript) {
                     hapticSuccess()
                     setShowCourseSelectionModal(true)
@@ -3286,7 +3229,7 @@ function DashboardContent() {
 
             {/* Title & Description */}
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 {streak === 0 ? 'Start Your Streak!' : `${streak} Day Streak!`}
               </h2>
               <p className="text-gray-600 dark:text-gray-300">
@@ -3324,7 +3267,7 @@ function DashboardContent() {
                           : 'bg-gray-200'
                       }`}>
                         {isActive ? (
-                          <Fire size={20} weight="fill" className="text-white" />
+                          <span className="text-white text-lg">🔥</span>
                         ) : (
                           <span className={`text-sm ${isToday ? 'text-blue-600 font-bold' : 'text-gray-400'}`}>
                             {isToday ? '?' : ''}
@@ -3339,7 +3282,7 @@ function DashboardContent() {
 
             {/* Milestones */}
             <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3">Milestones</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Milestones</h3>
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {[
                   { days: 3, label: '3 days', emoji: '🌱' },
