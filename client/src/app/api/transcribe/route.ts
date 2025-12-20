@@ -26,21 +26,36 @@ export async function POST(request: NextRequest) {
     }
 
     // === DIAGNOSTIC LOGGING START ===
+    console.log('Received audio file:', {
+      name: audioFile.name,
+      type: audioFile.type,
+      size: audioFile.size,
+    })
 
     // Check if file has content
     const arrayBuffer = await audioFile.arrayBuffer()
 
+    // Handle AAC audio from iOS - convert mime type to m4a which Groq accepts
+    let finalMimeType = audioFile.type || 'audio/webm'
+    let finalFileName = audioFile.name
+    
+    if (finalMimeType.includes('aac')) {
+      finalMimeType = 'audio/m4a'
+      finalFileName = finalFileName.replace('.aac', '.m4a')
+      console.log('Converting AAC to m4a format for Groq:', { finalMimeType, finalFileName })
+    }
+
     // Recreate file from buffer to ensure it's properly formed
-    const fileBlob = new Blob([arrayBuffer], { type: audioFile.type || 'audio/webm' })
-    const reconstructedFile = new File([fileBlob], audioFile.name, {
-      type: audioFile.type || 'audio/webm'
+    const fileBlob = new Blob([arrayBuffer], { type: finalMimeType })
+    const reconstructedFile = new File([fileBlob], finalFileName, {
+      type: finalMimeType
     })
 
     // === DIAGNOSTIC LOGGING END ===
 
     // Transcribe audio using Groq Whisper
     console.log('Sending to Groq Whisper:', {
-      fileName: audioFile.name,
+      fileName: reconstructedFile.name,
       fileSize: reconstructedFile.size,
       fileType: reconstructedFile.type,
     })
