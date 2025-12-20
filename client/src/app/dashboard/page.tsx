@@ -1227,7 +1227,7 @@ function DashboardContent() {
             <div className="mb-6">
               <button
                 onClick={() => setSelectedCourse(null)}
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors mb-4"
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors mb-4"
               >
                 <FiHome className="text-lg" />
                 <span>Back to Home</span>
@@ -1652,13 +1652,13 @@ function DashboardContent() {
                       : `${Math.floor(diffHours / 24)} days ago`
 
                     return (
-                      <div key={lecture.id} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+                      <div key={lecture.id} className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold text-gray-900 dark:text-white">{lecture.title}</h4>
                           <span className={`text-xs px-3 py-1 rounded-full ${
-                            lecture.transcription_status === 'completed' ? 'bg-green-100 text-green-700' :
-                            lecture.transcription_status === 'failed' ? 'bg-red-100 text-red-700' :
-                            'bg-yellow-100 text-yellow-700'
+                            lecture.transcription_status === 'completed' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                            lecture.transcription_status === 'failed' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
+                            'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
                           }`}>
                             {lecture.transcription_status === 'completed' ? 'Completed' :
                              lecture.transcription_status === 'failed' ? 'Failed' :
