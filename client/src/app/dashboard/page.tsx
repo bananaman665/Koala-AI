@@ -2325,7 +2325,7 @@ function DashboardContent() {
                           <span className="text-sm font-medium text-gray-700 dark:text-white">{course.name}</span>
                           <span className="text-sm text-gray-500 dark:text-gray-400">{totalHours.toFixed(1)}h</span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                           <div
                             className={`${courseColorClasses[course.color]?.bar || courseColorClasses.blue.bar} h-2 rounded-full`}
                             style={{ width: `${(totalHours / maxHours) * 100}%` }}
