@@ -1607,19 +1607,6 @@ function DashboardContent() {
                 </div>
               </div>
             )}
-            {isSupported && isRecordingMobile && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <FiAlertCircle className="text-blue-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-blue-800 text-sm font-medium mb-1">Mobile Recording Mode</p>
-                    <p className="text-blue-700 text-sm">
-                      On mobile, your audio will be transcribed after you stop recording. This may take a few moments.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
             {isTranscribing && (
               <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
                 <div className="flex items-start gap-3">
