@@ -94,7 +94,7 @@ export default function ForgotPasswordPage() {
               {/* Back to Login */}
               <Link
                 href="/auth/login"
-                className="flex items-center justify-center space-x-2 text-sm text-gray-600 hover:text-gray-900 mt-6"
+                className="flex items-center justify-center space-x-2 text-sm text-blue-600 hover:text-blue-700 mt-6"
               >
                 <FiArrowLeft />
                 <span>Back to login</span>
@@ -123,7 +123,7 @@ export default function ForgotPasswordPage() {
                 </p>
                 <Link
                   href="/auth/login"
-                  className="inline-flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-900"
+                  className="inline-flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-700"
                 >
                   <FiArrowLeft />
                   <span>Back to login</span>
@@ -135,7 +135,7 @@ export default function ForgotPasswordPage() {
 
         {/* Back to Home */}
         <div className="text-center mt-6">
-          <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
+          <Link href="/" className="text-sm text-blue-600 hover:text-blue-700">
             ← Back to Home
           </Link>
         </div>
