@@ -368,6 +368,12 @@ export function useHybridRecording(): UseHybridRecordingResult {
   // Stop recording
   const stopRecording = useCallback(async (): Promise<StopRecordingResult> => {
     console.log('[Recording] Stopping...')
+
+    // IMPORTANT: Set these BEFORE stopping to prevent the listeningState
+    // listener from trying to restart recognition
+    isRecordingRef.current = false
+    isPausedRef.current = false
+
     stopTimer()
 
     let finalTranscript = ''
@@ -379,9 +385,6 @@ export function useHybridRecording(): UseHybridRecordingResult {
       webRecognitionRef.current = null
       finalTranscript = transcriptRef.current.trim()
     }
-
-    isRecordingRef.current = false
-    isPausedRef.current = false
 
     setState(prev => ({
       ...prev,
