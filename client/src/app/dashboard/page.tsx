@@ -2021,13 +2021,13 @@ function DashboardContent() {
         {activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0 && (
           <div className="space-y-4 pb-20 animate-zoom-in">
             {/* Question Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md space-y-4">
+            <div className="bg-white dark:bg-[#151E2F] rounded-xl p-5 sm:p-6 shadow-md dark:shadow-none border border-gray-200 dark:border-[#1E293B] space-y-4">
               <div>
-                <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                <span className="px-3 py-1.5 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-semibold rounded-full">
                   {learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ? 'Multiple Choice' : 'True/False'}
                 </span>
               </div>
-              <h4 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h4 className="text-xl font-semibold text-gray-900 dark:text-[#F1F5F9]">
                 {learnModeQuestions[currentQuestionIndex].question}
               </h4>
 
@@ -2044,14 +2044,14 @@ function DashboardContent() {
                       key={idx}
                       onClick={() => handleAnswerSelect(option)}
                       disabled={showExplanation}
-                      className={`w-full p-3 rounded-lg text-left font-medium transition-all ${
+                      className={`w-full p-4 rounded-xl text-left font-medium transition-all ${
                         showCorrect
-                          ? 'bg-green-100 border-2 border-green-500 text-green-900'
+                          ? 'bg-green-100 dark:bg-green-500/15 border-2 border-green-500 dark:border-green-400 text-green-900 dark:text-green-200'
                           : showIncorrect
-                          ? 'bg-red-100 border-2 border-red-500 text-red-900'
+                          ? 'bg-red-100 dark:bg-red-500/15 border-2 border-red-500 dark:border-red-400 text-red-900 dark:text-red-200'
                           : isSelected && !showExplanation
-                          ? 'bg-blue-100 border-2 border-blue-500 text-blue-900'
-                          : 'bg-gray-100 border-2 border-gray-300 text-gray-900 hover:bg-gray-200'
+                          ? 'bg-blue-100 dark:bg-blue-500/15 border-2 border-blue-500 dark:border-blue-400 text-blue-900 dark:text-blue-200'
+                          : 'bg-gray-100 dark:bg-[#1E293B] border-2 border-gray-300 dark:border-[#334155] text-gray-900 dark:text-[#F1F5F9] hover:bg-gray-200 dark:hover:bg-[#263549] hover:border-gray-400 dark:hover:border-[#475569]'
                       } ${showExplanation ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                     >
                       {option}
@@ -2062,8 +2062,16 @@ function DashboardContent() {
 
               {/* Explanation */}
               {showExplanation && (
-                <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
-                  <p className="text-sm text-gray-700">
+                <div className={`mt-4 p-4 sm:p-5 rounded-xl ${
+                  selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
+                    ? 'bg-green-50 dark:bg-green-500/10 border-2 border-green-300 dark:border-green-500/40'
+                    : 'bg-red-50 dark:bg-red-500/10 border-2 border-red-300 dark:border-red-500/40'
+                }`}>
+                  <p className={`text-sm ${
+                    selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
+                      ? 'text-green-800 dark:text-green-300'
+                      : 'text-red-800 dark:text-red-300'
+                  }`}>
                     <strong>Explanation:</strong> {learnModeQuestions[currentQuestionIndex].explanation}
                   </p>
                 </div>
@@ -2073,14 +2081,14 @@ function DashboardContent() {
               {!showExplanation && selectedAnswer ? (
                 <button
                   onClick={handleSubmitAnswer}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors"
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-xl transition-all shadow-lg dark:shadow-purple-500/20"
                 >
                   Submit Answer
                 </button>
               ) : showExplanation ? (
                 <button
                   onClick={handleNextQuestion}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors"
+                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium py-3 rounded-xl transition-all shadow-lg dark:shadow-blue-500/20"
                 >
                   {currentQuestionIndex < learnModeQuestions.length - 1 ? 'Next Question' : 'Complete'}
                 </button>
