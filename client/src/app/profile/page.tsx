@@ -107,10 +107,10 @@ export default function ProfilePage() {
   const memberSince = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
   const stats = [
-    { label: 'Total Lectures', value: totalLectures.toString(), icon: BookOpen, color: 'blue' },
-    { label: 'Study Hours', value: `${totalHours}h`, icon: Clock, color: 'purple' },
-    { label: 'Current Streak', value: `${streak} ${streak === 1 ? 'day' : 'days'}`, icon: TrendingUp, color: 'green' },
-    { label: 'Courses', value: courses.length.toString(), icon: GraduationCap, color: 'yellow' },
+    { label: 'Total Lectures', value: totalLectures.toString(), icon: BookOpen, bgClass: 'bg-blue-100 dark:bg-blue-500/15', iconClass: 'text-blue-600 dark:text-blue-400' },
+    { label: 'Study Hours', value: `${totalHours}h`, icon: Clock, bgClass: 'bg-purple-100 dark:bg-purple-500/15', iconClass: 'text-purple-600 dark:text-purple-400' },
+    { label: 'Current Streak', value: `${streak} ${streak === 1 ? 'day' : 'days'}`, icon: TrendingUp, bgClass: 'bg-emerald-100 dark:bg-emerald-500/15', iconClass: 'text-emerald-600 dark:text-emerald-400' },
+    { label: 'Courses', value: courses.length.toString(), icon: GraduationCap, bgClass: 'bg-amber-100 dark:bg-amber-500/15', iconClass: 'text-amber-600 dark:text-amber-400' },
   ]
 
   // Get recent activity from real lectures
@@ -258,8 +258,8 @@ export default function ProfilePage() {
                 const Icon = stat.icon
                 return (
                   <div key={i} className="bg-white dark:bg-[#151E2F] rounded-xl shadow-sm border border-gray-200 dark:border-[#1E293B] p-4 md:p-5">
-                    <div className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-${stat.color}-100 dark:bg-${stat.color}-500/20 rounded-xl mb-3`}>
-                      <Icon className={`w-5 h-5 md:w-6 md:h-6 text-${stat.color}-600 dark:text-${stat.color}-400`} />
+                    <div className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 ${stat.bgClass} rounded-xl mb-3`}>
+                      <Icon className={`w-5 h-5 md:w-6 md:h-6 ${stat.iconClass}`} />
                     </div>
                     <div className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">{stat.value}</div>
                     <div className="text-xs md:text-sm text-gray-500 dark:text-[#94A3B8]">{stat.label}</div>
