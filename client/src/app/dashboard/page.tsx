@@ -3044,8 +3044,10 @@ function DashboardContent() {
               </button>
               <button
                 onClick={() => {
+                  console.log('[Dashboard] Yes button clicked, calling startRecording...')
                   hapticImpact('heavy')
                   startRecording()
+                  console.log('[Dashboard] startRecording() called, closing modal')
                   setShowReadyToRecordModal(false)
                 }}
                 className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg btn-press font-medium hover:bg-blue-700 transition-colors"

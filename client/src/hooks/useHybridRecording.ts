@@ -278,7 +278,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
       }
 
       // Guard: prevent double-starting if already recording
+      console.log('[Recording] Checking isRecording state:', state.isRecording)
       if (state.isRecording) {
+        console.warn('[Recording] Already recording, aborting')
         setError('Recording is already in progress')
         return
       }
