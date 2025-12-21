@@ -1427,15 +1427,15 @@ function DashboardContent() {
 
                   {/* Learn Mode Tab */}
                   {studyViewMode === 'learn' && learnModeQuestions.length > 0 && (
-                        <div className="mt-4 p-4 sm:p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg">
+                        <div className="mt-4 p-4 sm:p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-[#0B1220] dark:to-[#0F172A] border-2 border-green-200 dark:border-[#1E293B] rounded-xl shadow-lg dark:shadow-2xl">
                           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
                             <div>
-                              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Learn Mode</h3>
-                              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Round {round} • Question {currentQuestionIndex + 1} of {learnModeQuestions.length}</p>
+                              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-[#F1F5F9]">Learn Mode</h3>
+                              <p className="text-xs sm:text-sm text-gray-600 dark:text-[#94A3B8]">Round {round} • Question {currentQuestionIndex + 1} of {learnModeQuestions.length}</p>
                             </div>
                             <button
                               onClick={exitLearnMode}
-                              className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-xs sm:text-sm whitespace-nowrap"
+                              className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-600 dark:bg-[#334155] text-white rounded-lg hover:bg-gray-700 dark:hover:bg-[#475569] text-xs sm:text-sm whitespace-nowrap transition-colors"
                             >
                               Exit Learn Mode
                             </button>
@@ -1443,31 +1443,31 @@ function DashboardContent() {
 
                           {/* Progress Bar */}
                           <div className="mb-4 sm:mb-6">
-                            <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                            <div className="w-full bg-gray-200 dark:bg-[#1E293B] rounded-full h-2 sm:h-3">
                               <div
-                                className="bg-gradient-to-r from-green-500 to-emerald-600 h-2 sm:h-3 rounded-full transition-all duration-300"
+                                className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 sm:h-3 rounded-full transition-all duration-300"
                                 style={{ width: `${((currentQuestionIndex + (showExplanation ? 1 : 0)) / learnModeQuestions.length) * 100}%` }}
                               ></div>
                             </div>
-                            <div className="flex justify-between mt-2 text-xs text-gray-600 dark:text-gray-300">
+                            <div className="flex justify-between mt-2 text-xs text-gray-600 dark:text-[#94A3B8]">
                               <span>{correctAnswers.size} correct</span>
                               <span>{answeredQuestions.size} / {learnModeQuestions.length} answered</span>
                             </div>
                           </div>
 
                           {/* Question Card */}
-                          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 shadow-md mb-4 sm:mb-6">
-                            <div className="mb-3 sm:mb-2">
-                              <span className="px-2.5 py-1 sm:px-3 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold rounded-full">
+                          <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-6 shadow-md dark:shadow-xl dark:border dark:border-[#1E293B] mb-4 sm:mb-6">
+                            <div className="mb-3 sm:mb-4">
+                              <span className="px-2.5 py-1 sm:px-3 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-semibold rounded-full border border-transparent dark:border-purple-500/30">
                                 {learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ? 'Multiple Choice' : 'True/False'}
                               </span>
                             </div>
-                            <h4 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">
+                            <h4 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-[#F1F5F9] mb-4 sm:mb-6 leading-relaxed">
                               {learnModeQuestions[currentQuestionIndex].question}
                             </h4>
 
                             {/* Answer Options */}
-                            <div className="space-y-2 sm:space-y-3">
+                            <div className="space-y-3 sm:space-y-4">
                               {learnModeQuestions[currentQuestionIndex].options.map((option, idx) => {
                                 const isSelected = selectedAnswer === option
                                 const isCorrect = option === learnModeQuestions[currentQuestionIndex].correctAnswer
@@ -1479,20 +1479,20 @@ function DashboardContent() {
                                     key={idx}
                                     onClick={() => handleAnswerSelect(option)}
                                     disabled={showExplanation}
-                                    className={`w-full text-left p-3 sm:p-4 rounded-lg border-2 transition-all text-sm sm:text-base ${
+                                    className={`w-full text-left p-4 sm:p-5 rounded-xl border-2 transition-all text-sm sm:text-base ${
                                       showCorrect
-                                        ? 'bg-green-50 dark:bg-green-900/30 border-green-500 text-green-900 dark:text-green-300'
+                                        ? 'bg-green-50 dark:bg-green-500/15 border-green-500 dark:border-green-400 text-green-900 dark:text-green-200'
                                         : showIncorrect
-                                        ? 'bg-red-50 dark:bg-red-900/30 border-red-500 text-red-900 dark:text-red-300'
+                                        ? 'bg-red-50 dark:bg-red-500/15 border-red-500 dark:border-red-400 text-red-900 dark:text-red-200'
                                         : isSelected
-                                        ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-900 dark:text-blue-300'
-                                        : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+                                        ? 'bg-blue-50 dark:bg-blue-500/15 border-blue-500 dark:border-blue-400 text-blue-900 dark:text-blue-200 shadow-md dark:shadow-blue-500/10'
+                                        : 'bg-gray-50 dark:bg-[#1E293B] border-gray-200 dark:border-[#334155] text-gray-900 dark:text-[#F1F5F9] hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 active:scale-[0.98]'
                                     } ${showExplanation ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                                   >
                                     <div className="flex items-center justify-between gap-2">
                                       <span className="font-medium break-words">{option}</span>
-                                      {showCorrect && <span className="text-green-600 text-lg sm:text-xl flex-shrink-0">✓</span>}
-                                      {showIncorrect && <span className="text-red-600 text-lg sm:text-xl flex-shrink-0">✗</span>}
+                                      {showCorrect && <span className="text-green-500 dark:text-green-400 text-lg sm:text-xl flex-shrink-0">✓</span>}
+                                      {showIncorrect && <span className="text-red-500 dark:text-red-400 text-lg sm:text-xl flex-shrink-0">✗</span>}
                                     </div>
                                   </button>
                                 )
@@ -1501,33 +1501,33 @@ function DashboardContent() {
 
                             {/* Explanation */}
                             {showExplanation && (
-                              <div className={`mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg ${
+                              <div className={`mt-4 sm:mt-6 p-4 sm:p-5 rounded-xl ${
                                 selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                  ? 'bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800'
-                                  : 'bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800'
+                                  ? 'bg-green-50 dark:bg-green-500/10 border-2 border-green-300 dark:border-green-500/40'
+                                  : 'bg-red-50 dark:bg-red-500/10 border-2 border-red-300 dark:border-red-500/40'
                               }`}>
-                                <div className="flex items-start gap-2 sm:gap-3">
-                                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                <div className="flex items-start gap-3 sm:gap-4">
+                                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                                     selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
                                       ? 'bg-green-500'
                                       : 'bg-red-500'
                                   }`}>
-                                    <span className="text-white text-base sm:text-lg">
+                                    <span className="text-white text-lg sm:text-xl font-bold">
                                       {selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer ? '✓' : '✗'}
                                     </span>
                                   </div>
                                   <div className="flex-1">
                                     <p className={`font-semibold mb-1 text-sm sm:text-base ${
                                       selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                        ? 'text-green-900 dark:text-green-300'
-                                        : 'text-red-900 dark:text-red-300'
+                                        ? 'text-green-900 dark:text-green-200'
+                                        : 'text-red-900 dark:text-red-200'
                                     }`}>
                                       {selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer ? 'Correct!' : 'Incorrect'}
                                     </p>
-                                    <p className={`text-xs sm:text-sm ${
+                                    <p className={`text-sm sm:text-base leading-relaxed ${
                                       selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                        ? 'text-green-800 dark:text-green-400'
-                                        : 'text-red-800 dark:text-red-400'
+                                        ? 'text-green-800 dark:text-green-300'
+                                        : 'text-red-800 dark:text-red-300'
                                     }`}>
                                       {learnModeQuestions[currentQuestionIndex].explanation}
                                     </p>
@@ -1537,19 +1537,19 @@ function DashboardContent() {
                             )}
 
                             {/* Action Buttons */}
-                            <div className="mt-4 sm:mt-6 flex gap-3">
+                            <div className="mt-5 sm:mt-6 flex gap-3">
                               {!showExplanation ? (
                                 <button
                                   onClick={handleSubmitAnswer}
                                   disabled={!selectedAnswer}
-                                  className="flex-1 px-4 py-2.5 sm:px-6 sm:py-3 bg-green-600 text-white btn-press rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
+                                  className="flex-1 px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white btn-press rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm sm:text-base shadow-lg dark:shadow-purple-500/20"
                                 >
                                   Submit Answer
                                 </button>
                               ) : (
                                 <button
                                   onClick={handleNextQuestion}
-                                  className="flex-1 px-4 py-2.5 sm:px-6 sm:py-3 bg-blue-600 text-white rounded-lg btn-press font-semibold hover:bg-blue-700 transition-colors text-sm sm:text-base"
+                                  className="flex-1 px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl btn-press font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all text-sm sm:text-base shadow-lg dark:shadow-blue-500/20"
                                 >
                                   {currentQuestionIndex < learnModeQuestions.length - 1 ? 'Next Question' : incorrectQuestions.length > 0 ? 'Start Next Round' : 'Complete!'}
                                 </button>
