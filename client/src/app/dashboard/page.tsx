@@ -133,6 +133,7 @@ function DashboardContent() {
   // Course management state
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
   const [showNewCourseModal, setShowNewCourseModal] = useState(false)
+  const [isExitingCourse, setIsExitingCourse] = useState(false)
 
   // Classes state
   const [userClasses, setUserClasses] = useState<any[]>([])
@@ -153,6 +154,7 @@ function DashboardContent() {
   const [selectedLectureData, setSelectedLectureData] = useState<LectureWithCourse | null>(null)
   const [selectedLectureNotes, setSelectedLectureNotes] = useState<string | null>(null)
   const [isLoadingLectureNotes, setIsLoadingLectureNotes] = useState(false)
+  const [isExitingLecture, setIsExitingLecture] = useState(false)
 
   // Settings state
   const [autoGenerateNotes, setAutoGenerateNotes] = useState(true)
@@ -1222,11 +1224,17 @@ function DashboardContent() {
           if (!course) return null
 
           return (
-          <div key={course.id} className="animate-zoom-in">
+          <div key={course.id} className={isExitingCourse ? 'animate-zoom-out' : 'animate-zoom-in'}>
             {/* Course Header */}
             <div className="mb-6">
               <button
-                onClick={() => setSelectedCourse(null)}
+                onClick={() => {
+                  setIsExitingCourse(true)
+                  setTimeout(() => {
+                    setSelectedCourse(null)
+                    setIsExitingCourse(false)
+                  }, 200)
+                }}
                 className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors mb-4"
               >
                 <FiHome className="text-lg" />
@@ -1843,10 +1851,16 @@ function DashboardContent() {
 
         {/* Library Lecture Detail View */}
         {activeScreen === 'library' && selectedLecture && !isLearnModeActive && !isFlashcardModeActive && (
-          <div className="space-y-4 pb-20 animate-zoom-in">
+          <div className={`space-y-4 pb-20 ${isExitingLecture ? 'animate-zoom-out' : 'animate-zoom-in'}`}>
             {/* Back Button */}
             <button
-              onClick={() => setSelectedLecture(null)}
+              onClick={() => {
+                setIsExitingLecture(true)
+                setTimeout(() => {
+                  setSelectedLecture(null)
+                  setIsExitingLecture(false)
+                }, 200)
+              }}
               className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
             >
               <FiHome className="text-lg" />
@@ -2824,37 +2838,41 @@ function DashboardContent() {
           </button>
 
           {/* Center Record Button */}
-          <button
-            onClick={async () => {
-              hapticImpact('medium')
-              if (!isRecording) {
-                setShowReadyToRecordModal(true)
-              } else {
-                setIsStoppingRecording(true)
-                try {
-                  const result = await stopAndGenerateNotes()
-                  console.log('[Dashboard] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length, audioBlob: result.audioBlob?.size } : 'null')
+          <div className="relative">
+            {isRecording && (
+              <span className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-75" />
+            )}
+            <button
+              onClick={async () => {
+                hapticImpact('medium')
+                if (!isRecording) {
+                  setShowReadyToRecordModal(true)
+                } else {
+                  setIsStoppingRecording(true)
+                  try {
+                    const result = await stopAndGenerateNotes()
+                    console.log('[Dashboard] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length, audioBlob: result.audioBlob?.size } : 'null')
 
-                  // Always capture audioBlob if available
-                  if (result?.audioBlob) {
-                    capturedAudioBlobRef.current = result.audioBlob
-                    console.log('[Dashboard] Captured audioBlob in ref:', result.audioBlob.size, 'bytes')
-                  }
+                    // Always capture audioBlob if available
+                    if (result?.audioBlob) {
+                      capturedAudioBlobRef.current = result.audioBlob
+                      console.log('[Dashboard] Captured audioBlob in ref:', result.audioBlob.size, 'bytes')
+                    }
 
-                  if (result && result.transcript) {
-                    hapticSuccess()
-                    setShowCourseSelectionModal(true)
-                  } else {
-                    hapticError()
-                    // Show modal anyway if we have any transcript from the recording state
-                    if (transcript && transcript.trim().length > 0) {
+                    if (result && result.transcript) {
+                      hapticSuccess()
                       setShowCourseSelectionModal(true)
                     } else {
-                      alert('No audio was recorded. Please ensure microphone permissions are granted and try again.')
+                      hapticError()
+                      // Show modal anyway if we have any transcript from the recording state
+                      if (transcript && transcript.trim().length > 0) {
+                        setShowCourseSelectionModal(true)
+                      } else {
+                        alert('No audio was recorded. Please ensure microphone permissions are granted and try again.')
+                      }
                     }
-                  }
-                } catch (error) {
-                  console.error('Recording error:', error)
+                  } catch (error) {
+                    console.error('Recording error:', error)
                   hapticError()
                   // Still show modal if we have transcript
                   if (transcript && transcript.trim().length > 0) {
@@ -2876,7 +2894,8 @@ function DashboardContent() {
             ) : (
               <Mic className="w-5 h-5 text-white" strokeWidth={1.5} />
             )}
-          </button>
+            </button>
+          </div>
 
           {/* Analytics */}
           <button
