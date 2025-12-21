@@ -363,25 +363,38 @@ export function useHybridRecording(): UseHybridRecordingResult {
     setState(prev => ({ ...prev, isTranscribing: true }))
 
     try {
+      console.log('[Transcribe] Input:', {
+        providedMimeType: mimeType,
+        blobType: audioBlob.type,
+        blobSize: audioBlob.size
+      })
+
       let fileMimeType = mimeType || audioBlob.type || 'audio/wav'
       let audioToSend = audioBlob
 
       // Determine appropriate file extension based on mime type
-      let extension = 'webm' // Default to webm for web media recorder
+      // Capacitor VoiceRecorder on iOS returns 'audio/aac' with m4a container
+      let extension = 'm4a' // Default to m4a for Capacitor recordings
       if (fileMimeType.includes('webm')) extension = 'webm'
-      else if (fileMimeType.includes('aac') || fileMimeType.includes('m4a')) {
+      else if (fileMimeType.includes('aac') || fileMimeType.includes('m4a') || fileMimeType.includes('mp4')) {
         extension = 'm4a'
-        fileMimeType = 'audio/mp4'
+        fileMimeType = 'audio/mp4' // Groq expects audio/mp4 for m4a files
       }
       else if (fileMimeType.includes('wav')) extension = 'wav'
       else if (fileMimeType.includes('ogg')) extension = 'ogg'
       else if (fileMimeType.includes('flac')) extension = 'flac'
-      else if (fileMimeType.includes('mp3')) extension = 'mp3'
+      else if (fileMimeType.includes('mp3') || fileMimeType.includes('mpeg')) extension = 'mp3'
+      else {
+        // Unknown format - assume it's from Capacitor (m4a/aac)
+        console.log('[Transcribe] Unknown mime type, defaulting to m4a:', fileMimeType)
+        extension = 'm4a'
+        fileMimeType = 'audio/mp4'
+      }
 
       const fileName = `recording.${extension}`
       const audioFile = new File([audioToSend], fileName, { type: fileMimeType })
 
-      console.log('Transcribing audio:', { fileName, mimeType: fileMimeType, size: audioBlob.size })
+      console.log('[Transcribe] Sending to API:', { fileName, mimeType: fileMimeType, size: audioBlob.size })
 
       const formData = new FormData()
       formData.append('audio', audioFile)
