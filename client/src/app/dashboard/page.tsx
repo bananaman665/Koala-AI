@@ -2223,7 +2223,7 @@ function DashboardContent() {
             </div>
 
             {/* Stats Cards */}
-            <div key={analyticsTimeFilter} className="grid grid-cols-2 gap-3 animate-fade-in">
+            <div key={analyticsTimeFilter} className="grid grid-cols-2 gap-3 animate-fade-in-slow">
               {(() => {
                 // Filter lectures based on time period
                 const filteredAnalyticsLectures = lectures.filter((lecture) => {
