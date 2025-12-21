@@ -1065,15 +1065,15 @@ function DashboardContent() {
                   <div
                     key={course.id}
                     onClick={() => setSelectedCourse(course.id)}
-                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-6 hover:shadow-lg transition-all cursor-pointer group"
+                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-6 active:shadow-lg transition-all cursor-pointer group touch-manipulation"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                      <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center group-active:scale-110 transition-transform`}>
                         <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl -ml-0.5`} />
                       </div>
                       <span className="text-xs text-gray-400 dark:text-gray-500">{course.lectures} lectures</span>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-active:text-blue-600 transition-colors">
                       {course.name}
                     </h3>
                     <p className="text-xs text-gray-400 dark:text-gray-500">
