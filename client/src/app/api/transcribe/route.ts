@@ -26,21 +26,48 @@ export async function POST(request: NextRequest) {
     }
 
     // === DIAGNOSTIC LOGGING START ===
+    console.log('[API Transcribe] Received file:', {
+      name: audioFile.name,
+      type: audioFile.type,
+      size: audioFile.size,
+    })
 
     // Check if file has content
     const arrayBuffer = await audioFile.arrayBuffer()
+    console.log('[API Transcribe] ArrayBuffer size:', arrayBuffer.byteLength)
 
-    // Recreate file from buffer to ensure it's properly formed
-    const fileBlob = new Blob([arrayBuffer], { type: audioFile.type || 'audio/webm' })
-    const reconstructedFile = new File([fileBlob], audioFile.name, {
-      type: audioFile.type || 'audio/webm'
-    })
+    // Determine the correct MIME type for Groq
+    // Groq Whisper supports: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, webm
+    let mimeType = audioFile.type
+    let fileName = audioFile.name
+
+    // If the file is AAC (from iOS Capacitor), convert to m4a format for Groq
+    if (mimeType === 'audio/aac' || mimeType.includes('aac')) {
+      mimeType = 'audio/mp4'
+      fileName = fileName.replace(/\.[^/.]+$/, '.m4a')
+      if (!fileName.endsWith('.m4a')) fileName = 'recording.m4a'
+      console.log('[API Transcribe] Converting AAC to m4a:', { mimeType, fileName })
+    }
+
+    // If no valid type, try to infer from filename
+    if (!mimeType || mimeType === 'application/octet-stream') {
+      if (fileName.endsWith('.m4a')) mimeType = 'audio/mp4'
+      else if (fileName.endsWith('.webm')) mimeType = 'audio/webm'
+      else if (fileName.endsWith('.wav')) mimeType = 'audio/wav'
+      else if (fileName.endsWith('.mp3')) mimeType = 'audio/mpeg'
+      else mimeType = 'audio/mp4' // Default to mp4 for unknown
+      console.log('[API Transcribe] Inferred mimeType from filename:', mimeType)
+    }
+
+    // Recreate file with correct type
+    const fileBlob = new Blob([arrayBuffer], { type: mimeType })
+    const reconstructedFile = new File([fileBlob], fileName, { type: mimeType })
 
     // === DIAGNOSTIC LOGGING END ===
 
     // Transcribe audio using Groq Whisper
-    console.log('Sending to Groq Whisper:', {
-      fileName: audioFile.name,
+    console.log('[API Transcribe] Sending to Groq Whisper:', {
+      fileName: reconstructedFile.name,
       fileSize: reconstructedFile.size,
       fileType: reconstructedFile.type,
     })
