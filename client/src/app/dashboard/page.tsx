@@ -1011,61 +1011,34 @@ function DashboardContent() {
               </button>
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-8">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-9 h-9 bg-blue-200 dark:bg-blue-900/40 rounded-xl flex items-center justify-center">
-                    <FiFileText className="text-blue-600 dark:text-blue-400 text-lg" />
+            {/* Continue Learning */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4 sm:mb-8">
+              {lectures.length > 0 ? (
+                <div
+                  onClick={() => setSelectedLecture(lectures[0].id)}
+                  className="cursor-pointer group"
+                >
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide font-medium">Continue Learning</p>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <FiPlay className="text-blue-600 dark:text-blue-400 text-xl" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{lectures[0].title}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{lectures[0].courses?.name || 'No course'}</p>
+                    </div>
+                    <FiChevronRight className="text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-blue-900 dark:text-white">{lectures.length}</p>
-                <p className="text-xs text-blue-700 dark:text-gray-400">Total Lectures</p>
-              </div>
-
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-purple-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-9 h-9 bg-purple-200 dark:bg-purple-900/40 rounded-xl flex items-center justify-center">
-                    <FiClock className="text-purple-600 dark:text-purple-400 text-lg" />
+              ) : (
+                <div className="text-center py-2">
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <FiMic className="text-blue-600 dark:text-blue-400 text-xl" />
                   </div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Ready to start learning?</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Record your first lecture to get started</p>
                 </div>
-                <p className="text-2xl font-bold text-purple-900 dark:text-white">
-                  {(() => {
-                    const totalSeconds = lectures.reduce((sum, l) => sum + (l.duration || 0), 0)
-                    const hours = Math.floor(totalSeconds / 3600)
-                    const minutes = Math.floor((totalSeconds % 3600) / 60)
-                    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
-                  })()}
-                </p>
-                <p className="text-xs text-purple-700 dark:text-gray-400">Hours Recorded</p>
-              </div>
-
-              <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-green-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-9 h-9 bg-green-200 dark:bg-green-900/40 rounded-xl flex items-center justify-center">
-                    <FiMic className="text-green-600 dark:text-green-400 text-lg" />
-                  </div>
-                </div>
-                <p className="text-2xl font-bold text-green-900 dark:text-white">
-                  {lectures.filter(l => {
-                    const lectureDate = new Date(l.created_at)
-                    const now = new Date()
-                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-                    return lectureDate >= weekAgo
-                  }).length}
-                </p>
-                <p className="text-xs text-green-700 dark:text-gray-400">This Week</p>
-              </div>
-
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-orange-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-9 h-9 bg-orange-200 dark:bg-orange-900/40 rounded-xl flex items-center justify-center">
-                    <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-lg" />
-                  </div>
-                </div>
-                <p className="text-2xl font-bold text-orange-900 dark:text-white">{streak}</p>
-                <p className="text-xs text-orange-700 dark:text-gray-400">Study Streak</p>
-              </div>
+              )}
             </div>
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
