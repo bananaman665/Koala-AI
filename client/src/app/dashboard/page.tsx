@@ -1057,7 +1057,7 @@ function DashboardContent() {
                     <FiBook className="w-12 h-12 text-gray-300 dark:text-gray-500" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No courses yet</h3>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mb-6 max-w-xs mx-auto">Create your first course to get started</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-xs mx-auto">Create your first course to get started</p>
                   <button
                     onClick={() => setShowNewCourseModal(true)}
                     className="inline-flex items-center space-x-2 px-5 py-3 bg-blue-600 text-white rounded-xl btn-press hover:bg-blue-700"
