@@ -977,63 +977,39 @@ function DashboardContent() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-              <div>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Total Lectures</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.length} {lectures.length === 1 ? 'lec' : 'lecs'}</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-8">
+              <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-5 border border-gray-200 dark:border-[#1E293B]">
+                <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-500/15 rounded-xl mb-3">
+                  <FiFileText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">{lectures.length}</div>
+                <div className="text-xs sm:text-sm text-gray-500 dark:text-[#94A3B8]">Total Lectures</div>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <FiFileText className="text-blue-600 dark:text-blue-400 text-base sm:text-xl" />
-              </div>
-            </div>
-          </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-              <div>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Hours Recorded</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{(lectures.reduce((sum, l) => sum + (l.duration || 0), 0) / 3600).toFixed(1)} hrs</p>
+              <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-5 border border-gray-200 dark:border-[#1E293B]">
+                <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 dark:bg-purple-500/15 rounded-xl mb-3">
+                  <FiClock className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">{(lectures.reduce((sum, l) => sum + (l.duration || 0), 0) / 3600).toFixed(1)}h</div>
+                <div className="text-xs sm:text-sm text-gray-500 dark:text-[#94A3B8]">Study Hours</div>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                <FiClock className="text-purple-600 dark:text-purple-400 text-base sm:text-xl" />
-              </div>
-            </div>
-          </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-              <div>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">This Week</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{(() => {
-                  const count = lectures.filter(l => {
-                    const lectureDate = new Date(l.created_at)
-                    const now = new Date()
-                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-                    return lectureDate >= weekAgo
-                  }).length
-                  return `${count} ${count === 1 ? 'rec' : 'recs'}`
-                })()}</p>
+              <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-5 border border-gray-200 dark:border-[#1E293B]">
+                <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 dark:bg-emerald-500/15 rounded-xl mb-3">
+                  <FiTrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">{streak}</div>
+                <div className="text-xs sm:text-sm text-gray-500 dark:text-[#94A3B8]">Current Streak</div>
               </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <FiMic className="text-green-600 dark:text-green-400 text-base sm:text-xl" />
-              </div>
-            </div>
-          </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-              <div>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Study Streak</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{streak} {streak === 1 ? 'day' : 'days'}</p>
-              </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-base sm:text-xl" />
+              <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-5 border border-gray-200 dark:border-[#1E293B]">
+                <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 dark:bg-amber-500/15 rounded-xl mb-3">
+                  <FiFolder className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">{courses.length}</div>
+                <div className="text-xs sm:text-sm text-gray-500 dark:text-[#94A3B8]">Courses</div>
               </div>
             </div>
-          </div>
-        </div>
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Main Courses Area */}
@@ -2233,7 +2209,7 @@ function DashboardContent() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               {(() => {
                 // Filter lectures based on time period
                 const filteredAnalyticsLectures = lectures.filter((lecture) => {
@@ -2255,47 +2231,43 @@ function DashboardContent() {
 
                 return (
                   <>
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
-                      <div className="flex items-center justify-between mb-2">
-                        <FiClock className="text-blue-600 dark:text-gray-400 text-xl" />
+                    <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-5 border border-gray-200 dark:border-[#1E293B]">
+                      <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-500/15 rounded-xl mb-3">
+                        <FiFileText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
                       </div>
-                      <p className="text-2xl font-bold text-blue-900 dark:text-white">
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">{filteredAnalyticsLectures.length}</div>
+                      <div className="text-xs sm:text-sm text-gray-500 dark:text-[#94A3B8]">Lectures</div>
+                    </div>
+
+                    <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-5 border border-gray-200 dark:border-[#1E293B]">
+                      <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 dark:bg-purple-500/15 rounded-xl mb-3">
+                        <FiClock className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">
                         {(() => {
                           const totalSeconds = filteredAnalyticsLectures.reduce((sum, lec) => sum + lec.duration, 0)
                           const hours = Math.floor(totalSeconds / 3600)
                           const minutes = Math.floor((totalSeconds % 3600) / 60)
                           return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
                         })()}
-                      </p>
-                      <p className="text-xs text-blue-700 dark:text-gray-400">Study Time</p>
+                      </div>
+                      <div className="text-xs sm:text-sm text-gray-500 dark:text-[#94A3B8]">Study Time</div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-purple-200 dark:border-gray-700">
-                      <div className="flex items-center justify-between mb-2">
-                        <FiFileText className="text-purple-600 dark:text-gray-400 text-xl" />
+                    <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-5 border border-gray-200 dark:border-[#1E293B]">
+                      <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 dark:bg-emerald-500/15 rounded-xl mb-3">
+                        <FiTrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" />
                       </div>
-                      <p className="text-2xl font-bold text-purple-900 dark:text-white">{filteredAnalyticsLectures.length}</p>
-                      <p className="text-xs text-purple-700 dark:text-gray-400">Lectures</p>
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">{streak}</div>
+                      <div className="text-xs sm:text-sm text-gray-500 dark:text-[#94A3B8]">Current Streak</div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-green-200 dark:border-gray-700">
-                      <div className="flex items-center justify-between mb-2">
-                        <FiBook className="text-green-600 dark:text-gray-400 text-xl" />
+                    <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-5 border border-gray-200 dark:border-[#1E293B]">
+                      <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 dark:bg-amber-500/15 rounded-xl mb-3">
+                        <FiFolder className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 dark:text-amber-400" />
                       </div>
-                      <p className="text-2xl font-bold text-green-900 dark:text-white">{courses.length}</p>
-                      <p className="text-xs text-green-700 dark:text-gray-400">Courses</p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-orange-200 dark:border-gray-700">
-                      <div className="flex items-center justify-between mb-2">
-                        <FiMic className="text-orange-600 dark:text-gray-400 text-xl" />
-                      </div>
-                      <p className="text-2xl font-bold text-orange-900 dark:text-white">
-                        {filteredAnalyticsLectures.length > 0
-                          ? `${Math.round((filteredAnalyticsLectures.filter(l => l.transcription_status === 'completed').length / filteredAnalyticsLectures.length) * 100)}%`
-                          : '0%'}
-                      </p>
-                      <p className="text-xs text-orange-700 dark:text-gray-400">Completed</p>
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">{courses.length}</div>
+                      <div className="text-xs sm:text-sm text-gray-500 dark:text-[#94A3B8]">Courses</div>
                     </div>
                   </>
                 )
