@@ -3328,8 +3328,8 @@ function DashboardContent() {
             </div>
 
             {/* Weekly calendar */}
-            <div className="bg-gray-50 rounded-2xl p-4 mb-6">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">This Week</h3>
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-4 mb-6">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">This Week</h3>
               <div className="flex justify-between">
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
                   const today = new Date().getDay()
@@ -3340,20 +3340,20 @@ function DashboardContent() {
 
                   return (
                     <div key={day} className="flex flex-col items-center gap-1">
-                      <span className={`text-xs ${isToday ? 'font-bold text-blue-600' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <span className={`text-xs ${isToday ? 'font-bold text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
                         {day}
                       </span>
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         isActive
                           ? 'bg-gradient-to-br from-orange-400 to-red-500'
                           : isToday
-                          ? 'bg-blue-100 border-2 border-blue-400'
-                          : 'bg-gray-200'
+                          ? 'bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-400 dark:border-blue-500'
+                          : 'bg-gray-200 dark:bg-gray-600'
                       }`}>
                         {isActive ? (
                           <Fire size={20} weight="fill" className="text-white" />
                         ) : (
-                          <span className={`text-sm ${isToday ? 'text-blue-600 font-bold' : 'text-gray-400'}`}>
+                          <span className={`text-sm ${isToday ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-gray-400'}`}>
                             {isToday ? '?' : ''}
                           </span>
                         )}
@@ -3380,16 +3380,16 @@ function DashboardContent() {
                     key={days}
                     className={`flex-shrink-0 px-4 py-3 rounded-xl text-center ${
                       streak >= days
-                        ? 'bg-gradient-to-br from-orange-100 to-red-100 border border-orange-200'
-                        : 'bg-gray-100 border border-gray-200 dark:border-gray-700'
+                        ? 'bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-200 dark:border-orange-800'
+                        : 'bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
                     }`}
                   >
                     {streak >= days ? (
                       <span className="text-2xl">{emoji}</span>
                     ) : (
-                      <Lock className="w-6 h-6 mx-auto text-gray-400" />
+                      <Lock className="w-6 h-6 mx-auto text-gray-400 dark:text-gray-500" />
                     )}
-                    <p className={`text-xs mt-1 font-medium ${streak >= days ? 'text-orange-700' : 'text-gray-500 dark:text-gray-400'}`}>
+                    <p className={`text-xs mt-1 font-medium ${streak >= days ? 'text-orange-700 dark:text-orange-400' : 'text-gray-500 dark:text-gray-400'}`}>
                       {label}
                     </p>
                   </div>
@@ -3400,7 +3400,7 @@ function DashboardContent() {
             {/* Close button */}
             <button
               onClick={() => { hapticButton(); setShowStreakModal(false) }}
-              className="w-full py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors"
             >
               Keep Studying!
             </button>
