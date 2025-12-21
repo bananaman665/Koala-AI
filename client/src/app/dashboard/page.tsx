@@ -1067,7 +1067,7 @@ function DashboardContent() {
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl`} />
+                        <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl -ml-0.5`} />
                       </div>
                       <span className="text-xs text-gray-500 dark:text-gray-400">{course.lectures} lectures</span>
                     </div>
