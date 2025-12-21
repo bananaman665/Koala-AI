@@ -114,41 +114,32 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
       console.log('[Native Speech] Starting recognition...')
 
-      // Track the current phrase being recognized (before it's finalized)
-      let currentPhraseRef = ''
-
       // Set up listener for partial results
       // partialResults gives us real-time updates of the CURRENT phrase being recognized
+      // We save directly to transcriptRef so it's always available when we stop
       await SpeechRecognition.addListener('partialResults', (data: { matches: string[] }) => {
         console.log('[Native Speech] Partial results:', data.matches)
         if (data.matches && data.matches.length > 0) {
-          currentPhraseRef = data.matches[0]
+          const currentPhrase = data.matches[0]
 
-          // Show the current phrase being recognized (interim)
+          // Save the current transcript directly (always keep it updated)
+          transcriptRef.current = currentPhrase
+
+          // Show both the accumulated transcript and current phrase
           setState(prev => ({
             ...prev,
-            interimTranscript: currentPhraseRef,
+            transcript: currentPhrase,
+            interimTranscript: currentPhrase,
           }))
         }
       })
 
-      // Set up listener for when recognition stops (phrase complete)
+      // Set up listener for when recognition stops (for auto-restart during recording)
       await SpeechRecognition.addListener('listeningState', async (state: { status: string }) => {
         console.log('[Native Speech] Listening state:', state.status)
 
         if (state.status === 'stopped' && isRecordingRef.current && !isPausedRef.current) {
-          // Recognition stopped but we're still "recording" - append current phrase and restart
-          if (currentPhraseRef.trim()) {
-            transcriptRef.current = (transcriptRef.current + ' ' + currentPhraseRef).trim()
-            setState(prev => ({
-              ...prev,
-              transcript: transcriptRef.current,
-              interimTranscript: '',
-            }))
-            currentPhraseRef = ''
-          }
-
-          // Restart recognition to continue listening
+          // Recognition stopped but we're still "recording" - restart to continue
           console.log('[Native Speech] Restarting recognition...')
           try {
             await SpeechRecognition.start({
