@@ -1222,7 +1222,7 @@ function DashboardContent() {
           if (!course) return null
 
           return (
-          <div>
+          <div className="animate-zoom-in">
             {/* Course Header */}
             <div className="mb-6">
               <button
@@ -1843,7 +1843,7 @@ function DashboardContent() {
 
         {/* Library Lecture Detail View */}
         {activeScreen === 'library' && selectedLecture && !isLearnModeActive && !isFlashcardModeActive && (
-          <div className="space-y-4 pb-20">
+          <div className="space-y-4 pb-20 animate-zoom-in">
             {/* Back Button */}
             <button
               onClick={() => setSelectedLecture(null)}
@@ -2000,7 +2000,7 @@ function DashboardContent() {
 
         {/* Library Learn Mode View */}
         {activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0 && (
-          <div className="space-y-4 pb-20">
+          <div className="space-y-4 pb-20 animate-zoom-in">
             {/* Question Card */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md space-y-4">
               <div>
@@ -2072,7 +2072,7 @@ function DashboardContent() {
 
         {/* Library Flashcard Mode View */}
         {activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0 && (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] pb-20">
+          <div className="flex flex-col items-center justify-center min-h-[60vh] pb-20 animate-zoom-in">
             {/* Flashcard */}
             <div
               className="w-full max-w-md perspective-1000 cursor-pointer"

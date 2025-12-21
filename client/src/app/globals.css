@@ -286,6 +286,39 @@ body.dark {
   animation: slideInUp 0.15s ease-out forwards;
 }
 
+/* Content zoom animations for drill-down views */
+@keyframes zoomIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+.animate-zoom-in {
+  animation: zoomIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.animate-zoom-out {
+  animation: zoomOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: transform, opacity;
+}
+
 /* ============================================
    BUTTON PRESS EFFECTS
    ============================================ */
