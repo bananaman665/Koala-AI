@@ -1046,13 +1046,15 @@ function DashboardContent() {
                   <p className="text-gray-500 dark:text-gray-400">Loading courses...</p>
                 </div>
               ) : courses.length === 0 ? (
-                <div className="col-span-2 text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <FiBook className="text-gray-300 text-5xl mx-auto mb-3" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-1">No courses yet</h3>
-                  <p className="text-sm text-gray-500 mb-4">Create your first course to get started</p>
+                <div className="col-span-2 text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50]">
+                  <div className="w-24 h-24 bg-gray-100 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FiBook className="w-12 h-12 text-gray-300 dark:text-gray-500" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No courses yet</h3>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mb-6 max-w-xs mx-auto">Create your first course to get started</p>
                   <button
                     onClick={() => setShowNewCourseModal(true)}
-                    className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700"
+                    className="inline-flex items-center space-x-2 px-5 py-3 bg-blue-600 text-white rounded-xl btn-press hover:bg-blue-700"
                   >
                     <FiPlus />
                     <span>Create Course</span>
@@ -1063,18 +1065,18 @@ function DashboardContent() {
                   <div
                     key={course.id}
                     onClick={() => setSelectedCourse(course.id)}
-                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all cursor-pointer group"
+                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-6 hover:shadow-lg transition-all cursor-pointer group"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                      <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                         <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl -ml-0.5`} />
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{course.lectures} lectures</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{course.lectures} lectures</span>
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
                       {course.name}
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
                       {course.code && `${course.code} • `}
                       {course.professor || 'No professor set'}
                     </p>
@@ -2293,15 +2295,15 @@ function DashboardContent() {
             </div>
 
             {/* Study Streak */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Study Streak</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Study Streak</h3>
               <div className="flex items-center space-x-2 mb-3">
                 <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
                   <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-2xl" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">{streak} {streak === 1 ? 'Day' : 'Days'}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{streak === 0 ? 'Start your streak!' : streak >= 7 ? 'Amazing progress!' : 'Keep it up!'}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{streak === 0 ? 'Start your streak!' : streak >= 7 ? 'Amazing progress!' : 'Keep it up!'}</p>
                 </div>
               </div>
               <div className="flex space-x-1">
@@ -2323,11 +2325,11 @@ function DashboardContent() {
             </div>
 
             {/* Top Courses */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Top Courses</h3>
-              <div className="space-y-3">
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Top Courses</h3>
+              <div className="space-y-4">
                 {courses.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">No courses yet</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-4">No courses yet</p>
                 ) : (
                   courses.slice(0, 3).map((course) => {
                     const courseLectures = lectures.filter(l => l.course_id === course.id)
@@ -2338,13 +2340,13 @@ function DashboardContent() {
 
                     return (
                       <div key={course.id}>
-                        <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center justify-between mb-2">
                           <span className="text-sm font-medium text-gray-700 dark:text-white">{course.name}</span>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">{totalHours.toFixed(1)}h</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500">{totalHours.toFixed(1)}h</span>
                         </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                           <div
-                            className={`${courseColorClasses[course.color]?.bar || courseColorClasses.blue.bar} h-2 rounded-full`}
+                            className="progress-bar-gradient h-3 rounded-full transition-all duration-500"
                             style={{ width: `${(totalHours / maxHours) * 100}%` }}
                           ></div>
                         </div>
@@ -2356,11 +2358,11 @@ function DashboardContent() {
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Recent Activity</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Recent Activity</h3>
               <div className="space-y-3">
                 {lectures.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">No activity yet</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-4">No activity yet</p>
                 ) : (
                   lectures.slice(0, 5).map((lecture) => {
                     const createdDate = new Date(lecture.created_at)
@@ -2393,7 +2395,7 @@ function DashboardContent() {
                         </div>
                         <div className="flex-1">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">{statusText}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{lecture.title} • {timeDisplay}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">{lecture.title} • {timeDisplay}</p>
                         </div>
                       </div>
                     )
@@ -2418,14 +2420,14 @@ function DashboardContent() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Classes</h2>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Manage your classes and share lectures with classmates</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white pt-6">Classes</h2>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Manage your classes and share lectures with classmates</p>
               </div>
               <button
                 onClick={() => {
                   setShowNewCourseModal(true);
                 }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium text-sm flex items-center justify-center space-x-2 w-full sm:w-auto shrink-0"
+                className="px-4 py-3 bg-blue-600 text-white rounded-xl btn-press hover:bg-blue-700 font-medium text-sm flex items-center justify-center space-x-2 w-full sm:w-auto shrink-0"
               >
                 <FiPlus className="w-4 h-4" />
                 <span>New Class</span>
@@ -2438,7 +2440,7 @@ function DashboardContent() {
               {userClasses && userClasses.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4">
                   {userClasses.map((cls: any) => (
-                    <div key={cls.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 hover:shadow-md transition-shadow">
+                    <div key={cls.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-5 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900 dark:text-white text-lg">{cls.name}</h4>
@@ -2471,18 +2473,20 @@ function DashboardContent() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
-                  <FiBook className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
-                  <p className="text-gray-600 dark:text-white font-medium">No classes yet</p>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Create a new class or join an existing one to get started</p>
+                <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-12 text-center">
+                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FiBook className="w-10 h-10 text-gray-300 dark:text-gray-500" />
+                  </div>
+                  <p className="text-gray-700 dark:text-white font-semibold text-lg">No classes yet</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 max-w-xs mx-auto">Create a new class or join an existing one to get started</p>
                 </div>
               )}
             </div>
 
             {/* Join a Class */}
-            <div className="space-y-4">
+            <div className="space-y-4 pt-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Join a Class</h3>
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-6">
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
@@ -2493,13 +2497,13 @@ function DashboardContent() {
                       value={joinClassCode}
                       onChange={(e) => setJoinClassCode(e.target.value)}
                       placeholder="e.g., CS101"
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
                     />
                   </div>
                   <button
                     onClick={handleJoinClass}
                     disabled={isJoiningClass || !joinClassCode.trim()}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-blue-600 text-white rounded-xl btn-press hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isJoiningClass ? 'Joining...' : 'Join Class'}
                   </button>
@@ -2889,7 +2893,7 @@ function DashboardContent() {
             }}
             disabled={isStoppingRecording || isGeneratingNotes || isTranscribing}
             className={`rounded-full shadow-lg flex items-center justify-center transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 mb-[-8px] ${
-              isRecording ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
+              isRecording ? 'bg-red-600 hover:bg-red-700 animate-recording-pulse' : 'bg-blue-600 hover:bg-blue-700'
             }`}
           >
             {isStoppingRecording || isGeneratingNotes || isTranscribing ? (
@@ -2976,7 +2980,7 @@ function DashboardContent() {
               <div className="flex gap-3">
                 <button
                   onClick={() => { hapticSelection(); isPaused ? resumeRecording() : pauseRecording() }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-500 hover:bg-slate-600 text-white rounded-xl font-semibold transition-colors"
                 >
                   {isPaused ? <><FiPlay className="w-5 h-5" /> Resume</> : <><FiPause className="w-5 h-5" /> Pause</>}
                 </button>
