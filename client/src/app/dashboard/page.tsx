@@ -1748,7 +1748,7 @@ function DashboardContent() {
             </div>
 
             {/* Lecture List */}
-            <div className="space-y-3">
+            <div key={libraryFilter} className="space-y-3 animate-fade-in">
               {(() => {
                 if (isLoadingLectures) {
                   return (
@@ -2223,7 +2223,7 @@ function DashboardContent() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 gap-3">
+            <div key={analyticsTimeFilter} className="grid grid-cols-2 gap-3 animate-fade-in">
               {(() => {
                 // Filter lectures based on time period
                 const filteredAnalyticsLectures = lectures.filter((lecture) => {
