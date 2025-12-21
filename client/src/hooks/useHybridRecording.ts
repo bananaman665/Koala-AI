@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { Capacitor } from '@capacitor/core'
-import { VoiceRecorder } from 'capacitor-voice-recorder'
+import { SpeechRecognition } from '@capacitor-community/speech-recognition'
 
 interface HybridRecordingState {
   isRecording: boolean
@@ -9,12 +9,12 @@ interface HybridRecordingState {
   transcript: string
   interimTranscript: string
   isTranscribing: boolean
-  audioBlob: Blob | null
+  audioBlob: Blob | null // Kept for backward compatibility, always null now
 }
 
 interface StopRecordingResult {
   transcript: string
-  audioBlob: Blob | null
+  audioBlob: Blob | null // Kept for backward compatibility, always null now
 }
 
 interface UseHybridRecordingResult extends HybridRecordingState {
@@ -29,7 +29,7 @@ interface UseHybridRecordingResult extends HybridRecordingState {
   error: string | null
 }
 
-// Extend Window interface for Speech Recognition
+// Extend Window interface for Web Speech Recognition
 declare global {
   interface Window {
     SpeechRecognition: any
@@ -54,33 +54,22 @@ export function useHybridRecording(): UseHybridRecordingResult {
   const isMobile = isNativePlatform || (typeof window !== 'undefined' &&
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 
-  const hasSpeechRecognition = typeof window !== 'undefined' &&
+  // Web Speech API availability (for desktop browsers)
+  const hasWebSpeechRecognition = typeof window !== 'undefined' &&
     (window.SpeechRecognition || window.webkitSpeechRecognition)
 
-  const hasMediaRecorder = isNativePlatform || (typeof window !== 'undefined' &&
-    typeof MediaRecorder !== 'undefined')
+  // On native platforms, use Capacitor Speech Recognition
+  // On desktop browsers, use Web Speech API
+  const useNativeSpeechRecognition = isNativePlatform
+  const useWebSpeechRecognition = hasWebSpeechRecognition && !isNativePlatform
 
-  // Use Web Speech API for transcription whenever available (primary method)
-  // BUT: Disable on native platforms - Web Speech API in WKWebView conflicts with native recording
-  // On native platforms, use Capacitor VoiceRecorder (m4a is supported by Groq Whisper)
-  // On mobile web browsers, use Web MediaRecorder
-  const useSpeechRecognition = hasSpeechRecognition && !isNativePlatform
-  const useCapacitorMedia = isNativePlatform // Use Capacitor VoiceRecorder on native iOS/Android
-  const useWebMediaRecorder = isMobile && !isNativePlatform // Only on mobile web browsers, not native apps
+  const isSupported = useNativeSpeechRecognition || useWebSpeechRecognition
 
-  const isSupported = hasSpeechRecognition || hasMediaRecorder || isNativePlatform
-
-  // Refs for different recording methods
-  const recognitionRef = useRef<any>(null)
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const audioChunksRef = useRef<Blob[]>([])
-  const streamRef = useRef<MediaStream | null>(null)
-  const capacitorMediaRef = useRef<string | null>(null) // Store recording ID
-  const transcriptRef = useRef<string>('') // Track transcript in ref to avoid stale closures
-  const isRecordingRef = useRef<boolean>(false) // Track recording state in ref
-  const isPausedRef = useRef<boolean>(false) // Track paused state in ref
-  const capacitorStartTimeRef = useRef<number>(0) // Track when Capacitor recording started
-
+  // Refs
+  const webRecognitionRef = useRef<any>(null)
+  const transcriptRef = useRef<string>('')
+  const isRecordingRef = useRef<boolean>(false)
+  const isPausedRef = useRef<boolean>(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const startTimeRef = useRef<number>(0)
   const pausedTimeRef = useRef<number>(0)
@@ -102,25 +91,130 @@ export function useHybridRecording(): UseHybridRecordingResult {
     }
   }, [])
 
-  // Speech Recognition Methods (Desktop)
-  const startSpeechRecognition = useCallback(async () => {
+  // Native Speech Recognition (Capacitor plugin for iOS/Android)
+  const startNativeSpeechRecognition = useCallback(async () => {
     try {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+      console.log('[Native Speech] Requesting permissions...')
 
-      if (!SpeechRecognition) {
-        setError('Web Speech API not available on this device')
-        return
+      // Request permissions
+      const permissionStatus = await SpeechRecognition.requestPermissions()
+      console.log('[Native Speech] Permission status:', permissionStatus)
+
+      if (permissionStatus.speechRecognition !== 'granted') {
+        throw new Error('Speech recognition permission denied. Please enable it in Settings.')
       }
 
-      const recognition = new SpeechRecognition()
+      // Check if available
+      const available = await SpeechRecognition.available()
+      console.log('[Native Speech] Available:', available)
+
+      if (!available.available) {
+        throw new Error('Speech recognition is not available on this device.')
+      }
+
+      console.log('[Native Speech] Starting recognition...')
+
+      // Track the current phrase being recognized (before it's finalized)
+      let currentPhraseRef = ''
+
+      // Set up listener for partial results
+      // partialResults gives us real-time updates of the CURRENT phrase being recognized
+      await SpeechRecognition.addListener('partialResults', (data: { matches: string[] }) => {
+        console.log('[Native Speech] Partial results:', data.matches)
+        if (data.matches && data.matches.length > 0) {
+          currentPhraseRef = data.matches[0]
+
+          // Show the current phrase being recognized (interim)
+          setState(prev => ({
+            ...prev,
+            interimTranscript: currentPhraseRef,
+          }))
+        }
+      })
+
+      // Set up listener for when recognition stops (phrase complete)
+      await SpeechRecognition.addListener('listeningState', async (state: { status: string }) => {
+        console.log('[Native Speech] Listening state:', state.status)
+
+        if (state.status === 'stopped' && isRecordingRef.current && !isPausedRef.current) {
+          // Recognition stopped but we're still "recording" - append current phrase and restart
+          if (currentPhraseRef.trim()) {
+            transcriptRef.current = (transcriptRef.current + ' ' + currentPhraseRef).trim()
+            setState(prev => ({
+              ...prev,
+              transcript: transcriptRef.current,
+              interimTranscript: '',
+            }))
+            currentPhraseRef = ''
+          }
+
+          // Restart recognition to continue listening
+          console.log('[Native Speech] Restarting recognition...')
+          try {
+            await SpeechRecognition.start({
+              language: 'en-US',
+              maxResults: 5,
+              partialResults: true,
+              popup: false,
+            })
+          } catch (e) {
+            console.warn('[Native Speech] Failed to restart:', e)
+          }
+        }
+      })
+
+      // Start listening
+      await SpeechRecognition.start({
+        language: 'en-US',
+        maxResults: 5,
+        partialResults: true,
+        popup: false,
+      })
+
+      console.log('[Native Speech] Recognition started successfully')
+    } catch (err: any) {
+      console.error('[Native Speech] Failed to start:', err)
+      throw new Error(err.message || 'Failed to start speech recognition')
+    }
+  }, [])
+
+  // Stop Native Speech Recognition and get final transcript
+  const stopNativeSpeechRecognition = useCallback(async (): Promise<string> => {
+    try {
+      console.log('[Native Speech] Stopping recognition...')
+
+      // stop() returns void - transcript comes from partialResults listener
+      await SpeechRecognition.stop()
+
+      // Remove listeners
+      await SpeechRecognition.removeAllListeners()
+
+      // Return whatever transcript we've accumulated
+      const finalTranscript = transcriptRef.current.trim()
+      console.log('[Native Speech] Final transcript:', finalTranscript)
+      return finalTranscript
+    } catch (err: any) {
+      console.error('[Native Speech] Failed to stop:', err)
+      // Return whatever we have
+      return transcriptRef.current
+    }
+  }, [])
+
+  // Web Speech Recognition (for desktop browsers)
+  const startWebSpeechRecognition = useCallback(async () => {
+    try {
+      const WebSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+
+      if (!WebSpeechRecognition) {
+        throw new Error('Web Speech API not available on this device')
+      }
+
+      const recognition = new WebSpeechRecognition()
 
       recognition.continuous = true
       recognition.interimResults = true
       recognition.lang = 'en-US'
       recognition.maxAlternatives = 1
-
-      recognition.onstart = () => {
-      }
 
       recognition.onresult = (event: any) => {
         let interimTranscript = ''
@@ -129,7 +223,6 @@ export function useHybridRecording(): UseHybridRecordingResult {
           const resultTranscript = event.results[i][0].transcript
 
           if (event.results[i].isFinal) {
-            // Append to ref to avoid stale closure issues
             transcriptRef.current += resultTranscript + ' '
           } else {
             interimTranscript += resultTranscript
@@ -144,141 +237,49 @@ export function useHybridRecording(): UseHybridRecordingResult {
       }
 
       recognition.onerror = (event: any) => {
-        setError(`Recognition error: ${event.error}`)
+        console.error('[Web Speech] Error:', event.error)
+        if (event.error !== 'no-speech') {
+          setError(`Speech recognition error: ${event.error}`)
+        }
       }
 
       recognition.onend = () => {
         // Auto-restart if still recording (not paused or stopped)
-        // Use refs to avoid stale closure issues
         if (isRecordingRef.current && !isPausedRef.current) {
           try {
             recognition.start()
           } catch (e) {
+            console.warn('[Web Speech] Failed to restart:', e)
           }
         }
       }
 
       recognition.start()
-      recognitionRef.current = recognition
+      webRecognitionRef.current = recognition
+      console.log('[Web Speech] Recognition started')
     } catch (err: any) {
-      setError(err.message || 'Failed to start speech recognition')
+      console.error('[Web Speech] Failed to start:', err)
+      throw new Error(err.message || 'Failed to start speech recognition')
     }
   }, [])
 
-  // Capacitor Voice Recorder Methods (Native Mobile)
-  const startCapacitorVoiceRecorder = useCallback(async () => {
-    try {
-      console.log('[Capacitor Recording] Requesting permission...')
-      // Request microphone permission
-      const hasPermission = await VoiceRecorder.requestAudioRecordingPermission()
-      console.log('[Capacitor Recording] Permission result:', hasPermission)
-      if (!hasPermission.value) {
-        throw new Error('Microphone permission denied. Please enable microphone access in Settings.')
-      }
-
-      // Start recording
-      console.log('[Capacitor Recording] Starting recording...')
-      const startResult = await VoiceRecorder.startRecording()
-      console.log('[Capacitor Recording] Start result:', startResult)
-
-      if (!startResult.value) {
-        throw new Error('Failed to start native recording. Please restart the app and try again.')
-      }
-
-      capacitorMediaRef.current = 'recording' // Just a flag
-      capacitorStartTimeRef.current = Date.now() // Track when recording started
-      console.log('[Capacitor Recording] Recording started successfully at', capacitorStartTimeRef.current)
-    } catch (err: any) {
-      console.error('[Capacitor Recording] Failed to start:', err)
-      throw new Error(err.message || 'Failed to start Capacitor recording')
-    }
-  }, [])
-
-  // Web MediaRecorder Methods (Mobile Web)
-  const startWebMediaRecorder = useCallback(async () => {
-    console.log('[WebMediaRecorder] Starting...')
-    
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        }
-      })
-      console.log('[WebMediaRecorder] Got media stream')
-
-      streamRef.current = stream
-
-      // Determine supported mime type (iOS Safari doesn't support webm)
-      let mimeType = 'audio/webm;codecs=opus'
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        console.log('[WebMediaRecorder] webm not supported, trying mp4')
-        mimeType = 'audio/mp4'
-      }
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        console.log('[WebMediaRecorder] mp4 not supported, trying wav')
-        mimeType = 'audio/wav'
-      }
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        console.log('[WebMediaRecorder] wav not supported, using default')
-        mimeType = '' // Use default
-      }
-      console.log('[WebMediaRecorder] Using mimeType:', mimeType || 'default')
-
-      const mediaRecorderOptions: MediaRecorderOptions = {}
-      if (mimeType) {
-        mediaRecorderOptions.mimeType = mimeType
-      }
-
-      const mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions)
-      console.log('[WebMediaRecorder] MediaRecorder created, actual mimeType:', mediaRecorder.mimeType)
-
-      audioChunksRef.current = []
-
-      mediaRecorder.ondataavailable = (event) => {
-        console.log('[WebMediaRecorder] Data available:', event.data.size, 'bytes')
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data)
-        }
-      }
-
-      mediaRecorder.onerror = (event: any) => {
-        console.error('[WebMediaRecorder] Error:', event.error)
-      }
-
-      mediaRecorder.onstart = () => {
-        console.log('[WebMediaRecorder] Recording started')
-      }
-
-      mediaRecorder.start(1000) // Collect data every second
-      mediaRecorderRef.current = mediaRecorder
-      console.log('[WebMediaRecorder] Started successfully')
-    } catch (err: any) {
-      console.error('[WebMediaRecorder] Failed to start:', err)
-      throw err
-    }
-  }, [])
-
-  // Start recording
+  // Start recording (speech recognition)
   const startRecording = useCallback(async () => {
     try {
       setError(null)
 
       console.log('[Recording] Starting...', {
         isNativePlatform,
-        useSpeechRecognition,
-        useCapacitorMedia,
-        useWebMediaRecorder,
+        useNativeSpeechRecognition,
+        useWebSpeechRecognition,
         isSupported
       })
 
       if (!isSupported) {
-        throw new Error('Recording is not supported on this device')
+        throw new Error('Speech recognition is not supported on this device')
       }
 
-      // Guard: prevent double-starting if already recording
-      console.log('[Recording] Checking isRecording state:', state.isRecording)
+      // Guard: prevent double-starting
       if (state.isRecording) {
         console.warn('[Recording] Already recording, aborting')
         setError('Recording is already in progress')
@@ -287,36 +288,25 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
       isRecordingRef.current = true
       isPausedRef.current = false
+      transcriptRef.current = ''
+
       setState(prev => ({
         ...prev,
         isRecording: true,
         isPaused: false,
+        transcript: '',
+        interimTranscript: '',
       }))
 
       startTimer()
 
-      // Start Web Speech Recognition for transcription (primary - disabled on native)
-      if (useSpeechRecognition) {
+      // Start appropriate speech recognition
+      if (useNativeSpeechRecognition) {
+        console.log('[Recording] Using Native Speech Recognition (Capacitor)')
+        await startNativeSpeechRecognition()
+      } else if (useWebSpeechRecognition) {
         console.log('[Recording] Using Web Speech Recognition')
-        await startSpeechRecognition()
-      }
-
-      // Also start Capacitor recording for audio backup on native platforms
-      if (useCapacitorMedia && useSpeechRecognition) {
-        console.log('[Recording] Starting Capacitor as backup')
-        await startCapacitorVoiceRecorder().catch((err) => {
-          // Log Capacitor recording error - important for debugging
-          console.warn('Capacitor recording failed to start (backup):', err.message)
-        })
-      } else if (useCapacitorMedia) {
-        console.log('[Recording] Using Capacitor as PRIMARY (native platform)')
-        await startCapacitorVoiceRecorder()
-      }
-
-      // Web Media Recorder as fallback if Speech Recognition not available
-      if (useWebMediaRecorder && !useSpeechRecognition) {
-        console.log('[Recording] Using Web MediaRecorder fallback')
-        await startWebMediaRecorder()
+        await startWebSpeechRecognition()
       }
 
       console.log('[Recording] Started successfully')
@@ -327,324 +317,102 @@ export function useHybridRecording(): UseHybridRecordingResult {
       setState(prev => ({ ...prev, isRecording: false }))
       stopTimer()
     }
-  }, [isSupported, isNativePlatform, useSpeechRecognition, useCapacitorMedia, useWebMediaRecorder, startSpeechRecognition, startCapacitorVoiceRecorder, startWebMediaRecorder, startTimer, stopTimer, state.isRecording])
+  }, [isSupported, isNativePlatform, useNativeSpeechRecognition, useWebSpeechRecognition, startNativeSpeechRecognition, startWebSpeechRecognition, startTimer, stopTimer, state.isRecording])
 
   // Pause recording
-  const pauseRecording = useCallback(() => {
-    if (useSpeechRecognition && recognitionRef.current) {
-      recognitionRef.current.stop()
-    } else if (useWebMediaRecorder && mediaRecorderRef.current?.state === 'recording') {
-      mediaRecorderRef.current.pause()
+  const pauseRecording = useCallback(async () => {
+    console.log('[Recording] Pausing...')
+
+    if (useNativeSpeechRecognition) {
+      // Native doesn't support pause, so we stop and save transcript
+      try {
+        const partialTranscript = await stopNativeSpeechRecognition()
+        transcriptRef.current = partialTranscript
+        setState(prev => ({ ...prev, transcript: partialTranscript }))
+      } catch (e) {
+        console.warn('[Recording] Failed to pause native:', e)
+      }
+    } else if (webRecognitionRef.current) {
+      webRecognitionRef.current.stop()
     }
-    // Note: Capacitor VoiceRecorder doesn't support pause
 
     pausedTimeRef.current = Date.now() - startTimeRef.current
     stopTimer()
     isPausedRef.current = true
-    setState(prev => ({ ...prev, isPaused: true }))
-  }, [useSpeechRecognition, useWebMediaRecorder, stopTimer])
+    setState(prev => ({ ...prev, isPaused: true, interimTranscript: '' }))
+  }, [useNativeSpeechRecognition, stopNativeSpeechRecognition, stopTimer])
 
   // Resume recording
-  const resumeRecording = useCallback(() => {
-    if (useSpeechRecognition && recognitionRef.current) {
-      recognitionRef.current.start()
-    } else if (useWebMediaRecorder && mediaRecorderRef.current?.state === 'paused') {
-      mediaRecorderRef.current.resume()
+  const resumeRecording = useCallback(async () => {
+    console.log('[Recording] Resuming...')
+
+    if (useNativeSpeechRecognition) {
+      try {
+        await startNativeSpeechRecognition()
+      } catch (e) {
+        console.warn('[Recording] Failed to resume native:', e)
+      }
+    } else if (webRecognitionRef.current) {
+      try {
+        webRecognitionRef.current.start()
+      } catch (e) {
+        console.warn('[Recording] Failed to resume web:', e)
+      }
     }
-    // Note: Capacitor VoiceRecorder doesn't support resume
 
     startTimer()
     isPausedRef.current = false
     setState(prev => ({ ...prev, isPaused: false }))
-  }, [useSpeechRecognition, useWebMediaRecorder, startTimer])
-
-  // Transcribe audio via API
-  const transcribeAudio = useCallback(async (audioBlob: Blob, mimeType?: string): Promise<string> => {
-    setState(prev => ({ ...prev, isTranscribing: true }))
-
-    try {
-      console.log('[Transcribe] Input:', {
-        providedMimeType: mimeType,
-        blobType: audioBlob.type,
-        blobSize: audioBlob.size
-      })
-
-      let fileMimeType = mimeType || audioBlob.type || 'audio/wav'
-      let audioToSend = audioBlob
-
-      // Determine appropriate file extension based on mime type
-      // Capacitor VoiceRecorder on iOS returns 'audio/aac' with m4a container
-      let extension = 'm4a' // Default to m4a for Capacitor recordings
-      if (fileMimeType.includes('webm')) extension = 'webm'
-      else if (fileMimeType.includes('aac') || fileMimeType.includes('m4a') || fileMimeType.includes('mp4')) {
-        extension = 'm4a'
-        fileMimeType = 'audio/mp4' // Groq expects audio/mp4 for m4a files
-      }
-      else if (fileMimeType.includes('wav')) extension = 'wav'
-      else if (fileMimeType.includes('ogg')) extension = 'ogg'
-      else if (fileMimeType.includes('flac')) extension = 'flac'
-      else if (fileMimeType.includes('mp3') || fileMimeType.includes('mpeg')) extension = 'mp3'
-      else {
-        // Unknown format - assume it's from Capacitor (m4a/aac)
-        console.log('[Transcribe] Unknown mime type, defaulting to m4a:', fileMimeType)
-        extension = 'm4a'
-        fileMimeType = 'audio/mp4'
-      }
-
-      const fileName = `recording.${extension}`
-      const audioFile = new File([audioToSend], fileName, { type: fileMimeType })
-
-      console.log('[Transcribe] Sending to API:', { fileName, mimeType: fileMimeType, size: audioBlob.size })
-
-      const formData = new FormData()
-      formData.append('audio', audioFile)
-
-      const response = await fetch('/api/transcribe', {
-        method: 'POST',
-        body: formData,
-      })
-
-      console.log('Transcription response status:', response.status)
-      const data = await response.json()
-      console.log('Transcription response data:', data)
-
-      if (!response.ok) {
-        const errorMsg = data.message || data.error || data.errorType || 'Failed to transcribe audio'
-        console.error('Transcription API error details:', { status: response.status, ...data })
-        throw new Error(errorMsg)
-      }
-
-      const transcript = data.transcript || ''
-      return transcript
-    } catch (err: any) {
-      console.error('Transcription error:', err)
-      console.error('Transcription error message:', err.message)
-      console.error('Transcription error stack:', err.stack)
-      setError(`Transcription failed: ${err.message}`)
-      return ''
-    } finally {
-      setState(prev => ({ ...prev, isTranscribing: false }))
-    }
-  }, [])
+  }, [useNativeSpeechRecognition, startNativeSpeechRecognition, startTimer])
 
   // Stop recording
   const stopRecording = useCallback(async (): Promise<StopRecordingResult> => {
+    console.log('[Recording] Stopping...')
     stopTimer()
 
-    // Primary: Use Web Speech API transcript (if available and working)
-    if (useSpeechRecognition && recognitionRef.current) {
-      recognitionRef.current.stop()
-      recognitionRef.current = null
+    let finalTranscript = ''
 
-      const speechTranscript = transcriptRef.current.trim()
-
-      // If we have a Capacitor recording AND the speech transcript is empty,
-      // use the Capacitor recording for transcription instead
-      if (capacitorMediaRef.current && !speechTranscript) {
-        try {
-          const result = await VoiceRecorder.stopRecording()
-          capacitorMediaRef.current = null
-
-          // Convert base64 to blob
-          const base64Response = await fetch(`data:${result.value.mimeType};base64,${result.value.recordDataBase64}`)
-          const audioBlob = await base64Response.blob()
-
-          // Transcribe the audio
-          const transcribedText = await transcribeAudio(audioBlob, result.value.mimeType)
-
-          isRecordingRef.current = false
-          isPausedRef.current = false
-          setState(prev => ({
-            ...prev,
-            transcript: transcribedText,
-            isRecording: false,
-            isPaused: false,
-            audioBlob: audioBlob,
-          }))
-
-          return { transcript: transcribedText, audioBlob }
-        } catch (err: any) {
-          // If Capacitor transcription fails, continue with empty transcript
-          console.error('Capacitor transcription fallback failed:', err)
-        }
-      }
-
-      // Stop Capacitor recording in background if not used for transcription
-      if (capacitorMediaRef.current) {
-        VoiceRecorder.stopRecording().catch(() => {
-        })
-        capacitorMediaRef.current = null
-      }
-
-      isRecordingRef.current = false
-      isPausedRef.current = false
-      setState(prev => ({
-        ...prev,
-        isRecording: false,
-        isPaused: false,
-      }))
-
-      // Web Speech API doesn't provide audio blob
-      return { transcript: speechTranscript, audioBlob: null }
-    }
-
-    // Native Platform: Use Capacitor recording + Groq transcription
-    if (useCapacitorMedia && capacitorMediaRef.current) {
-      try {
-        // Check minimum recording duration (at least 1 second)
-        const recordingDurationMs = Date.now() - capacitorStartTimeRef.current
-        console.log('[Capacitor Recording] Recording duration:', recordingDurationMs, 'ms')
-
-        if (recordingDurationMs < 1000) {
-          console.warn('[Capacitor Recording] Recording too short:', recordingDurationMs, 'ms')
-          // Still try to stop, but warn the user
-        }
-
-        console.log('[Capacitor Recording] Stopping recording...')
-        const result = await VoiceRecorder.stopRecording()
-        console.log('[Capacitor Recording] Stop result:', {
-          mimeType: result.value.mimeType,
-          msDuration: result.value.msDuration,
-          hasBase64: !!result.value.recordDataBase64,
-          base64Length: result.value.recordDataBase64?.length || 0
-        })
-        capacitorMediaRef.current = null
-        capacitorStartTimeRef.current = 0
-
-        // Check if we got any audio data
-        if (!result.value.recordDataBase64 || result.value.recordDataBase64.length === 0) {
-          console.error('[Capacitor Recording] No audio data received!')
-          // Provide more helpful error message based on recording duration
-          if (recordingDurationMs < 1000) {
-            throw new Error('Recording was too short. Please record for at least 2 seconds.')
-          }
-          throw new Error('No audio was captured. Please restart the app and try again. If the issue persists, check that no other apps are using the microphone.')
-        }
-
-        if (result.value.msDuration <= 0) {
-          console.error('[Capacitor Recording] Duration is 0 or negative!')
-          throw new Error('Recording failed to capture audio. Please close and reopen the app.')
-        }
-
-        // Convert base64 to blob
-        console.log('[Capacitor Recording] Converting base64 to blob...')
-        const base64Response = await fetch(`data:${result.value.mimeType};base64,${result.value.recordDataBase64}`)
-        const audioBlob = await base64Response.blob()
-        console.log('[Capacitor Recording] Blob size:', audioBlob.size)
-
-        // Transcribe the audio
-        console.log('[Capacitor Recording] Sending to transcription API...')
-        const transcribedText = await transcribeAudio(audioBlob, result.value.mimeType)
-        console.log('[Capacitor Recording] Transcription result length:', transcribedText.length)
-
-        isRecordingRef.current = false
-        isPausedRef.current = false
-        console.log('[Capacitor Recording] Setting audioBlob in state:', audioBlob.size, 'bytes')
-        setState(prev => ({
-          ...prev,
-          transcript: transcribedText,
-          isRecording: false,
-          isPaused: false,
-          audioBlob: audioBlob,
-        }))
-
-        return { transcript: transcribedText, audioBlob }
-      } catch (err: any) {
-        capacitorMediaRef.current = null
-        isRecordingRef.current = false
-        isPausedRef.current = false
-        console.log('[Capacitor Recording] Error, setting audioBlob to null')
-        setState(prev => ({
-          ...prev,
-          isRecording: false,
-          isPaused: false,
-          audioBlob: null,
-        }))
-        setError(err.message || 'Failed to stop recording')
-        return { transcript: '', audioBlob: null }
-      }
-    }
-
-    // Web: Use Web Media Recorder
-    if (useWebMediaRecorder && mediaRecorderRef.current) {
-      const recorderMimeType = mediaRecorderRef.current.mimeType || 'audio/webm'
-      const recorder = mediaRecorderRef.current // Capture reference before nulling
-      console.log('[WebMediaRecorder] Stopping, mimeType:', recorderMimeType)
-      
-      return new Promise<StopRecordingResult>(async (resolve) => {
-        if (!recorder) {
-          console.log('[WebMediaRecorder] No recorder ref, returning empty')
-          resolve({ transcript: '', audioBlob: null })
-          return
-        }
-
-        recorder.onstop = async () => {
-          console.log('[WebMediaRecorder] onstop called, chunks:', audioChunksRef.current.length)
-          const audioBlob = new Blob(audioChunksRef.current, { type: recorderMimeType })
-          console.log('[HybridRecording] WebMediaRecorder audioBlob created:', audioBlob.size, 'bytes, type:', audioBlob.type)
-
-          // Stop all tracks
-          if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop())
-            streamRef.current = null
-          }
-
-          // Transcribe the audio using the actual mime type
-          const transcribedText = await transcribeAudio(audioBlob, recorderMimeType)
-
-          isRecordingRef.current = false
-          isPausedRef.current = false
-          console.log('[HybridRecording] Setting audioBlob in state:', audioBlob.size, 'bytes')
-          setState(prev => ({
-            ...prev,
-            transcript: transcribedText,
-            isRecording: false,
-            isPaused: false,
-            audioBlob: audioBlob,
-          }))
-
-          resolve({ transcript: transcribedText, audioBlob })
-        }
-
-        recorder.stop()
-        mediaRecorderRef.current = null
-      })
+    if (useNativeSpeechRecognition) {
+      finalTranscript = await stopNativeSpeechRecognition()
+    } else if (webRecognitionRef.current) {
+      webRecognitionRef.current.stop()
+      webRecognitionRef.current = null
+      finalTranscript = transcriptRef.current.trim()
     }
 
     isRecordingRef.current = false
     isPausedRef.current = false
+
     setState(prev => ({
       ...prev,
+      transcript: finalTranscript,
+      interimTranscript: '',
       isRecording: false,
       isPaused: false,
     }))
 
-    return { transcript: '', audioBlob: null }
-  }, [useSpeechRecognition, useCapacitorMedia, useWebMediaRecorder, stopTimer, transcribeAudio])
+    console.log('[Recording] Stopped. Final transcript length:', finalTranscript.length)
+
+    // Return transcript (no audio blob with speech recognition approach)
+    return { transcript: finalTranscript, audioBlob: null }
+  }, [useNativeSpeechRecognition, stopNativeSpeechRecognition, stopTimer])
 
   // Reset recording
-  const resetRecording = useCallback(() => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop()
-      recognitionRef.current = null
-    }
+  const resetRecording = useCallback(async () => {
+    console.log('[Recording] Resetting...')
 
-    if (capacitorMediaRef.current) {
-      VoiceRecorder.stopRecording().catch(() => {}) // Stop if recording
-      capacitorMediaRef.current = null
-      capacitorStartTimeRef.current = 0
-    }
-
-    if (mediaRecorderRef.current) {
-      if (mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop()
+    if (useNativeSpeechRecognition) {
+      try {
+        await SpeechRecognition.stop()
+        await SpeechRecognition.removeAllListeners()
+      } catch (e) {
+        // Ignore errors during reset
       }
-      mediaRecorderRef.current = null
     }
 
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop())
-      streamRef.current = null
+    if (webRecognitionRef.current) {
+      webRecognitionRef.current.stop()
+      webRecognitionRef.current = null
     }
 
     stopTimer()
@@ -652,6 +420,8 @@ export function useHybridRecording(): UseHybridRecordingResult {
     isRecordingRef.current = false
     isPausedRef.current = false
     transcriptRef.current = ''
+    pausedTimeRef.current = 0
+
     setState({
       isRecording: false,
       isPaused: false,
@@ -662,12 +432,10 @@ export function useHybridRecording(): UseHybridRecordingResult {
       audioBlob: null,
     })
 
-    audioChunksRef.current = []
-    pausedTimeRef.current = 0
     setError(null)
-  }, [stopTimer])
+  }, [useNativeSpeechRecognition, stopTimer])
 
-  // Clear audio blob (call after saving lecture)
+  // Clear audio blob (no-op now, kept for backward compatibility)
   const clearAudioBlob = useCallback(() => {
     setState(prev => ({ ...prev, audioBlob: null }))
   }, [])
@@ -678,20 +446,15 @@ export function useHybridRecording(): UseHybridRecordingResult {
       if (timerRef.current) {
         clearInterval(timerRef.current)
       }
-      if (recognitionRef.current) {
-        recognitionRef.current.stop()
+      if (webRecognitionRef.current) {
+        webRecognitionRef.current.stop()
       }
-      if (capacitorMediaRef.current) {
-        VoiceRecorder.stopRecording().catch(() => {})
-      }
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop()
-      }
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop())
+      if (isNativePlatform) {
+        SpeechRecognition.stop().catch(() => {})
+        SpeechRecognition.removeAllListeners().catch(() => {})
       }
     }
-  }, [])
+  }, [isNativePlatform])
 
   return {
     ...state,
