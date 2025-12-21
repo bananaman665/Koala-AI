@@ -980,7 +980,9 @@ function DashboardContent() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-8">
               <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-2">
-                  <FiFileText className="text-blue-600 dark:text-gray-400 text-xl" />
+                  <div className="w-9 h-9 bg-blue-200 dark:bg-blue-900/40 rounded-xl flex items-center justify-center">
+                    <FiFileText className="text-blue-600 dark:text-blue-400 text-lg" />
+                  </div>
                 </div>
                 <p className="text-2xl font-bold text-blue-900 dark:text-white">{lectures.length}</p>
                 <p className="text-xs text-blue-700 dark:text-gray-400">Total Lectures</p>
@@ -988,7 +990,9 @@ function DashboardContent() {
 
               <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-purple-200 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-2">
-                  <FiClock className="text-purple-600 dark:text-gray-400 text-xl" />
+                  <div className="w-9 h-9 bg-purple-200 dark:bg-purple-900/40 rounded-xl flex items-center justify-center">
+                    <FiClock className="text-purple-600 dark:text-purple-400 text-lg" />
+                  </div>
                 </div>
                 <p className="text-2xl font-bold text-purple-900 dark:text-white">
                   {(() => {
@@ -1003,7 +1007,9 @@ function DashboardContent() {
 
               <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-green-200 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-2">
-                  <FiMic className="text-green-600 dark:text-gray-400 text-xl" />
+                  <div className="w-9 h-9 bg-green-200 dark:bg-green-900/40 rounded-xl flex items-center justify-center">
+                    <FiMic className="text-green-600 dark:text-green-400 text-lg" />
+                  </div>
                 </div>
                 <p className="text-2xl font-bold text-green-900 dark:text-white">
                   {lectures.filter(l => {
@@ -1018,7 +1024,9 @@ function DashboardContent() {
 
               <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-orange-200 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-2">
-                  <FiTrendingUp className="text-orange-600 dark:text-gray-400 text-xl" />
+                  <div className="w-9 h-9 bg-orange-200 dark:bg-orange-900/40 rounded-xl flex items-center justify-center">
+                    <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-lg" />
+                  </div>
                 </div>
                 <p className="text-2xl font-bold text-orange-900 dark:text-white">{streak}</p>
                 <p className="text-xs text-orange-700 dark:text-gray-400">Study Streak</p>
