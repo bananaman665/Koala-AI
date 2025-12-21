@@ -1063,10 +1063,10 @@ function DashboardContent() {
                   <div
                     key={course.id}
                     onClick={() => setSelectedCourse(course.id)}
-                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all cursor-pointer group"
+                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all cursor-pointer group text-center"
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <div className="flex flex-col items-center mb-4">
+                      <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform mb-2`}>
                         <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl`} />
                       </div>
                       <span className="text-xs text-gray-500 dark:text-gray-400">{course.lectures} lectures</span>
