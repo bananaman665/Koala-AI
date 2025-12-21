@@ -16,7 +16,10 @@ import {
   GraduationCap,
   Trophy,
   Zap,
-  ChevronLeft
+  ChevronLeft,
+  Pencil,
+  Check,
+  X
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -49,6 +52,9 @@ export default function ProfilePage() {
   const [lectures, setLectures] = useState<Lecture[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [isSavingName, setIsSavingName] = useState(false)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -84,6 +90,37 @@ export default function ProfilePage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleEditName = () => {
+    setNewName(user?.user_metadata?.full_name || '')
+    setIsEditingName(true)
+  }
+
+  const handleSaveName = async () => {
+    if (!newName.trim()) return
+    
+    setIsSavingName(true)
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { full_name: newName.trim() }
+      })
+      
+      if (error) throw error
+      
+      // Force a page reload to refresh user data
+      window.location.reload()
+    } catch (error) {
+      console.error('Error updating name:', error)
+    } finally {
+      setIsSavingName(false)
+      setIsEditingName(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditingName(false)
+    setNewName('')
   }
 
   if (authLoading || loading) {
@@ -191,9 +228,51 @@ export default function ProfilePage() {
                     {userInitials}
                   </div>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">
-                  {user.user_metadata?.full_name || 'User'}
-                </h2>
+                
+                {/* Name with edit feature */}
+                {isEditingName ? (
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <input
+                      type="text"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      className="text-xl font-bold text-gray-900 dark:text-[#F1F5F9] bg-gray-100 dark:bg-[#1E293B] border border-gray-300 dark:border-[#334155] rounded-lg px-3 py-1.5 text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="Enter your name"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveName()
+                        if (e.key === 'Escape') handleCancelEdit()
+                      }}
+                    />
+                    <button
+                      onClick={handleSaveName}
+                      disabled={isSavingName || !newName.trim()}
+                      className="p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg disabled:opacity-50 transition-colors"
+                    >
+                      {isSavingName ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="p-2 bg-gray-200 dark:bg-[#1E293B] hover:bg-gray-300 dark:hover:bg-[#334155] text-gray-600 dark:text-[#94A3B8] rounded-lg transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-[#F1F5F9]">
+                      {user.user_metadata?.full_name || 'User'}
+                    </h2>
+                    <button
+                      onClick={handleEditName}
+                      className="p-1.5 hover:bg-gray-100 dark:hover:bg-[#1E293B] rounded-lg transition-colors"
+                      title="Edit name"
+                    >
+                      <Pencil className="w-4 h-4 text-gray-400 dark:text-[#94A3B8]" />
+                    </button>
+                  </div>
+                )}
+                
                 <p className="text-gray-600 dark:text-[#94A3B8] mb-3">{user.email}</p>
                 <div className="inline-flex items-center px-3 py-1.5 bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium">
                   Free Plan
