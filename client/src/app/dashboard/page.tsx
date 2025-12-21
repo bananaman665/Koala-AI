@@ -318,6 +318,41 @@ function DashboardContent() {
     }
   }
 
+  // Delete course function
+  const deleteCourse = async (courseId: string) => {
+    if (!user?.id) return
+
+    try {
+      // First delete all lectures in this course
+      await supabase
+        .from('lectures')
+        .delete()
+        .eq('course_id', courseId)
+        .eq('user_id', user.id)
+
+      // Then delete the course
+      const { error } = await supabase
+        .from('courses')
+        .delete()
+        .eq('id', courseId)
+        .eq('user_id', user.id)
+
+      if (error) {
+        hapticError()
+        toast.error('Failed to delete course')
+      } else {
+        hapticSuccess()
+        toast.success('Course deleted')
+        setCourses(prev => prev.filter(c => c.id !== courseId))
+        // Also remove lectures from this course from state
+        setLectures(prev => prev.filter(l => l.course_id !== courseId))
+      }
+    } catch (error) {
+      hapticError()
+      toast.error('Failed to delete course')
+    }
+  }
+
   // Fetch user classes
   useEffect(() => {
     if (!user?.id) {
@@ -1060,25 +1095,29 @@ function DashboardContent() {
                 </div>
               ) : (
                 courses.map((course) => (
-                  <div
+                  <SwipeToDelete
                     key={course.id}
-                    onClick={() => setSelectedCourse(course.id)}
-                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-6 active:shadow-lg transition-all cursor-pointer group touch-manipulation"
+                    onDelete={() => deleteCourse(course.id)}
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center group-active:scale-110 transition-transform`}>
-                        <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl -ml-0.5`} />
+                    <div
+                      onClick={() => setSelectedCourse(course.id)}
+                      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-6 active:shadow-lg transition-all cursor-pointer group touch-manipulation"
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center group-active:scale-110 transition-transform`}>
+                          <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl -ml-0.5`} />
+                        </div>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">{course.lectures} lectures</span>
                       </div>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">{course.lectures} lectures</span>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-active:text-blue-600 transition-colors">
+                        {course.name}
+                      </h3>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                        {course.code && `${course.code} • `}
+                        {course.professor || 'No professor set'}
+                      </p>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-active:text-blue-600 transition-colors">
-                      {course.name}
-                    </h3>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
-                      {course.code && `${course.code} • `}
-                      {course.professor || 'No professor set'}
-                    </p>
-                  </div>
+                  </SwipeToDelete>
                 ))
               )}
             </div>
