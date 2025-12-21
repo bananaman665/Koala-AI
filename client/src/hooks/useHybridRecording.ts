@@ -62,11 +62,11 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
   // Use Web Speech API for transcription whenever available (primary method)
   // BUT: Disable on native platforms - Web Speech API in WKWebView conflicts with native recording
-  // Use Web Media Recorder as primary on iOS (produces webm/opus which Groq supports)
-  // Capacitor m4a format is rejected by Groq Whisper
+  // On native platforms, use Capacitor VoiceRecorder (m4a is supported by Groq Whisper)
+  // On mobile web browsers, use Web MediaRecorder
   const useSpeechRecognition = hasSpeechRecognition && !isNativePlatform
-  const useWebMediaRecorder = isMobile // Use Web MediaRecorder on all mobile platforms
-  const useCapacitorMedia = isNativePlatform && !isMobile // Only use Capacitor on non-mobile native (shouldn't happen)
+  const useCapacitorMedia = isNativePlatform // Use Capacitor VoiceRecorder on native iOS/Android
+  const useWebMediaRecorder = isMobile && !isNativePlatform // Only on mobile web browsers, not native apps
 
   const isSupported = hasSpeechRecognition || hasMediaRecorder || isNativePlatform
 
