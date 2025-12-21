@@ -159,25 +159,27 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0B1220]">
       {/* Navigation */}
-      <nav className="bg-white dark:bg-[#151E2F] border-b border-gray-200 dark:border-[#1E293B] pt-12 sm:pt-0">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#151E2F] border-b border-gray-200 dark:border-[#1E293B] pt-12 sm:pt-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/dashboard" className="flex items-center space-x-2">
+            <Link href="/dashboard" className="flex items-center space-x-2 w-20">
               <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-[#94A3B8]" />
               <span className="text-gray-700 dark:text-[#F1F5F9] font-medium">Back</span>
             </Link>
             <span className="text-lg font-semibold text-gray-900 dark:text-[#F1F5F9]">Profile</span>
-            <Link
-              href="/settings"
-              className="p-2 hover:bg-gray-100 dark:hover:bg-[#1E293B] rounded-xl transition-colors"
-            >
-              <Settings className="w-5 h-5 text-gray-600 dark:text-[#94A3B8]" />
-            </Link>
+            <div className="w-20 flex justify-end">
+              <Link
+                href="/settings"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-[#1E293B] rounded-xl transition-colors"
+              >
+                <Settings className="w-5 h-5 text-gray-600 dark:text-[#94A3B8]" />
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-28 sm:pt-24">
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Left Column - Profile Info */}
           <div className="lg:col-span-1 space-y-5">
