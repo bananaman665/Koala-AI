@@ -977,50 +977,63 @@ function DashboardContent() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-8">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                  <FiClock className="text-blue-600 dark:text-gray-400 text-xl" />
-                </div>
-                <p className="text-2xl font-bold text-blue-900 dark:text-white">
-                  {(() => {
-                    const totalSeconds = lectures.reduce((sum, lec) => sum + (lec.duration || 0), 0)
-                    const hours = Math.floor(totalSeconds / 3600)
-                    const minutes = Math.floor((totalSeconds % 3600) / 60)
-                    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
-                  })()}
-                </p>
-                <p className="text-xs text-blue-700 dark:text-gray-400">Study Time</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+              <div>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Total Lectures</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.length} {lectures.length === 1 ? 'lec' : 'lecs'}</p>
               </div>
-
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-purple-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                  <FiFileText className="text-purple-600 dark:text-gray-400 text-xl" />
-                </div>
-                <p className="text-2xl font-bold text-purple-900 dark:text-white">{lectures.length}</p>
-                <p className="text-xs text-purple-700 dark:text-gray-400">Lectures</p>
-              </div>
-
-              <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-green-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                  <FiBook className="text-green-600 dark:text-gray-400 text-xl" />
-                </div>
-                <p className="text-2xl font-bold text-green-900 dark:text-white">{courses.length}</p>
-                <p className="text-xs text-green-700 dark:text-gray-400">Courses</p>
-              </div>
-
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-orange-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                  <FiMic className="text-orange-600 dark:text-gray-400 text-xl" />
-                </div>
-                <p className="text-2xl font-bold text-orange-900 dark:text-white">
-                  {lectures.length > 0
-                    ? `${Math.round((lectures.filter(l => l.transcription_status === 'completed').length / lectures.length) * 100)}%`
-                    : '0%'}
-                </p>
-                <p className="text-xs text-orange-700 dark:text-gray-400">Completed</p>
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <FiFileText className="text-blue-600 dark:text-blue-400 text-base sm:text-xl" />
               </div>
             </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+              <div>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Hours Recorded</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{(lectures.reduce((sum, l) => sum + (l.duration || 0), 0) / 3600).toFixed(1)} hrs</p>
+              </div>
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                <FiClock className="text-purple-600 dark:text-purple-400 text-base sm:text-xl" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+              <div>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">This Week</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{(() => {
+                  const count = lectures.filter(l => {
+                    const lectureDate = new Date(l.created_at)
+                    const now = new Date()
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+                    return lectureDate >= weekAgo
+                  }).length
+                  return `${count} ${count === 1 ? 'rec' : 'recs'}`
+                })()}</p>
+              </div>
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <FiMic className="text-green-600 dark:text-green-400 text-base sm:text-xl" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+              <div>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Study Streak</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{streak} {streak === 1 ? 'day' : 'days'}</p>
+              </div>
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-base sm:text-xl" />
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Main Courses Area */}
@@ -1113,11 +1126,11 @@ function DashboardContent() {
                       <div key={lecture.id} className={`flex items-center justify-between p-3 sm:p-4 bg-gray-100 dark:bg-gray-700/50 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer card-press animate-list-item stagger-${index + 1}`}>
                         <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
                           <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                            lecture.transcription_status === 'completed' ? 'bg-green-100 dark:bg-green-900/30' :
+                            lecture.transcription_status === 'completed' ? 'bg-teal-100 dark:bg-teal-900/30' :
                             lecture.transcription_status === 'failed' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30'
                           }`}>
                             <FiFileText className={`text-base sm:text-lg ${
-                              lecture.transcription_status === 'completed' ? 'text-green-600 dark:text-green-400' :
+                              lecture.transcription_status === 'completed' ? 'text-teal-600 dark:text-teal-400' :
                               lecture.transcription_status === 'failed' ? 'text-red-600 dark:text-red-400' : 'text-yellow-600 dark:text-yellow-400'
                             }`} />
                           </div>
@@ -1128,7 +1141,7 @@ function DashboardContent() {
                         </div>
                         <div className="flex-shrink-0 ml-2">
                           {lecture.transcription_status === 'completed' ? (
-                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">
+                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 text-xs font-medium rounded-full">
                               Ready
                             </span>
                           ) : lecture.transcription_status === 'failed' ? (
@@ -1814,9 +1827,9 @@ function DashboardContent() {
                             <p className="text-sm text-gray-500 dark:text-gray-400">{lecture.courses?.name || 'No course'}</p>
                           </div>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            lecture.transcription_status === 'completed' ? 'bg-green-100 text-green-700' :
-                            lecture.transcription_status === 'failed' ? 'bg-red-100 text-red-700' :
-                            'bg-yellow-100 text-yellow-700'
+                            lecture.transcription_status === 'completed' ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400' :
+                            lecture.transcription_status === 'failed' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
+                            'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
                           }`}>
                             {lecture.transcription_status === 'completed' ? 'Ready' :
                              lecture.transcription_status === 'failed' ? 'Failed' :
@@ -2301,7 +2314,7 @@ function DashboardContent() {
                     : i < adjustedToday && (adjustedToday - 1 - i) < streak
                   return (
                     <div key={i} className="flex-1 text-center">
-                      <div className={`w-full h-8 rounded ${isActive ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'} mb-1`}></div>
+                      <div className={`w-full h-8 rounded ${isActive ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'} mb-1`}></div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{day}</p>
                     </div>
                   )
