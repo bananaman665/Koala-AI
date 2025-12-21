@@ -982,7 +982,7 @@ function DashboardContent() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
               <div>
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Total Lectures</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.length}</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.length} {lectures.length === 1 ? 'lecture' : 'lectures'}</p>
               </div>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                 <FiFileText className="text-blue-600 dark:text-blue-400 text-base sm:text-xl" />
@@ -994,7 +994,7 @@ function DashboardContent() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
               <div>
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Hours Recorded</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{(lectures.reduce((sum, l) => sum + (l.duration || 0), 0) / 3600).toFixed(1)}</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{(lectures.reduce((sum, l) => sum + (l.duration || 0), 0) / 3600).toFixed(1)} hours</p>
               </div>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                 <FiClock className="text-purple-600 dark:text-purple-400 text-base sm:text-xl" />
@@ -1006,12 +1006,15 @@ function DashboardContent() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
               <div>
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">This Week</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.filter(l => {
-                  const lectureDate = new Date(l.created_at)
-                  const now = new Date()
-                  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-                  return lectureDate >= weekAgo
-                }).length}</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{(() => {
+                  const count = lectures.filter(l => {
+                    const lectureDate = new Date(l.created_at)
+                    const now = new Date()
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+                    return lectureDate >= weekAgo
+                  }).length
+                  return `${count} ${count === 1 ? 'recording' : 'recordings'}`
+                })()}</p>
               </div>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
                 <FiMic className="text-green-600 dark:text-green-400 text-base sm:text-xl" />
