@@ -1458,7 +1458,7 @@ function DashboardContent() {
                           {/* Question Card */}
                           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 shadow-md mb-4 sm:mb-6">
                             <div className="mb-3 sm:mb-2">
-                              <span className="px-2.5 py-1 sm:px-3 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full">
+                              <span className="px-2.5 py-1 sm:px-3 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold rounded-full">
                                 {learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ? 'Multiple Choice' : 'True/False'}
                               </span>
                             </div>
@@ -1481,12 +1481,12 @@ function DashboardContent() {
                                     disabled={showExplanation}
                                     className={`w-full text-left p-3 sm:p-4 rounded-lg border-2 transition-all text-sm sm:text-base ${
                                       showCorrect
-                                        ? 'bg-green-50 border-green-500 text-green-900'
+                                        ? 'bg-green-50 dark:bg-green-900/30 border-green-500 text-green-900 dark:text-green-300'
                                         : showIncorrect
-                                        ? 'bg-red-50 border-red-500 text-red-900'
+                                        ? 'bg-red-50 dark:bg-red-900/30 border-red-500 text-red-900 dark:text-red-300'
                                         : isSelected
-                                        ? 'bg-blue-50 border-blue-500 text-blue-900'
-                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-gray-700'
+                                        ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-900 dark:text-blue-300'
+                                        : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'
                                     } ${showExplanation ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                                   >
                                     <div className="flex items-center justify-between gap-2">
@@ -1503,8 +1503,8 @@ function DashboardContent() {
                             {showExplanation && (
                               <div className={`mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg ${
                                 selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                  ? 'bg-green-50 border-2 border-green-200'
-                                  : 'bg-red-50 border-2 border-red-200'
+                                  ? 'bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800'
+                                  : 'bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800'
                               }`}>
                                 <div className="flex items-start gap-2 sm:gap-3">
                                   <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -1519,15 +1519,15 @@ function DashboardContent() {
                                   <div className="flex-1">
                                     <p className={`font-semibold mb-1 text-sm sm:text-base ${
                                       selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                        ? 'text-green-900'
-                                        : 'text-red-900'
+                                        ? 'text-green-900 dark:text-green-300'
+                                        : 'text-red-900 dark:text-red-300'
                                     }`}>
                                       {selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer ? 'Correct!' : 'Incorrect'}
                                     </p>
                                     <p className={`text-xs sm:text-sm ${
                                       selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                        ? 'text-green-800'
-                                        : 'text-red-800'
+                                        ? 'text-green-800 dark:text-green-400'
+                                        : 'text-red-800 dark:text-red-400'
                                     }`}>
                                       {learnModeQuestions[currentQuestionIndex].explanation}
                                     </p>
