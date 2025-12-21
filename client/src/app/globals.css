@@ -289,7 +289,7 @@ body.dark {
 /* Content zoom animations for drill-down views */
 @keyframes zoomIn {
   from {
-    transform: scale(0.95);
+    transform: scale(0.9);
     opacity: 0;
   }
   to {

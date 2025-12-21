@@ -1222,7 +1222,7 @@ function DashboardContent() {
           if (!course) return null
 
           return (
-          <div className="animate-zoom-in">
+          <div key={course.id} className="animate-zoom-in">
             {/* Course Header */}
             <div className="mb-6">
               <button
