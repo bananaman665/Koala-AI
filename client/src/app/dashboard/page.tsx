@@ -2421,7 +2421,7 @@ function DashboardContent() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white pt-6">Classes</h2>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Manage your classes and share lectures with classmates</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your classes and share lectures with classmates</p>
               </div>
               <button
                 onClick={() => {
@@ -2478,7 +2478,7 @@ function DashboardContent() {
                     <FiBook className="w-10 h-10 text-gray-300 dark:text-gray-500" />
                   </div>
                   <p className="text-gray-700 dark:text-white font-semibold text-lg">No classes yet</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 max-w-xs mx-auto">Create a new class or join an existing one to get started</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-xs mx-auto">Create a new class or join an existing one to get started</p>
                 </div>
               )}
             </div>
