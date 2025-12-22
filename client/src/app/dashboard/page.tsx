@@ -996,6 +996,52 @@ function DashboardContent() {
               <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
         {!selectedCourse && (
           <>
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <FiClock className="text-blue-600 dark:text-blue-400 text-xl" />
+                </div>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                  {(() => {
+                    const totalSeconds = lectures.reduce((sum, lec) => sum + lec.duration, 0)
+                    const hours = Math.floor(totalSeconds / 3600)
+                    const minutes = Math.floor((totalSeconds % 3600) / 60)
+                    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+                  })()}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Study Time</p>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <FiFileText className="text-purple-600 dark:text-purple-400 text-xl" />
+                </div>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.length}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Lectures</p>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <FiBook className="text-teal-600 dark:text-teal-400 text-xl" />
+                </div>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{courses.length}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Courses</p>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <FiCheckCircle className="text-green-600 dark:text-green-400 text-xl" />
+                </div>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                  {lectures.length > 0
+                    ? `${Math.round((lectures.filter(l => l.transcription_status === 'completed').length / lectures.length) * 100)}%`
+                    : '0%'}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Completed</p>
+              </div>
+            </div>
+
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
