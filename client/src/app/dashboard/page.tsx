@@ -996,6 +996,21 @@ function DashboardContent() {
               <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
         {!selectedCourse && (
           <>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Courses</h1>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Organize your lectures by course</p>
+              </div>
+              <button
+                onClick={() => setShowNewCourseModal(true)}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-shadow flex items-center space-x-2"
+              >
+                <FiPlus />
+                <span className="hidden sm:inline">New Course</span>
+              </button>
+            </div>
+
             {/* Quick Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -1040,21 +1055,6 @@ function DashboardContent() {
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Completed</p>
               </div>
-            </div>
-
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Courses</h1>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Organize your lectures by course</p>
-              </div>
-              <button
-                onClick={() => setShowNewCourseModal(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-shadow flex items-center space-x-2"
-              >
-                <FiPlus />
-                <span className="hidden sm:inline">New Course</span>
-              </button>
             </div>
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
