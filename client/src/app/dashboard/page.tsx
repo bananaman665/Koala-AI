@@ -2125,32 +2125,13 @@ function DashboardContent() {
               </button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
-                <FiFileText className="text-blue-600 dark:text-blue-400 text-xl mb-2" />
-                <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{selectedLectureNotes ? selectedLectureNotes.split(/\s+/).length : 0}</p>
-                <p className="text-xs text-blue-700 dark:text-blue-300">Words</p>
-              </div>
-              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-200 dark:border-purple-800">
-                <FiBook className="text-purple-600 dark:text-purple-400 text-xl mb-2" />
-                <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{flashcards.length}</p>
-                <p className="text-xs text-purple-700 dark:text-purple-300">Flashcards</p>
-              </div>
-              <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
-                <FiCheckCircle className="text-green-600 dark:text-green-400 text-xl mb-2" />
-                <p className="text-2xl font-bold text-green-900 dark:text-green-100">{learnModeQuestions.length}</p>
-                <p className="text-xs text-green-700 dark:text-green-300">Quiz Questions</p>
-              </div>
-            </div>
-
             {/* Delete Lecture Button */}
             <button
               onClick={() => {
                 hapticButton()
                 setShowDeleteLectureModal(true)
               }}
-              className="w-full flex items-center justify-center space-x-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-4 py-4 rounded-xl border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/40 font-medium transition-colors"
+              className="w-full flex items-center justify-center space-x-2 bg-red-500 text-white px-4 py-4 rounded-xl hover:bg-red-600 font-medium transition-colors"
             >
               <FiTrash2 className="text-lg" />
               <span>Delete Lecture</span>
