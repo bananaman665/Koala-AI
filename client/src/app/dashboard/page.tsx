@@ -242,8 +242,32 @@ function DashboardContent() {
         .order('created_at', { ascending: false })
 
       if (error) {
+      } else if (!data || data.length === 0) {
+        // Create a default course for new users
+        // @ts-ignore - Supabase typing issue
+        const { data: newCourse, error: createError } = await (supabase as any)
+          .from('courses')
+          .insert([{
+            user_id: user!.id,
+            name: 'My Course',
+            code: '100',
+            professor: 'Prof. Smith',
+            category: 'General',
+            color: 'blue',
+            lectures: 0,
+            total_hours: 0,
+            last_updated: new Date().toISOString()
+          }])
+          .select()
+          .single()
+
+        if (!createError && newCourse) {
+          setCourses([newCourse])
+        } else {
+          setCourses([])
+        }
       } else {
-        setCourses(data || [])
+        setCourses(data)
       }
       setIsLoadingCourses(false)
     }
