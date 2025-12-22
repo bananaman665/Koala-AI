@@ -1070,41 +1070,41 @@ function DashboardContent() {
         <nav className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/[0.06] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-3 sm:px-4">
           <div className="flex justify-between items-center h-14 sm:h-16">
-            {/* Level Badge - De-emphasized */}
+            {/* Level Badge */}
             <button 
               onClick={() => { hapticButton(); setShowLevelModal(true) }}
-              className="flex items-center gap-1 px-2 py-1 rounded-full bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700/50 transition-all hover:scale-105 active:scale-95 opacity-80 hover:opacity-100"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-all hover:scale-105 active:scale-95"
             >
-              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
-                <span className="text-white text-[8px] font-bold">{levelInfo.level}</span>
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
+                <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
               </div>
-              <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400">{levelInfo.name}</span>
+              <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{levelInfo.name}</span>
             </button>
 
-            {/* Achievements - De-emphasized */}
+            {/* Achievements */}
             <button 
               onClick={() => { hapticButton(); setShowAchievementsModal(true) }}
-              className="flex items-center gap-1 px-2 py-1 rounded-full bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/30 transition-all hover:scale-105 active:scale-95 opacity-75 hover:opacity-100"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 transition-all hover:scale-105 active:scale-95"
             >
-              <Trophy className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-[10px] font-medium text-amber-500 dark:text-amber-400/70">{unlockedCount}/{totalCount}</span>
+              <Trophy className="w-4 h-4 text-amber-500" />
+              <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">{unlockedCount}/{totalCount}</span>
             </button>
 
-            {/* Streak - De-emphasized */}
-            <button onClick={() => { hapticButton(); setShowStreakModal(true) }} className="opacity-75 hover:opacity-100 transition-opacity">
+            {/* Streak */}
+            <button onClick={() => { hapticButton(); setShowStreakModal(true) }}>
               <StreakDisplay streak={streak} size="sm" />
             </button>
 
             {/* Settings */}
             <Link
               href="/settings"
-              className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-full transition-colors opacity-70 hover:opacity-100"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-full transition-colors"
             >
-              <FiSettings className="text-gray-400 dark:text-gray-500 text-lg" />
+              <FiSettings className="text-gray-500 dark:text-gray-400 text-lg" />
             </Link>
 
             {/* Avatar */}
-            <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white text-[10px] font-bold shadow-md shadow-purple-500/15">
+            <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-purple-500/20">
               {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
             </div>
           </div>
@@ -1174,50 +1174,26 @@ function DashboardContent() {
         {!selectedCourse && (
           <>
             {/* Hero Card - Greeting + Record CTA */}
-            <div className="bg-white dark:bg-[#1a2233]/80 rounded-2xl p-5 mb-8 border border-gray-100 dark:border-white/[0.06] animate-card-in">
+            <div className="bg-white dark:bg-[#1a2233]/80 rounded-3xl p-6 mb-6 border border-gray-100 dark:border-white/[0.06] animate-card-in">
               <div className="flex items-center justify-between">
-                <div className="flex-1 pr-4">
-                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1.5">
+                <div className="flex-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                     {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}{user?.user_metadata?.full_name || user?.user_metadata?.display_name ? `, ${(user?.user_metadata?.full_name || user?.user_metadata?.display_name).split(' ')[0]}` : ''}
                   </h1>
                   <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
-                    {(() => {
-                      const todayLectures = lectures.filter(l => new Date(l.created_at).toDateString() === new Date().toDateString()).length
-                      const totalLectures = lectures.length
-                      
-                      // Rotating motivational messages based on state
-                      if (totalLectures === 0) {
-                        return "Record your first lecture to begin your journey"
-                      }
-                      if (todayLectures === 0) {
-                        return "You're one recording away from today's goal"
-                      }
-                      if (todayLectures >= 1) {
-                        const messages = [
-                          "Nice momentum—keep it going!",
-                          "You're on fire today!",
-                          "Great progress—one more?",
-                        ]
-                        return messages[todayLectures % messages.length]
-                      }
-                      return `${totalLectures} lecture${totalLectures === 1 ? '' : 's'} captured so far`
-                    })()}
+                    {lectures.length === 0 ? 'Record your first lecture to get started!' : `You have ${lectures.length} lecture${lectures.length === 1 ? '' : 's'} recorded`}
                   </p>
                   <button
                     onClick={() => setShowReadyToRecordModal(true)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold text-sm rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:from-violet-500 hover:to-purple-500 transition-all duration-200 active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-medium text-sm rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
                   >
                     <Mic className="w-4 h-4" />
                     Start Recording
                   </button>
                 </div>
                 {/* Daily Goal Ring */}
-                <div className="flex flex-col items-center">
-                  <div className={`relative w-20 h-20 sm:w-24 sm:h-24 ${
-                    lectures.filter(l => new Date(l.created_at).toDateString() === new Date().toDateString()).length >= 1 
-                      ? 'ring-2 ring-green-500/20 ring-offset-2 ring-offset-white dark:ring-offset-[#1a2233]' 
-                      : ''
-                  } rounded-full transition-all duration-300`}>
+                <div className="flex flex-col items-center ml-4 sm:ml-6">
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24">
                     <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90">
                       <circle
                         cx="40"
@@ -1226,7 +1202,7 @@ function DashboardContent() {
                         stroke="currentColor"
                         strokeWidth="6"
                         fill="none"
-                        className="text-gray-100 dark:text-white/5 sm:hidden"
+                        className="text-gray-200 dark:text-white/10 sm:hidden"
                       />
                       <circle
                         cx="48"
@@ -1235,7 +1211,7 @@ function DashboardContent() {
                         stroke="currentColor"
                         strokeWidth="8"
                         fill="none"
-                        className="text-gray-100 dark:text-white/5 hidden sm:block"
+                        className="text-gray-200 dark:text-white/10 hidden sm:block"
                       />
                       <circle
                         cx="40"
@@ -1250,7 +1226,7 @@ function DashboardContent() {
                           return new Date(l.created_at).toDateString() === today
                         }).length, 1)) / 1}
                         strokeLinecap="round"
-                        className="text-green-500 transition-all duration-700 ease-out sm:hidden"
+                        className="text-green-500 transition-all duration-500 sm:hidden"
                       />
                       <circle
                         cx="48"
@@ -1265,7 +1241,7 @@ function DashboardContent() {
                           return new Date(l.created_at).toDateString() === today
                         }).length, 1)) / 1}
                         strokeLinecap="round"
-                        className="text-green-500 transition-all duration-700 ease-out hidden sm:block"
+                        className="text-green-500 transition-all duration-500 hidden sm:block"
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -1275,75 +1251,70 @@ function DashboardContent() {
                           return new Date(l.created_at).toDateString() === today
                         }).length}
                       </span>
-                      <span className="text-[8px] sm:text-[9px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wide">Today</span>
+                      <span className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">Today</span>
                     </div>
                   </div>
-                  <span className="text-[9px] text-gray-400 dark:text-gray-500 mt-1.5 font-medium">Daily Goal</span>
                 </div>
               </div>
             </div>
 
             {/* Stats Row - Horizontal Scroll Carousel */}
-            <div className="flex gap-2.5 mb-8 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+            <div className="flex gap-3 mb-6 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
               {[
                 {
-                  icon: <FiClock className="text-base" />,
+                  icon: <FiClock className="text-lg" />,
                   value: (() => {
                     const totalSeconds = lectures.reduce((sum, lec) => sum + lec.duration, 0)
                     const hours = Math.floor(totalSeconds / 3600)
                     const minutes = Math.floor((totalSeconds % 3600) / 60)
-                    if (totalSeconds === 0) return '—'
-                    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+                    return hours > 0 ? `${hours}h` : `${minutes}m`
                   })(),
-                  label: (() => {
-                    const totalSeconds = lectures.reduce((sum, lec) => sum + lec.duration, 0)
-                    return totalSeconds === 0 ? 'No focus yet' : 'Focused'
-                  })(),
+                  label: 'Time',
                   color: 'blue',
                   progress: Math.min(lectures.reduce((sum, lec) => sum + lec.duration, 0) / 3600, 5) / 5
                 },
                 {
-                  icon: <FiFileText className="text-base" />,
-                  value: lectures.length || '—',
-                  label: lectures.length === 0 ? 'No lectures' : lectures.length === 1 ? 'Captured' : 'Captured',
+                  icon: <FiFileText className="text-lg" />,
+                  value: lectures.length,
+                  label: 'Lectures',
                   color: 'purple',
                   progress: Math.min(lectures.length, 10) / 10
                 },
                 {
-                  icon: <FiBook className="text-base" />,
-                  value: courses.length || '—',
-                  label: courses.length === 0 ? 'No courses' : courses.length === 1 ? 'Course' : 'Courses',
+                  icon: <FiBook className="text-lg" />,
+                  value: courses.length,
+                  label: 'Courses',
                   color: 'teal',
                   progress: Math.min(courses.length, 5) / 5
                 },
                 {
-                  icon: <FiCheckCircle className="text-base" />,
-                  value: lectures.length > 0 ? `${Math.round((lectures.filter(l => l.transcription_status === 'completed').length / lectures.length) * 100)}%` : '—',
-                  label: lectures.length === 0 ? 'Pending' : 'Complete',
+                  icon: <FiCheckCircle className="text-lg" />,
+                  value: lectures.length > 0 ? `${Math.round((lectures.filter(l => l.transcription_status === 'completed').length / lectures.length) * 100)}%` : '0%',
+                  label: 'Done',
                   color: 'green',
                   progress: lectures.length > 0 ? lectures.filter(l => l.transcription_status === 'completed').length / lectures.length : 0
                 },
               ].map((stat, i) => (
                 <div
                   key={stat.label}
-                  className={`flex-shrink-0 w-[104px] sm:w-28 bg-white dark:bg-[#1a2233]/80 rounded-2xl p-3 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-${i + 1}`}
+                  className={`flex-shrink-0 w-36 sm:w-40 bg-white dark:bg-[#1a2233]/80 rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-${i + 1}`}
                 >
-                  <div className={`inline-flex items-center justify-center w-7 h-7 rounded-lg mb-1.5 ${
-                    stat.color === 'blue' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-500 dark:text-blue-400' :
-                    stat.color === 'purple' ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-500 dark:text-purple-400' :
-                    stat.color === 'teal' ? 'bg-teal-50 dark:bg-teal-500/10 text-teal-500 dark:text-teal-400' :
-                    'bg-green-50 dark:bg-green-500/10 text-green-500 dark:text-green-400'
+                  <div className={`inline-flex items-center justify-center w-8 h-8 rounded-xl mb-2 ${
+                    stat.color === 'blue' ? 'bg-blue-100 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400' :
+                    stat.color === 'purple' ? 'bg-purple-100 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400' :
+                    stat.color === 'teal' ? 'bg-teal-100 dark:bg-teal-500/15 text-teal-600 dark:text-teal-400' :
+                    'bg-green-100 dark:bg-green-500/15 text-green-600 dark:text-green-400'
                   }`}>
                     {stat.icon}
                   </div>
-                  <p className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                  <p className="text-[9px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wide mt-0.5">{stat.label}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
                   {/* Progress Dots */}
-                  <div className="flex justify-center gap-0.5 mt-1.5">
+                  <div className="flex justify-center gap-1 mt-2">
                     {[...Array(5)].map((_, j) => (
                       <div
                         key={j}
-                        className={`w-1 h-1 rounded-full transition-all duration-300 ${
+                        className={`w-1.5 h-1.5 rounded-full transition-colors ${
                           j < Math.ceil(stat.progress * 5)
                             ? stat.color === 'blue' ? 'bg-blue-500' :
                               stat.color === 'purple' ? 'bg-purple-500' :
@@ -1357,8 +1328,8 @@ function DashboardContent() {
               ))}
             </div>
 
-            {/* Section Header - My Courses */}
-            <div className="flex items-center justify-between mb-4 mt-6">
+            {/* Section Header */}
+            <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Courses</h2>
               <button
                 onClick={() => setShowNewCourseModal(true)}
@@ -1395,13 +1366,7 @@ function DashboardContent() {
               </div>
             ) : (
               courses.map((course, index) => {
-                const courseLectures = lectures.filter(l => l.course_id === course.id)
-                const lectureCount = courseLectures.length
-                const hasRecentActivity = courseLectures.some(l => {
-                  const lectureDate = new Date(l.created_at)
-                  const today = new Date()
-                  return lectureDate.toDateString() === today.toDateString()
-                })
+                const lectureCount = lectures.filter(l => l.course_id === course.id).length
                 return (
                 <SwipeToDelete
                   key={course.id}
@@ -1409,7 +1374,7 @@ function DashboardContent() {
                 >
                   <div
                     onClick={() => setSelectedCourse(course.id)}
-                    className={`bg-white dark:bg-[#1a2233]/80 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 transition-all duration-200 cursor-pointer group touch-manipulation active:scale-[0.98] hover:border-gray-200 dark:hover:border-white/10 animate-card-in card-stagger-${Math.min(index + 1, 6)}`}
+                    className={`bg-white dark:bg-[#1a2233]/80 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] animate-card-in card-stagger-${Math.min(index + 1, 6)}`}
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <div className={`w-11 h-11 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -1421,19 +1386,15 @@ function DashboardContent() {
                         </h3>
                         <p className="text-xs text-gray-400 dark:text-gray-500">
                           {lectureCount} lecture{lectureCount !== 1 ? 's' : ''}
-                          {hasRecentActivity && <span className="text-green-500 dark:text-green-400 ml-1.5">• Updated today</span>}
                         </p>
                       </div>
-                      <FiChevronRight className="text-gray-300 dark:text-white/30 text-lg flex-shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                      <FiChevronRight className="text-gray-300 dark:text-white/30 text-lg flex-shrink-0" />
                     </div>
-                    {/* Progress Bar with smooth animation */}
+                    {/* Progress Bar */}
                     <div className="h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${courseColorClasses[course.color]?.bar || 'bg-blue-500'}`}
-                        style={{ 
-                          width: `${lectureCount > 0 ? Math.min((lectureCount / 10) * 100, 100) : 0}%`,
-                          transition: 'width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                        }}
+                        className={`h-full rounded-full transition-all duration-500 ${courseColorClasses[course.color]?.bar || 'bg-blue-500'}`}
+                        style={{ width: `${lectureCount > 0 ? Math.min((lectureCount / 10) * 100, 100) : 0}%` }}
                       />
                     </div>
                   </div>
@@ -1444,22 +1405,22 @@ function DashboardContent() {
 
           {/* Continue Learning - only show if there are lectures */}
           {lectures.length > 0 && (
-            <div 
-              onClick={() => {
-                setSelectedLecture(lectures[0].id)
-                setActiveScreen('library')
-              }}
-              className="bg-white dark:bg-[#1a2233]/80 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mt-6 mb-5 cursor-pointer group transition-all duration-200 active:scale-[0.98] hover:border-green-200 dark:hover:border-green-500/20"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-green-500/20 group-hover:shadow-green-500/30 transition-shadow">
-                  <FiPlay className="text-white text-xl ml-0.5" />
+            <div className="bg-white dark:bg-[#1a2233]/80 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-4">
+              <div
+                onClick={() => {
+                  setSelectedLecture(lectures[0].id)
+                  setActiveScreen('library')
+                }}
+                className="cursor-pointer group flex items-center gap-3"
+              >
+                <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate mb-0.5">{lectures[0].title}</h3>
-                  <p className="text-xs text-green-600 dark:text-green-400 font-medium">Tap to continue & unlock quiz</p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5">Continue</p>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{lectures[0].title}</h3>
                 </div>
-                <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0" />
               </div>
             </div>
           )}
