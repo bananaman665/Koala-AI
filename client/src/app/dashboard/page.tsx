@@ -1907,7 +1907,7 @@ function DashboardContent() {
                     minute: '2-digit'
                   }) : 'N/A'}
                 </span>
-                <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                <span className="px-2 py-1 bg-teal-100 dark:bg-teal-500/15 text-teal-700 dark:text-teal-400 rounded-full text-xs font-medium">
                   Completed
                 </span>
               </div>
