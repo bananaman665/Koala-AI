@@ -148,7 +148,7 @@ export function LevelProgressModal({ isOpen, onClose, levelInfo, totalXP, xpHist
                   className={`aspect-square rounded-xl flex flex-col items-center justify-center text-center p-1 ${
                     levelInfo.level >= level.level
                       ? `bg-gradient-to-br ${getLevelColor(level.level)} text-white`
-                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-400 dark:text-blue-500'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-400'
                   }`}
                 >
                   <span className="text-lg font-bold">{level.level}</span>
