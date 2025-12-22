@@ -945,17 +945,25 @@ function DashboardContent() {
                 </Link>
               </div>
             </div>
-            <div className="flex items-center space-x-4 sm:space-x-5">
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* XP Badge */}
+              <div className="flex items-center gap-1 px-2.5 py-1 bg-amber-500/10 rounded-full">
+                <span className="text-amber-500 text-sm">💎</span>
+                <span className="text-amber-500 text-xs font-bold">{lectures.length * 50}</span>
+              </div>
+              {/* Streak */}
               <button onClick={() => { hapticButton(); setShowStreakModal(true) }}>
                 <StreakDisplay streak={streak} size="sm" />
               </button>
+              {/* Settings */}
               <Link
                 href="/settings"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-lg transition-colors"
+                className="p-1.5 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-full transition-colors"
               >
-                <FiSettings className="text-gray-400 dark:text-white/60 text-lg sm:text-base" />
+                <FiSettings className="text-gray-400 dark:text-white/50 text-lg" />
               </Link>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-semibold">
+              {/* Avatar */}
+              <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-purple-500/20">
                 {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
               </div>
             </div>
@@ -1017,149 +1025,247 @@ function DashboardContent() {
             isActive={activeScreen === 'dashboard'}
           >
             <div className="overflow-y-auto bg-gray-50 dark:bg-gradient-to-b dark:from-[#0f1420] dark:via-[#111827] dark:to-[#151c28] h-full relative">
-              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
+              <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-24 sm:pt-28`}>
         {!selectedCourse && (
           <>
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white">My Courses</h1>
-                <p className="text-gray-500 dark:text-gray-500 text-sm mt-1">Organize your lectures by course</p>
-              </div>
-              <div className="relative">
-                <div className="absolute inset-[-2px] rounded-full bg-blue-500/20 blur-sm" />
-                <button
-                  onClick={() => setShowNewCourseModal(true)}
-                  className="relative bg-gradient-to-b from-blue-500 to-blue-600 text-white w-11 h-11 rounded-full font-semibold shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all duration-150 ease-out active:scale-[0.95] active:shadow-md flex items-center justify-center"
-                >
-                  <FiPlus className="text-xl" />
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-              <div className="bg-white dark:bg-[#1a2233] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.10)] animate-card-in card-stagger-1">
-                <div className="flex items-center justify-between mb-1">
-                  <FiClock className="text-blue-600 dark:text-blue-400/55 text-xl" />
-                </div>
-                <p className="text-2xl font-medium text-gray-900 dark:text-white mt-1">
-                  {(() => {
-                    const totalSeconds = lectures.reduce((sum, lec) => sum + lec.duration, 0)
-                    const hours = Math.floor(totalSeconds / 3600)
-                    const minutes = Math.floor((totalSeconds % 3600) / 60)
-                    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
-                  })()}
-                </p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-1.5 tracking-wide">Study Time</p>
-              </div>
-
-              <div className="bg-white dark:bg-[#1a2233] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.10)] animate-card-in card-stagger-2">
-                <div className="flex items-center justify-between mb-1">
-                  <FiFileText className="text-purple-600 dark:text-purple-400/55 text-xl" />
-                </div>
-                <p className="text-2xl font-medium text-gray-900 dark:text-white mt-1">{lectures.length}</p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-1.5 tracking-wide">Lectures</p>
-              </div>
-
-              <div className="bg-white dark:bg-[#1a2233] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.10)] animate-card-in card-stagger-3">
-                <div className="flex items-center justify-between mb-1">
-                  <FiBook className="text-teal-600 dark:text-teal-400/55 text-xl" />
-                </div>
-                <p className="text-2xl font-medium text-gray-900 dark:text-white mt-1">{courses.length}</p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-1.5 tracking-wide">Courses</p>
-              </div>
-
-              <div className="bg-white dark:bg-[#1a2233] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.10)] animate-card-in card-stagger-4">
-                <div className="flex items-center justify-between mb-1">
-                  <FiCheckCircle className="text-green-600 dark:text-green-400/55 text-xl" />
-                </div>
-                <p className="text-2xl font-medium text-gray-900 dark:text-white mt-1">
-                  {lectures.length > 0
-                    ? `${Math.round((lectures.filter(l => l.transcription_status === 'completed').length / lectures.length) * 100)}%`
-                    : '0%'}
-                </p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-1.5 tracking-wide">Completed</p>
-              </div>
-            </div>
-
-        <div className="grid lg:grid-cols-3 gap-4">
-          {/* Main Courses Area */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Courses Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {isLoadingCourses ? (
-                <div className="col-span-2 text-center py-12">
-                  <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400">Loading courses...</p>
-                </div>
-              ) : (
-                courses.map((course) => (
-                  <SwipeToDelete
-                    key={course.id}
-                    onDelete={() => deleteCourse(course.id)}
+            {/* Hero Card - Greeting + Record CTA */}
+            <div className="bg-gradient-to-br from-violet-600/20 via-purple-600/10 to-blue-600/20 dark:from-violet-600/10 dark:via-purple-600/5 dark:to-blue-600/10 rounded-3xl p-6 mb-6 border border-white/10 animate-card-in">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">
+                    {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'} 👋
+                  </p>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    Ready to learn?
+                  </h1>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
+                    {lectures.length === 0 ? 'Record your first lecture to get started!' : `You have ${lectures.length} lecture${lectures.length === 1 ? '' : 's'} recorded`}
+                  </p>
+                  <button
+                    onClick={() => setShowReadyToRecordModal(true)}
+                    className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-2xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
                   >
-                    <div
-                      onClick={() => setSelectedCourse(course.id)}
-                      className="bg-white dark:bg-[#1a2233] rounded-xl border border-gray-200 dark:border-white/[0.06] p-5 shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.10)] active:shadow-lg transition-all cursor-pointer group touch-manipulation"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center group-active:scale-105 transition-transform flex-shrink-0`}>
-                            <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl`} />
-                          </div>
-                          <div className="min-w-0">
-                            <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white group-active:text-blue-600 transition-colors leading-tight">
-                              {course.name}
-                            </h3>
-                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                              {course.code && `${course.code} • `}
-                              {course.lectures} lectures
-                            </p>
-                          </div>
-                        </div>
-                        <FiChevronRight className="text-gray-300 dark:text-white/40 text-lg flex-shrink-0 ml-2" />
-                      </div>
-                    </div>
-                  </SwipeToDelete>
-                ))
-              )}
-            </div>
-
-            {/* Continue Learning & Study Tip */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Continue Learning - only show if there are lectures */}
-              {lectures.length > 0 && (
-                <div className="bg-white dark:bg-[#1a2233] rounded-xl shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.10)] border border-gray-200 dark:border-white/[0.06] p-4 sm:p-5">
-                  <div
-                    onClick={() => {
-                      setSelectedLecture(lectures[0].id)
-                      setActiveScreen('library')
-                    }}
-                    className="cursor-pointer group"
-                  >
-                    <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-3 uppercase tracking-[0.12em] font-medium">Continue Learning</p>
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/12 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
-                        <FiPlay className="text-blue-600 dark:text-blue-400/80 text-xl" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{lectures[0].title}</h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-500 truncate mt-1">{lectures[0].courses?.name || 'No course'}</p>
-                      </div>
-                      <FiChevronRight className="text-gray-400 dark:text-white/40 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0" />
+                    <Mic className="w-5 h-5" />
+                    Start Recording
+                  </button>
+                </div>
+                {/* Daily Goal Ring */}
+                <div className="hidden sm:flex flex-col items-center ml-6">
+                  <div className="relative w-24 h-24">
+                    <svg className="w-24 h-24 transform -rotate-90">
+                      <circle
+                        cx="48"
+                        cy="48"
+                        r="40"
+                        stroke="currentColor"
+                        strokeWidth="8"
+                        fill="none"
+                        className="text-gray-200 dark:text-white/10"
+                      />
+                      <circle
+                        cx="48"
+                        cy="48"
+                        r="40"
+                        stroke="currentColor"
+                        strokeWidth="8"
+                        fill="none"
+                        strokeDasharray={251.2}
+                        strokeDashoffset={251.2 - (251.2 * Math.min(lectures.filter(l => {
+                          const today = new Date().toDateString()
+                          return new Date(l.created_at).toDateString() === today
+                        }).length, 1)) / 1}
+                        strokeLinecap="round"
+                        className="text-green-500 transition-all duration-500"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {lectures.filter(l => {
+                          const today = new Date().toDateString()
+                          return new Date(l.created_at).toDateString() === today
+                        }).length}
+                      </span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">Today</span>
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
+            </div>
 
-              {/* Study Tip */}
-              <div className={`bg-white dark:bg-[#151c28] rounded-xl border border-gray-200 dark:border-white/[0.04] p-5 ${lectures.length === 0 ? 'sm:col-span-2' : ''}`}>
-                <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-3 uppercase tracking-[0.15em] font-medium flex items-center gap-2">
-                  <Lightbulb className="w-4 h-4 text-amber-500/90" />
-                  Study Tip
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+            {/* Stats Row - Gamified */}
+            <div className="grid grid-cols-4 gap-3 mb-6">
+              {[
+                {
+                  icon: <FiClock className="text-lg" />,
+                  value: (() => {
+                    const totalSeconds = lectures.reduce((sum, lec) => sum + lec.duration, 0)
+                    const hours = Math.floor(totalSeconds / 3600)
+                    const minutes = Math.floor((totalSeconds % 3600) / 60)
+                    return hours > 0 ? `${hours}h` : `${minutes}m`
+                  })(),
+                  label: 'Time',
+                  color: 'blue',
+                  progress: Math.min(lectures.reduce((sum, lec) => sum + lec.duration, 0) / 3600, 5) / 5
+                },
+                {
+                  icon: <FiFileText className="text-lg" />,
+                  value: lectures.length,
+                  label: 'Lectures',
+                  color: 'purple',
+                  progress: Math.min(lectures.length, 10) / 10
+                },
+                {
+                  icon: <FiBook className="text-lg" />,
+                  value: courses.length,
+                  label: 'Courses',
+                  color: 'teal',
+                  progress: Math.min(courses.length, 5) / 5
+                },
+                {
+                  icon: <FiCheckCircle className="text-lg" />,
+                  value: lectures.length > 0 ? `${Math.round((lectures.filter(l => l.transcription_status === 'completed').length / lectures.length) * 100)}%` : '0%',
+                  label: 'Done',
+                  color: 'green',
+                  progress: lectures.length > 0 ? lectures.filter(l => l.transcription_status === 'completed').length / lectures.length : 0
+                },
+              ].map((stat, i) => (
+                <div
+                  key={stat.label}
+                  className={`bg-white dark:bg-[#1a2233]/80 rounded-2xl p-3 sm:p-4 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-${i + 1}`}
+                >
+                  <div className={`inline-flex items-center justify-center w-8 h-8 rounded-xl mb-2 ${
+                    stat.color === 'blue' ? 'bg-blue-100 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400' :
+                    stat.color === 'purple' ? 'bg-purple-100 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400' :
+                    stat.color === 'teal' ? 'bg-teal-100 dark:bg-teal-500/15 text-teal-600 dark:text-teal-400' :
+                    'bg-green-100 dark:bg-green-500/15 text-green-600 dark:text-green-400'
+                  }`}>
+                    {stat.icon}
+                  </div>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
+                  {/* Progress Dots */}
+                  <div className="flex justify-center gap-1 mt-2">
+                    {[...Array(5)].map((_, j) => (
+                      <div
+                        key={j}
+                        className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                          j < Math.ceil(stat.progress * 5)
+                            ? stat.color === 'blue' ? 'bg-blue-500' :
+                              stat.color === 'purple' ? 'bg-purple-500' :
+                              stat.color === 'teal' ? 'bg-teal-500' : 'bg-green-500'
+                            : 'bg-gray-200 dark:bg-white/10'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Section Header */}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Courses</h2>
+              <button
+                onClick={() => setShowNewCourseModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-full transition-colors"
+              >
+                <FiPlus className="text-sm" />
+                Add
+              </button>
+            </div>
+
+        <div className="space-y-4">
+          {/* Courses Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {isLoadingCourses ? (
+              <div className="col-span-2 text-center py-12">
+                <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">Loading courses...</p>
+              </div>
+            ) : courses.length === 0 ? (
+              /* Empty State */
+              <div className="col-span-2 text-center py-12 px-6">
+                <div className="w-20 h-20 mx-auto mb-4 bg-violet-100 dark:bg-violet-500/10 rounded-3xl flex items-center justify-center">
+                  <FiBook className="text-violet-600 dark:text-violet-400 text-3xl" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No courses yet</h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">Create your first course to organize your lectures</p>
+                <button
+                  onClick={() => setShowNewCourseModal(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 text-white font-medium rounded-xl hover:bg-violet-700 transition-colors"
+                >
+                  <FiPlus />
+                  Create Course
+                </button>
+              </div>
+            ) : (
+              courses.map((course, index) => (
+                <SwipeToDelete
+                  key={course.id}
+                  onDelete={() => deleteCourse(course.id)}
+                >
+                  <div
+                    onClick={() => setSelectedCourse(course.id)}
+                    className={`bg-white dark:bg-[#1a2233]/80 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] animate-card-in card-stagger-${Math.min(index + 1, 6)}`}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-11 h-11 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                        <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-lg`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
+                          {course.name}
+                        </h3>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                          {course.lectures} lecture{course.lectures !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+                      <FiChevronRight className="text-gray-300 dark:text-white/30 text-lg flex-shrink-0" />
+                    </div>
+                    {/* Progress Bar */}
+                    <div className="h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${courseColorClasses[course.color]?.bar || 'bg-blue-500'}`}
+                        style={{ width: `${course.lectures > 0 ? Math.min((course.lectures / 10) * 100, 100) : 0}%` }}
+                      />
+                    </div>
+                  </div>
+                </SwipeToDelete>
+              ))
+            )}
+          </div>
+
+          {/* Continue Learning - only show if there are lectures */}
+          {lectures.length > 0 && (
+            <div className="bg-white dark:bg-[#1a2233]/80 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-4">
+              <div
+                onClick={() => {
+                  setSelectedLecture(lectures[0].id)
+                  setActiveScreen('library')
+                }}
+                className="cursor-pointer group flex items-center gap-3"
+              >
+                <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5">Continue</p>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{lectures[0].title}</h3>
+                </div>
+                <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0" />
+              </div>
+            </div>
+          )}
+
+          {/* Study Tip */}
+          <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 dark:from-amber-500/5 dark:to-orange-500/5 rounded-2xl border border-amber-200/50 dark:border-amber-500/10 p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-amber-100 dark:bg-amber-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] text-amber-700 dark:text-amber-400 uppercase tracking-wider font-semibold mb-1">Daily Tip</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                   {(() => {
                     const tips = [
                       "Review your notes within 24 hours to boost retention by up to 80%!",
@@ -1175,65 +1281,6 @@ function DashboardContent() {
                   })()}
                 </p>
               </div>
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="hidden lg:block space-y-4">
-            {/* Quick Actions */}
-            <div className="bg-white dark:bg-[#1a2233] rounded-xl shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.10)] border border-gray-200 dark:border-white/[0.06] p-4 sm:p-5">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <button
-                  onClick={() => setShowNewCourseModal(true)}
-                  className="w-full flex items-center space-x-3 p-3 bg-gradient-to-b from-blue-500 to-blue-600 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-150 active:scale-[0.98]"
-                >
-                  <FiPlus className="text-white" />
-                  <span className="font-medium text-white">New Course</span>
-                </button>
-                <button
-                  onClick={() => setActiveScreen('library')}
-                  className="w-full flex items-center space-x-3 p-3 bg-gray-50 dark:bg-white/[0.04] rounded-xl hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-all duration-150 active:scale-[0.98]"
-                >
-                  <FiSearch className="text-gray-500 dark:text-gray-400" />
-                  <span className="font-medium text-gray-900 dark:text-white">Search Notes</span>
-                </button>
-                <button
-                  onClick={() => setActiveScreen('library')}
-                  className="w-full flex items-center space-x-3 p-3 bg-gray-50 dark:bg-white/[0.04] rounded-xl hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-all duration-150 active:scale-[0.98]"
-                >
-                  <FiFolder className="text-gray-500 dark:text-gray-400" />
-                  <span className="font-medium text-gray-900 dark:text-white">Browse Library</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Tips */}
-            <div className="bg-white dark:bg-[#151c28] rounded-xl border border-gray-200 dark:border-white/[0.04] p-4 sm:p-5">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-amber-500/90" />
-                Pro Tip
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                Click on a course to see all lectures and record new ones. Organize your notes by subject for better study sessions.
-              </p>
-            </div>
-
-            {/* Storage */}
-            <div className="bg-white dark:bg-[#1a2233] rounded-xl shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.10)] border border-gray-200 dark:border-white/[0.06] p-4 sm:p-5">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Storage</h3>
-              <div className="mb-3">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-600 dark:text-gray-300">2.4 GB used</span>
-                  <span className="text-gray-600 dark:text-gray-300">of 10 GB</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full" style={{ width: '24%' }}></div>
-                </div>
-              </div>
-              <button className="text-blue-600 text-sm font-medium hover:text-blue-700">
-                Upgrade Storage →
-              </button>
             </div>
           </div>
         </div>
