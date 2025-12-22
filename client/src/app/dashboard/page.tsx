@@ -1011,39 +1011,6 @@ function DashboardContent() {
               </button>
             </div>
 
-            {/* Continue Learning */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4 sm:mb-8">
-              {lectures.length > 0 ? (
-                <div
-                  onClick={() => {
-                    setSelectedLecture(lectures[0].id)
-                    setActiveScreen('library')
-                  }}
-                  className="cursor-pointer group"
-                >
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide font-medium">Continue Learning</p>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                      <FiPlay className="text-blue-600 dark:text-blue-400 text-xl" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{lectures[0].title}</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{lectures[0].courses?.name || 'No course'}</p>
-                    </div>
-                    <FiChevronRight className="text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-2">
-                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <FiMic className="text-blue-600 dark:text-blue-400 text-xl" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Ready to start learning?</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Record your first lecture to get started</p>
-                </div>
-              )}
-            </div>
-
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Main Courses Area */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
@@ -1098,81 +1065,59 @@ function DashboardContent() {
               )}
             </div>
 
-            {/* Recent Lectures */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mt-6">
-              <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Recent Lectures</h3>
-                <button
-                  onClick={() => setActiveScreen('library')}
-                  className="text-blue-600 text-xs sm:text-sm font-medium hover:text-blue-700"
-                >
-                  View All
-                </button>
-              </div>
-
-              <div className="space-y-2 sm:space-y-3">
-                {isLoadingLectures ? (
-                  <div className="space-y-3">
-                    <SkeletonLectureCard />
-                    <SkeletonLectureCard />
-                    <SkeletonLectureCard />
-                  </div>
-                ) : lectures.length === 0 ? (
-                  <div className="text-center py-8">
-                    <FiFileText className="text-gray-300 text-4xl mx-auto mb-2" />
-                    <p className="text-gray-500 text-sm">No lectures recorded yet</p>
+            {/* Continue Learning & Study Tip */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+              {/* Continue Learning */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
+                {lectures.length > 0 ? (
+                  <div
+                    onClick={() => {
+                      setSelectedLecture(lectures[0].id)
+                      setActiveScreen('library')
+                    }}
+                    className="cursor-pointer group"
+                  >
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide font-medium">Continue Learning</p>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/15 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <FiPlay className="text-blue-600 dark:text-blue-400 text-xl" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{lectures[0].title}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{lectures[0].courses?.name || 'No course'}</p>
+                      </div>
+                      <FiChevronRight className="text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0" />
+                    </div>
                   </div>
                 ) : (
-                  lectures.slice(0, 3).map((lecture, index) => {
-                    const durationMinutes = Math.floor(lecture.duration / 60)
-                    const formattedDuration = durationMinutes >= 60
-                      ? `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`
-                      : `${durationMinutes}m`
-                    const createdDate = new Date(lecture.created_at)
-                    const now = new Date()
-                    const diffHours = Math.floor((now.getTime() - createdDate.getTime()) / (1000 * 60 * 60))
-                    const dateDisplay = diffHours < 24
-                      ? 'Today'
-                      : diffHours < 48
-                      ? 'Yesterday'
-                      : `${Math.floor(diffHours / 24)} days ago`
-
-                    return (
-                      <div key={lecture.id} className={`flex items-center justify-between p-3 sm:p-4 bg-gray-100 dark:bg-gray-700/50 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer card-press animate-list-item stagger-${index + 1}`}>
-                        <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
-                          <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                            lecture.transcription_status === 'completed' ? 'bg-teal-100 dark:bg-teal-900/30' :
-                            lecture.transcription_status === 'failed' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30'
-                          }`}>
-                            <FiFileText className={`text-base sm:text-lg ${
-                              lecture.transcription_status === 'completed' ? 'text-teal-600 dark:text-teal-400' :
-                              lecture.transcription_status === 'failed' ? 'text-red-600 dark:text-red-400' : 'text-yellow-600 dark:text-yellow-400'
-                            }`} />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="font-medium text-gray-900 dark:text-white text-sm sm:text-base truncate">{lecture.title}</div>
-                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{dateDisplay} • {formattedDuration}</div>
-                          </div>
-                        </div>
-                        <div className="flex-shrink-0 ml-2">
-                          {lecture.transcription_status === 'completed' ? (
-                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 text-xs font-medium rounded-full">
-                              Ready
-                            </span>
-                          ) : lecture.transcription_status === 'failed' ? (
-                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-medium rounded-full">
-                              Failed
-                            </span>
-                          ) : (
-                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-medium rounded-full hidden sm:inline">
-                              Processing
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })
+                  <div className="text-center py-4">
+                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <FiMic className="text-blue-600 dark:text-blue-400 text-xl" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1 text-sm">Ready to start?</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Record your first lecture</p>
+                  </div>
                 )}
+              </div>
+
+              {/* Study Tip */}
+              <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl shadow-sm border border-purple-200 dark:border-purple-500/20 p-4 sm:p-5">
+                <p className="text-xs text-purple-600 dark:text-purple-400 mb-3 uppercase tracking-wide font-medium">💡 Study Tip</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {(() => {
+                    const tips = [
+                      "Review your notes within 24 hours to boost retention by up to 80%!",
+                      "Use the Learn Mode quiz feature to test your knowledge and improve recall.",
+                      "Break study sessions into 25-minute chunks with 5-minute breaks.",
+                      "Record lectures in a quiet space for better transcription accuracy.",
+                      "Create flashcards from your notes to reinforce key concepts.",
+                      "Study the same material in different locations to strengthen memory."
+                    ]
+                    const today = new Date()
+                    const index = (today.getDate() + today.getMonth()) % tips.length
+                    return tips[index]
+                  })()}
+                </p>
               </div>
             </div>
           </div>
@@ -1181,7 +1126,7 @@ function DashboardContent() {
           <div className="hidden lg:block space-y-6">
             {/* Quick Actions */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
               <div className="space-y-3">
                 <button
                   onClick={() => setShowNewCourseModal(true)}
@@ -1190,11 +1135,17 @@ function DashboardContent() {
                   <FiPlus className="text-white" />
                   <span className="font-medium text-white">New Course</span>
                 </button>
-                <button className="w-full flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <button 
+                  onClick={() => setActiveScreen('library')}
+                  className="w-full flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                >
                   <FiSearch className="text-gray-600 dark:text-gray-300" />
                   <span className="font-medium text-gray-900 dark:text-white">Search Notes</span>
                 </button>
-                <button className="w-full flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <button 
+                  onClick={() => setActiveScreen('library')}
+                  className="w-full flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                >
                   <FiFolder className="text-gray-600 dark:text-gray-300" />
                   <span className="font-medium text-gray-900 dark:text-white">Browse Library</span>
                 </button>
