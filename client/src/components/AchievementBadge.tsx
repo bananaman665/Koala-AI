@@ -1,6 +1,6 @@
 'use client'
 
-import { Lock, Trophy } from 'lucide-react'
+import { Lock, Trophy, Rocket, Mic, Clock, Flame, Brain, BookOpen, Star, Sparkles, X } from 'lucide-react'
 import { ACHIEVEMENTS, AchievementId } from '@/hooks/useAchievements'
 
 interface AchievementCardProps {
@@ -102,14 +102,14 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
 
   // Group achievements by category
   const categories = [
-    { id: 'getting_started', name: 'Getting Started', icon: '🚀' },
-    { id: 'recording', name: 'Recording', icon: '🎙️' },
-    { id: 'time', name: 'Time', icon: '⏱️' },
-    { id: 'streak', name: 'Streaks', icon: '🔥' },
-    { id: 'quiz', name: 'Quizzes', icon: '🧠' },
-    { id: 'courses', name: 'Courses', icon: '📚' },
-    { id: 'level', name: 'Levels', icon: '⭐' },
-    { id: 'special', name: 'Special', icon: '✨' },
+    { id: 'getting_started', name: 'Getting Started', icon: Rocket },
+    { id: 'recording', name: 'Recording', icon: Mic },
+    { id: 'time', name: 'Time', icon: Clock },
+    { id: 'streak', name: 'Streaks', icon: Flame },
+    { id: 'quiz', name: 'Quizzes', icon: Brain },
+    { id: 'courses', name: 'Courses', icon: BookOpen },
+    { id: 'level', name: 'Levels', icon: Star },
+    { id: 'special', name: 'Special', icon: Sparkles },
   ]
 
   return (
@@ -134,9 +134,7 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             >
               <span className="sr-only">Close</span>
-              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="w-5 h-5 text-gray-500" />
             </button>
           </div>
           
@@ -158,10 +156,11 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
               const categoryAchievements = achievements.filter(a => a.category === category.id)
               if (categoryAchievements.length === 0) return null
 
+              const CategoryIcon = category.icon
               return (
                 <div key={category.id}>
                   <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
-                    <span>{category.icon}</span>
+                    <CategoryIcon className="w-4 h-4" />
                     {category.name}
                   </h3>
                   <div className="grid grid-cols-1 gap-3">
@@ -226,7 +225,9 @@ export function AchievementUnlockedModal({ isOpen, onClose, achievement }: Achie
           </div>
           
           <div className="relative">
-            <div className="text-5xl mb-3">🏆</div>
+            <div className="w-16 h-16 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center">
+              <Trophy className="w-8 h-8 text-white" />
+            </div>
             <h2 className="text-lg font-bold mb-1 opacity-90">Achievement Unlocked!</h2>
             <div className="w-20 h-20 mx-auto my-4 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
               <Icon className="w-10 h-10 text-white" />
