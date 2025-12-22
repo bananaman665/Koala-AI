@@ -1068,7 +1068,7 @@ function DashboardContent() {
                   <p className="text-gray-500 dark:text-gray-400">Loading courses...</p>
                 </div>
               ) : courses.length === 0 ? (
-                <div className="col-span-2 text-center py-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div className="col-span-2 text-center py-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                   <div className="w-14 h-14 bg-purple-100 dark:bg-purple-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
                     <FiBook className="w-7 h-7 text-purple-600 dark:text-purple-400" />
                   </div>
