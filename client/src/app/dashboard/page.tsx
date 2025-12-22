@@ -1045,9 +1045,18 @@ function DashboardContent() {
                   </button>
                 </div>
                 {/* Daily Goal Ring */}
-                <div className="hidden sm:flex flex-col items-center ml-6">
-                  <div className="relative w-24 h-24">
-                    <svg className="w-24 h-24 transform -rotate-90">
+                <div className="flex flex-col items-center ml-4 sm:ml-6">
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24">
+                    <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90">
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="32"
+                        stroke="currentColor"
+                        strokeWidth="6"
+                        fill="none"
+                        className="text-gray-200 dark:text-white/10 sm:hidden"
+                      />
                       <circle
                         cx="48"
                         cy="48"
@@ -1055,7 +1064,22 @@ function DashboardContent() {
                         stroke="currentColor"
                         strokeWidth="8"
                         fill="none"
-                        className="text-gray-200 dark:text-white/10"
+                        className="text-gray-200 dark:text-white/10 hidden sm:block"
+                      />
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="32"
+                        stroke="currentColor"
+                        strokeWidth="6"
+                        fill="none"
+                        strokeDasharray={201}
+                        strokeDashoffset={201 - (201 * Math.min(lectures.filter(l => {
+                          const today = new Date().toDateString()
+                          return new Date(l.created_at).toDateString() === today
+                        }).length, 1)) / 1}
+                        strokeLinecap="round"
+                        className="text-green-500 transition-all duration-500 sm:hidden"
                       />
                       <circle
                         cx="48"
@@ -1070,17 +1094,17 @@ function DashboardContent() {
                           return new Date(l.created_at).toDateString() === today
                         }).length, 1)) / 1}
                         strokeLinecap="round"
-                        className="text-green-500 transition-all duration-500"
+                        className="text-green-500 transition-all duration-500 hidden sm:block"
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                      <span className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                         {lectures.filter(l => {
                           const today = new Date().toDateString()
                           return new Date(l.created_at).toDateString() === today
                         }).length}
                       </span>
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">Today</span>
+                      <span className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">Today</span>
                     </div>
                   </div>
                 </div>
