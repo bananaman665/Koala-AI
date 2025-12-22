@@ -100,9 +100,11 @@ export function useLevel() {
 
   // Add XP and check for level up
   const addXP = useCallback((amount: number, action: string) => {
+    console.log('[useLevel] addXP called:', amount, action)
     setState(prev => {
       const oldLevel = getLevelInfo(prev.totalXP).level
       const newTotalXP = prev.totalXP + amount
+      console.log('[useLevel] XP updated:', prev.totalXP, '->', newTotalXP)
       const newLevelNum = getLevelInfo(newTotalXP).level
 
       // Check for level up

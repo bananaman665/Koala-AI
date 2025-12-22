@@ -745,12 +745,16 @@ function DashboardContent() {
       recordActivity()
 
       // Award XP for recording lecture
+      console.log('[SaveLecture] Awarding XP...')
       const isFirstLecture = lectures.length === 0
       if (isFirstLecture) {
+        console.log('[SaveLecture] First lecture bonus! +', XP_REWARDS.FIRST_LECTURE)
         addXP(XP_REWARDS.FIRST_LECTURE, 'First lecture recorded!')
       } else {
+        console.log('[SaveLecture] Regular lecture +', XP_REWARDS.RECORD_LECTURE)
         addXP(XP_REWARDS.RECORD_LECTURE, 'Recorded a lecture')
       }
+      console.log('[SaveLecture] Notes bonus +', XP_REWARDS.GENERATE_NOTES)
       addXP(XP_REWARDS.GENERATE_NOTES, 'Generated notes')
 
       // Check achievements
@@ -1273,7 +1277,9 @@ function DashboardContent() {
                 </button>
               </div>
             ) : (
-              courses.map((course, index) => (
+              courses.map((course, index) => {
+                const lectureCount = lectures.filter(l => l.course_id === course.id).length
+                return (
                 <SwipeToDelete
                   key={course.id}
                   onDelete={() => deleteCourse(course.id)}
@@ -1291,7 +1297,7 @@ function DashboardContent() {
                           {course.name}
                         </h3>
                         <p className="text-xs text-gray-400 dark:text-gray-500">
-                          {course.lectures} lecture{course.lectures !== 1 ? 's' : ''}
+                          {lectureCount} lecture{lectureCount !== 1 ? 's' : ''}
                         </p>
                       </div>
                       <FiChevronRight className="text-gray-300 dark:text-white/30 text-lg flex-shrink-0" />
@@ -1300,12 +1306,12 @@ function DashboardContent() {
                     <div className="h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${courseColorClasses[course.color]?.bar || 'bg-blue-500'}`}
-                        style={{ width: `${course.lectures > 0 ? Math.min((course.lectures / 10) * 100, 100) : 0}%` }}
+                        style={{ width: `${lectureCount > 0 ? Math.min((lectureCount / 10) * 100, 100) : 0}%` }}
                       />
                     </div>
                   </div>
                 </SwipeToDelete>
-              ))
+              )})
             )}
           </div>
 
