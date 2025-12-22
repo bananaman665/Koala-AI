@@ -997,7 +997,7 @@ function DashboardContent() {
         {!selectedCourse && (
           <>
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Courses</h1>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Organize your lectures by course</p>
@@ -1012,7 +1012,7 @@ function DashboardContent() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4">
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <FiClock className="text-blue-600 dark:text-blue-400 text-xl" />
@@ -1057,9 +1057,9 @@ function DashboardContent() {
               </div>
             </div>
 
-        <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
+        <div className="grid lg:grid-cols-3 gap-4">
           {/* Main Courses Area */}
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="lg:col-span-2 space-y-4">
             {/* Courses Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {isLoadingCourses ? (
@@ -1105,7 +1105,7 @@ function DashboardContent() {
             </div>
 
             {/* Continue Learning & Study Tip */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Continue Learning */}
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
                 {lectures.length > 0 ? (
