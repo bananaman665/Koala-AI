@@ -1806,7 +1806,16 @@ function DashboardContent() {
                       : `${Math.floor(diffHours / 24)} days ago`
 
                     return (
-                      <div key={lecture.id} className="p-4 bg-white dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-md transition-all cursor-pointer">
+                      <div 
+                        key={lecture.id} 
+                        onClick={() => {
+                          hapticSelection()
+                          setSelectedLecture(lecture.id)
+                          setSelectedCourse(null)
+                          setActiveScreen('library')
+                        }}
+                        className="p-4 bg-white dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-md transition-all cursor-pointer"
+                      >
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold text-gray-900 dark:text-white">{lecture.title}</h4>
                           <span className={`text-xs px-3 py-1 rounded-full ${
