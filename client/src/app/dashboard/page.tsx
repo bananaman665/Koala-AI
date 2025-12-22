@@ -2343,7 +2343,7 @@ function DashboardContent() {
               <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Top Courses</h3>
               <div className="space-y-4">
                 {courses.length === 0 ? (
-                  <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-4">No courses yet</p>
+                  <p className="text-sm text-gray-300 dark:text-gray-600 text-center py-4">No courses yet</p>
                 ) : (
                   courses.slice(0, 3).map((course) => {
                     const courseLectures = lectures.filter(l => l.course_id === course.id)
@@ -2376,7 +2376,7 @@ function DashboardContent() {
               <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Recent Activity</h3>
               <div className="space-y-3">
                 {lectures.length === 0 ? (
-                  <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-4">No activity yet</p>
+                  <p className="text-sm text-gray-300 dark:text-gray-600 text-center py-4">No activity yet</p>
                 ) : (
                   lectures.slice(0, 5).map((lecture) => {
                     const createdDate = new Date(lecture.created_at)
