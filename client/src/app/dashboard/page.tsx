@@ -92,6 +92,94 @@ function DashboardContent() {
   // Ref to store captured audio blob for saving
   const capturedAudioBlobRef = useRef<Blob | null>(null)
 
+  // Audio visualization state
+  const [audioLevels, setAudioLevels] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0, 0])
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const mediaStreamRef = useRef<MediaStream | null>(null)
+  const animationFrameRef = useRef<number | null>(null)
+
+  // Audio visualization effect
+  useEffect(() => {
+    if (isRecording && !isPaused) {
+      // Start audio visualization
+      const startAudioVisualization = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+          mediaStreamRef.current = stream
+          
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+          audioContextRef.current = audioContext
+          
+          const analyser = audioContext.createAnalyser()
+          analyser.fftSize = 32
+          analyserRef.current = analyser
+          
+          const source = audioContext.createMediaStreamSource(stream)
+          source.connect(analyser)
+          
+          const dataArray = new Uint8Array(analyser.frequencyBinCount)
+          
+          const updateLevels = () => {
+            if (!analyserRef.current) return
+            
+            analyserRef.current.getByteFrequencyData(dataArray)
+            
+            // Get 9 evenly spaced frequency bands and normalize to 0-32 range for height
+            const levels: number[] = []
+            const bandCount = 9
+            const step = Math.floor(dataArray.length / bandCount)
+            
+            for (let i = 0; i < bandCount; i++) {
+              const value = dataArray[i * step] || 0
+              // Normalize: input 0-255, output 8-32 pixels
+              const normalized = Math.max(8, (value / 255) * 32)
+              levels.push(normalized)
+            }
+            
+            setAudioLevels(levels)
+            animationFrameRef.current = requestAnimationFrame(updateLevels)
+          }
+          
+          updateLevels()
+        } catch (err) {
+          console.error('Failed to start audio visualization:', err)
+        }
+      }
+      
+      startAudioVisualization()
+    } else {
+      // Stop audio visualization
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+        animationFrameRef.current = null
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close()
+        audioContextRef.current = null
+      }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop())
+        mediaStreamRef.current = null
+      }
+      analyserRef.current = null
+      setAudioLevels([0, 0, 0, 0, 0, 0, 0, 0, 0])
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close()
+      }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop())
+      }
+    }
+  }, [isRecording, isPaused])
+
   const [showTranscript, setShowTranscript] = useState(false)
   const [showNotes, setShowNotes] = useState(false)
   const [studyViewMode, setStudyViewMode] = useState<'notes' | 'flashcards' | 'learn'>('notes')
@@ -3107,12 +3195,12 @@ function DashboardContent() {
 
               {/* Waveform Visualization */}
               <div className="flex items-center justify-center gap-1 h-8 mb-4">
-                {[...Array(9)].map((_, i) => (
+                {audioLevels.map((level, i) => (
                   <div
                     key={i}
-                    className={`w-1 bg-red-500 rounded-full ${!isPaused ? 'waveform-bar' : 'h-2'}`}
+                    className="w-1 bg-red-500 rounded-full transition-all duration-75"
                     style={{
-                      height: isPaused ? '8px' : `${Math.random() * 24 + 8}px`,
+                      height: isPaused ? '8px' : `${level}px`,
                     }}
                   />
                 ))}
