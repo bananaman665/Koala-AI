@@ -2437,7 +2437,7 @@ function DashboardContent() {
             isActive={activeScreen === 'feed'}
           >
             <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
+              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-24 sm:pt-28`}>
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex-1 min-w-0">
