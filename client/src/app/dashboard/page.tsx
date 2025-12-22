@@ -1015,7 +1015,10 @@ function DashboardContent() {
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4 sm:mb-8">
               {lectures.length > 0 ? (
                 <div
-                  onClick={() => setSelectedLecture(lectures[0].id)}
+                  onClick={() => {
+                    setSelectedLecture(lectures[0].id)
+                    setActiveScreen('library')
+                  }}
                   className="cursor-pointer group"
                 >
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide font-medium">Continue Learning</p>
