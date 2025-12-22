@@ -12,7 +12,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(false)
+  const [isDark, setIsDark] = useState(true)
   const [isMounted, setIsMounted] = useState(false)
 
   // Update theme-color meta tag for iOS status bar
@@ -40,21 +40,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Load theme preference from localStorage on mount (default to light mode)
+  // Load theme preference from localStorage on mount (default to dark mode)
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme-preference')
 
-    if (savedTheme === 'dark') {
-      setIsDark(true)
-      document.documentElement.classList.add('dark')
-      updateThemeColor(true)
-      updateStatusBarStyle(true)
-    } else {
-      // Default to light mode (ignore system preference)
+    if (savedTheme === 'light') {
       setIsDark(false)
       document.documentElement.classList.remove('dark')
       updateThemeColor(false)
       updateStatusBarStyle(false)
+    } else {
+      // Default to dark mode
+      setIsDark(true)
+      document.documentElement.classList.add('dark')
+      updateThemeColor(true)
+      updateStatusBarStyle(true)
     }
 
     setIsMounted(true)
@@ -92,7 +92,7 @@ export function useTheme() {
   // Return safe defaults during SSR/static generation instead of throwing
   if (context === undefined) {
     return {
-      isDark: false,
+      isDark: true,
       toggleDarkMode: () => {},
     }
   }
