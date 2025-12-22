@@ -978,35 +978,25 @@ function DashboardContent() {
         <nav className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/[0.06] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
-            <div className="flex items-center space-x-4 sm:space-x-8">
-              <Link href="/" className="flex items-center space-x-1.5 sm:space-x-2">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <FiBook className="text-white text-sm sm:text-base" />
-                </div>
-                <span className="text-base sm:text-xl font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Koala.ai
-                </span>
+            <div className="hidden md:flex items-center space-x-5 lg:space-x-7">
+              <Link
+                href="/dashboard"
+                className={`text-sm lg:text-base ${activeScreen === 'dashboard' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+              >
+                Dashboard
               </Link>
-              <div className="hidden md:flex space-x-5 lg:space-x-7">
-                <Link
-                  href="/dashboard"
-                  className={`text-sm lg:text-base ${activeScreen === 'dashboard' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/dashboard/library"
-                  className={`text-sm lg:text-base ${activeScreen === 'library' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-                >
-                  Library
-                </Link>
-                <Link
-                  href="/dashboard/analytics"
-                  className={`text-sm lg:text-base ${activeScreen === 'analytics' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-                >
-                  Analytics
-                </Link>
-              </div>
+              <Link
+                href="/dashboard/library"
+                className={`text-sm lg:text-base ${activeScreen === 'library' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+              >
+                Library
+              </Link>
+              <Link
+                href="/dashboard/analytics"
+                className={`text-sm lg:text-base ${activeScreen === 'analytics' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+              >
+                Analytics
+              </Link>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Level Badge */}
