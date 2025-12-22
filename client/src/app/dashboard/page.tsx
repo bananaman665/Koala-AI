@@ -912,48 +912,48 @@ function DashboardContent() {
           />
         )}
         {/* Top Navigation */}
-        <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800/95 dark:backdrop-blur-xl border-b border-gray-200 dark:border-white/[0.06] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
-            <div className="flex items-center space-x-3 sm:space-x-8">
-              <Link href="/" className="flex items-center space-x-1 sm:space-x-2">
+            <div className="flex items-center space-x-4 sm:space-x-8">
+              <Link href="/" className="flex items-center space-x-1.5 sm:space-x-2">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <FiBook className="text-white text-sm sm:text-base" />
                 </div>
-                <span className="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="text-base sm:text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Koala.ai
                 </span>
               </Link>
               <div className="hidden md:flex space-x-4 lg:space-x-6">
                 <Link
                   href="/dashboard"
-                  className={`text-sm lg:text-base ${activeScreen === 'dashboard' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900 dark:text-white'}`}
+                  className={`text-sm lg:text-base ${activeScreen === 'dashboard' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/dashboard/library"
-                  className={`text-sm lg:text-base ${activeScreen === 'library' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900 dark:text-white'}`}
+                  className={`text-sm lg:text-base ${activeScreen === 'library' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                 >
                   Library
                 </Link>
                 <Link
                   href="/dashboard/analytics"
-                  className={`text-sm lg:text-base ${activeScreen === 'analytics' ? 'text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-900 dark:text-white'}`}
+                  className={`text-sm lg:text-base ${activeScreen === 'analytics' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                 >
                   Analytics
                 </Link>
               </div>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="flex items-center space-x-3 sm:space-x-4">
               <button onClick={() => { hapticButton(); setShowStreakModal(true) }}>
                 <StreakDisplay streak={streak} size="sm" />
               </button>
               <Link
                 href="/settings"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-lg"
               >
-                <FiSettings className="text-gray-600 dark:text-white text-lg sm:text-base" />
+                <FiSettings className="text-gray-500 dark:text-white/70 text-lg sm:text-base" />
               </Link>
               <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-semibold">
                 {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
@@ -1024,24 +1024,23 @@ function DashboardContent() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Courses</h1>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Organize your lectures by course</p>
+                <p className="text-gray-500 dark:text-gray-400/80 text-sm mt-1">Organize your lectures by course</p>
               </div>
               <button
                 onClick={() => setShowNewCourseModal(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-shadow flex items-center space-x-2"
+                className="bg-gradient-to-b from-blue-500 to-blue-600 text-white w-11 h-11 rounded-full font-semibold shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all flex items-center justify-center"
               >
-                <FiPlus />
-                <span className="hidden sm:inline">New Course</span>
+                <FiPlus className="text-xl" />
               </button>
             </div>
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <FiClock className="text-blue-600 dark:text-blue-400 text-xl" />
+              <div className="bg-white dark:bg-[#1C2432] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.12)]">
+                <div className="flex items-center justify-between mb-1">
+                  <FiClock className="text-blue-600 dark:text-blue-400/70 text-xl" />
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-2xl font-semibold text-gray-900 dark:text-white mt-1">
                   {(() => {
                     const totalSeconds = lectures.reduce((sum, lec) => sum + lec.duration, 0)
                     const hours = Math.floor(totalSeconds / 3600)
@@ -1049,35 +1048,35 @@ function DashboardContent() {
                     return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
                   })()}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Study Time</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400/80 mt-1.5">Study Time</p>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <FiFileText className="text-purple-600 dark:text-purple-400 text-xl" />
+              <div className="bg-white dark:bg-[#1C2432] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.12)]">
+                <div className="flex items-center justify-between mb-1">
+                  <FiFileText className="text-purple-600 dark:text-purple-400/70 text-xl" />
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{lectures.length}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Lectures</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-white mt-1">{lectures.length}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400/80 mt-1.5">Lectures</p>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <FiBook className="text-teal-600 dark:text-teal-400 text-xl" />
+              <div className="bg-white dark:bg-[#1C2432] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.12)]">
+                <div className="flex items-center justify-between mb-1">
+                  <FiBook className="text-teal-600 dark:text-teal-400/70 text-xl" />
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{courses.length}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Courses</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-white mt-1">{courses.length}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400/80 mt-1.5">Courses</p>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <FiCheckCircle className="text-green-600 dark:text-green-400 text-xl" />
+              <div className="bg-white dark:bg-[#1C2432] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.12)]">
+                <div className="flex items-center justify-between mb-1">
+                  <FiCheckCircle className="text-green-600 dark:text-green-400/70 text-xl" />
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-2xl font-semibold text-gray-900 dark:text-white mt-1">
                   {lectures.length > 0
                     ? `${Math.round((lectures.filter(l => l.transcription_status === 'completed').length / lectures.length) * 100)}%`
                     : '0%'}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Completed</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400/80 mt-1.5">Completed</p>
               </div>
             </div>
 
@@ -1099,20 +1098,20 @@ function DashboardContent() {
                   >
                     <div
                       onClick={() => setSelectedCourse(course.id)}
-                      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-6 active:shadow-lg transition-all cursor-pointer group touch-manipulation"
+                      className="bg-white dark:bg-[#1E2738] rounded-xl border border-gray-200 dark:border-white/[0.06] p-5 shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.12)] active:shadow-lg transition-all cursor-pointer group touch-manipulation"
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div className={`w-12 h-12 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center group-active:scale-110 transition-transform`}>
                           <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-xl -ml-0.5`} />
                         </div>
-                        <span className="text-xs text-gray-400 dark:text-gray-500">{course.lectures} lectures</span>
+                        <FiChevronRight className="text-gray-300 dark:text-white/40 text-lg mt-1" />
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-active:text-blue-600 transition-colors">
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2 group-active:text-blue-600 transition-colors">
                         {course.name}
                       </h3>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                      <p className="text-xs text-gray-400 dark:text-gray-400/80">
                         {course.code && `${course.code} • `}
-                        {course.professor || 'No professor set'}
+                        {course.lectures} lectures
                       </p>
                     </div>
                   </SwipeToDelete>
@@ -1124,7 +1123,7 @@ function DashboardContent() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Continue Learning - only show if there are lectures */}
               {lectures.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
+                <div className="bg-white dark:bg-[#1C2432] rounded-xl shadow-sm dark:shadow-[0_6px_12px_rgba(0,0,0,0.12)] border border-gray-200 dark:border-white/[0.06] p-4 sm:p-5">
                   <div
                     onClick={() => {
                       setSelectedLecture(lectures[0].id)
@@ -1132,28 +1131,28 @@ function DashboardContent() {
                     }}
                     className="cursor-pointer group"
                   >
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide font-medium">Continue Learning</p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400/80 mb-3 uppercase tracking-wider font-medium">Continue Learning</p>
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/15 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
                         <FiPlay className="text-blue-600 dark:text-blue-400 text-xl" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{lectures[0].title}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{lectures[0].courses?.name || 'No course'}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400/80 truncate">{lectures[0].courses?.name || 'No course'}</p>
                       </div>
-                      <FiChevronRight className="text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0" />
+                      <FiChevronRight className="text-gray-400 dark:text-white/40 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0" />
                     </div>
                   </div>
                 </div>
               )}
 
               {/* Study Tip */}
-              <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5 ${lectures.length === 0 ? 'sm:col-span-2' : ''}`}>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide font-medium flex items-center gap-1.5">
+              <div className={`bg-white dark:bg-[#161D29] rounded-xl border border-gray-200 dark:border-white/[0.04] p-4 sm:p-5 ${lectures.length === 0 ? 'sm:col-span-2' : ''}`}>
+                <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-3 uppercase tracking-[0.1em] font-medium flex items-center gap-1.5">
                   <Lightbulb className="w-4 h-4 text-amber-500" />
                   Study Tip
                 </p>
-                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                   {(() => {
                     const tips = [
                       "Review your notes within 24 hours to boost retention by up to 80%!",
@@ -2852,27 +2851,27 @@ function DashboardContent() {
       `}</style>
 
       {/* Mobile Bottom Navigation with Center Record Button */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50 pb-8">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-t border-gray-200 dark:border-white/[0.06] z-50 pb-8">
         <div className="flex items-end justify-evenly h-16 px-4 pt-2">
           {/* Home */}
           <button
             onClick={() => { hapticSelection(); setActiveScreen('dashboard') }}
-            className={`flex flex-col items-center justify-center gap-0.5 transition-colors min-w-[48px] ${
-              activeScreen === 'dashboard' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-300'
+            className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
+              activeScreen === 'dashboard' ? 'text-blue-600' : 'text-gray-400 dark:text-gray-500'
             }`}
           >
-            <FiHome className="text-xl" />
+            <FiHome className={`${activeScreen === 'dashboard' ? 'text-[22px]' : 'text-xl'}`} />
             <span className="text-[10px] font-medium">Home</span>
           </button>
 
           {/* Library */}
           <button
             onClick={() => { hapticSelection(); setActiveScreen('library') }}
-            className={`flex flex-col items-center justify-center gap-0.5 transition-colors min-w-[48px] ${
-              activeScreen === 'library' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-300'
+            className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
+              activeScreen === 'library' ? 'text-blue-600' : 'text-gray-400 dark:text-gray-500'
             }`}
           >
-            <FiBook className="text-xl" />
+            <FiBook className={`${activeScreen === 'library' ? 'text-[22px]' : 'text-xl'}`} />
             <span className="text-[10px] font-medium">Library</span>
           </button>
 
@@ -2924,8 +2923,8 @@ function DashboardContent() {
               }
             }}
             disabled={isStoppingRecording || isGeneratingNotes || isTranscribing}
-            className={`rounded-full shadow-lg flex items-center justify-center transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 mb-[-8px] ${
-              isRecording ? 'bg-red-600 hover:bg-red-700 animate-recording-pulse' : 'bg-blue-600 hover:bg-blue-700'
+            className={`rounded-full shadow-lg shadow-blue-500/20 flex items-center justify-center transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 mb-[-8px] ${
+              isRecording ? 'bg-red-600 hover:bg-red-700 animate-recording-pulse shadow-red-500/20' : 'bg-gradient-to-b from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
             }`}
           >
             {isStoppingRecording || isGeneratingNotes || isTranscribing ? (
@@ -2939,22 +2938,22 @@ function DashboardContent() {
           {/* Analytics */}
           <button
             onClick={() => { hapticSelection(); setActiveScreen('analytics') }}
-            className={`flex flex-col items-center justify-center gap-0.5 transition-colors min-w-[48px] ${
-              activeScreen === 'analytics' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-300'
+            className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
+              activeScreen === 'analytics' ? 'text-blue-600' : 'text-gray-400 dark:text-gray-500'
             }`}
           >
-            <FiBarChart2 className="text-xl" />
+            <FiBarChart2 className={`${activeScreen === 'analytics' ? 'text-[22px]' : 'text-xl'}`} />
             <span className="text-[10px] font-medium">Analytics</span>
           </button>
 
           {/* Classes */}
           <button
             onClick={() => { hapticSelection(); setActiveScreen('feed') }}
-            className={`flex flex-col items-center justify-center gap-0.5 transition-colors min-w-[48px] ${
-              activeScreen === 'feed' ? 'text-blue-600' : 'text-gray-600 dark:text-gray-300'
+            className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
+              activeScreen === 'feed' ? 'text-blue-600' : 'text-gray-400 dark:text-gray-500'
             }`}
           >
-            <FiUsers className="text-xl" />
+            <FiUsers className={`${activeScreen === 'feed' ? 'text-[22px]' : 'text-xl'}`} />
             <span className="text-[10px] font-medium">Classes</span>
           </button>
         </div>
