@@ -1122,9 +1122,9 @@ function DashboardContent() {
 
             {/* Continue Learning & Study Tip */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Continue Learning */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
-                {lectures.length > 0 ? (
+              {/* Continue Learning - only show if there are lectures */}
+              {lectures.length > 0 && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
                   <div
                     onClick={() => {
                       setSelectedLecture(lectures[0].id)
@@ -1144,19 +1144,11 @@ function DashboardContent() {
                       <FiChevronRight className="text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0" />
                     </div>
                   </div>
-                ) : (
-                  <div className="text-center py-4">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
-                      <FiMic className="text-blue-600 dark:text-blue-400 text-xl" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Ready to start?</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Record your first lecture</p>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Study Tip */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
+              <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5 ${lectures.length === 0 ? 'sm:col-span-2' : ''}`}>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide font-medium flex items-center gap-1.5">
                   <Lightbulb className="w-4 h-4 text-amber-500" />
                   Study Tip
