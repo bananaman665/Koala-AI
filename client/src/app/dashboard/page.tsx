@@ -1101,8 +1101,11 @@ function DashboardContent() {
               </div>
 
               {/* Study Tip */}
-              <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl shadow-sm border border-purple-200 dark:border-purple-500/20 p-4 sm:p-5">
-                <p className="text-xs text-purple-600 dark:text-purple-400 mb-3 uppercase tracking-wide font-medium">💡 Study Tip</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide font-medium flex items-center gap-1.5">
+                  <Lightbulb className="w-4 h-4 text-amber-500" />
+                  Study Tip
+                </p>
                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                   {(() => {
                     const tips = [
