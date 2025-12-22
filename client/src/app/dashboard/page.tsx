@@ -21,6 +21,10 @@ import { useToast } from '@/components/Toast'
 import { SkeletonLectureCard, SkeletonCourseCard, SkeletonStats } from '@/components/Skeleton'
 import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
+import { useLevel, XP_REWARDS } from '@/hooks/useLevel'
+import { useAchievements, UserStats } from '@/hooks/useAchievements'
+import { LevelBadge, LevelProgressModal, LevelUpModal } from '@/components/LevelBadge'
+import { AchievementsModal, AchievementUnlockedModal } from '@/components/AchievementBadge'
 
 // Color classes for course icons (full class names for Tailwind to detect)
 const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
@@ -48,6 +52,18 @@ function DashboardContent() {
   const { user } = useAuth()
   const toast = useToast()
   const { streak, recordActivity, isActiveToday } = useStreak()
+  const { totalXP, levelInfo, addXP, showLevelUp, newLevel, dismissLevelUp, xpHistory } = useLevel()
+  const { 
+    unlockedCount, 
+    totalCount, 
+    checkAchievements, 
+    getAllAchievements, 
+    newAchievement, 
+    showAchievementModal, 
+    dismissAchievement 
+  } = useAchievements()
+  const [showLevelModal, setShowLevelModal] = useState(false)
+  const [showAchievementsModal, setShowAchievementsModal] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const {
@@ -728,6 +744,31 @@ function DashboardContent() {
       // Record study activity for streak
       recordActivity()
 
+      // Award XP for recording lecture
+      const isFirstLecture = lectures.length === 0
+      if (isFirstLecture) {
+        addXP(XP_REWARDS.FIRST_LECTURE, 'First lecture recorded!')
+      } else {
+        addXP(XP_REWARDS.RECORD_LECTURE, 'Recorded a lecture')
+      }
+      addXP(XP_REWARDS.GENERATE_NOTES, 'Generated notes')
+
+      // Check achievements
+      const totalRecordingTime = lectures.reduce((sum, l) => sum + l.duration, 0) + duration
+      const hour = new Date().getHours()
+      checkAchievements({
+        totalLectures: lectures.length + 1,
+        totalCourses: courses.length,
+        totalRecordingTime,
+        notesGenerated: 1,
+        quizzesCompleted: 0,
+        perfectQuizzes: 0,
+        currentStreak: streak,
+        level: levelInfo.level,
+        earlyBirdLectures: hour < 8 ? 1 : 0,
+        nightOwlLectures: hour >= 22 ? 1 : 0,
+      }, addXP)
+
       // Haptic feedback for success
       hapticSuccess()
 
@@ -869,6 +910,28 @@ function DashboardContent() {
       } else {
         // All questions answered correctly - complete!
         setIsLearnModeActive(false)
+        
+        // Award XP for completing quiz
+        addXP(XP_REWARDS.COMPLETE_QUIZ, 'Completed Learn Mode quiz')
+        
+        // Check if perfect score (all correct on first round)
+        const isPerfect = round === 1
+        
+        // Check achievements
+        checkAchievements({
+          totalLectures: lectures.length,
+          totalCourses: courses.length,
+          totalRecordingTime: lectures.reduce((sum, l) => sum + l.duration, 0),
+          notesGenerated: 0,
+          quizzesCompleted: 1,
+          perfectQuizzes: isPerfect ? 1 : 0,
+          currentStreak: streak,
+          level: levelInfo.level,
+          earlyBirdLectures: 0,
+          nightOwlLectures: 0,
+        }, addXP)
+        
+        hapticSuccess()
       }
     }
   }
@@ -946,6 +1009,21 @@ function DashboardContent() {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Level Badge */}
+              <LevelBadge 
+                levelInfo={levelInfo} 
+                totalXP={totalXP} 
+                size="sm" 
+                onClick={() => { hapticButton(); setShowLevelModal(true) }} 
+              />
+              {/* Achievements */}
+              <button 
+                onClick={() => { hapticButton(); setShowAchievementsModal(true) }}
+                className="flex items-center gap-1 px-2 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 transition-all hover:scale-105 active:scale-95"
+              >
+                <Trophy className="w-4 h-4 text-amber-500" />
+                <span className="text-xs font-medium text-amber-600 dark:text-amber-400">{unlockedCount}</span>
+              </button>
               {/* Streak */}
               <button onClick={() => { hapticButton(); setShowStreakModal(true) }}>
                 <StreakDisplay streak={streak} size="sm" />
@@ -998,6 +1076,11 @@ function DashboardContent() {
               <span>Card {currentFlashcardIndex + 1} of {flashcards.length}</span>
               <button
                 onClick={() => {
+                  // Award XP if they reviewed all cards
+                  if (currentFlashcardIndex === flashcards.length - 1) {
+                    addXP(XP_REWARDS.REVIEW_FLASHCARDS, 'Reviewed flashcards')
+                    hapticSuccess()
+                  }
                   setIsFlashcardModeActive(false)
                   setCurrentFlashcardIndex(0)
                   setIsCardFlipped(false)
@@ -3522,6 +3605,38 @@ function DashboardContent() {
           </div>
         </div>
       )}
+
+      {/* Level Progress Modal */}
+      <LevelProgressModal
+        isOpen={showLevelModal}
+        onClose={() => setShowLevelModal(false)}
+        levelInfo={levelInfo}
+        totalXP={totalXP}
+        xpHistory={xpHistory}
+      />
+
+      {/* Level Up Celebration Modal */}
+      <LevelUpModal
+        isOpen={showLevelUp}
+        onClose={dismissLevelUp}
+        newLevel={newLevel}
+      />
+
+      {/* Achievements Modal */}
+      <AchievementsModal
+        isOpen={showAchievementsModal}
+        onClose={() => setShowAchievementsModal(false)}
+        achievements={getAllAchievements()}
+        unlockedCount={unlockedCount}
+        totalCount={totalCount}
+      />
+
+      {/* Achievement Unlocked Modal */}
+      <AchievementUnlockedModal
+        isOpen={showAchievementModal}
+        onClose={dismissAchievement}
+        achievement={newAchievement}
+      />
 
       </div> {/* Close h-screen-safe */}
     </Suspense>
