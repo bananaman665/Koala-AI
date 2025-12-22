@@ -1068,19 +1068,12 @@ function DashboardContent() {
                   <p className="text-gray-500 dark:text-gray-400">Loading courses...</p>
                 </div>
               ) : courses.length === 0 ? (
-                <div className="col-span-2 text-center py-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <div className="w-14 h-14 bg-gray-100 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <FiBook className="w-7 h-7 text-gray-300 dark:text-gray-500" />
+                <div className="col-span-2 text-center py-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <div className="w-14 h-14 bg-purple-100 dark:bg-purple-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <FiBook className="w-7 h-7 text-purple-600 dark:text-purple-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No courses yet</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 max-w-xs mx-auto">Create your first course to get started</p>
-                  <button
-                    onClick={() => setShowNewCourseModal(true)}
-                    className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 text-sm"
-                  >
-                    <FiPlus />
-                    <span>Create Course</span>
-                  </button>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Tap + to create your first course</p>
                 </div>
               ) : (
                 courses.map((course) => (
