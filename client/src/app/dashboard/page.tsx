@@ -1082,7 +1082,7 @@ function DashboardContent() {
         {!selectedCourse && (
           <>
             {/* Hero Card - Greeting + Record CTA */}
-            <div className="bg-gradient-to-br from-violet-600/20 via-purple-600/10 to-blue-600/20 dark:from-violet-600/10 dark:via-purple-600/5 dark:to-blue-600/10 rounded-3xl p-6 mb-6 border border-white/10 animate-card-in">
+            <div className="bg-white dark:bg-[#1a2233]/80 rounded-3xl p-6 mb-6 border border-gray-100 dark:border-white/[0.06] animate-card-in">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">
