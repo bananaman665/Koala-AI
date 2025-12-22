@@ -31,7 +31,7 @@ export function LevelBadge({ levelInfo, totalXP, size = 'sm', onClick }: LevelBa
 
   // Color based on level
   const getLevelColor = () => {
-    if (levelInfo.level <= 2) return 'from-gray-400 to-gray-500'
+    if (levelInfo.level <= 2) return 'from-blue-400 to-blue-500'
     if (levelInfo.level <= 4) return 'from-green-400 to-emerald-500'
     if (levelInfo.level <= 6) return 'from-blue-400 to-indigo-500'
     if (levelInfo.level <= 8) return 'from-purple-400 to-violet-500'
@@ -39,7 +39,7 @@ export function LevelBadge({ levelInfo, totalXP, size = 'sm', onClick }: LevelBa
   }
 
   const getBgColor = () => {
-    if (levelInfo.level <= 2) return 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+    if (levelInfo.level <= 2) return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
     if (levelInfo.level <= 4) return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
     if (levelInfo.level <= 6) return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
     if (levelInfo.level <= 8) return 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'
@@ -47,7 +47,7 @@ export function LevelBadge({ levelInfo, totalXP, size = 'sm', onClick }: LevelBa
   }
 
   const getTextColor = () => {
-    if (levelInfo.level <= 2) return 'text-gray-600 dark:text-gray-400'
+    if (levelInfo.level <= 2) return 'text-blue-600 dark:text-blue-400'
     if (levelInfo.level <= 4) return 'text-green-600 dark:text-green-400'
     if (levelInfo.level <= 6) return 'text-blue-600 dark:text-blue-400'
     if (levelInfo.level <= 8) return 'text-purple-600 dark:text-purple-400'
@@ -89,7 +89,7 @@ export function LevelProgressModal({ isOpen, onClose, levelInfo, totalXP, xpHist
   if (!isOpen) return null
 
   const getLevelColor = (level: number) => {
-    if (level <= 2) return 'from-gray-400 to-gray-500'
+    if (level <= 2) return 'from-blue-400 to-blue-500'
     if (level <= 4) return 'from-green-400 to-emerald-500'
     if (level <= 6) return 'from-blue-400 to-indigo-500'
     if (level <= 8) return 'from-purple-400 to-violet-500'
@@ -97,7 +97,7 @@ export function LevelProgressModal({ isOpen, onClose, levelInfo, totalXP, xpHist
   }
 
   const getProgressColor = () => {
-    if (levelInfo.level <= 2) return 'bg-gray-500'
+    if (levelInfo.level <= 2) return 'bg-blue-500'
     if (levelInfo.level <= 4) return 'bg-green-500'
     if (levelInfo.level <= 6) return 'bg-blue-500'
     if (levelInfo.level <= 8) return 'bg-purple-500'
@@ -148,7 +148,7 @@ export function LevelProgressModal({ isOpen, onClose, levelInfo, totalXP, xpHist
                   className={`aspect-square rounded-xl flex flex-col items-center justify-center text-center p-1 ${
                     levelInfo.level >= level.level
                       ? `bg-gradient-to-br ${getLevelColor(level.level)} text-white`
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-400'
+                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-400 dark:text-blue-500'
                   }`}
                 >
                   <span className="text-lg font-bold">{level.level}</span>
@@ -198,7 +198,7 @@ export function LevelUpModal({ isOpen, onClose, newLevel }: LevelUpModalProps) {
   if (!isOpen || !newLevel) return null
 
   const getLevelColor = (level: number) => {
-    if (level <= 2) return 'from-gray-400 to-gray-500'
+    if (level <= 2) return 'from-blue-400 to-blue-500'
     if (level <= 4) return 'from-green-400 to-emerald-500'
     if (level <= 6) return 'from-blue-400 to-indigo-500'
     if (level <= 8) return 'from-purple-400 to-violet-500'
