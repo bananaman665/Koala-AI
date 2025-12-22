@@ -1012,7 +1012,7 @@ function DashboardContent() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <FiClock className="text-blue-600 dark:text-blue-400 text-xl" />
@@ -1157,9 +1157,9 @@ function DashboardContent() {
           </div>
 
           {/* Sidebar */}
-          <div className="hidden lg:block space-y-6">
+          <div className="hidden lg:block space-y-4">
             {/* Quick Actions */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
               <div className="space-y-3">
                 <button
@@ -1187,19 +1187,19 @@ function DashboardContent() {
             </div>
 
             {/* Tips */}
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-yellow-500" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-amber-500" />
                 Pro Tip
               </h3>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Click on a course to see all lectures and record new ones. Organize your notes by subject for better study sessions.
               </p>
             </div>
 
             {/* Storage */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Storage</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Storage</h3>
               <div className="mb-3">
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-600 dark:text-gray-300">2.4 GB used</span>
