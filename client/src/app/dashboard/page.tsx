@@ -1085,11 +1085,8 @@ function DashboardContent() {
             <div className="bg-white dark:bg-[#1a2233]/80 rounded-3xl p-6 mb-6 border border-gray-100 dark:border-white/[0.06] animate-card-in">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">
-                    {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}
-                  </p>
                   <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Ready to learn?
+                    {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}{user?.user_metadata?.full_name || user?.user_metadata?.display_name ? `, ${(user?.user_metadata?.full_name || user?.user_metadata?.display_name).split(' ')[0]}` : ''}
                   </h1>
                   <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
                     {lectures.length === 0 ? 'Record your first lecture to get started!' : `You have ${lectures.length} lecture${lectures.length === 1 ? '' : 's'} recorded`}
