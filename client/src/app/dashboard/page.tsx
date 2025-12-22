@@ -1137,11 +1137,11 @@ function DashboardContent() {
                   </div>
                 ) : (
                   <div className="text-center py-4">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
-                      <FiMic className="text-blue-600 dark:text-blue-400 text-xl" />
+                    <div className="w-14 h-14 bg-blue-100 dark:bg-blue-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <FiMic className="text-blue-600 dark:text-blue-400 text-2xl" />
                     </div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1 text-sm">Ready to start?</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Record your first lecture</p>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Ready to start?</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Record your first lecture</p>
                   </div>
                 )}
               </div>
