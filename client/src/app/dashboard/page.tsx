@@ -1020,7 +1020,7 @@ function DashboardContent() {
             isActive={activeScreen === 'dashboard'}
           >
             <div className="overflow-y-auto bg-gray-50 dark:bg-gradient-to-b dark:from-[#0f1420] dark:via-[#111827] dark:to-[#151c28] h-full relative">
-              <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-28 sm:pt-32`}>
+              <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
         {!selectedCourse && (
           <>
             {/* Hero Card - Greeting + Record CTA */}
@@ -1087,8 +1087,8 @@ function DashboardContent() {
               </div>
             </div>
 
-            {/* Stats Row - Gamified */}
-            <div className="grid grid-cols-4 gap-3 mb-6">
+            {/* Stats Row - Horizontal Scroll Carousel */}
+            <div className="flex gap-3 mb-6 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
               {[
                 {
                   icon: <FiClock className="text-lg" />,
@@ -1126,7 +1126,7 @@ function DashboardContent() {
               ].map((stat, i) => (
                 <div
                   key={stat.label}
-                  className={`bg-white dark:bg-[#1a2233]/80 rounded-2xl p-3 sm:p-4 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-${i + 1}`}
+                  className={`flex-shrink-0 w-36 sm:w-40 bg-white dark:bg-[#1a2233]/80 rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-${i + 1}`}
                 >
                   <div className={`inline-flex items-center justify-center w-8 h-8 rounded-xl mb-2 ${
                     stat.color === 'blue' ? 'bg-blue-100 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400' :
