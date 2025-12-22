@@ -1012,7 +1012,7 @@ function DashboardContent() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <FiClock className="text-blue-600 dark:text-blue-400 text-xl" />
