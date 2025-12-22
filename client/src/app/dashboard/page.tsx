@@ -1067,14 +1067,6 @@ function DashboardContent() {
                   <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
                   <p className="text-gray-500 dark:text-gray-400">Loading courses...</p>
                 </div>
-              ) : courses.length === 0 ? (
-                <div className="col-span-2 text-center py-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                  <div className="w-14 h-14 bg-purple-100 dark:bg-purple-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <FiBook className="w-7 h-7 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No courses yet</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Tap + to create your first course</p>
-                </div>
               ) : (
                 courses.map((course) => (
                   <SwipeToDelete
