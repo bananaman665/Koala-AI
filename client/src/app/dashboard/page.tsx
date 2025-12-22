@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2 } from 'react-icons/fi'
-import { Lightbulb, Mic, Lock } from 'lucide-react'
+import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem } from 'lucide-react'
 import { Fire } from '@phosphor-icons/react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
@@ -946,11 +946,6 @@ function DashboardContent() {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* XP Badge */}
-              <div className="flex items-center gap-1 px-2.5 py-1 bg-amber-500/10 rounded-full">
-                <span className="text-amber-500 text-sm">💎</span>
-                <span className="text-amber-500 text-xs font-bold">{lectures.length * 50}</span>
-              </div>
               {/* Streak */}
               <button onClick={() => { hapticButton(); setShowStreakModal(true) }}>
                 <StreakDisplay streak={streak} size="sm" />
@@ -1025,7 +1020,7 @@ function DashboardContent() {
             isActive={activeScreen === 'dashboard'}
           >
             <div className="overflow-y-auto bg-gray-50 dark:bg-gradient-to-b dark:from-[#0f1420] dark:via-[#111827] dark:to-[#151c28] h-full relative">
-              <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-24 sm:pt-28`}>
+              <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-28 sm:pt-32`}>
         {!selectedCourse && (
           <>
             {/* Hero Card - Greeting + Record CTA */}
@@ -1033,7 +1028,7 @@ function DashboardContent() {
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">
-                    {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'} 👋
+                    {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}
                   </p>
                   <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                     Ready to learn?
@@ -3465,13 +3460,13 @@ function DashboardContent() {
               <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3">Milestones</h3>
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {[
-                  { days: 3, label: '3 days', emoji: '🌱' },
-                  { days: 7, label: '1 week', emoji: '⭐' },
-                  { days: 14, label: '2 weeks', emoji: '🌟' },
-                  { days: 30, label: '1 month', emoji: '🏆' },
-                  { days: 60, label: '2 months', emoji: '💎' },
-                  { days: 100, label: '100 days', emoji: '👑' },
-                ].map(({ days, label, emoji }) => (
+                  { days: 3, label: '3 days', icon: <Sprout className="w-6 h-6" /> },
+                  { days: 7, label: '1 week', icon: <Star className="w-6 h-6" /> },
+                  { days: 14, label: '2 weeks', icon: <Award className="w-6 h-6" /> },
+                  { days: 30, label: '1 month', icon: <Trophy className="w-6 h-6" /> },
+                  { days: 60, label: '2 months', icon: <Gem className="w-6 h-6" /> },
+                  { days: 100, label: '100 days', icon: <Crown className="w-6 h-6" /> },
+                ].map(({ days, label, icon }) => (
                   <div
                     key={days}
                     className={`flex-shrink-0 px-4 py-3 rounded-xl text-center ${
@@ -3481,7 +3476,7 @@ function DashboardContent() {
                     }`}
                   >
                     {streak >= days ? (
-                      <span className="text-2xl">{emoji}</span>
+                      <div className="text-orange-600 dark:text-orange-400">{icon}</div>
                     ) : (
                       <Lock className="w-6 h-6 mx-auto text-gray-400 dark:text-gray-500" />
                     )}
