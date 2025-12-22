@@ -1096,9 +1096,9 @@ function DashboardContent() {
                   </p>
                   <button
                     onClick={() => setShowReadyToRecordModal(true)}
-                    className="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold rounded-2xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-medium text-sm rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
                   >
-                    <Mic className="w-5 h-5" />
+                    <Mic className="w-4 h-4" />
                     Start Recording
                   </button>
                 </div>
