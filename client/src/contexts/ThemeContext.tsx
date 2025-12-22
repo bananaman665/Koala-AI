@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { StatusBar, Style } from '@capacitor/status-bar'
+import { SplashScreen } from '@capacitor/splash-screen'
 import { Capacitor } from '@capacitor/core'
 
 interface ThemeContextType {
@@ -58,6 +59,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
 
     setIsMounted(true)
+
+    // Hide splash screen once app is loaded
+    if (Capacitor.isNativePlatform()) {
+      SplashScreen.hide().catch(console.error)
+    }
   }, [])
 
   const toggleDarkMode = () => {
