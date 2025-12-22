@@ -1068,17 +1068,17 @@ function DashboardContent() {
                   <p className="text-gray-500 dark:text-gray-400">Loading courses...</p>
                 </div>
               ) : courses.length === 0 ? (
-                <div className="col-span-2 text-center py-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <FiBook className="w-5 h-5 text-gray-300 dark:text-gray-500" />
+                <div className="col-span-2 text-center py-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <div className="w-14 h-14 bg-gray-100 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <FiBook className="w-7 h-7 text-gray-300 dark:text-gray-500" />
                   </div>
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-0.5">No courses yet</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Create your first course to get started</p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No courses yet</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 max-w-xs mx-auto">Create your first course to get started</p>
                   <button
                     onClick={() => setShowNewCourseModal(true)}
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 text-xs"
+                    className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 text-sm"
                   >
-                    <FiPlus className="w-3.5 h-3.5" />
+                    <FiPlus />
                     <span>Create Course</span>
                   </button>
                 </div>
@@ -2494,12 +2494,12 @@ function DashboardContent() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-12 text-center">
-                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FiBook className="w-10 h-10 text-gray-300 dark:text-gray-500" />
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-center">
+                  <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <FiBook className="w-6 h-6 text-gray-300 dark:text-gray-500" />
                   </div>
-                  <p className="text-gray-700 dark:text-white font-semibold text-lg">No classes yet</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-xs mx-auto">Create a new class or join an existing one to get started</p>
+                  <p className="text-gray-900 dark:text-white font-semibold text-base">No classes yet</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Create or join a class to get started</p>
                 </div>
               )}
             </div>
