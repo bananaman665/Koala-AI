@@ -976,59 +976,44 @@ function DashboardContent() {
         )}
         {/* Top Navigation */}
         <nav className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/[0.06] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="px-3 sm:px-4">
           <div className="flex justify-between items-center h-14 sm:h-16">
-            <div className="hidden md:flex items-center space-x-5 lg:space-x-7">
-              <Link
-                href="/dashboard"
-                className={`text-sm lg:text-base ${activeScreen === 'dashboard' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/dashboard/library"
-                className={`text-sm lg:text-base ${activeScreen === 'library' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-              >
-                Library
-              </Link>
-              <Link
-                href="/dashboard/analytics"
-                className={`text-sm lg:text-base ${activeScreen === 'analytics' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-              >
-                Analytics
-              </Link>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Level Badge */}
-              <LevelBadge 
-                levelInfo={levelInfo} 
-                totalXP={totalXP} 
-                size="sm" 
-                onClick={() => { hapticButton(); setShowLevelModal(true) }} 
-              />
-              {/* Achievements */}
-              <button 
-                onClick={() => { hapticButton(); setShowAchievementsModal(true) }}
-                className="flex items-center gap-1 px-2 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 transition-all hover:scale-105 active:scale-95"
-              >
-                <Trophy className="w-4 h-4 text-amber-500" />
-                <span className="text-xs font-medium text-amber-600 dark:text-amber-400">{unlockedCount}</span>
-              </button>
-              {/* Streak */}
-              <button onClick={() => { hapticButton(); setShowStreakModal(true) }}>
-                <StreakDisplay streak={streak} size="sm" />
-              </button>
-              {/* Settings */}
-              <Link
-                href="/settings"
-                className="p-1.5 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-full transition-colors"
-              >
-                <FiSettings className="text-gray-400 dark:text-white/50 text-lg" />
-              </Link>
-              {/* Avatar */}
-              <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-purple-500/20">
-                {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
+            {/* Level Badge */}
+            <button 
+              onClick={() => { hapticButton(); setShowLevelModal(true) }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-all hover:scale-105 active:scale-95"
+            >
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
+                <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
               </div>
+              <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{levelInfo.name}</span>
+            </button>
+
+            {/* Achievements */}
+            <button 
+              onClick={() => { hapticButton(); setShowAchievementsModal(true) }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 transition-all hover:scale-105 active:scale-95"
+            >
+              <Trophy className="w-4 h-4 text-amber-500" />
+              <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">{unlockedCount}/{totalCount}</span>
+            </button>
+
+            {/* Streak */}
+            <button onClick={() => { hapticButton(); setShowStreakModal(true) }}>
+              <StreakDisplay streak={streak} size="sm" />
+            </button>
+
+            {/* Settings */}
+            <Link
+              href="/settings"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-full transition-colors"
+            >
+              <FiSettings className="text-gray-500 dark:text-gray-400 text-lg" />
+            </Link>
+
+            {/* Avatar */}
+            <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-purple-500/20">
+              {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
             </div>
           </div>
         </div>
