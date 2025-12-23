@@ -5,14 +5,14 @@ const config: CapacitorConfig = {
   appName: 'Koala.ai',
   webDir: 'out',
   // Production - use Vercel deployment
-  server: {
-    url: 'https://koala-ai-client.vercel.app',
-  },
-  // Development - use local server for testing
   // server: {
-  //   url: 'http://10.200.1.31:3000', // Your Mac's local IP
-  //   cleartext: true,
+  //   url: 'https://koala-ai-client.vercel.app',
   // },
+  // Development - use local server for testing
+  server: {
+    url: 'http://10.200.1.31:3000', // Your Mac's local IP
+    cleartext: true,
+  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,

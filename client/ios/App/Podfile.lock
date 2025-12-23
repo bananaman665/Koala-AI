@@ -5,6 +5,8 @@ PODS:
     - Capacitor
   - CapacitorCamera (7.0.2):
     - Capacitor
+  - CapacitorCommunityNativeAudio (7.0.1):
+    - Capacitor
   - CapacitorCommunitySpeechRecognition (7.0.1):
     - Capacitor
   - CapacitorCordova (7.4.4)
@@ -25,6 +27,7 @@ DEPENDENCIES:
   - "Capacitor (from `../../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../../node_modules/@capacitor/app`)"
   - "CapacitorCamera (from `../../../node_modules/@capacitor/camera`)"
+  - "CapacitorCommunityNativeAudio (from `../../../node_modules/@capacitor-community/native-audio`)"
   - "CapacitorCommunitySpeechRecognition (from `../../../node_modules/@capacitor-community/speech-recognition`)"
   - "CapacitorCordova (from `../../../node_modules/@capacitor/ios`)"
   - "CapacitorFilesystem (from `../../../node_modules/@capacitor/filesystem`)"
@@ -44,6 +47,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/@capacitor/app"
   CapacitorCamera:
     :path: "../../../node_modules/@capacitor/camera"
+  CapacitorCommunityNativeAudio:
+    :path: "../../../node_modules/@capacitor-community/native-audio"
   CapacitorCommunitySpeechRecognition:
     :path: "../../../node_modules/@capacitor-community/speech-recognition"
   CapacitorCordova:
@@ -63,6 +68,7 @@ SPEC CHECKSUMS:
   Capacitor: 358dd1c3fdd71d969547b17e159fd8a7736cb45f
   CapacitorApp: 26587c2ce485d88ddb39adb21cac64f8e481afe3
   CapacitorCamera: f9e54db0a18bb218a8dc360907d63aaefe9209ff
+  CapacitorCommunityNativeAudio: 035096f7f8830ccb6f49afe51a0e2b20da748f47
   CapacitorCommunitySpeechRecognition: 3e03566c44c2bb3b52391a33d4518b1adbdeb38f
   CapacitorCordova: bf648a636f3c153f652d312ae145fb508b6ffced
   CapacitorFilesystem: 609d5cceca1ed93d7f25839dbfdfd224bfe78209
@@ -72,6 +78,6 @@ SPEC CHECKSUMS:
   CapacitorVoiceRecorder: 9158861be982f32d411769723a4d813d6ce46135
   IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
 
-PODFILE CHECKSUM: 92c5b3064759971ec750979ca89f9677df6a633d
+PODFILE CHECKSUM: 52c9f722f06a9187e7fe062a0a17dbfc2feac535
 
 COCOAPODS: 1.16.2

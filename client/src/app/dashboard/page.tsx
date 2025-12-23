@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2 } from 'react-icons/fi'
+import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2, FiEdit2 } from 'react-icons/fi'
 import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem } from 'lucide-react'
 import { Fire } from '@phosphor-icons/react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
@@ -259,6 +259,12 @@ function DashboardContent() {
   const [selectedLectureNotes, setSelectedLectureNotes] = useState<string | null>(null)
   const [isLoadingLectureNotes, setIsLoadingLectureNotes] = useState(false)
   const [isExitingLecture, setIsExitingLecture] = useState(false)
+
+  // Edit notes state
+  const [isEditingNotes, setIsEditingNotes] = useState(false)
+  const [editedNotesContent, setEditedNotesContent] = useState<string>('')
+  const [isSavingNotes, setIsSavingNotes] = useState(false)
+  const [notesWasEdited, setNotesWasEdited] = useState(false)
 
   // Settings state
   const [autoGenerateNotes, setAutoGenerateNotes] = useState(true)
@@ -1067,7 +1073,7 @@ function DashboardContent() {
           />
         )}
         {/* Top Navigation */}
-        <nav className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/[0.06] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <nav className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-[#1a2235]/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/[0.06] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-3 sm:px-4">
           <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Level Badge */}
@@ -1297,7 +1303,7 @@ function DashboardContent() {
               ].map((stat, i) => (
                 <div
                   key={stat.label}
-                  className={`flex-shrink-0 w-36 sm:w-40 bg-white dark:bg-[#1a2233]/80 rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-${i + 1}`}
+                  className={`flex-shrink-0 w-36 sm:w-40 bg-white dark:bg-[#1a2235] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-${i + 1}`}
                 >
                   <div className={`inline-flex items-center justify-center w-8 h-8 rounded-xl mb-2 ${
                     stat.color === 'blue' ? 'bg-blue-100 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400' :
@@ -1426,13 +1432,13 @@ function DashboardContent() {
           )}
 
           {/* Study Tip */}
-          <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 dark:from-amber-500/5 dark:to-orange-500/5 rounded-2xl border border-amber-200/50 dark:border-amber-500/10 p-4">
+          <div className="bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 bg-amber-100 dark:bg-amber-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] text-amber-700 dark:text-amber-400 uppercase tracking-wider font-semibold mb-1">Daily Tip</p>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">Daily Tip</p>
                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                   {(() => {
                     const tips = [
@@ -2108,6 +2114,9 @@ function DashboardContent() {
                 setTimeout(() => {
                   setSelectedLecture(null)
                   setIsExitingLecture(false)
+                  setIsEditingNotes(false)
+                  setEditedNotesContent('')
+                  setNotesWasEdited(false)
                 }, 200)
               }}
               className="flex items-center space-x-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors shadow-sm"
@@ -2152,10 +2161,94 @@ function DashboardContent() {
 
             {/* Notes */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">AI Generated Notes</h3>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                    {isEditingNotes ? 'Edit Notes' : 'AI Generated Notes'}
+                  </h3>
+                  {notesWasEdited && !isEditingNotes && (
+                    <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-medium rounded-full">
+                      Edited
+                    </span>
+                  )}
+                </div>
+                {selectedLectureNotes && !isEditingNotes && (
+                  <button
+                    onClick={() => {
+                      hapticButton()
+                      setEditedNotesContent(selectedLectureNotes)
+                      setIsEditingNotes(true)
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <FiEdit2 className="text-sm" />
+                    Edit
+                  </button>
+                )}
+              </div>
               {isLoadingLectureNotes ? (
                 <div className="flex items-center justify-center py-8">
                   <FiLoader className="text-gray-400 text-4xl animate-spin" />
+                </div>
+              ) : isEditingNotes ? (
+                <div className="space-y-4">
+                  <textarea
+                    value={editedNotesContent}
+                    onChange={(e) => setEditedNotesContent(e.target.value)}
+                    className="w-full h-80 p-4 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-mono text-sm"
+                    placeholder="Edit your notes here..."
+                  />
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => {
+                        hapticButton()
+                        setIsEditingNotes(false)
+                        setEditedNotesContent('')
+                      }}
+                      disabled={isSavingNotes}
+                      className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (!selectedLecture || !user?.id) return
+                        setIsSavingNotes(true)
+                        try {
+                          const { error } = await (supabase as any)
+                            .from('notes')
+                            .update({ content: editedNotesContent })
+                            .eq('lecture_id', selectedLecture)
+                            .eq('user_id', user.id)
+                          
+                          if (error) throw error
+                          
+                          hapticSuccess()
+                          toast.success('Notes saved successfully')
+                          setSelectedLectureNotes(editedNotesContent)
+                          setNotesWasEdited(true)
+                          setIsEditingNotes(false)
+                        } catch (error) {
+                          console.error('Error saving notes:', error)
+                          hapticError()
+                          toast.error('Failed to save notes')
+                        } finally {
+                          setIsSavingNotes(false)
+                        }
+                      }}
+                      disabled={isSavingNotes || editedNotesContent === selectedLectureNotes}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSavingNotes ? (
+                        <>
+                          <FiLoader className="animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
+                    </button>
+                  </div>
                 </div>
               ) : selectedLectureNotes ? (
                 <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
@@ -3063,7 +3156,7 @@ function DashboardContent() {
       `}</style>
 
       {/* Mobile Bottom Navigation with Center Record Button */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-[#1a1f2e]/90 backdrop-blur-2xl backdrop-saturate-150 border-t border-gray-200/80 dark:border-white/[0.08] z-50 pb-8">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-[#1a2235]/90 backdrop-blur-2xl backdrop-saturate-150 border-t border-gray-200/80 dark:border-white/[0.08] z-50 pb-8">
         <div className="flex items-end justify-evenly h-16 px-4 pt-2">
           {/* Home */}
           <button
@@ -3494,6 +3587,32 @@ function DashboardContent() {
                       throw lectureError
                     }
 
+                    // Upload audio if available (use ref which has the captured blob)
+                    const audioBlobToUpload = capturedAudioBlobRef.current
+                    console.log('[SaveLecture Modal] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
+                    if (audioBlobToUpload) {
+                      try {
+                        console.log('[SaveLecture Modal] Uploading audio to storage...')
+                        const audioUrl = await uploadAudioFile(user!.id, lecture.id, audioBlobToUpload)
+                        console.log('[SaveLecture Modal] Audio uploaded, URL:', audioUrl)
+                        // Update lecture with audio URL
+                        const { error: updateError } = await (supabase as any)
+                          .from('lectures')
+                          .update({ audio_url: audioUrl })
+                          .eq('id', lecture.id)
+                        if (updateError) {
+                          console.error('[SaveLecture Modal] Failed to update lecture with audio URL:', updateError)
+                        } else {
+                          console.log('[SaveLecture Modal] Lecture updated with audio URL successfully')
+                        }
+                      } catch (audioError) {
+                        console.error('[SaveLecture Modal] Failed to upload audio:', audioError)
+                        // Continue saving even if audio upload fails
+                      }
+                    } else {
+                      console.log('[SaveLecture Modal] No audioBlob available to upload')
+                    }
+
                     // Save transcript
                     if (transcript) {
                       await (supabase as any).from('transcripts').insert({
@@ -3530,6 +3649,7 @@ function DashboardContent() {
                     setShowCourseSelectionModal(false)
                     setSelectedCourseForRecording(null)
                     setLectureTitle('')
+                    capturedAudioBlobRef.current = null
                     reset()
                   } catch (error) {
                     alert('Failed to save recording. Please try again.')

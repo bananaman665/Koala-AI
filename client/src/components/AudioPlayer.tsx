@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { FiPlay, FiPause, FiVolume2, FiVolumeX, FiSkipBack, FiSkipForward } from 'react-icons/fi'
+import { useNativeAudioPlayer } from '@/hooks/useNativeAudioPlayer'
 
 interface TranscriptSegment {
   id: string
@@ -18,6 +19,8 @@ interface AudioPlayerProps {
   segments?: TranscriptSegment[]
   onTimeUpdate?: (currentTime: number) => void
   className?: string
+  /** Force web player even on native platforms (useful for testing) */
+  forceWebPlayer?: boolean
 }
 
 export function AudioPlayer({
@@ -27,9 +30,12 @@ export function AudioPlayer({
   segments = [],
   onTimeUpdate,
   className = '',
+  forceWebPlayer = false,
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
+  
+  // Web player state
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(totalDuration || 0)
@@ -38,6 +44,29 @@ export function AudioPlayer({
   const [playbackRate, setPlaybackRate] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // Native audio player hook for iOS/Android
+  const nativeAudio = useNativeAudioPlayer({
+    audioUrl: (!forceWebPlayer && audioUrl) ? audioUrl : null,
+    initialDuration: totalDuration,
+    onTimeUpdate,
+    onEnded: () => {
+      // Native audio ended
+    },
+  })
+  
+  // Determine if we should use native player
+  const useNative = nativeAudio.isNative && !forceWebPlayer
+  
+  // Get unified state values (native or web)
+  const playerIsPlaying = useNative ? nativeAudio.isPlaying : isPlaying
+  const playerCurrentTime = useNative ? nativeAudio.currentTime : currentTime
+  const playerDuration = useNative ? (nativeAudio.duration || totalDuration || duration) : duration
+  const playerIsLoading = useNative ? nativeAudio.isLoading : isLoading
+  const playerError = useNative ? nativeAudio.error : error
+  const playerIsMuted = useNative ? nativeAudio.isMuted : isMuted
+  const playerVolume = useNative ? nativeAudio.volume : volume
+  const playerPlaybackRate = useNative ? nativeAudio.playbackRate : playbackRate
 
   // Format time as MM:SS or HH:MM:SS
   const formatTime = (seconds: number): string => {
@@ -51,89 +80,127 @@ export function AudioPlayer({
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  // Handle play/pause
-  const togglePlay = useCallback(() => {
-    if (!audioRef.current || !audioUrl) return
-
-    if (isPlaying) {
-      audioRef.current.pause()
+  // Handle play/pause - works for both native and web
+  const togglePlay = useCallback(async () => {
+    if (!audioUrl) return
+    
+    if (useNative) {
+      // Native player
+      if (nativeAudio.isPlaying) {
+        await nativeAudio.pause()
+      } else {
+        await nativeAudio.play()
+      }
     } else {
-      audioRef.current.play().catch((err) => {
-        setError('Unable to play audio')
-      })
+      // Web player
+      if (!audioRef.current) return
+      
+      if (isPlaying) {
+        audioRef.current.pause()
+      } else {
+        audioRef.current.play().catch((err) => {
+          setError('Unable to play audio')
+        })
+      }
     }
-  }, [isPlaying, audioUrl])
+  }, [audioUrl, useNative, nativeAudio, isPlaying])
 
-  // Handle seeking
-  const handleSeek = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!progressRef.current || !audioRef.current) return
+  // Handle seeking - works for both native and web
+  const handleSeek = useCallback(async (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!progressRef.current) return
 
     const rect = progressRef.current.getBoundingClientRect()
     const clickPosition = (e.clientX - rect.left) / rect.width
-    const newTime = clickPosition * duration
+    const newTime = clickPosition * playerDuration
 
-    audioRef.current.currentTime = newTime
-    setCurrentTime(newTime)
-  }, [duration])
-
-  // Skip forward/backward
-  const skip = useCallback((seconds: number) => {
-    if (!audioRef.current) return
-
-    const newTime = Math.max(0, Math.min(duration, audioRef.current.currentTime + seconds))
-    audioRef.current.currentTime = newTime
-    setCurrentTime(newTime)
-  }, [duration])
-
-  // Handle volume change
-  const handleVolumeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value)
-    setVolume(newVolume)
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume
-    }
-    setIsMuted(newVolume === 0)
-  }, [])
-
-  // Toggle mute
-  const toggleMute = useCallback(() => {
-    if (!audioRef.current) return
-
-    if (isMuted) {
-      audioRef.current.volume = volume || 1
-      setIsMuted(false)
+    if (useNative) {
+      await nativeAudio.seek(newTime)
     } else {
-      audioRef.current.volume = 0
-      setIsMuted(true)
+      if (!audioRef.current) return
+      audioRef.current.currentTime = newTime
+      setCurrentTime(newTime)
     }
-  }, [isMuted, volume])
+  }, [playerDuration, useNative, nativeAudio])
 
-  // Change playback rate
-  const changePlaybackRate = useCallback(() => {
+  // Skip forward/backward - works for both native and web
+  const skip = useCallback(async (seconds: number) => {
+    const newTime = Math.max(0, Math.min(playerDuration, playerCurrentTime + seconds))
+    
+    if (useNative) {
+      await nativeAudio.seek(newTime)
+    } else {
+      if (!audioRef.current) return
+      audioRef.current.currentTime = newTime
+      setCurrentTime(newTime)
+    }
+  }, [playerDuration, playerCurrentTime, useNative, nativeAudio])
+
+  // Handle volume change - works for both native and web
+  const handleVolumeChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value)
+    
+    if (useNative) {
+      await nativeAudio.setVolume(newVolume)
+    } else {
+      setVolume(newVolume)
+      if (audioRef.current) {
+        audioRef.current.volume = newVolume
+      }
+      setIsMuted(newVolume === 0)
+    }
+  }, [useNative, nativeAudio])
+
+  // Toggle mute - works for both native and web
+  const toggleMute = useCallback(async () => {
+    if (useNative) {
+      await nativeAudio.toggleMute()
+    } else {
+      if (!audioRef.current) return
+
+      if (isMuted) {
+        audioRef.current.volume = volume || 1
+        setIsMuted(false)
+      } else {
+        audioRef.current.volume = 0
+        setIsMuted(true)
+      }
+    }
+  }, [useNative, nativeAudio, isMuted, volume])
+
+  // Change playback rate - works for both native and web
+  const changePlaybackRate = useCallback(async () => {
     const rates = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
-    const currentIndex = rates.indexOf(playbackRate)
+    const currentIndex = rates.indexOf(playerPlaybackRate)
     const nextIndex = (currentIndex + 1) % rates.length
     const newRate = rates[nextIndex]
 
-    setPlaybackRate(newRate)
-    if (audioRef.current) {
-      audioRef.current.playbackRate = newRate
+    if (useNative) {
+      await nativeAudio.setPlaybackRate(newRate)
+    } else {
+      setPlaybackRate(newRate)
+      if (audioRef.current) {
+        audioRef.current.playbackRate = newRate
+      }
     }
-  }, [playbackRate])
+  }, [playerPlaybackRate, useNative, nativeAudio])
 
-  // Seek to specific timestamp (for transcript sync)
-  const seekToTime = useCallback((time: number) => {
-    if (!audioRef.current) return
+  // Seek to specific timestamp (for transcript sync) - works for both native and web
+  const seekToTime = useCallback(async (time: number) => {
+    if (useNative) {
+      await nativeAudio.seek(time)
+    } else {
+      if (!audioRef.current) return
 
-    audioRef.current.currentTime = time
-    setCurrentTime(time)
-
-    if (!isPlaying) {
+      audioRef.current.currentTime = time
+      setCurrentTime(time)
     }
-  }, [isPlaying])
+  }, [useNative, nativeAudio, playerIsPlaying])
 
-  // Audio event handlers
+  // Audio event handlers (only for web player)
   useEffect(() => {
+    // Skip setting up web audio events if using native
+    if (useNative) return
+    
     const audio = audioRef.current
     if (!audio) return
 
@@ -176,7 +243,7 @@ export function AudioPlayer({
       audio.removeEventListener('canplay', handleCanPlay)
       audio.removeEventListener('error', handleError)
     }
-  }, [totalDuration, onTimeUpdate])
+  }, [totalDuration, onTimeUpdate, useNative])
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -207,7 +274,7 @@ export function AudioPlayer({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [togglePlay, skip, toggleMute])
 
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0
+  const progress = playerDuration > 0 ? (playerCurrentTime / playerDuration) * 100 : 0
 
   if (!audioUrl) {
     return (
@@ -219,12 +286,12 @@ export function AudioPlayer({
 
   return (
     <div className={`bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-4 ${className}`}>
-      {/* Hidden audio element */}
-      <audio ref={audioRef} src={audioUrl} preload="metadata" />
+      {/* Hidden audio element - only used for web player */}
+      {!useNative && <audio ref={audioRef} src={audioUrl} preload="metadata" />}
 
       {/* Error message */}
-      {error && (
-        <div className="text-red-400 text-sm mb-2 text-center">{error}</div>
+      {playerError && (
+        <div className="text-red-400 text-sm mb-2 text-center">{playerError}</div>
       )}
 
       {/* Waveform/Progress Bar */}
@@ -268,7 +335,7 @@ export function AudioPlayer({
       <div className="flex items-center justify-between">
         {/* Left: Time display */}
         <div className="text-white/80 text-sm font-mono min-w-[100px]">
-          {formatTime(currentTime)} / {formatTime(duration)}
+          {formatTime(playerCurrentTime)} / {formatTime(playerDuration)}
         </div>
 
         {/* Center: Playback controls */}
@@ -285,13 +352,13 @@ export function AudioPlayer({
           {/* Play/Pause */}
           <button
             onClick={togglePlay}
-            disabled={isLoading}
+            disabled={playerIsLoading}
             className="p-3 bg-white rounded-full text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-50"
-            title={isPlaying ? 'Pause' : 'Play'}
+            title={playerIsPlaying ? 'Pause' : 'Play'}
           >
-            {isLoading ? (
+            {playerIsLoading ? (
               <div className="w-6 h-6 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-            ) : isPlaying ? (
+            ) : playerIsPlaying ? (
               <FiPause className="w-6 h-6" />
             ) : (
               <FiPlay className="w-6 h-6 ml-0.5" />
@@ -316,7 +383,7 @@ export function AudioPlayer({
             className="px-2 py-1 text-xs font-medium text-white/70 hover:text-white bg-white/10 rounded transition-colors min-w-[45px]"
             title="Change playback speed"
           >
-            {playbackRate}x
+            {playerPlaybackRate}x
           </button>
 
           {/* Volume */}
@@ -324,9 +391,9 @@ export function AudioPlayer({
             <button
               onClick={toggleMute}
               className="p-1 text-white/70 hover:text-white transition-colors"
-              title={isMuted ? 'Unmute' : 'Mute'}
+              title={playerIsMuted ? 'Unmute' : 'Mute'}
             >
-              {isMuted ? (
+              {playerIsMuted ? (
                 <FiVolumeX className="w-5 h-5" />
               ) : (
                 <FiVolume2 className="w-5 h-5" />
@@ -337,7 +404,7 @@ export function AudioPlayer({
               min="0"
               max="1"
               step="0.1"
-              value={isMuted ? 0 : volume}
+              value={playerIsMuted ? 0 : playerVolume}
               onChange={handleVolumeChange}
               className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
             />

@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { SpeechRecognition } from '@capacitor-community/speech-recognition'
+import { VoiceRecorder } from 'capacitor-voice-recorder'
 
 interface HybridRecordingState {
   isRecording: boolean
@@ -9,12 +10,12 @@ interface HybridRecordingState {
   transcript: string
   interimTranscript: string
   isTranscribing: boolean
-  audioBlob: Blob | null // Kept for backward compatibility, always null now
+  audioBlob: Blob | null // Recorded audio for playback
 }
 
 interface StopRecordingResult {
   transcript: string
-  audioBlob: Blob | null // Kept for backward compatibility, always null now
+  audioBlob: Blob | null // Recorded audio for playback
 }
 
 interface UseHybridRecordingResult extends HybridRecordingState {
@@ -74,6 +75,14 @@ export function useHybridRecording(): UseHybridRecordingResult {
   const startTimeRef = useRef<number>(0)
   const pausedTimeRef = useRef<number>(0)
 
+  // Audio recording refs (for playback)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
+  const mediaStreamRef = useRef<MediaStream | null>(null)
+  
+  // Native voice recorder state
+  const nativeRecordingActiveRef = useRef<boolean>(false)
+
   // Start timer
   const startTimer = useCallback(() => {
     startTimeRef.current = Date.now() - pausedTimeRef.current
@@ -90,6 +99,162 @@ export function useHybridRecording(): UseHybridRecordingResult {
       timerRef.current = null
     }
   }, [])
+
+  // Start audio recording (MediaRecorder) for playback
+  // Uses native VoiceRecorder on iOS/Android, MediaRecorder on web
+  const startAudioRecording = useCallback(async () => {
+    // Use native VoiceRecorder on iOS/Android
+    if (isNativePlatform) {
+      try {
+        console.log('[Native Audio Recording] Checking permissions...')
+        
+        // Check/request permissions
+        const permissionStatus = await VoiceRecorder.requestAudioRecordingPermission()
+        console.log('[Native Audio Recording] Permission status:', permissionStatus)
+        
+        if (!permissionStatus.value) {
+          console.warn('[Native Audio Recording] Permission denied')
+          return
+        }
+        
+        // Start native recording
+        console.log('[Native Audio Recording] Starting recording...')
+        await VoiceRecorder.startRecording()
+        nativeRecordingActiveRef.current = true
+        console.log('[Native Audio Recording] Started successfully')
+      } catch (err) {
+        console.error('[Native Audio Recording] Failed to start:', err)
+        // Don't throw - audio recording is optional, speech recognition can continue
+      }
+      return
+    }
+
+    // Web browser recording using MediaRecorder
+    try {
+      console.log('[Audio Recording] Requesting microphone access...')
+      
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.warn('[Audio Recording] getUserMedia not available')
+        return
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      mediaStreamRef.current = stream
+      audioChunksRef.current = []
+
+      // Determine best supported mime type
+      let mimeType = 'audio/webm'
+      if (typeof MediaRecorder !== 'undefined') {
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          mimeType = 'audio/webm;codecs=opus'
+        } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+          mimeType = 'audio/webm'
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          mimeType = 'audio/mp4'
+        } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+          mimeType = 'audio/ogg'
+        }
+      }
+
+      console.log('[Audio Recording] Using mime type:', mimeType)
+
+      const mediaRecorder = new MediaRecorder(stream, { mimeType })
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data)
+          console.log('[Audio Recording] Chunk received:', event.data.size, 'bytes')
+        }
+      }
+
+      mediaRecorder.onerror = (event) => {
+        console.error('[Audio Recording] Error:', event)
+      }
+
+      mediaRecorderRef.current = mediaRecorder
+      mediaRecorder.start(1000) // Collect data every second
+      console.log('[Audio Recording] Started successfully')
+    } catch (err) {
+      console.error('[Audio Recording] Failed to start:', err)
+      // Don't throw - audio recording is optional, speech recognition can continue
+    }
+  }, [isNativePlatform])
+
+  // Stop audio recording and return blob
+  const stopAudioRecording = useCallback(async (): Promise<Blob | null> => {
+    // Handle native VoiceRecorder on iOS/Android
+    if (isNativePlatform && nativeRecordingActiveRef.current) {
+      try {
+        console.log('[Native Audio Recording] Stopping recording...')
+        const result = await VoiceRecorder.stopRecording()
+        nativeRecordingActiveRef.current = false
+        
+        console.log('[Native Audio Recording] Got result:', result.value ? 'has data' : 'no data')
+        
+        if (result.value && result.value.recordDataBase64) {
+          // Convert base64 to blob
+          const base64Data = result.value.recordDataBase64
+          const mimeType = result.value.mimeType || 'audio/aac'
+          
+          // Decode base64 to binary
+          const binaryString = atob(base64Data)
+          const bytes = new Uint8Array(binaryString.length)
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+          }
+          
+          const audioBlob = new Blob([bytes], { type: mimeType })
+          console.log('[Native Audio Recording] Created blob:', audioBlob.size, 'bytes, type:', mimeType)
+          
+          return audioBlob
+        }
+        
+        console.log('[Native Audio Recording] No audio data returned')
+        return null
+      } catch (err) {
+        console.error('[Native Audio Recording] Failed to stop:', err)
+        nativeRecordingActiveRef.current = false
+        return null
+      }
+    }
+    
+    // Handle web MediaRecorder
+    return new Promise((resolve) => {
+      const mediaRecorder = mediaRecorderRef.current
+      const stream = mediaStreamRef.current
+
+      if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+        console.log('[Audio Recording] No active recorder')
+        resolve(null)
+        return
+      }
+
+      mediaRecorder.onstop = () => {
+        const chunks = audioChunksRef.current
+        console.log('[Audio Recording] Stopped, chunks:', chunks.length)
+
+        if (chunks.length === 0) {
+          resolve(null)
+          return
+        }
+
+        const audioBlob = new Blob(chunks, { type: mediaRecorder.mimeType || 'audio/webm' })
+        console.log('[Audio Recording] Created blob:', audioBlob.size, 'bytes, type:', audioBlob.type)
+
+        // Clean up
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop())
+        }
+        mediaStreamRef.current = null
+        mediaRecorderRef.current = null
+        audioChunksRef.current = []
+
+        resolve(audioBlob)
+      }
+
+      mediaRecorder.stop()
+    })
+  }, [isNativePlatform])
 
   // Native Speech Recognition (Capacitor plugin for iOS/Android)
   const startNativeSpeechRecognition = useCallback(async () => {
@@ -254,7 +419,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
     }
   }, [])
 
-  // Start recording (speech recognition)
+  // Start recording (speech recognition + audio recording)
   const startRecording = useCallback(async () => {
     try {
       setError(null)
@@ -291,6 +456,11 @@ export function useHybridRecording(): UseHybridRecordingResult {
 
       startTimer()
 
+      // Start audio recording for playback (non-blocking)
+      startAudioRecording().catch(err => {
+        console.warn('[Recording] Audio recording failed, continuing with speech only:', err)
+      })
+
       // Start appropriate speech recognition
       if (useNativeSpeechRecognition) {
         console.log('[Recording] Using Native Speech Recognition (Capacitor)')
@@ -308,7 +478,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
       setState(prev => ({ ...prev, isRecording: false }))
       stopTimer()
     }
-  }, [isSupported, isNativePlatform, useNativeSpeechRecognition, useWebSpeechRecognition, startNativeSpeechRecognition, startWebSpeechRecognition, startTimer, stopTimer, state.isRecording])
+  }, [isSupported, isNativePlatform, useNativeSpeechRecognition, useWebSpeechRecognition, startNativeSpeechRecognition, startWebSpeechRecognition, startTimer, stopTimer, state.isRecording, startAudioRecording])
 
   // Pause recording
   const pauseRecording = useCallback(async () => {
@@ -377,19 +547,23 @@ export function useHybridRecording(): UseHybridRecordingResult {
       finalTranscript = transcriptRef.current.trim()
     }
 
+    // Stop audio recording and get blob
+    const audioBlob = await stopAudioRecording()
+    console.log('[Recording] Audio blob:', audioBlob ? `${audioBlob.size} bytes` : 'null')
+
     setState(prev => ({
       ...prev,
       transcript: finalTranscript,
       interimTranscript: '',
       isRecording: false,
       isPaused: false,
+      audioBlob: audioBlob,
     }))
 
     console.log('[Recording] Stopped. Final transcript length:', finalTranscript.length)
 
-    // Return transcript (no audio blob with speech recognition approach)
-    return { transcript: finalTranscript, audioBlob: null }
-  }, [useNativeSpeechRecognition, stopNativeSpeechRecognition, stopTimer])
+    return { transcript: finalTranscript, audioBlob }
+  }, [useNativeSpeechRecognition, stopNativeSpeechRecognition, stopTimer, stopAudioRecording])
 
   // Reset recording
   const resetRecording = useCallback(async () => {
@@ -408,6 +582,17 @@ export function useHybridRecording(): UseHybridRecordingResult {
       webRecognitionRef.current.stop()
       webRecognitionRef.current = null
     }
+
+    // Clean up audio recording
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop()
+    }
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop())
+    }
+    mediaRecorderRef.current = null
+    mediaStreamRef.current = null
+    audioChunksRef.current = []
 
     stopTimer()
 
@@ -429,7 +614,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
     setError(null)
   }, [useNativeSpeechRecognition, stopTimer])
 
-  // Clear audio blob (no-op now, kept for backward compatibility)
+  // Clear audio blob
   const clearAudioBlob = useCallback(() => {
     setState(prev => ({ ...prev, audioBlob: null }))
   }, [])
@@ -442,6 +627,12 @@ export function useHybridRecording(): UseHybridRecordingResult {
       }
       if (webRecognitionRef.current) {
         webRecognitionRef.current.stop()
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop()
+      }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop())
       }
       if (isNativePlatform) {
         SpeechRecognition.stop().catch(() => {})
