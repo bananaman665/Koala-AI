@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { NativeAudio } from '@capacitor-community/native-audio'
+import { Filesystem, Directory } from '@capacitor/filesystem'
 
 interface NativeAudioPlayerState {
   isPlaying: boolean
@@ -41,8 +42,8 @@ function generateAssetId(url: string): string {
   return `audio_${Math.abs(hash)}`
 }
 
-// Validate and fix audio URL for iOS playback
-function validateAndFixAudioUrl(url: string | null): string | null {
+// Validate remote audio URL format
+function validateRemoteAudioUrl(url: string | null): string | null {
   if (!url) {
     console.warn('[NativeAudio] Audio URL is null or undefined')
     return null
@@ -58,13 +59,13 @@ function validateAndFixAudioUrl(url: string | null): string | null {
 
   // Check if URL is complete (should start with https:// or http://)
   if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
-    console.error('[NativeAudio] Asset Path is missing - URL does not start with http:// or https://', trimmedUrl)
+    console.error('[NativeAudio] Invalid URL - does not start with http:// or https://', trimmedUrl)
     return null
   }
 
   // Check if URL contains the full path (should have at least /object/public/ or similar)
   if (!trimmedUrl.includes('/')) {
-    console.error('[NativeAudio] Asset Path is missing - URL is incomplete', trimmedUrl)
+    console.error('[NativeAudio] Invalid URL - is incomplete', trimmedUrl)
     return null
   }
 
@@ -73,20 +74,83 @@ function validateAndFixAudioUrl(url: string | null): string | null {
     // Should have format: https://xxx.supabase.co/storage/v1/object/public/bucket/path/file.ext
     const supabaseMatch = trimmedUrl.match(/https:\/\/[^/]+\.supabase\.co\/storage\/v1\/object\/public\//)
     if (!supabaseMatch) {
-      console.error('[NativeAudio] Asset Path is missing - Invalid Supabase URL format', trimmedUrl)
+      console.error('[NativeAudio] Invalid Supabase URL format', trimmedUrl)
       return null
     }
 
     // Verify there's content after the bucket/public path
     const pathAfterPublic = trimmedUrl.substring(supabaseMatch[0].length)
     if (!pathAfterPublic || pathAfterPublic.trim() === '') {
-      console.error('[NativeAudio] Asset Path is missing - No file path after /public/', trimmedUrl)
+      console.error('[NativeAudio] No file path after /public/', trimmedUrl)
       return null
     }
   }
 
   console.log('[NativeAudio] URL validation passed, URL length:', trimmedUrl.length)
   return trimmedUrl
+}
+
+// Download audio file from remote URL to local cache
+async function downloadAudioToCache(remoteUrl: string, audioId: string): Promise<string | null> {
+  try {
+    console.log('[NativeAudio] Downloading audio from:', remoteUrl)
+
+    // Fetch the audio file from remote URL
+    const response = await fetch(remoteUrl)
+    if (!response.ok) {
+      console.error('[NativeAudio] Failed to download audio, HTTP status:', response.status)
+      return null
+    }
+
+    // Convert response to blob
+    const blob = await response.blob()
+    if (blob.size === 0) {
+      console.error('[NativeAudio] Downloaded file is empty')
+      return null
+    }
+
+    console.log('[NativeAudio] Downloaded audio file, size:', blob.size, 'bytes')
+
+    // Convert blob to base64
+    const reader = new FileReader()
+    return new Promise((resolve) => {
+      reader.onload = async () => {
+        try {
+          const base64Data = reader.result as string
+          const base64Content = base64Data.split(',')[1] // Remove data:audio/...;base64, prefix
+
+          // Get file extension from URL
+          const urlPath = remoteUrl.split('?')[0] // Remove query params
+          const extension = urlPath.split('.').pop() || 'm4a'
+          const fileName = `${audioId}.${extension}`
+
+          // Write to cache directory
+          await Filesystem.writeFile({
+            path: `audio-cache/${fileName}`,
+            data: base64Content,
+            directory: Directory.Cache,
+            recursive: true,
+          })
+
+          // Get the URI of the cached file
+          const fileUri = await Filesystem.getUri({
+            path: `audio-cache/${fileName}`,
+            directory: Directory.Cache,
+          })
+
+          console.log('[NativeAudio] Cached audio at:', fileUri.uri)
+          return resolve(fileUri.uri)
+        } catch (err) {
+          console.error('[NativeAudio] Failed to cache audio:', err)
+          resolve(null)
+        }
+      }
+      reader.readAsDataURL(blob)
+    })
+  } catch (err) {
+    console.error('[NativeAudio] Download error:', err)
+    return null
+  }
 }
 
 export function useNativeAudioPlayer({
@@ -168,13 +232,13 @@ export function useNativeAudioPlayer({
       setState(prev => ({ ...prev, isLoading: true, error: null }))
 
       try {
-        // Validate and fix audio URL for iOS compatibility
-        const validatedUrl = validateAndFixAudioUrl(audioUrl)
+        // Validate remote audio URL
+        const validatedUrl = validateRemoteAudioUrl(audioUrl)
         if (!validatedUrl) {
           setState(prev => ({
             ...prev,
             isLoading: false,
-            error: 'Asset Path is missing - Invalid or incomplete audio URL',
+            error: 'Invalid or incomplete audio URL',
           }))
           return
         }
@@ -186,14 +250,27 @@ export function useNativeAudioPlayer({
         const newAssetId = generateAssetId(validatedUrl)
         assetIdRef.current = newAssetId
 
-        console.log('[NativeAudio] Loading audio:', validatedUrl, 'assetId:', newAssetId)
+        console.log('[NativeAudio] Processing audio:', validatedUrl, 'assetId:', newAssetId)
 
-        // Preload the audio
+        // Download audio to local cache (required for iOS NativeAudio plugin)
+        const localAudioUrl = await downloadAudioToCache(validatedUrl, newAssetId)
+        if (!localAudioUrl) {
+          setState(prev => ({
+            ...prev,
+            isLoading: false,
+            error: 'Failed to download audio file',
+          }))
+          return
+        }
+
+        console.log('[NativeAudio] Loading audio from local cache:', localAudioUrl, 'assetId:', newAssetId)
+
+        // Preload the audio from local cache URL
         await NativeAudio.preload({
           assetId: newAssetId,
-          assetPath: validatedUrl,
+          assetPath: localAudioUrl,
           audioChannelNum: 1,
-          isUrl: true, // Loading from URL
+          isUrl: true, // Loading from file:// URL
         })
 
         isLoadedRef.current = true
