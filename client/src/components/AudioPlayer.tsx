@@ -285,7 +285,7 @@ export function AudioPlayer({
   }
 
   return (
-    <div className={`bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-4 ${className}`}>
+    <div className={`bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-3 ${className}`}>
       {/* Hidden audio element - only used for web player */}
       {!useNative && <audio ref={audioRef} src={audioUrl} preload="metadata" />}
 
@@ -298,7 +298,7 @@ export function AudioPlayer({
       <div
         ref={progressRef}
         onClick={handleSeek}
-        className="relative h-12 bg-gray-700/50 rounded-lg cursor-pointer mb-4 overflow-hidden group"
+        className="relative h-12 bg-gray-700/50 rounded-none cursor-pointer overflow-hidden group -mx-3 -mt-3 -mb-3 px-3"
       >
         {/* Progress fill */}
         <div
@@ -332,7 +332,7 @@ export function AudioPlayer({
       </div>
 
       {/* Controls */}
-      <div className="space-y-4">
+      <div className="space-y-4 mt-3">
         {/* Top row: Time, Play controls, and Speed */}
         <div className="flex items-center justify-between">
           {/* Left: Time display */}
@@ -410,13 +410,6 @@ export function AudioPlayer({
             className="w-32 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
           />
         </div>
-      </div>
-
-      {/* Keyboard shortcuts hint */}
-      <div className="mt-3 text-center">
-        <p className="text-white/40 text-xs">
-          Space to play/pause | ← → to skip 10s | M to mute
-        </p>
       </div>
     </div>
   )
