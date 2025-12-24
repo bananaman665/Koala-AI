@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     // Construct file path
     const fileName = `${lectureId}.${extension}`
-    const filePath = `audio-recordings/${userId}/${fileName}`
+    const filePath = `${userId}/${fileName}`
 
     console.log('[uploadAudioEndpoint] Uploading to path:', filePath)
 

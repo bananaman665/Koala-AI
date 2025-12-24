@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     // Construct file paths
-    const oldPath = `audio-recordings/${userId}/${tempId}.${extension}`
-    const newPath = `audio-recordings/${userId}/${lectureId}.${extension}`
+    const oldPath = `${userId}/${tempId}.${extension}`
+    const newPath = `${userId}/${lectureId}.${extension}`
 
     console.log('[reorganizeAudioEndpoint] Moving from:', oldPath, 'to:', newPath)
 
