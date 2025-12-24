@@ -19,12 +19,16 @@ import { supabase, uploadAudioFile } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
 import { SkeletonLectureCard, SkeletonCourseCard, SkeletonStats } from '@/components/Skeleton'
+import ReactMarkdown from 'react-markdown'
 import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 import { useLevel, XP_REWARDS } from '@/hooks/useLevel'
 import { useAchievements, UserStats } from '@/hooks/useAchievements'
 import { LevelBadge, LevelProgressModal, LevelUpModal } from '@/components/LevelBadge'
 import { AchievementsModal, AchievementUnlockedModal } from '@/components/AchievementBadge'
+import { LearnModeConfigModal, LearnModeConfig } from '@/components/LearnModeConfigModal'
+import { FlashcardConfigModal, FlashcardConfig } from '@/components/FlashcardConfigModal'
+import type { QuestionType } from '@/lib/groq'
 
 // Color classes for course icons (full class names for Tailwind to detect)
 const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
@@ -194,10 +198,12 @@ function DashboardContent() {
   // Learn Mode State
   const [learnModeQuestions, setLearnModeQuestions] = useState<Array<{
     question: string;
-    type: 'multiple_choice' | 'true_false';
+    type: QuestionType;
     correctAnswer: string;
     options: string[];
     explanation: string;
+    keywords?: string[];
+    acceptableAnswers?: string[];
   }>>([])
   const [isGeneratingLearnMode, setIsGeneratingLearnMode] = useState(false)
   const [learnModeError, setLearnModeError] = useState<string | null>(null)
@@ -209,6 +215,10 @@ function DashboardContent() {
   const [correctAnswers, setCorrectAnswers] = useState<Set<number>>(new Set())
   const [incorrectQuestions, setIncorrectQuestions] = useState<number[]>([])
   const [round, setRound] = useState(1)
+  const [showLearnModeConfigModal, setShowLearnModeConfigModal] = useState(false)
+  const [showFlashcardConfigModal, setShowFlashcardConfigModal] = useState(false)
+  const [writtenAnswer, setWrittenAnswer] = useState('')
+  const [writtenAnswerFeedback, setWrittenAnswerFeedback] = useState<{ isCorrect: boolean; matchedKeywords: string[] } | null>(null)
 
   // Mobile bottom nav state
   const [activeScreen, setActiveScreen] = useState<'dashboard' | 'library' | 'analytics' | 'feed'>('dashboard')
@@ -879,8 +889,10 @@ function DashboardContent() {
     }
   }
 
-  const generateFlashcards = async () => {
-    if (!notes) {
+  const generateFlashcards = async (contentToUse?: string, config?: FlashcardConfig) => {
+    const notesContent = contentToUse || selectedLectureNotes || notes
+
+    if (!notesContent) {
       setFlashcardsError('No notes available to generate flashcards from')
       return
     }
@@ -888,13 +900,17 @@ function DashboardContent() {
     try {
       setIsGeneratingFlashcards(true)
       setFlashcardsError(null)
+      setShowFlashcardConfigModal(false)
 
       const response = await fetch('/api/ai/generate-flashcards', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ content: notes, numberOfCards: 10 }),
+        body: JSON.stringify({
+          content: notesContent,
+          numberOfCards: config?.numberOfCards || 10,
+        }),
       })
 
       const data = await response.json()
@@ -904,6 +920,13 @@ function DashboardContent() {
       }
 
       setFlashcards(data.flashcards)
+
+      // If in library view, activate flashcard mode
+      if (activeScreen === 'library' && selectedLecture) {
+        setCurrentFlashcardIndex(0)
+        setIsCardFlipped(false)
+        setIsFlashcardModeActive(true)
+      }
     } catch (err: any) {
       setFlashcardsError(err.message || 'Failed to generate flashcards')
     } finally {
@@ -923,7 +946,7 @@ function DashboardContent() {
     })
   }
 
-  const generateLearnMode = async (contentToUse?: string) => {
+  const generateLearnMode = async (contentToUse?: string, config?: LearnModeConfig) => {
     const notesContent = contentToUse || selectedLectureNotes || notes
 
     if (!notesContent) {
@@ -934,13 +957,19 @@ function DashboardContent() {
     try {
       setIsGeneratingLearnMode(true)
       setLearnModeError(null)
+      setShowLearnModeConfigModal(false)
 
       const response = await fetch('/api/ai/generate-learn-mode', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ content: notesContent, numberOfQuestions: 10 }),
+        body: JSON.stringify({
+          content: notesContent,
+          numberOfQuestions: config?.numberOfQuestions || 10,
+          questionTypes: config?.questionTypes || ['multiple_choice', 'true_false'],
+          difficulty: config?.difficulty || 'medium',
+        }),
       })
 
       const data = await response.json()
@@ -971,25 +1000,81 @@ function DashboardContent() {
   }
 
   const handleSubmitAnswer = () => {
-    if (!selectedAnswer || showExplanation) return
-
     const currentQuestion = learnModeQuestions[currentQuestionIndex]
-    const isCorrect = selectedAnswer === currentQuestion.correctAnswer
+    const questionType = currentQuestion.type
 
-    setAnsweredQuestions(prev => new Set(prev).add(currentQuestionIndex))
+    // For multiple choice and true/false
+    if (questionType === 'multiple_choice' || questionType === 'true_false') {
+      if (!selectedAnswer || showExplanation) return
+      const isCorrect = selectedAnswer === currentQuestion.correctAnswer
 
-    if (isCorrect) {
-      setCorrectAnswers(prev => new Set(prev).add(currentQuestionIndex))
-    } else {
-      setIncorrectQuestions(prev => [...prev, currentQuestionIndex])
+      setAnsweredQuestions(prev => new Set(prev).add(currentQuestionIndex))
+
+      if (isCorrect) {
+        setCorrectAnswers(prev => new Set(prev).add(currentQuestionIndex))
+      } else {
+        setIncorrectQuestions(prev => [...prev, currentQuestionIndex])
+      }
+
+      setShowExplanation(true)
+      return
     }
 
-    setShowExplanation(true)
+    // For written answers
+    if (questionType === 'written') {
+      if (!writtenAnswer.trim() || showExplanation) return
+
+      // Check for keyword matches
+      const keywords = currentQuestion.keywords || []
+      const lowerAnswer = writtenAnswer.toLowerCase()
+      const matchedKeywords = keywords.filter(kw =>
+        lowerAnswer.includes(kw.toLowerCase())
+      )
+
+      // Consider correct if at least 50% of keywords are present
+      const isCorrect = keywords.length === 0 || matchedKeywords.length >= Math.ceil(keywords.length * 0.5)
+
+      setWrittenAnswerFeedback({ isCorrect, matchedKeywords })
+      setAnsweredQuestions(prev => new Set(prev).add(currentQuestionIndex))
+
+      if (isCorrect) {
+        setCorrectAnswers(prev => new Set(prev).add(currentQuestionIndex))
+      } else {
+        setIncorrectQuestions(prev => [...prev, currentQuestionIndex])
+      }
+
+      setShowExplanation(true)
+      return
+    }
+
+    // For fill in the blank
+    if (questionType === 'fill_in_blank') {
+      if (!writtenAnswer.trim() || showExplanation) return
+
+      const correctAnswer = currentQuestion.correctAnswer.toLowerCase().trim()
+      const acceptableAnswers = currentQuestion.acceptableAnswers?.map(a => a.toLowerCase().trim()) || []
+      const userAnswer = writtenAnswer.toLowerCase().trim()
+
+      const isCorrect = userAnswer === correctAnswer || acceptableAnswers.includes(userAnswer)
+
+      setWrittenAnswerFeedback({ isCorrect, matchedKeywords: [] })
+      setAnsweredQuestions(prev => new Set(prev).add(currentQuestionIndex))
+
+      if (isCorrect) {
+        setCorrectAnswers(prev => new Set(prev).add(currentQuestionIndex))
+      } else {
+        setIncorrectQuestions(prev => [...prev, currentQuestionIndex])
+      }
+
+      setShowExplanation(true)
+    }
   }
 
   const handleNextQuestion = () => {
     setShowExplanation(false)
     setSelectedAnswer(null)
+    setWrittenAnswer('')
+    setWrittenAnswerFeedback(null)
 
     // Check if we've answered all questions in current round
     if (currentQuestionIndex < learnModeQuestions.length - 1) {
@@ -1043,6 +1128,8 @@ function DashboardContent() {
     setCorrectAnswers(new Set())
     setIncorrectQuestions([])
     setRound(1)
+    setWrittenAnswer('')
+    setWrittenAnswerFeedback(null)
   }
 
   // Show loading screen while checking authentication
@@ -1088,7 +1175,7 @@ function DashboardContent() {
             </button>
 
             {/* Achievements */}
-            <button 
+            <button
               onClick={() => { hapticButton(); setShowAchievementsModal(true) }}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 transition-all hover:scale-105 active:scale-95"
             >
@@ -1183,7 +1270,7 @@ function DashboardContent() {
             <div className="bg-white dark:bg-[#1a2233]/80 rounded-3xl p-6 mb-6 border border-gray-100 dark:border-white/[0.06] animate-card-in">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
                     {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}{user?.user_metadata?.full_name || user?.user_metadata?.display_name ? `, ${(user?.user_metadata?.full_name || user?.user_metadata?.display_name).split(' ')[0]}` : ''}
                   </h1>
                   <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
@@ -1600,8 +1687,8 @@ function DashboardContent() {
                   {studyViewMode === 'notes' && (
                     <div>
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">AI Generated Notes</h3>
-                      <div className="prose prose-sm max-w-none mb-4">
-                        <pre className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 font-sans">{notes}</pre>
+                      <div className="prose prose-sm max-w-none mb-4 dark:prose-invert prose-p:my-3 prose-headings:mt-4 prose-headings:mb-2 prose-ul:my-2 prose-li:my-1">
+                        <ReactMarkdown>{notes || ''}</ReactMarkdown>
                       </div>
                       <div className="flex gap-3 flex-wrap">
                         <button
@@ -1610,18 +1697,18 @@ function DashboardContent() {
                           Save to Library
                         </button>
                         <button
-                          onClick={generateFlashcards}
+                          onClick={() => setShowFlashcardConfigModal(true)}
                           disabled={isGeneratingFlashcards}
                           className="px-4 py-2 bg-purple-600 text-white btn-press rounded-lg hover:bg-purple-700 disabled:opacity-50"
                         >
-                          {isGeneratingFlashcards ? 'Generating...' : 'Generate Flashcards'}
+                          {isGeneratingFlashcards ? 'Generating...' : 'Flashcards'}
                         </button>
                         <button
-                          onClick={() => generateLearnMode()}
+                          onClick={() => setShowLearnModeConfigModal(true)}
                           disabled={isGeneratingLearnMode}
-                          className="px-4 py-2 bg-green-600 text-white btn-press rounded-lg hover:bg-green-700 disabled:opacity-50"
+                          className="px-4 py-2 bg-indigo-600 text-white btn-press rounded-lg hover:bg-indigo-700 disabled:opacity-50"
                         >
-                          {isGeneratingLearnMode ? 'Generating...' : 'Generate Learn Mode'}
+                          {isGeneratingLearnMode ? 'Generating...' : 'Learn Mode'}
                         </button>
                         <button onClick={reset} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
                           New Recording
@@ -1699,90 +1786,188 @@ function DashboardContent() {
                           {/* Question Card */}
                           <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-6 shadow-md dark:shadow-xl dark:border dark:border-[#1E293B] mb-4 sm:mb-6">
                             <div className="mb-3 sm:mb-4">
-                              <span className="px-2.5 py-1 sm:px-3 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-semibold rounded-full border border-transparent dark:border-purple-500/30">
-                                {learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ? 'Multiple Choice' : 'True/False'}
+                              <span className={`px-2.5 py-1 sm:px-3 text-xs font-semibold rounded-full border border-transparent ${
+                                learnModeQuestions[currentQuestionIndex].type === 'multiple_choice'
+                                  ? 'bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 dark:border-purple-500/30'
+                                  : learnModeQuestions[currentQuestionIndex].type === 'true_false'
+                                  ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 dark:border-blue-500/30'
+                                  : learnModeQuestions[currentQuestionIndex].type === 'written'
+                                  ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 dark:border-amber-500/30'
+                                  : 'bg-teal-100 dark:bg-teal-500/20 text-teal-700 dark:text-teal-300 dark:border-teal-500/30'
+                              }`}>
+                                {learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ? 'Multiple Choice'
+                                  : learnModeQuestions[currentQuestionIndex].type === 'true_false' ? 'True / False'
+                                  : learnModeQuestions[currentQuestionIndex].type === 'written' ? 'Written Answer'
+                                  : 'Fill in the Blank'}
                               </span>
                             </div>
                             <h4 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-[#F1F5F9] mb-4 sm:mb-6 leading-relaxed">
                               {learnModeQuestions[currentQuestionIndex].question}
                             </h4>
 
-                            {/* Answer Options */}
-                            <div className="space-y-3 sm:space-y-4">
-                              {learnModeQuestions[currentQuestionIndex].options.map((option, idx) => {
-                                const isSelected = selectedAnswer === option
-                                const isCorrect = option === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                const showCorrect = showExplanation && isCorrect
-                                const showIncorrect = showExplanation && isSelected && !isCorrect
+                            {/* Multiple Choice / True-False Options */}
+                            {(learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ||
+                              learnModeQuestions[currentQuestionIndex].type === 'true_false') && (
+                              <div className="space-y-3 sm:space-y-4">
+                                {learnModeQuestions[currentQuestionIndex].options.map((option, idx) => {
+                                  const isSelected = selectedAnswer === option
+                                  const isCorrect = option === learnModeQuestions[currentQuestionIndex].correctAnswer
+                                  const showCorrect = showExplanation && isCorrect
+                                  const showIncorrect = showExplanation && isSelected && !isCorrect
 
-                                return (
-                                  <button
-                                    key={idx}
-                                    onClick={() => handleAnswerSelect(option)}
-                                    disabled={showExplanation}
-                                    className={`w-full text-left p-4 sm:p-5 rounded-xl border-2 transition-all text-sm sm:text-base ${
-                                      showCorrect
-                                        ? 'bg-green-50 dark:bg-green-500/15 border-green-500 dark:border-green-400 text-green-900 dark:text-green-200'
-                                        : showIncorrect
-                                        ? 'bg-red-50 dark:bg-red-500/15 border-red-500 dark:border-red-400 text-red-900 dark:text-red-200'
-                                        : isSelected
-                                        ? 'bg-blue-50 dark:bg-blue-500/15 border-blue-500 dark:border-blue-400 text-blue-900 dark:text-blue-200 shadow-md dark:shadow-blue-500/10'
-                                        : 'bg-gray-50 dark:bg-[#1E293B] border-gray-200 dark:border-[#334155] text-gray-900 dark:text-[#F1F5F9] hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 active:scale-[0.98]'
-                                    } ${showExplanation ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                                  >
-                                    <div className="flex items-center justify-between gap-2">
-                                      <span className="font-medium break-words">{option}</span>
-                                      {showCorrect && <span className="text-green-500 dark:text-green-400 text-lg sm:text-xl flex-shrink-0">✓</span>}
-                                      {showIncorrect && <span className="text-red-500 dark:text-red-400 text-lg sm:text-xl flex-shrink-0">✗</span>}
-                                    </div>
-                                  </button>
-                                )
-                              })}
-                            </div>
-
-                            {/* Explanation */}
-                            {showExplanation && (
-                              <div className={`mt-4 sm:mt-6 p-4 sm:p-5 rounded-xl ${
-                                selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                  ? 'bg-green-50 dark:bg-green-500/10 border-2 border-green-300 dark:border-green-500/40'
-                                  : 'bg-red-50 dark:bg-red-500/10 border-2 border-red-300 dark:border-red-500/40'
-                              }`}>
-                                <div className="flex items-start gap-3 sm:gap-4">
-                                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                                    selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                      ? 'bg-green-500'
-                                      : 'bg-red-500'
-                                  }`}>
-                                    <span className="text-white text-lg sm:text-xl font-bold">
-                                      {selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer ? '✓' : '✗'}
-                                    </span>
-                                  </div>
-                                  <div className="flex-1">
-                                    <p className={`font-semibold mb-1 text-sm sm:text-base ${
-                                      selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                        ? 'text-green-900 dark:text-green-200'
-                                        : 'text-red-900 dark:text-red-200'
-                                    }`}>
-                                      {selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer ? 'Correct!' : 'Incorrect'}
-                                    </p>
-                                    <p className={`text-sm sm:text-base leading-relaxed ${
-                                      selectedAnswer === learnModeQuestions[currentQuestionIndex].correctAnswer
-                                        ? 'text-green-800 dark:text-green-300'
-                                        : 'text-red-800 dark:text-red-300'
-                                    }`}>
-                                      {learnModeQuestions[currentQuestionIndex].explanation}
-                                    </p>
-                                  </div>
-                                </div>
+                                  return (
+                                    <button
+                                      key={idx}
+                                      onClick={() => handleAnswerSelect(option)}
+                                      disabled={showExplanation}
+                                      className={`w-full text-left p-4 sm:p-5 rounded-xl border-2 transition-all text-sm sm:text-base ${
+                                        showCorrect
+                                          ? 'bg-green-50 dark:bg-green-500/15 border-green-500 dark:border-green-400 text-green-900 dark:text-green-200'
+                                          : showIncorrect
+                                          ? 'bg-red-50 dark:bg-red-500/15 border-red-500 dark:border-red-400 text-red-900 dark:text-red-200'
+                                          : isSelected
+                                          ? 'bg-blue-50 dark:bg-blue-500/15 border-blue-500 dark:border-blue-400 text-blue-900 dark:text-blue-200 shadow-md dark:shadow-blue-500/10'
+                                          : 'bg-gray-50 dark:bg-[#1E293B] border-gray-200 dark:border-[#334155] text-gray-900 dark:text-[#F1F5F9] hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 active:scale-[0.98]'
+                                      } ${showExplanation ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                                    >
+                                      <div className="flex items-center justify-between gap-2">
+                                        <span className="font-medium break-words">{option}</span>
+                                        {showCorrect && <span className="text-green-500 dark:text-green-400 text-lg sm:text-xl flex-shrink-0">✓</span>}
+                                        {showIncorrect && <span className="text-red-500 dark:text-red-400 text-lg sm:text-xl flex-shrink-0">✗</span>}
+                                      </div>
+                                    </button>
+                                  )
+                                })}
                               </div>
                             )}
+
+                            {/* Written Answer Input */}
+                            {learnModeQuestions[currentQuestionIndex].type === 'written' && (
+                              <div className="space-y-4">
+                                <textarea
+                                  value={writtenAnswer}
+                                  onChange={(e) => setWrittenAnswer(e.target.value)}
+                                  disabled={showExplanation}
+                                  placeholder="Type your answer here..."
+                                  rows={4}
+                                  className={`w-full p-4 rounded-xl border-2 text-sm sm:text-base resize-none transition-all ${
+                                    showExplanation
+                                      ? writtenAnswerFeedback?.isCorrect
+                                        ? 'bg-green-50 dark:bg-green-500/15 border-green-500 dark:border-green-400'
+                                        : 'bg-amber-50 dark:bg-amber-500/15 border-amber-500 dark:border-amber-400'
+                                      : 'bg-gray-50 dark:bg-[#1E293B] border-gray-200 dark:border-[#334155] focus:border-blue-500 dark:focus:border-blue-400'
+                                  } text-gray-900 dark:text-[#F1F5F9] placeholder-gray-400 dark:placeholder-gray-500`}
+                                />
+                                {showExplanation && writtenAnswerFeedback && (
+                                  <div className="flex flex-wrap gap-2">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">Key concepts found:</span>
+                                    {writtenAnswerFeedback.matchedKeywords.length > 0 ? (
+                                      writtenAnswerFeedback.matchedKeywords.map((kw, i) => (
+                                        <span key={i} className="px-2 py-0.5 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 text-xs rounded-full">
+                                          {kw}
+                                        </span>
+                                      ))
+                                    ) : (
+                                      <span className="text-xs text-amber-600 dark:text-amber-400">None detected</span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Fill in the Blank Input */}
+                            {learnModeQuestions[currentQuestionIndex].type === 'fill_in_blank' && (
+                              <div className="space-y-4">
+                                <input
+                                  type="text"
+                                  value={writtenAnswer}
+                                  onChange={(e) => setWrittenAnswer(e.target.value)}
+                                  disabled={showExplanation}
+                                  placeholder="Type the missing word or phrase..."
+                                  className={`w-full p-4 rounded-xl border-2 text-sm sm:text-base transition-all ${
+                                    showExplanation
+                                      ? writtenAnswerFeedback?.isCorrect
+                                        ? 'bg-green-50 dark:bg-green-500/15 border-green-500 dark:border-green-400'
+                                        : 'bg-red-50 dark:bg-red-500/15 border-red-500 dark:border-red-400'
+                                      : 'bg-gray-50 dark:bg-[#1E293B] border-gray-200 dark:border-[#334155] focus:border-blue-500 dark:focus:border-blue-400'
+                                  } text-gray-900 dark:text-[#F1F5F9] placeholder-gray-400 dark:placeholder-gray-500`}
+                                />
+                                {showExplanation && !writtenAnswerFeedback?.isCorrect && (
+                                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    Correct answer: <span className="font-semibold text-green-600 dark:text-green-400">{learnModeQuestions[currentQuestionIndex].correctAnswer}</span>
+                                  </p>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Explanation */}
+                            {showExplanation && (() => {
+                              const currentQ = learnModeQuestions[currentQuestionIndex]
+                              const isCorrectAnswer = currentQ.type === 'multiple_choice' || currentQ.type === 'true_false'
+                                ? selectedAnswer === currentQ.correctAnswer
+                                : writtenAnswerFeedback?.isCorrect || false
+
+                              return (
+                                <div className={`mt-4 sm:mt-6 p-4 sm:p-5 rounded-xl ${
+                                  isCorrectAnswer
+                                    ? 'bg-green-50 dark:bg-green-500/10 border-2 border-green-300 dark:border-green-500/40'
+                                    : currentQ.type === 'written'
+                                    ? 'bg-amber-50 dark:bg-amber-500/10 border-2 border-amber-300 dark:border-amber-500/40'
+                                    : 'bg-red-50 dark:bg-red-500/10 border-2 border-red-300 dark:border-red-500/40'
+                                }`}>
+                                  <div className="flex items-start gap-3 sm:gap-4">
+                                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                      isCorrectAnswer
+                                        ? 'bg-green-500'
+                                        : currentQ.type === 'written'
+                                        ? 'bg-amber-500'
+                                        : 'bg-red-500'
+                                    }`}>
+                                      <span className="text-white text-lg sm:text-xl font-bold">
+                                        {isCorrectAnswer ? '✓' : currentQ.type === 'written' ? '!' : '✗'}
+                                      </span>
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className={`font-semibold mb-1 text-sm sm:text-base ${
+                                        isCorrectAnswer
+                                          ? 'text-green-900 dark:text-green-200'
+                                          : currentQ.type === 'written'
+                                          ? 'text-amber-900 dark:text-amber-200'
+                                          : 'text-red-900 dark:text-red-200'
+                                      }`}>
+                                        {isCorrectAnswer ? 'Correct!' : currentQ.type === 'written' ? 'Review your answer' : 'Incorrect'}
+                                      </p>
+                                      <p className={`text-sm sm:text-base leading-relaxed ${
+                                        isCorrectAnswer
+                                          ? 'text-green-800 dark:text-green-300'
+                                          : currentQ.type === 'written'
+                                          ? 'text-amber-800 dark:text-amber-300'
+                                          : 'text-red-800 dark:text-red-300'
+                                      }`}>
+                                        {currentQ.explanation}
+                                      </p>
+                                      {(currentQ.type === 'written' || currentQ.type === 'fill_in_blank') && !isCorrectAnswer && (
+                                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                          <span className="font-medium">Expected answer:</span> {currentQ.correctAnswer}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            })()}
 
                             {/* Action Buttons */}
                             <div className="mt-5 sm:mt-6 flex gap-3">
                               {!showExplanation ? (
                                 <button
                                   onClick={handleSubmitAnswer}
-                                  disabled={!selectedAnswer}
+                                  disabled={
+                                    (learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ||
+                                     learnModeQuestions[currentQuestionIndex].type === 'true_false')
+                                      ? !selectedAnswer
+                                      : !writtenAnswer.trim()
+                                  }
                                   className="flex-1 px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white btn-press rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm sm:text-base shadow-lg dark:shadow-purple-500/20"
                                 >
                                   Submit Answer
@@ -2251,8 +2436,8 @@ function DashboardContent() {
                   </div>
                 </div>
               ) : selectedLectureNotes ? (
-                <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                  {selectedLectureNotes}
+                <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-3 prose-headings:mt-4 prose-headings:mb-2 prose-ul:my-2 prose-li:my-1">
+                  <ReactMarkdown>{selectedLectureNotes}</ReactMarkdown>
                 </div>
               ) : (
                 <p className="text-gray-500 dark:text-gray-400">No notes available for this lecture.</p>
@@ -2264,13 +2449,13 @@ function DashboardContent() {
               <button
                 onClick={() => {
                   if (selectedLectureNotes) {
-                    generateLearnMode()
+                    setShowLearnModeConfigModal(true)
                   } else {
                     alert('No notes available for this lecture')
                   }
                 }}
                 disabled={isGeneratingLearnMode}
-                className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-4 rounded-xl hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-4 rounded-xl hover:from-indigo-700 hover:to-purple-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20"
               >
                 {isGeneratingLearnMode ? (
                   <FiLoader className="animate-spin text-lg" />
@@ -2280,37 +2465,17 @@ function DashboardContent() {
                 <span>{isGeneratingLearnMode ? 'Generating...' : 'Learn Mode'}</span>
               </button>
               <button
-                onClick={async () => {
+                onClick={() => {
                   if (flashcards.length > 0) {
                     setCurrentFlashcardIndex(0)
                     setIsCardFlipped(false)
                     setIsFlashcardModeActive(true)
                   } else {
-                    // Generate flashcards first
-                    setIsGeneratingFlashcards(true)
-                    setFlashcardsError(null)
-                    try {
-                      const response = await fetch('/api/ai/generate-flashcards', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ content: selectedLectureNotes || notes, numberOfCards: 10 }),
-                      })
-                      const data = await response.json()
-                      if (!response.ok) {
-                        throw new Error(data.error || 'Failed to generate flashcards')
-                      }
-                      setFlashcards(data.flashcards)
-                      setCurrentFlashcardIndex(0)
-                      setIsCardFlipped(false)
-                      setIsFlashcardModeActive(true)
-                    } catch (err: any) {
-                      setFlashcardsError(err.message || 'Failed to generate flashcards')
-                    }
-                    setIsGeneratingFlashcards(false)
+                    setShowFlashcardConfigModal(true)
                   }
                 }}
                 disabled={isGeneratingFlashcards}
-                className="flex items-center justify-center space-x-2 bg-purple-600 text-white btn-press px-4 py-4 rounded-xl hover:bg-purple-700 font-medium disabled:opacity-50"
+                className="flex items-center justify-center space-x-2 bg-purple-600 text-white btn-press px-4 py-4 rounded-xl hover:bg-purple-700 font-medium disabled:opacity-50 shadow-lg shadow-purple-200 dark:shadow-purple-900/20"
               >
                 {isGeneratingFlashcards ? (
                   <FiLoader className="text-lg animate-spin" />
@@ -2338,6 +2503,17 @@ function DashboardContent() {
         {/* Library Learn Mode View */}
         {activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0 && (
           <div className="space-y-4 pb-20 animate-zoom-in">
+            {/* Header with Exit Button */}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Learn Mode</h2>
+              <button
+                onClick={exitLearnMode}
+                className="px-4 py-2 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 text-sm font-medium transition-colors"
+              >
+                ← Back
+              </button>
+            </div>
+
             {/* Question Card */}
             <div className="bg-white dark:bg-[#151E2F] rounded-xl p-5 sm:p-6 shadow-md dark:shadow-none border border-gray-200 dark:border-[#1E293B] space-y-4">
               <div>
@@ -2498,6 +2674,18 @@ function DashboardContent() {
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
               Use arrow keys or swipe to navigate
             </p>
+
+            {/* Exit Button */}
+            <button
+              onClick={() => {
+                setIsFlashcardModeActive(false)
+                setCurrentFlashcardIndex(0)
+                setIsCardFlipped(false)
+              }}
+              className="mt-8 px-6 py-2 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 font-medium transition-colors"
+            >
+              ← Back to Lecture
+            </button>
           </div>
         )}
               </div>
@@ -3343,6 +3531,14 @@ function DashboardContent() {
                     setIsStoppingRecording(true)
                     try {
                       const result = await stopAndGenerateNotes()
+                      console.log('[Dashboard Stop Button] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length, audioBlob: result.audioBlob?.size } : 'null')
+
+                      // Always capture audioBlob if available
+                      if (result?.audioBlob) {
+                        capturedAudioBlobRef.current = result.audioBlob
+                        console.log('[Dashboard Stop Button] Captured audioBlob in ref:', result.audioBlob.size, 'bytes')
+                      }
+
                       if (result && result.transcript) {
                         hapticSuccess()
                         setShowCourseSelectionModal(true)
@@ -3812,6 +4008,22 @@ function DashboardContent() {
         isOpen={showAchievementModal}
         onClose={dismissAchievement}
         achievement={newAchievement}
+      />
+
+      {/* Learn Mode Config Modal */}
+      <LearnModeConfigModal
+        isOpen={showLearnModeConfigModal}
+        onClose={() => setShowLearnModeConfigModal(false)}
+        onGenerate={(config) => generateLearnMode(undefined, config)}
+        isGenerating={isGeneratingLearnMode}
+      />
+
+      {/* Flashcard Config Modal */}
+      <FlashcardConfigModal
+        isOpen={showFlashcardConfigModal}
+        onClose={() => setShowFlashcardConfigModal(false)}
+        onGenerate={(config) => generateFlashcards(undefined, config)}
+        isGenerating={isGeneratingFlashcards}
       />
 
       </div> {/* Close h-screen-safe */}

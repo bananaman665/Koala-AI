@@ -65,6 +65,13 @@ export function useNativeAudioPlayer({
   const isLoadedRef = useRef<boolean>(false)
   const timeUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const previousUrlRef = useRef<string | null>(null)
+  const listenerHandleRef = useRef<{ remove: () => Promise<void> } | null>(null)
+  const onEndedRef = useRef(onEnded)
+
+  // Keep onEnded ref updated
+  useEffect(() => {
+    onEndedRef.current = onEnded
+  }, [onEnded])
 
   // Cleanup function
   const cleanup = useCallback(async () => {
@@ -72,6 +79,16 @@ export function useNativeAudioPlayer({
     if (timeUpdateIntervalRef.current) {
       clearInterval(timeUpdateIntervalRef.current)
       timeUpdateIntervalRef.current = null
+    }
+
+    // Remove listener if exists
+    if (listenerHandleRef.current) {
+      try {
+        await listenerHandleRef.current.remove()
+      } catch (err) {
+        console.log('[NativeAudio] Listener cleanup error (ignored):', err)
+      }
+      listenerHandleRef.current = null
     }
 
     // Unload previous audio if exists
@@ -122,12 +139,32 @@ export function useNativeAudioPlayer({
 
         isLoadedRef.current = true
 
+        // Set up completion listener ONCE after loading
+        const handle = await NativeAudio.addListener('complete', (info) => {
+          if (info.assetId === newAssetId) {
+            console.log('[NativeAudio] Playback complete')
+            setState(prev => ({
+              ...prev,
+              isPlaying: false,
+              isPaused: false,
+              currentTime: 0,
+            }))
+            // Stop time updates
+            if (timeUpdateIntervalRef.current) {
+              clearInterval(timeUpdateIntervalRef.current)
+              timeUpdateIntervalRef.current = null
+            }
+            onEndedRef.current?.()
+          }
+        })
+        listenerHandleRef.current = handle
+
         // Get duration
         try {
           const durationResult = await NativeAudio.getDuration({ assetId: newAssetId })
           if (durationResult.duration) {
-            setState(prev => ({ 
-              ...prev, 
+            setState(prev => ({
+              ...prev,
               duration: durationResult.duration,
               isLoading: false,
             }))
@@ -201,27 +238,13 @@ export function useNativeAudioPlayer({
         time: state.currentTime,
       })
 
-      setState(prev => ({ 
-        ...prev, 
-        isPlaying: true, 
+      setState(prev => ({
+        ...prev,
+        isPlaying: true,
         isPaused: false,
       }))
 
       startTimeUpdates()
-
-      // Set up completion listener
-      NativeAudio.addListener('complete', (info) => {
-        if (info.assetId === assetIdRef.current) {
-          setState(prev => ({
-            ...prev,
-            isPlaying: false,
-            isPaused: false,
-            currentTime: 0,
-          }))
-          stopTimeUpdates()
-          onEnded?.()
-        }
-      })
 
       console.log('[NativeAudio] Playing')
     } catch (err: any) {
@@ -231,7 +254,7 @@ export function useNativeAudioPlayer({
         error: err.message || 'Failed to play audio',
       }))
     }
-  }, [isNative, state.currentTime, startTimeUpdates, stopTimeUpdates, onEnded])
+  }, [isNative, state.currentTime, startTimeUpdates])
 
   // Pause
   const pause = useCallback(async () => {

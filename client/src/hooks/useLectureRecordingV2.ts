@@ -66,7 +66,6 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
           body: JSON.stringify({ transcript: finalTranscript }),
         })
 
-
         const data = await response.json()
 
         if (!response.ok) {
@@ -81,8 +80,11 @@ export function useLectureRecordingV2(): UseLectureRecordingV2Result {
         generatedNotes = data.notes
         setNotes(generatedNotes)
       } catch (err: any) {
+        console.error('[V2 Hook] Notes generation failed:', err.message)
         setNotesError(err.message || 'Failed to generate notes')
-        return null
+        // Still return transcript and audioBlob even if notes failed
+        // so the recording can be saved without notes
+        return { transcript: finalTranscript, notes: '', audioBlob: capturedAudioBlob }
       } finally {
         setIsGeneratingNotes(false)
       }

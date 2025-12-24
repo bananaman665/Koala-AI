@@ -166,7 +166,8 @@ export async function uploadAudioFile(
   // Determine file extension based on actual blob type
   const mimeType = audioBlob.type || 'audio/webm'
   let extension = 'webm'
-  if (mimeType.includes('mp4') || mimeType.includes('m4a')) extension = 'm4a'
+  if (mimeType.includes('aac')) extension = 'm4a'  // iOS native recording
+  else if (mimeType.includes('mp4') || mimeType.includes('m4a')) extension = 'm4a'
   else if (mimeType.includes('wav')) extension = 'wav'
   else if (mimeType.includes('mp3') || mimeType.includes('mpeg')) extension = 'mp3'
   else if (mimeType.includes('ogg')) extension = 'ogg'

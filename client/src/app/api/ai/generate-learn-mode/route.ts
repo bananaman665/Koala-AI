@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateLearnModeQuestions } from '@/lib/groq'
+import { generateLearnModeQuestions, QuestionType, DifficultyLevel } from '@/lib/groq'
 
 export async function POST(request: NextRequest) {
   try {
-    const { content, numberOfQuestions = 10 } = await request.json()
+    const {
+      content,
+      numberOfQuestions = 10,
+      questionTypes,
+      difficulty
+    } = await request.json()
 
     if (!content || typeof content !== 'string') {
       return NextResponse.json(
@@ -19,8 +24,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate question types if provided
+    const validTypes: QuestionType[] = ['multiple_choice', 'true_false', 'written', 'fill_in_blank']
+    if (questionTypes && Array.isArray(questionTypes)) {
+      const invalidTypes = questionTypes.filter((t: string) => !validTypes.includes(t as QuestionType))
+      if (invalidTypes.length > 0) {
+        return NextResponse.json(
+          { error: `Invalid question types: ${invalidTypes.join(', ')}. Valid types are: ${validTypes.join(', ')}` },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Validate difficulty if provided
+    const validDifficulties: DifficultyLevel[] = ['easy', 'medium', 'hard']
+    if (difficulty && !validDifficulties.includes(difficulty)) {
+      return NextResponse.json(
+        { error: `Invalid difficulty: ${difficulty}. Valid difficulties are: ${validDifficulties.join(', ')}` },
+        { status: 400 }
+      )
+    }
+
     // Generate learn mode questions using Groq
-    const questions = await generateLearnModeQuestions(content, numberOfQuestions)
+    const questions = await generateLearnModeQuestions(content, numberOfQuestions, {
+      questionTypes: questionTypes as QuestionType[],
+      difficulty: difficulty as DifficultyLevel,
+    })
 
     return NextResponse.json({
       success: true,

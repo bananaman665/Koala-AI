@@ -164,32 +164,96 @@ export async function generateFlashcards(
   }
 }
 
+// Question types for learn mode
+export type QuestionType = 'multiple_choice' | 'true_false' | 'written' | 'fill_in_blank'
+export type DifficultyLevel = 'easy' | 'medium' | 'hard'
+
+export interface LearnModeOptions {
+  model?: string
+  questionTypes?: QuestionType[]
+  difficulty?: DifficultyLevel
+}
+
 /**
- * Generate learn mode questions with multiple choice options
+ * Generate learn mode questions with configurable question types and difficulty
  */
 export async function generateLearnModeQuestions(
   content: string,
   numberOfQuestions: number = 10,
-  options?: {
-    model?: string
-  }
+  options?: LearnModeOptions
 ) {
+  const questionTypes = options?.questionTypes || ['multiple_choice', 'true_false']
+  const difficulty = options?.difficulty || 'medium'
+
+  // Build question type instructions
+  const typeInstructions = questionTypes.map(type => {
+    switch (type) {
+      case 'multiple_choice':
+        return '- Multiple Choice: 4 options with one correct answer'
+      case 'true_false':
+        return '- True/False: statement that is either true or false'
+      case 'written':
+        return '- Written: open-ended question requiring a short written response (1-3 sentences)'
+      case 'fill_in_blank':
+        return '- Fill in the Blank: sentence with a key term removed (shown as ___)'
+      default:
+        return ''
+    }
+  }).join('\n')
+
+  const difficultyInstructions = {
+    easy: 'Create straightforward questions that test basic recall and understanding. Use clear, simple language.',
+    medium: 'Create moderately challenging questions that require understanding concepts and making connections.',
+    hard: 'Create challenging questions that require deep understanding, analysis, and application of concepts.'
+  }
+
+  const typeSchemas = questionTypes.map(type => {
+    switch (type) {
+      case 'multiple_choice':
+        return `For multiple_choice:
+  - "options": array of exactly 4 options (include the correct answer, randomly positioned)
+  - "correctAnswer": the exact text of the correct option`
+      case 'true_false':
+        return `For true_false:
+  - "options": ["True", "False"]
+  - "correctAnswer": either "True" or "False"`
+      case 'written':
+        return `For written:
+  - "options": [] (empty array)
+  - "correctAnswer": the ideal/expected answer (1-3 sentences)
+  - "keywords": array of 3-5 key terms/concepts that should appear in a correct answer`
+      case 'fill_in_blank':
+        return `For fill_in_blank:
+  - "options": [] (empty array)
+  - "correctAnswer": the word or phrase that fills the blank
+  - "acceptableAnswers": array of alternative acceptable answers (synonyms, variations)`
+      default:
+        return ''
+    }
+  }).join('\n\n')
+
   const completion = await groq.chat.completions.create({
     messages: [
       {
         role: 'system',
-        content: `You are an expert at creating effective study questions. Create a mix of multiple choice and true/false questions that help students learn and retain information. Make the questions challenging but fair, with plausible distractors for multiple choice.`,
+        content: `You are an expert at creating effective study questions. ${difficultyInstructions[difficulty]}`,
       },
       {
         role: 'user',
-        content: `Create exactly ${numberOfQuestions} learn mode questions from this lecture content. Format your response as a JSON array with objects containing:
+        content: `Create exactly ${numberOfQuestions} learn mode questions from this lecture content.
+
+Question types to include (distribute evenly):
+${typeInstructions}
+
+Format your response as a JSON array with objects containing:
 - "question": the question text
-- "type": either "multiple_choice" or "true_false"
+- "type": one of: ${questionTypes.map(t => `"${t}"`).join(', ')}
 - "correctAnswer": the correct answer
-- "options": array of 4 options for multiple choice (include the correct answer), or ["True", "False"] for true/false
+- "options": array of options (varies by type)
 - "explanation": brief explanation of why the answer is correct
 
-Make sure the correct answer is randomly positioned in the options array.
+Type-specific fields:
+${typeSchemas}
 
 Content:
 ${content}`,
@@ -197,7 +261,7 @@ ${content}`,
     ],
     model: options?.model || GROQ_MODELS.LLAMA_70B,
     temperature: 0.6,
-    max_tokens: 3000,
+    max_tokens: 4000,
   })
 
   const response = completion.choices[0]?.message?.content || ''
