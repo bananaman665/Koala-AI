@@ -761,6 +761,70 @@ function DashboardContent() {
     }
   }
 
+  // Create a new class
+  const handleCreateNewClass = async () => {
+    // Validation
+    if (!newClassData.name.trim()) {
+      toast.error('Please enter a class name')
+      return
+    }
+    if (!newClassData.code.trim()) {
+      toast.error('Please enter a class code')
+      return
+    }
+    if (!newClassData.professor.trim()) {
+      toast.error('Please enter a professor name')
+      return
+    }
+    if (!user?.id) {
+      toast.error('You must be logged in to create a class')
+      return
+    }
+
+    setIsCreatingClass(true)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': user.id,
+        },
+        body: JSON.stringify({
+          name: newClassData.name.trim(),
+          code: newClassData.code.trim(),
+          professor: newClassData.professor.trim(),
+          description: newClassData.description.trim(),
+          color: newClassData.color,
+        }),
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        hapticSuccess()
+        toast.success('Class created successfully!')
+        setUserClasses(prev => [result.data, ...prev])
+
+        // Reset form
+        setNewClassData({
+          name: '',
+          code: '',
+          professor: '',
+          description: '',
+          color: 'blue'
+        })
+        setShowCreateClassScreen(false)
+      } else {
+        hapticError()
+        toast.error(result.error?.message || 'Failed to create class')
+      }
+    } catch (error: any) {
+      hapticError()
+      toast.error(`Failed to create class: ${error.message}`)
+    } finally {
+      setIsCreatingClass(false)
+    }
+  }
+
   const saveNotesToLibrary = async () => {
     if (!notes || !user) {
       alert('Please generate notes first')
@@ -3170,6 +3234,150 @@ function DashboardContent() {
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreatingCourse ? 'Creating...' : 'Create Course'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Class Screen - Full Screen Modal */}
+      {showCreateClassScreen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Class</h2>
+              <button
+                onClick={() => {
+                  hapticButton()
+                  setShowCreateClassScreen(false)
+                  setNewClassData({
+                    name: '',
+                    code: '',
+                    professor: '',
+                    description: '',
+                    color: 'blue'
+                  })
+                }}
+                disabled={isCreatingClass}
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-50"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Class Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Class Name *
+                </label>
+                <input
+                  type="text"
+                  value={newClassData.name}
+                  onChange={(e) => setNewClassData({ ...newClassData, name: e.target.value })}
+                  placeholder="e.g., Introduction to Computer Science"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                  disabled={isCreatingClass}
+                />
+              </div>
+
+              {/* Class Code */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Class Code * <span className="text-xs text-gray-500">(students will use this to join)</span>
+                </label>
+                <input
+                  type="text"
+                  value={newClassData.code}
+                  onChange={(e) => setNewClassData({ ...newClassData, code: e.target.value.toUpperCase() })}
+                  placeholder="e.g., CS101"
+                  maxLength="10"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700 uppercase"
+                  disabled={isCreatingClass}
+                />
+              </div>
+
+              {/* Professor */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Professor Name *
+                </label>
+                <input
+                  type="text"
+                  value={newClassData.professor}
+                  onChange={(e) => setNewClassData({ ...newClassData, professor: e.target.value })}
+                  placeholder="e.g., Dr. Jane Smith"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                  disabled={isCreatingClass}
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Description (optional)
+                </label>
+                <textarea
+                  value={newClassData.description}
+                  onChange={(e) => setNewClassData({ ...newClassData, description: e.target.value })}
+                  placeholder="e.g., Fall 2024 section. Advanced data structures and algorithms."
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700 resize-none"
+                  disabled={isCreatingClass}
+                />
+              </div>
+
+              {/* Color Theme */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Color Theme
+                </label>
+                <div className="flex space-x-2">
+                  {['blue', 'purple', 'green', 'orange', 'pink', 'yellow'].map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => {
+                        hapticSelection()
+                        setNewClassData({ ...newClassData, color })
+                      }}
+                      disabled={isCreatingClass}
+                      className={`w-10 h-10 rounded-full transition-all hover:scale-110 ${
+                        courseColorClasses[color]?.bg || courseColorClasses.blue.bg
+                      } ${
+                        newClassData.color === color ? 'ring-4 ring-offset-2 dark:ring-offset-gray-800 ring-gray-800 dark:ring-gray-200' : ''
+                      } ${isCreatingClass ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3 pt-4">
+                <button
+                  onClick={() => {
+                    hapticButton()
+                    setShowCreateClassScreen(false)
+                    setNewClassData({
+                      name: '',
+                      code: '',
+                      professor: '',
+                      description: '',
+                      color: 'blue'
+                    })
+                  }}
+                  disabled={isCreatingClass}
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateNewClass}
+                  disabled={isCreatingClass || !newClassData.name.trim() || !newClassData.code.trim() || !newClassData.professor.trim()}
+                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isCreatingClass ? 'Creating...' : 'Create Class'}
                 </button>
               </div>
             </div>
