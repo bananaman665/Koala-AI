@@ -15,7 +15,7 @@ import { StreakDisplay, useStreak } from '@/components/StreakDisplay'
 import { OnboardingCarousel } from '@/components/OnboardingCarousel'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
-import { supabase, uploadAudioFile } from '@/lib/supabase'
+import { supabase, uploadAudioFile, reorganizeAudioFile } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
 import { SkeletonLectureCard, SkeletonCourseCard, SkeletonStats } from '@/components/Skeleton'
@@ -759,7 +759,32 @@ function DashboardContent() {
     }
 
     try {
-      // Create a lecture record
+      // Get audio URL first (if audio is available) before creating lecture
+      let audioUrl: string | null = null
+      let uploadedExtension: string | null = null
+      let tempUploadId: string | null = null
+      const audioBlobToUpload = capturedAudioBlobRef.current
+      console.log('[SaveLecture] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
+
+      if (audioBlobToUpload) {
+        try {
+          console.log('[SaveLecture] Uploading audio to storage with temp ID...')
+          // Use a temporary ID for initial upload
+          tempUploadId = `temp-${Date.now()}`
+          const uploadResult = await uploadAudioFile(user.id, tempUploadId, audioBlobToUpload)
+          audioUrl = uploadResult.url
+          uploadedExtension = uploadResult.extension
+          console.log('[SaveLecture] Audio uploaded, URL:', audioUrl)
+        } catch (audioError) {
+          console.error('[SaveLecture] Failed to upload audio:', audioError)
+          toast.error(`Warning: Audio file could not be uploaded. ${(audioError as Error).message}`)
+          // Continue saving even if audio upload fails
+        }
+      } else {
+        console.log('[SaveLecture] No audioBlob available to upload')
+      }
+
+      // Create a lecture record with the audio URL (now with actual URL or null)
       // @ts-ignore - Supabase typing issue with Database generic
       const { data: lecture, error: lectureError } = await (supabase as any)
         .from('lectures')
@@ -769,7 +794,7 @@ function DashboardContent() {
           title: lectureTitle.trim() || `Lecture ${new Date().toLocaleDateString()}`,
           duration: duration,
           transcription_status: 'completed',
-          audio_url: '',
+          audio_url: audioUrl,
         })
         .select()
         .single()
@@ -778,31 +803,34 @@ function DashboardContent() {
         throw lectureError
       }
 
-      // Upload audio if available (use ref which has the captured blob)
-      const audioBlobToUpload = capturedAudioBlobRef.current
-      console.log('[SaveLecture] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
-      if (audioBlobToUpload) {
+      // If we uploaded audio with a temp ID, reorganize the file to use the actual lecture ID
+      if (audioUrl && tempUploadId && uploadedExtension) {
         try {
-          console.log('[SaveLecture] Uploading audio to storage...')
-          const audioUrl = await uploadAudioFile(user.id, lecture.id, audioBlobToUpload)
-          console.log('[SaveLecture] Audio uploaded, URL:', audioUrl)
-          // Update lecture with audio URL
-          // @ts-ignore - Supabase typing issue with Database generic
+          console.log('[SaveLecture] Reorganizing audio file with lecture ID...')
+          const newAudioUrl = await reorganizeAudioFile(
+            user.id,
+            tempUploadId,
+            lecture.id,
+            uploadedExtension
+          )
+
+          console.log('[SaveLecture] New audio URL:', newAudioUrl)
+
+          // Update lecture with the correct audio URL
           const { error: updateError } = await (supabase as any)
             .from('lectures')
-            .update({ audio_url: audioUrl })
+            .update({ audio_url: newAudioUrl })
             .eq('id', lecture.id)
+
           if (updateError) {
-            console.error('[SaveLecture] Failed to update lecture with audio URL:', updateError)
+            console.error('[SaveLecture] Failed to update lecture with new audio URL:', updateError)
           } else {
-            console.log('[SaveLecture] Lecture updated with audio URL successfully')
+            console.log('[SaveLecture] Lecture updated with reorganized audio URL successfully')
           }
-        } catch (audioError) {
-          console.error('[SaveLecture] Failed to upload audio:', audioError)
-          // Continue saving even if audio upload fails
+        } catch (reorganizeError) {
+          console.error('[SaveLecture] Failed to reorganize audio file:', reorganizeError)
+          // File is still accessible at the temp URL, so this is non-critical
         }
-      } else {
-        console.log('[SaveLecture] No audioBlob available to upload')
       }
 
       // Save transcript if available
@@ -3766,6 +3794,31 @@ function DashboardContent() {
                   }
                   setIsSavingRecording(true)
                   try {
+                    // Get audio URL first (if audio is available) before creating lecture
+                    let audioUrl: string | null = null
+                    let uploadedExtension: string | null = null
+                    let tempUploadId: string | null = null
+                    const audioBlobToUpload = capturedAudioBlobRef.current
+                    console.log('[SaveLecture Modal] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
+
+                    if (audioBlobToUpload) {
+                      try {
+                        console.log('[SaveLecture Modal] Uploading audio to storage with temp ID...')
+                        // Use a temporary ID for initial upload
+                        tempUploadId = `temp-${Date.now()}`
+                        const uploadResult = await uploadAudioFile(user!.id, tempUploadId, audioBlobToUpload)
+                        audioUrl = uploadResult.url
+                        uploadedExtension = uploadResult.extension
+                        console.log('[SaveLecture Modal] Audio uploaded, URL:', audioUrl)
+                      } catch (audioError) {
+                        console.error('[SaveLecture Modal] Failed to upload audio:', audioError)
+                        toast.error(`Warning: Audio file could not be uploaded. ${(audioError as Error).message}`)
+                        // Continue saving even if audio upload fails
+                      }
+                    } else {
+                      console.log('[SaveLecture Modal] No audioBlob available to upload')
+                    }
+
                     const { data: lecture, error: lectureError } = await (supabase as any)
                       .from('lectures')
                       .insert({
@@ -3774,7 +3827,7 @@ function DashboardContent() {
                         title: lectureTitle.trim() || `Lecture ${new Date().toLocaleDateString()}`,
                         duration: duration,
                         transcription_status: 'completed',
-                        audio_url: '',
+                        audio_url: audioUrl,
                       })
                       .select()
                       .single()
@@ -3783,30 +3836,34 @@ function DashboardContent() {
                       throw lectureError
                     }
 
-                    // Upload audio if available (use ref which has the captured blob)
-                    const audioBlobToUpload = capturedAudioBlobRef.current
-                    console.log('[SaveLecture Modal] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
-                    if (audioBlobToUpload) {
+                    // If we uploaded audio with a temp ID, reorganize the file to use the actual lecture ID
+                    if (audioUrl && tempUploadId && uploadedExtension) {
                       try {
-                        console.log('[SaveLecture Modal] Uploading audio to storage...')
-                        const audioUrl = await uploadAudioFile(user!.id, lecture.id, audioBlobToUpload)
-                        console.log('[SaveLecture Modal] Audio uploaded, URL:', audioUrl)
-                        // Update lecture with audio URL
+                        console.log('[SaveLecture Modal] Reorganizing audio file with lecture ID...')
+                        const newAudioUrl = await reorganizeAudioFile(
+                          user!.id,
+                          tempUploadId,
+                          lecture.id,
+                          uploadedExtension
+                        )
+
+                        console.log('[SaveLecture Modal] New audio URL:', newAudioUrl)
+
+                        // Update lecture with the correct audio URL
                         const { error: updateError } = await (supabase as any)
                           .from('lectures')
-                          .update({ audio_url: audioUrl })
+                          .update({ audio_url: newAudioUrl })
                           .eq('id', lecture.id)
+
                         if (updateError) {
-                          console.error('[SaveLecture Modal] Failed to update lecture with audio URL:', updateError)
+                          console.error('[SaveLecture Modal] Failed to update lecture with new audio URL:', updateError)
                         } else {
-                          console.log('[SaveLecture Modal] Lecture updated with audio URL successfully')
+                          console.log('[SaveLecture Modal] Lecture updated with reorganized audio URL successfully')
                         }
-                      } catch (audioError) {
-                        console.error('[SaveLecture Modal] Failed to upload audio:', audioError)
-                        // Continue saving even if audio upload fails
+                      } catch (reorganizeError) {
+                        console.error('[SaveLecture Modal] Failed to reorganize audio file:', reorganizeError)
+                        // File is still accessible at the temp URL, so this is non-critical
                       }
-                    } else {
-                      console.log('[SaveLecture Modal] No audioBlob available to upload')
                     }
 
                     // Save transcript

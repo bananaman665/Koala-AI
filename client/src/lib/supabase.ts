@@ -152,62 +152,129 @@ export interface Database {
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
 
 /**
- * Upload audio file to Supabase Storage
+ * Upload audio file to Supabase Storage via backend API
+ * This bypasses RLS issues by using the server-side service role key
  * @param userId - The user's ID
  * @param lectureId - The lecture's ID
  * @param audioBlob - The audio blob to upload
- * @returns The public URL of the uploaded file
+ * @returns Object with public URL and file extension
  */
 export async function uploadAudioFile(
   userId: string,
   lectureId: string,
   audioBlob: Blob
-): Promise<string> {
-  // Determine file extension based on actual blob type
+): Promise<{ url: string; extension: string }> {
   const mimeType = audioBlob.type || 'audio/webm'
-  let extension = 'webm'
-  if (mimeType.includes('aac')) extension = 'm4a'  // iOS native recording
-  else if (mimeType.includes('mp4') || mimeType.includes('m4a')) extension = 'm4a'
-  else if (mimeType.includes('wav')) extension = 'wav'
-  else if (mimeType.includes('mp3') || mimeType.includes('mpeg')) extension = 'mp3'
-  else if (mimeType.includes('ogg')) extension = 'ogg'
-  
+
   console.log('[uploadAudioFile] Starting upload:', {
     userId,
     lectureId,
     blobSize: audioBlob.size,
     blobType: audioBlob.type,
-    mimeType,
-    extension
+    mimeType
   })
 
-  const fileName = `${lectureId}.${extension}`
-  const filePath = `audio-recordings/${userId}/${fileName}`
+  try {
+    // Create FormData for multipart upload
+    const formData = new FormData()
+    formData.append('file', audioBlob, `audio.${mimeType.split('/')[1] || 'webm'}`)
+    formData.append('userId', userId)
+    formData.append('lectureId', lectureId)
 
-  console.log('[uploadAudioFile] Uploading to path:', filePath)
+    console.log('[uploadAudioFile] Sending to backend API...')
 
-  const { data, error } = await supabase.storage
-    .from('audio-recordings')
-    .upload(filePath, audioBlob, {
-      contentType: mimeType,
-      upsert: true,
+    // Call backend API endpoint
+    const response = await fetch('/api/audio/upload', {
+      method: 'POST',
+      body: formData,
     })
 
-  if (error) {
-    console.error('[uploadAudioFile] Upload failed:', error)
+    const data = await response.json()
+
+    if (!response.ok) {
+      console.error('[uploadAudioFile] Backend API error:', {
+        status: response.status,
+        error: data.error,
+        details: data.details,
+      })
+      throw new Error(`Upload failed: ${data.error} - ${data.details || ''}`)
+    }
+
+    console.log('[uploadAudioFile] Upload successful:', {
+      url: data.url,
+      extension: data.extension,
+      filePath: data.filePath,
+    })
+
+    return { url: data.url, extension: data.extension }
+  } catch (error: any) {
+    console.error('[uploadAudioFile] Upload error:', {
+      message: error.message,
+      cause: error.cause,
+    })
     throw new Error(`Failed to upload audio: ${error.message}`)
   }
+}
 
-  console.log('[uploadAudioFile] Upload successful:', data)
+/**
+ * Reorganize audio file from temp ID to final lecture ID
+ * @param userId - The user's ID
+ * @param tempId - The temporary ID used for initial upload
+ * @param lectureId - The final lecture ID
+ * @param extension - The file extension
+ * @returns The new public URL
+ */
+export async function reorganizeAudioFile(
+  userId: string,
+  tempId: string,
+  lectureId: string,
+  extension: string
+): Promise<string> {
+  console.log('[reorganizeAudioFile] Starting reorganization:', {
+    userId,
+    tempId,
+    lectureId,
+    extension,
+  })
 
-  // Get public URL
-  const { data: { publicUrl } } = supabase.storage
-    .from('audio-recordings')
-    .getPublicUrl(filePath)
+  try {
+    const response = await fetch('/api/audio/reorganize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        tempId,
+        lectureId,
+        extension,
+      }),
+    })
 
-  console.log('[uploadAudioFile] Public URL:', publicUrl)
+    const data = await response.json()
 
-  return publicUrl
+    if (!response.ok) {
+      console.error('[reorganizeAudioFile] Backend API error:', {
+        status: response.status,
+        error: data.error,
+        details: data.details,
+      })
+      throw new Error(`Reorganization failed: ${data.error} - ${data.details || ''}`)
+    }
+
+    console.log('[reorganizeAudioFile] Reorganization successful:', {
+      url: data.url,
+      filePath: data.filePath,
+    })
+
+    return data.url
+  } catch (error: any) {
+    console.error('[reorganizeAudioFile] Error:', {
+      message: error.message,
+      cause: error.cause,
+    })
+    throw new Error(`Failed to reorganize audio file: ${error.message}`)
+  }
 }
 
 /**
