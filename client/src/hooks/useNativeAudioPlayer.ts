@@ -41,6 +41,54 @@ function generateAssetId(url: string): string {
   return `audio_${Math.abs(hash)}`
 }
 
+// Validate and fix audio URL for iOS playback
+function validateAndFixAudioUrl(url: string | null): string | null {
+  if (!url) {
+    console.warn('[NativeAudio] Audio URL is null or undefined')
+    return null
+  }
+
+  // Check if URL is a valid string
+  if (typeof url !== 'string' || url.trim() === '') {
+    console.warn('[NativeAudio] Audio URL is empty or not a string:', typeof url)
+    return null
+  }
+
+  const trimmedUrl = url.trim()
+
+  // Check if URL is complete (should start with https:// or http://)
+  if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
+    console.error('[NativeAudio] Asset Path is missing - URL does not start with http:// or https://', trimmedUrl)
+    return null
+  }
+
+  // Check if URL contains the full path (should have at least /object/public/ or similar)
+  if (!trimmedUrl.includes('/')) {
+    console.error('[NativeAudio] Asset Path is missing - URL is incomplete', trimmedUrl)
+    return null
+  }
+
+  // Validate Supabase storage URL format
+  if (trimmedUrl.includes('supabase.co')) {
+    // Should have format: https://xxx.supabase.co/storage/v1/object/public/bucket/path/file.ext
+    const supabaseMatch = trimmedUrl.match(/https:\/\/[^/]+\.supabase\.co\/storage\/v1\/object\/public\//)
+    if (!supabaseMatch) {
+      console.error('[NativeAudio] Asset Path is missing - Invalid Supabase URL format', trimmedUrl)
+      return null
+    }
+
+    // Verify there's content after the bucket/public path
+    const pathAfterPublic = trimmedUrl.substring(supabaseMatch[0].length)
+    if (!pathAfterPublic || pathAfterPublic.trim() === '') {
+      console.error('[NativeAudio] Asset Path is missing - No file path after /public/', trimmedUrl)
+      return null
+    }
+  }
+
+  console.log('[NativeAudio] URL validation passed, URL length:', trimmedUrl.length)
+  return trimmedUrl
+}
+
 export function useNativeAudioPlayer({
   audioUrl,
   initialDuration = 0,
@@ -120,19 +168,30 @@ export function useNativeAudioPlayer({
       setState(prev => ({ ...prev, isLoading: true, error: null }))
 
       try {
+        // Validate and fix audio URL for iOS compatibility
+        const validatedUrl = validateAndFixAudioUrl(audioUrl)
+        if (!validatedUrl) {
+          setState(prev => ({
+            ...prev,
+            isLoading: false,
+            error: 'Asset Path is missing - Invalid or incomplete audio URL',
+          }))
+          return
+        }
+
         // Cleanup previous audio
         await cleanup()
 
         // Generate new asset ID
-        const newAssetId = generateAssetId(audioUrl)
+        const newAssetId = generateAssetId(validatedUrl)
         assetIdRef.current = newAssetId
 
-        console.log('[NativeAudio] Loading audio:', audioUrl, 'assetId:', newAssetId)
+        console.log('[NativeAudio] Loading audio:', validatedUrl, 'assetId:', newAssetId)
 
         // Preload the audio
         await NativeAudio.preload({
           assetId: newAssetId,
-          assetPath: audioUrl,
+          assetPath: validatedUrl,
           audioChannelNum: 1,
           isUrl: true, // Loading from URL
         })

@@ -103,7 +103,28 @@ export async function POST(request: NextRequest) {
       .from('audio-recordings')
       .getPublicUrl(filePath)
 
-    console.log('[uploadAudioEndpoint] Public URL:', publicUrl)
+    // Validate the public URL format
+    if (!publicUrl || typeof publicUrl !== 'string' || publicUrl.trim() === '') {
+      console.error('[uploadAudioEndpoint] Invalid public URL returned:', {
+        publicUrl,
+        type: typeof publicUrl,
+        length: publicUrl?.length || 0,
+      })
+      return NextResponse.json(
+        {
+          error: 'Failed to get public URL from storage',
+          details: 'Public URL is empty or invalid',
+        },
+        { status: 500 }
+      )
+    }
+
+    console.log('[uploadAudioEndpoint] Public URL:', {
+      url: publicUrl,
+      length: publicUrl.length,
+      hasHttps: publicUrl.startsWith('https://'),
+      hasFilePath: publicUrl.includes(filePath),
+    })
 
     return NextResponse.json({
       success: true,

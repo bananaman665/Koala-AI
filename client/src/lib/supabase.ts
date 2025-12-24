@@ -200,8 +200,20 @@ export async function uploadAudioFile(
       throw new Error(`Upload failed: ${data.error} - ${data.details || ''}`)
     }
 
+    // Validate the returned URL
+    if (!data.url || typeof data.url !== 'string' || data.url.trim() === '') {
+      console.error('[uploadAudioFile] Invalid URL returned from API:', {
+        url: data.url,
+        type: typeof data.url,
+        length: data.url?.length || 0,
+      })
+      throw new Error(`Invalid URL returned from upload: ${JSON.stringify(data.url)}`)
+    }
+
     console.log('[uploadAudioFile] Upload successful:', {
       url: data.url,
+      urlLength: data.url.length,
+      hasHttps: data.url.startsWith('https://'),
       extension: data.extension,
       filePath: data.filePath,
     })
