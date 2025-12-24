@@ -90,6 +90,7 @@ export interface Database {
           id: string
           user_id: string
           course_id: string
+          class_id: string | null
           title: string
           duration: number
           audio_url: string | null
@@ -100,6 +101,7 @@ export interface Database {
         Insert: {
           user_id: string
           course_id: string
+          class_id?: string | null
           title: string
           duration: number
           audio_url?: string | null
@@ -109,6 +111,7 @@ export interface Database {
           title?: string
           duration?: number
           audio_url?: string | null
+          class_id?: string | null
           transcription_status?: 'pending' | 'processing' | 'completed' | 'failed'
         }
       }

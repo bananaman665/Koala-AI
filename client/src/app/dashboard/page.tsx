@@ -254,6 +254,20 @@ function DashboardContent() {
   const [joinClassCode, setJoinClassCode] = useState('')
   const [isJoiningClass, setIsJoiningClass] = useState(false)
   const [isLoadingClasses, setIsLoadingClasses] = useState(false)
+  const [showCreateClassScreen, setShowCreateClassScreen] = useState(false)
+  const [newClassData, setNewClassData] = useState({
+    name: '',
+    code: '',
+    professor: '',
+    description: '',
+    color: 'blue'
+  })
+  const [isCreatingClass, setIsCreatingClass] = useState(false)
+  const [selectedClass, setSelectedClass] = useState<string | null>(null)
+  const [selectedClassData, setSelectedClassData] = useState<any>(null)
+  const [classLectures, setClassLectures] = useState<any[]>([])
+  const [isLoadingClassLectures, setIsLoadingClassLectures] = useState(false)
+  const [isExitingClass, setIsExitingClass] = useState(false)
   const [newCourseData, setNewCourseData] = useState({
     name: '',
     code: '',
@@ -2967,10 +2981,12 @@ function DashboardContent() {
                     <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Collaborate with classmates</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-2 py-1 rounded-full font-medium">Coming in v2</span>
                     <button
-                      className="bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 px-4 py-2 rounded-lg font-semibold cursor-not-allowed flex items-center space-x-2"
-                      disabled
+                      onClick={() => {
+                        hapticButton()
+                        setShowCreateClassScreen(true)
+                      }}
+                      className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center space-x-2"
                     >
                       <FiPlus />
                       <span className="hidden sm:inline">New Class</span>
@@ -3026,27 +3042,26 @@ function DashboardContent() {
                   <div className="space-y-4">
                     {/* Join a Class */}
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Join a Class</h3>
-                        <span className="text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-2 py-1 rounded-full font-medium">v2</span>
-                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Join a Class</h3>
                       <div className="space-y-3">
                         <div>
-                          <label className="block text-sm font-medium text-gray-400 dark:text-gray-500 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Class Code
                           </label>
                           <input
                             type="text"
                             placeholder="e.g., ABC123"
-                            disabled
-                            className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700/50 text-sm cursor-not-allowed"
+                            value={joinClassCode}
+                            onChange={(e) => setJoinClassCode(e.target.value.toUpperCase())}
+                            className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                         </div>
                         <button
-                          disabled
-                          className="w-full px-4 py-2.5 bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-lg font-medium cursor-not-allowed text-sm"
+                          onClick={handleJoinClass}
+                          disabled={isJoiningClass || !joinClassCode.trim()}
+                          className="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                         >
-                          Join Class
+                          {isJoiningClass ? 'Joining...' : 'Join Class'}
                         </button>
                       </div>
                     </div>
