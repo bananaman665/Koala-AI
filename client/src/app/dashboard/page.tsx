@@ -698,11 +698,15 @@ function DashboardContent() {
   // Join an existing class by code
   const handleJoinClass = async () => {
     if (!joinClassCode.trim()) {
-      alert('Please enter a class code')
+      toast.error('Please enter a class code')
+      return
+    }
+    if (joinClassCode.trim().length < 6) {
+      toast.error('Class code must be at least 6 characters long')
       return
     }
     if (!user?.id) {
-      alert('User not authenticated')
+      toast.error('You must be logged in to join a class')
       return
     }
 
@@ -720,7 +724,8 @@ function DashboardContent() {
       const searchResult = await searchResponse.json()
 
       if (!searchResult.success || !searchResult.data) {
-        alert('Class not found. Please check the code and try again.')
+        hapticError()
+        toast.error('Class not found. Please check the code and try again.')
         setIsJoiningClass(false)
         return
       }
@@ -737,6 +742,8 @@ function DashboardContent() {
 
       const result = await response.json()
       if (result.success) {
+        hapticSuccess()
+        toast.success(`Successfully joined ${searchResult.data.name}!`)
         // Refresh the classes list
         const classesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes`, {
           headers: {
@@ -748,14 +755,16 @@ function DashboardContent() {
           setUserClasses(classesResult.data || [])
         }
         setJoinClassCode('')
-        alert('Successfully joined the class!')
       } else if (result.error?.code === 'ALREADY_MEMBER') {
-        alert('You are already a member of this class')
+        hapticError()
+        toast.error('You are already a member of this class')
       } else {
-        alert(`Failed to join class: ${result.error?.message || 'Unknown error'}`)
+        hapticError()
+        toast.error(result.error?.message || 'Failed to join class')
       }
     } catch (error: any) {
-      alert(`Failed to join class: ${error.message}`)
+      hapticError()
+      toast.error(`Failed to join class: ${error.message}`)
     } finally {
       setIsJoiningClass(false)
     }
@@ -770,6 +779,10 @@ function DashboardContent() {
     }
     if (!newClassData.code.trim()) {
       toast.error('Please enter a class code')
+      return
+    }
+    if (newClassData.code.trim().length < 6) {
+      toast.error('Class code must be at least 6 characters long')
       return
     }
     if (!newClassData.professor.trim()) {
@@ -3285,13 +3298,14 @@ function DashboardContent() {
               {/* Class Code */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Class Code * <span className="text-xs text-gray-500">(students will use this to join)</span>
+                  Class Code * <span className="text-xs text-gray-500">(6+ characters, students will use this to join)</span>
                 </label>
                 <input
                   type="text"
                   value={newClassData.code}
                   onChange={(e) => setNewClassData({ ...newClassData, code: e.target.value.toUpperCase() })}
-                  placeholder="e.g., CS101"
+                  placeholder="e.g., CS101AB"
+                  minLength={6}
                   maxLength={10}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700 uppercase"
                   disabled={isCreatingClass}
@@ -3374,7 +3388,7 @@ function DashboardContent() {
                 </button>
                 <button
                   onClick={handleCreateNewClass}
-                  disabled={isCreatingClass || !newClassData.name.trim() || !newClassData.code.trim() || !newClassData.professor.trim()}
+                  disabled={isCreatingClass || !newClassData.name.trim() || !newClassData.code.trim() || newClassData.code.length < 6 || !newClassData.professor.trim()}
                   className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isCreatingClass ? 'Creating...' : 'Create Class'}
