@@ -388,10 +388,10 @@ export function AudioPlayer({
         </div>
 
         {/* Bottom row: Volume control */}
-        <div className="flex items-center justify-center space-x-2">
+        <div className="flex items-center space-x-2 -mx-3 -mb-3 bg-gray-700/50 px-3 py-2">
           <button
             onClick={toggleMute}
-            className="p-1 text-white/70 hover:text-white transition-colors"
+            className="p-1 text-white/70 hover:text-white transition-colors flex-shrink-0"
             title={playerIsMuted ? 'Unmute' : 'Mute'}
           >
             {playerIsMuted ? (
@@ -407,7 +407,7 @@ export function AudioPlayer({
             step="0.1"
             value={playerIsMuted ? 0 : playerVolume}
             onChange={handleVolumeChange}
-            className="w-32 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+            className="flex-1 h-1 bg-gray-600 rounded-none appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
           />
         </div>
       </div>
