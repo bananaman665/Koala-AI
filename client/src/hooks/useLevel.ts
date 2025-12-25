@@ -5,13 +5,15 @@ import { hapticSuccess } from '@/lib/haptics'
 
 // XP rewards for different actions
 export const XP_REWARDS = {
-  RECORD_LECTURE: 50,
+  RECORD_LECTURE_BASE: 10, // Base XP for recording any lecture
+  RECORD_LECTURE_PER_MINUTE: 2, // XP per minute of recording
   COMPLETE_QUIZ: 30,
   REVIEW_FLASHCARDS: 25,
   GENERATE_NOTES: 20,
   DAILY_STREAK: 15,
-  FIRST_LECTURE: 100, // Bonus for first lecture
+  FIRST_LECTURE_BONUS: 50, // Extra bonus for first lecture
   DAILY_QUEST: 20, // Reward for completing a daily quest
+  MONTHLY_GOAL: 100, // Reward for completing monthly goal
 } as const
 
 // Level definitions with thresholds and names

@@ -68,6 +68,7 @@ function DashboardContent() {
   } = useAchievements()
   const [showLevelModal, setShowLevelModal] = useState(false)
   const [showAchievementsModal, setShowAchievementsModal] = useState(false)
+  const [monthlyGoalRewarded, setMonthlyGoalRewarded] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const {
@@ -339,6 +340,41 @@ function DashboardContent() {
     localStorage.setItem('onboarding_completed', 'true')
     setShowOnboarding(false)
   }
+
+  // Check and award XP for monthly goal completion
+  useEffect(() => {
+    if (!user || lectures.length === 0) return
+
+    const now = new Date()
+    const monthKey = `${now.getFullYear()}-${now.getMonth()}`
+    const rewardedKey = `koala_monthly_goal_rewarded_${monthKey}`
+    const wasRewarded = localStorage.getItem(rewardedKey) === 'true'
+
+    if (wasRewarded) {
+      setMonthlyGoalRewarded(true)
+      return
+    }
+
+    // Calculate current month's goal progress
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const monthIndex = now.getMonth()
+
+    const goalTargets = [
+      { id: 'lectures', target: 10, getCurrent: () => lectures.filter(l => new Date(l.created_at) >= startOfMonth).length },
+      { id: 'study_hours', target: 8, getCurrent: () => Math.floor(lectures.filter(l => new Date(l.created_at) >= startOfMonth).reduce((sum, l) => sum + (l.duration || 0), 0) / 3600) },
+      { id: 'courses', target: 3, getCurrent: () => courses.filter(c => new Date(c.created_at) >= startOfMonth).length },
+      { id: 'streak', target: 15, getCurrent: () => streak },
+    ]
+
+    const currentGoal = goalTargets[monthIndex % goalTargets.length]
+    const isCompleted = currentGoal.getCurrent() >= currentGoal.target
+
+    if (isCompleted && !monthlyGoalRewarded) {
+      addXP(XP_REWARDS.MONTHLY_GOAL, 'Monthly Goal Completed')
+      localStorage.setItem(rewardedKey, 'true')
+      setMonthlyGoalRewarded(true)
+    }
+  }, [user, lectures, courses, streak, monthlyGoalRewarded, addXP])
 
   // Handle screen query parameter for redirects
   useEffect(() => {
@@ -1124,16 +1160,20 @@ function DashboardContent() {
       // Record study activity for streak
       recordActivity()
 
-      // Award XP for recording lecture
+      // Award XP for recording lecture (based on duration)
       console.log('[SaveLecture] Awarding XP...')
+      const durationMinutes = Math.floor(duration / 60)
+      const lectureXP = XP_REWARDS.RECORD_LECTURE_BASE + (durationMinutes * XP_REWARDS.RECORD_LECTURE_PER_MINUTE)
+      console.log('[SaveLecture] Lecture XP:', lectureXP, `(${durationMinutes} minutes)`)
+      addXP(lectureXP, `Recorded ${durationMinutes}min lecture`)
+
+      // First lecture bonus
       const isFirstLecture = lectures.length === 0
       if (isFirstLecture) {
-        console.log('[SaveLecture] First lecture bonus! +', XP_REWARDS.FIRST_LECTURE)
-        addXP(XP_REWARDS.FIRST_LECTURE, 'First lecture recorded!')
-      } else {
-        console.log('[SaveLecture] Regular lecture +', XP_REWARDS.RECORD_LECTURE)
-        addXP(XP_REWARDS.RECORD_LECTURE, 'Recorded a lecture')
+        console.log('[SaveLecture] First lecture bonus! +', XP_REWARDS.FIRST_LECTURE_BONUS)
+        addXP(XP_REWARDS.FIRST_LECTURE_BONUS, 'First lecture bonus!')
       }
+
       console.log('[SaveLecture] Notes bonus +', XP_REWARDS.GENERATE_NOTES)
       addXP(XP_REWARDS.GENERATE_NOTES, 'Generated notes')
 
@@ -1458,7 +1498,7 @@ function DashboardContent() {
                 className="flex items-center gap-1 px-2.5 py-1.5 bg-orange-50 dark:bg-orange-500/10 rounded-full"
               >
                 <Flame className="w-4 h-4 text-orange-500" />
-                <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{streak}</span>
+                <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{streak} {streak === 1 ? 'day' : 'days'}</span>
               </button>
             </div>
 
@@ -1551,7 +1591,15 @@ function DashboardContent() {
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}{user?.user_metadata?.full_name || user?.user_metadata?.display_name ? `, ${(user?.user_metadata?.full_name || user?.user_metadata?.display_name).split(' ')[0]}` : ''}
+                    {(() => {
+                      const hour = new Date().getHours()
+                      const firstName = user?.user_metadata?.full_name || user?.user_metadata?.display_name
+                        ? (user?.user_metadata?.full_name || user?.user_metadata?.display_name).split(' ')[0]
+                        : ''
+                      if (hour < 12) return `Good morning${firstName ? `, ${firstName}` : ''}`
+                      if (hour < 17) return 'Good afternoon!'
+                      return `Good evening${firstName ? `, ${firstName}` : ''}`
+                    })()}
                   </h1>
                   <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
                     {lectures.length === 0 ? 'Record your first lecture to get started!' : (() => {
@@ -1704,8 +1752,8 @@ function DashboardContent() {
                         <Trophy className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Monthly Goal</h3>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400">{daysRemaining} days remaining</p>
+                        <h3 className="text-base font-semibold text-gray-900 dark:text-white">Monthly Goal</h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{daysRemaining} days remaining</p>
                       </div>
                     </div>
                     {isCompleted && (
