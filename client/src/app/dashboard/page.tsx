@@ -268,6 +268,9 @@ function DashboardContent() {
   const [classLectures, setClassLectures] = useState<any[]>([])
   const [isLoadingClassLectures, setIsLoadingClassLectures] = useState(false)
   const [isExitingClass, setIsExitingClass] = useState(false)
+  const [showShareCourseModal, setShowShareCourseModal] = useState(false)
+  const [selectedCourseToShare, setSelectedCourseToShare] = useState<string | null>(null)
+  const [isSharingCourse, setIsSharingCourse] = useState(false)
   const [newCourseData, setNewCourseData] = useState({
     name: '',
     code: '',
@@ -433,6 +436,32 @@ function DashboardContent() {
     }
 
     fetchLectures()
+  }, [user])
+
+  // Fetch user classes
+  useEffect(() => {
+    if (!user?.id) {
+      setUserClasses([])
+      return
+    }
+
+    async function fetchClasses() {
+      try {
+        const response = await fetch('/api/classes', {
+          headers: {
+            'x-user-id': user?.id || '',
+          },
+        })
+        const result = await response.json()
+        if (result.success) {
+          setUserClasses(result.data || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch classes:', error)
+      }
+    }
+
+    fetchClasses()
   }, [user])
 
   // Delete lecture function
@@ -713,7 +742,7 @@ function DashboardContent() {
     setIsJoiningClass(true)
     try {
       // First, find the class by code
-      const searchResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes/search?code=${encodeURIComponent(joinClassCode.trim())}`, {
+      const searchResponse = await fetch(`/api/classes/search?code=${encodeURIComponent(joinClassCode.trim())}`, {
         headers: {
           'x-user-id': user.id,
         },
@@ -732,7 +761,7 @@ function DashboardContent() {
 
       const classId = searchResult.data.id
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes/${classId}/join`, {
+      const response = await fetch(`/api/classes/${classId}/join`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -745,7 +774,7 @@ function DashboardContent() {
         hapticSuccess()
         toast.success(`Successfully joined ${searchResult.data.name}!`)
         // Refresh the classes list
-        const classesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes`, {
+        const classesResponse = await fetch(`/api/classes`, {
           headers: {
             'x-user-id': user.id,
           },
@@ -796,7 +825,7 @@ function DashboardContent() {
 
     setIsCreatingClass(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes`, {
+      const response = await fetch(`/api/classes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -835,6 +864,134 @@ function DashboardContent() {
       toast.error(`Failed to create class: ${error.message}`)
     } finally {
       setIsCreatingClass(false)
+    }
+  }
+
+  // View class details and lectures
+  const handleViewClass = async (classId: string) => {
+    setSelectedClass(classId)
+    setIsLoadingClassLectures(true)
+    try {
+      // Fetch class details
+      const classResponse = await fetch(`/api/classes/${classId}`, {
+        headers: {
+          'x-user-id': user?.id || '',
+        },
+      })
+      const classResult = await classResponse.json()
+      if (classResult.success) {
+        setSelectedClassData(classResult.data)
+      }
+
+      // Fetch lectures in this class
+      const lecturesResponse = await fetch(`/api/classes/${classId}/lectures`, {
+        headers: {
+          'x-user-id': user?.id || '',
+        },
+      })
+      const lecturesResult = await lecturesResponse.json()
+      if (lecturesResult.success) {
+        setClassLectures(lecturesResult.data || [])
+      }
+    } catch (error: any) {
+      toast.error(`Failed to load class details: ${error.message}`)
+    } finally {
+      setIsLoadingClassLectures(false)
+    }
+  }
+
+  // Leave a class
+  const handleLeaveClass = async () => {
+    if (!selectedClass) return
+
+    setIsExitingClass(true)
+    try {
+      const response = await fetch(`/api/classes/${selectedClass}/leave`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-id': user?.id || '',
+        },
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        hapticSuccess()
+        toast.success('You have left the class')
+        // Refresh classes list
+        const classesResponse = await fetch(`/api/classes`, {
+          headers: {
+            'x-user-id': user?.id || '',
+          },
+        })
+        const classesResult = await classesResponse.json()
+        if (classesResult.success) {
+          setUserClasses(classesResult.data || [])
+        }
+        setSelectedClass(null)
+        setSelectedClassData(null)
+      } else {
+        hapticError()
+        toast.error(result.error?.message || 'Failed to leave class')
+      }
+    } catch (error: any) {
+      hapticError()
+      toast.error(`Failed to leave class: ${error.message}`)
+    } finally {
+      setIsExitingClass(false)
+    }
+  }
+
+  // Share a course's lectures to a class
+  const handleShareCourse = async () => {
+    if (!selectedClass || !selectedCourseToShare) {
+      toast.error('Please select a course to share')
+      return
+    }
+
+    setIsSharingCourse(true)
+    try {
+      // Get all lectures in the selected course
+      const courseId = selectedCourseToShare
+      const lecturesInCourse = lectures.filter(l => l.course_id === courseId)
+
+      if (lecturesInCourse.length === 0) {
+        toast.error('This course has no lectures to share')
+        setIsSharingCourse(false)
+        return
+      }
+
+      // Update each lecture to add the class_id
+      const courseData = courses.find(c => c.id === courseId)
+      const updatePromises = lecturesInCourse.map(lecture => {
+        return (supabase as any)
+          .from('lectures')
+          .update({ class_id: selectedClass })
+          .eq('id', lecture.id)
+      })
+
+      await Promise.all(updatePromises)
+
+      hapticSuccess()
+      toast.success(`Shared "${courseData?.name}" (${lecturesInCourse.length} lectures) to the class!`)
+
+      // Refresh class lectures
+      const lecturesResponse = await fetch(`/api/classes/${selectedClass}/lectures`, {
+        headers: {
+          'x-user-id': user?.id || '',
+        },
+      })
+      const lecturesResult = await lecturesResponse.json()
+      if (lecturesResult.success) {
+        setClassLectures(lecturesResult.data || [])
+      }
+
+      setShowShareCourseModal(false)
+      setSelectedCourseToShare(null)
+    } catch (error: any) {
+      hapticError()
+      toast.error(`Failed to share course: ${error.message}`)
+    } finally {
+      setIsSharingCourse(false)
     }
   }
 
@@ -1382,7 +1539,7 @@ function DashboardContent() {
             isActive={activeScreen === 'dashboard'}
           >
             <div className="overflow-y-auto bg-gray-50 dark:bg-gradient-to-b dark:from-[#0f1420] dark:via-[#111827] dark:to-[#151c28] h-full relative">
-              <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
+              <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40`}>
         {!selectedCourse && (
           <>
             {/* Hero Card - Greeting + Record CTA */}
@@ -1393,7 +1550,19 @@ function DashboardContent() {
                     {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}{user?.user_metadata?.full_name || user?.user_metadata?.display_name ? `, ${(user?.user_metadata?.full_name || user?.user_metadata?.display_name).split(' ')[0]}` : ''}
                   </h1>
                   <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
-                    {lectures.length === 0 ? 'Record your first lecture to get started!' : `You have ${lectures.length} lecture${lectures.length === 1 ? '' : 's'} recorded`}
+                    {lectures.length === 0 ? 'Record your first lecture to get started!' : (() => {
+                      const motivationalMessages = [
+                        "You're on fire today!",
+                        "Keep up the great work!",
+                        "You're crushing it today!",
+                        "Amazing progress so far!",
+                        "You're a learning machine!",
+                        "Stay focused, stay sharp!",
+                        "Every lecture counts!",
+                      ]
+                      const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
+                      return motivationalMessages[dayOfYear % motivationalMessages.length]
+                    })()}
                   </p>
                   <button
                     onClick={() => setShowReadyToRecordModal(true)}
@@ -1470,74 +1639,24 @@ function DashboardContent() {
               </div>
             </div>
 
-            {/* Stats Row - Horizontal Scroll Carousel */}
-            <div className="flex gap-3 mb-6 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-              {[
-                {
-                  icon: <FiClock className="text-lg" />,
-                  value: (() => {
-                    const totalSeconds = lectures.reduce((sum, lec) => sum + lec.duration, 0)
-                    const hours = Math.floor(totalSeconds / 3600)
-                    const minutes = Math.floor((totalSeconds % 3600) / 60)
-                    return hours > 0 ? `${hours}h` : `${minutes}m`
-                  })(),
-                  label: 'Time',
-                  color: 'blue',
-                  progress: Math.min(lectures.reduce((sum, lec) => sum + lec.duration, 0) / 3600, 5) / 5
-                },
-                {
-                  icon: <FiFileText className="text-lg" />,
-                  value: lectures.length,
-                  label: 'Lectures',
-                  color: 'purple',
-                  progress: Math.min(lectures.length, 10) / 10
-                },
-                {
-                  icon: <FiBook className="text-lg" />,
-                  value: courses.length,
-                  label: 'Courses',
-                  color: 'teal',
-                  progress: Math.min(courses.length, 5) / 5
-                },
-                {
-                  icon: <FiCheckCircle className="text-lg" />,
-                  value: lectures.length > 0 ? `${Math.round((lectures.filter(l => l.transcription_status === 'completed').length / lectures.length) * 100)}%` : '0%',
-                  label: 'Done',
-                  color: 'green',
-                  progress: lectures.length > 0 ? lectures.filter(l => l.transcription_status === 'completed').length / lectures.length : 0
-                },
-              ].map((stat, i) => (
-                <div
-                  key={stat.label}
-                  className={`flex-shrink-0 w-36 sm:w-40 bg-white dark:bg-[#1a2235] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-${i + 1}`}
-                >
-                  <div className={`inline-flex items-center justify-center w-8 h-8 rounded-xl mb-2 ${
-                    stat.color === 'blue' ? 'bg-blue-100 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400' :
-                    stat.color === 'purple' ? 'bg-purple-100 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400' :
-                    stat.color === 'teal' ? 'bg-teal-100 dark:bg-teal-500/15 text-teal-600 dark:text-teal-400' :
-                    'bg-green-100 dark:bg-green-500/15 text-green-600 dark:text-green-400'
-                  }`}>
-                    {stat.icon}
-                  </div>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
-                  {/* Progress Dots */}
-                  <div className="flex justify-center gap-1 mt-2">
-                    {[...Array(5)].map((_, j) => (
-                      <div
-                        key={j}
-                        className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                          j < Math.ceil(stat.progress * 5)
-                            ? stat.color === 'blue' ? 'bg-blue-500' :
-                              stat.color === 'purple' ? 'bg-purple-500' :
-                              stat.color === 'teal' ? 'bg-teal-500' : 'bg-green-500'
-                            : 'bg-gray-200 dark:bg-white/10'
-                        }`}
-                      />
-                    ))}
-                  </div>
+            {/* Stats Row - Lectures and Courses */}
+            <div className="flex gap-3 mb-6">
+              {/* Lectures Stat */}
+              <div className="flex-1 bg-white dark:bg-[#1a2235] rounded-2xl px-4 py-5 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-1">
+                <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl mb-2 bg-purple-100 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400">
+                  <FiFileText className="text-lg" />
                 </div>
-              ))}
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{lectures.length}</p>
+                <p className="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider mt-0.5">Lectures</p>
+              </div>
+              {/* Courses Stat */}
+              <div className="flex-1 bg-white dark:bg-[#1a2235] rounded-2xl px-4 py-5 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-2">
+                <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl mb-2 bg-teal-100 dark:bg-teal-500/15 text-teal-600 dark:text-teal-400">
+                  <FiBook className="text-lg" />
+                </div>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{courses.length}</p>
+                <p className="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider mt-0.5">Courses</p>
+              </div>
             </div>
 
             {/* Section Header */}
@@ -1806,7 +1925,7 @@ function DashboardContent() {
                   {studyViewMode === 'notes' && (
                     <div>
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">AI Generated Notes</h3>
-                      <div className="prose prose-sm max-w-none mb-4 dark:prose-invert prose-p:my-3 prose-headings:mt-4 prose-headings:mb-2 prose-ul:my-2 prose-li:my-1">
+                      <div className="prose prose-sm max-w-none mb-4 dark:prose-invert prose-p:mb-8 prose-headings:mt-8 prose-headings:mb-4 prose-ul:my-6 prose-li:my-3">
                         <ReactMarkdown>{notes || ''}</ReactMarkdown>
                       </div>
                       <div className="flex gap-3 flex-wrap">
@@ -2260,7 +2379,7 @@ function DashboardContent() {
             isActive={activeScreen === 'library'}
           >
             <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 ${(selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'pt-40 sm:pt-44' : 'pt-32 sm:pt-36'}`}>
+              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 ${(selectedLecture && isLearnModeActive && learnModeQuestions.length > 0) || (selectedLecture && isFlashcardModeActive && flashcards.length > 0) ? 'pt-32 sm:pt-36 larger-phone:pt-40 larger-phone:sm:pt-44' : 'pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40'}`}>
         {!selectedLecture && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -2555,7 +2674,7 @@ function DashboardContent() {
                   </div>
                 </div>
               ) : selectedLectureNotes ? (
-                <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-3 prose-headings:mt-4 prose-headings:mb-2 prose-ul:my-2 prose-li:my-1">
+                <div className="prose prose-sm max-w-none dark:prose-invert prose-p:mb-8 prose-headings:mt-8 prose-headings:mb-4 prose-ul:my-6 prose-li:my-3">
                   <ReactMarkdown>{selectedLectureNotes}</ReactMarkdown>
                 </div>
               ) : (
@@ -2819,7 +2938,7 @@ function DashboardContent() {
             isActive={activeScreen === 'analytics'}
           >
             <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
+              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40`}>
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
 
@@ -3022,13 +3141,21 @@ function DashboardContent() {
                                          lecture.transcription_status === 'failed' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'
 
                     return (
-                      <div key={lecture.id} className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${iconBgClass}`}>
+                      <div
+                        key={lecture.id}
+                        onClick={() => {
+                          hapticButton()
+                          setSelectedLecture(lecture.id)
+                          setActiveScreen('library')
+                        }}
+                        className="flex items-center space-x-3 p-2 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      >
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${iconBgClass}`}>
                           <FiMic className={`text-lg ${iconTextClass}`} />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">{statusText}</p>
-                          <p className="text-xs text-gray-400 dark:text-gray-500">{lecture.title} • {timeDisplay}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{lecture.title} • {timeDisplay}</p>
                         </div>
                       </div>
                     )
@@ -3049,8 +3176,8 @@ function DashboardContent() {
             isActive={activeScreen === 'feed'}
           >
             <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36`}>
-                
+              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-36 sm:pt-40`}>
+
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -3094,7 +3221,10 @@ function DashboardContent() {
                                   </div>
                                 </div>
                                 <button
-                                  onClick={() => setActiveScreen('library')}
+                                  onClick={() => {
+                                    hapticButton()
+                                    handleViewClass(cls.id)
+                                  }}
                                   className="px-3 py-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg font-medium transition-colors text-sm flex-shrink-0"
                                 >
                                   View
@@ -3257,7 +3387,7 @@ function DashboardContent() {
       {/* Create Class Screen - Full Screen Modal */}
       {showCreateClassScreen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Class</h2>
               <button
@@ -3394,6 +3524,199 @@ function DashboardContent() {
                   {isCreatingClass ? 'Creating...' : 'Create Class'}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Class Detail View Modal */}
+      {selectedClass && selectedClassData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-2xl w-full p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{selectedClassData.name}</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{selectedClassData.professor}</p>
+              </div>
+              <button
+                onClick={() => {
+                  hapticButton()
+                  setSelectedClass(null)
+                  setSelectedClassData(null)
+                }}
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Class Info */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Class Code</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-bold text-gray-900 dark:text-white">{selectedClassData.code}</p>
+                  <button
+                    onClick={() => {
+                      hapticButton()
+                      navigator.clipboard.writeText(selectedClassData.code)
+                      toast.success('Code copied to clipboard!')
+                    }}
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Members</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">{selectedClassData.class_memberships?.length || 0}</p>
+              </div>
+            </div>
+
+            {/* Share Course Section (Owner Only) */}
+            {selectedClassData.owner_id === user?.id && (
+              <div className="mb-6">
+                <button
+                  onClick={() => {
+                    hapticButton()
+                    setShowShareCourseModal(true)
+                  }}
+                  className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
+                >
+                  Share Course to Class
+                </button>
+              </div>
+            )}
+
+            {/* Lectures in Class */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Shared Lectures</h3>
+              {isLoadingClassLectures ? (
+                <div className="text-center py-6">
+                  <div className="animate-spin text-blue-600 dark:text-blue-400 mb-2">⟳</div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Loading lectures...</p>
+                </div>
+              ) : classLectures.length > 0 ? (
+                <div className="space-y-2">
+                  {classLectures.map((lecture: any) => (
+                    <div key={lecture.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white text-sm">{lecture.title}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {lecture.duration ? `${Math.round(lecture.duration / 60)} min` : 'Duration unknown'}
+                        </p>
+                      </div>
+                      {lecture.audio_url && (
+                        <span className="px-2 py-1 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 rounded text-xs font-medium">
+                          Has Audio
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No lectures shared yet</p>
+                </div>
+              )}
+            </div>
+
+            {/* Leave Class Button (Non-Owner) */}
+            {selectedClassData.owner_id !== user?.id && (
+              <button
+                onClick={() => {
+                  hapticButton()
+                  if (confirm('Are you sure you want to leave this class?')) {
+                    handleLeaveClass()
+                  }
+                }}
+                disabled={isExitingClass}
+                className="w-full px-4 py-3 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 rounded-lg font-medium transition-colors text-sm disabled:opacity-50"
+              >
+                {isExitingClass ? 'Leaving...' : 'Leave Class'}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Share Course to Class Modal */}
+      {showShareCourseModal && selectedClass && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Share Course</h2>
+              <button
+                onClick={() => {
+                  hapticButton()
+                  setShowShareCourseModal(false)
+                  setSelectedCourseToShare(null)
+                }}
+                disabled={isSharingCourse}
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-50"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Select a course to share all its lectures with this class
+            </p>
+
+            {/* Course List */}
+            <div className="space-y-2 mb-6">
+              {courses && courses.length > 0 ? (
+                courses.map((course: any) => {
+                  const lectureCount = lectures.filter(l => l.course_id === course.id).length
+                  return (
+                    <button
+                      key={course.id}
+                      onClick={() => {
+                        hapticSelection()
+                        setSelectedCourseToShare(course.id)
+                      }}
+                      className={`w-full text-left p-3 rounded-lg transition-all border-2 ${
+                        selectedCourseToShare === course.id
+                          ? 'bg-blue-50 dark:bg-blue-500/20 border-blue-500'
+                          : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500'
+                      }`}
+                    >
+                      <p className="font-medium text-gray-900 dark:text-white">{course.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {lectureCount} lecture{lectureCount !== 1 ? 's' : ''}
+                      </p>
+                    </button>
+                  )
+                })
+              ) : (
+                <div className="text-center py-6">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No courses available</p>
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+                  hapticButton()
+                  setShowShareCourseModal(false)
+                  setSelectedCourseToShare(null)
+                }}
+                disabled={isSharingCourse}
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleShareCourse}
+                disabled={isSharingCourse || !selectedCourseToShare}
+                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+              >
+                {isSharingCourse ? 'Sharing...' : 'Share Course'}
+              </button>
             </div>
           </div>
         </div>

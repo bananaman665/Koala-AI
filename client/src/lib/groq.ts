@@ -39,14 +39,24 @@ export async function generateNotesFromTranscript(
       messages: [
         {
           role: 'system',
-          content: `You are an expert note-taking assistant. Your job is to convert lecture transcripts into clear, structured, and comprehensive notes. Format the notes with:
-- Main topics as headings
-- Key concepts with bullet points
-- Important definitions highlighted
-- Examples and explanations
-- Summary at the end
+          content: `You are an expert note-taking assistant. Your job is to convert lecture transcripts into clear, structured, and comprehensive notes.
 
-Make the notes easy to study from and understand.`,
+IMPORTANT FORMATTING RULES:
+- Use double line breaks (blank lines) between ALL paragraphs
+- Use markdown headings (##, ###) for topics and subtopics
+- Add a blank line before and after headings
+- Use bullet points for lists
+- Add blank lines between different list groups
+
+Structure the notes with:
+- Main topics as ## headings
+- Subtopics as ### headings
+- Key concepts with bullet points
+- Important definitions highlighted with bold
+- Examples and explanations in separate paragraphs with blank lines between them
+- Summary section at the end
+
+Make the notes easy to study from and understand with clear visual spacing between all sections.`,
         },
         {
           role: 'user',

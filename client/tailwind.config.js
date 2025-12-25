@@ -8,6 +8,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        'larger-phone': '393px', // iPhone 16/17 Pro and larger
+      },
       colors: {
         // Primary accent color (blue) - use for buttons, active states, highlights
         primary: {
