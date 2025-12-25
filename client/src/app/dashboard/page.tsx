@@ -1436,54 +1436,46 @@ function DashboardContent() {
           />
         )}
         {/* Top Navigation */}
-        <nav className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-[#1a2235]/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/[0.06] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="px-3 sm:px-4">
+        <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-14 sm:h-16">
-            {/* Left side - Progress indicators */}
+            {/* Left side - Level & Streak */}
             <div className="flex items-center gap-2">
               {/* Level Badge */}
               <button
                 onClick={() => { hapticButton(); setShowLevelModal(true) }}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 dark:bg-purple-500/10 rounded-full"
               >
-                <div className="w-5 h-5 rounded-full bg-violet-600 flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center">
                   <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
                 </div>
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{levelInfo.name}</span>
+                <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">{levelInfo.name}</span>
               </button>
 
               {/* Streak */}
               <button
                 onClick={() => { hapticButton(); setShowStreakModal(true) }}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+                className="flex items-center gap-1 px-2.5 py-1.5 bg-orange-50 dark:bg-orange-500/10 rounded-full"
               >
-                <Flame className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{streak}</span>
+                <Flame className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{streak}</span>
               </button>
             </div>
 
             {/* Right side - Actions */}
-            <div className="flex items-center gap-3">
-              {/* Achievements */}
-              <button
-                onClick={() => { hapticButton(); setShowAchievementsModal(true) }}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
-              >
-                <Trophy className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              </button>
-
+            <div className="flex items-center gap-4">
               {/* Settings */}
               <Link
                 href="/settings"
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
               >
-                <FiSettings className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                <FiSettings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </Link>
 
               {/* Avatar */}
               <Link
                 href="/profile"
-                className="w-8 h-8 bg-violet-600 rounded-full flex items-center justify-center text-white text-xs font-medium hover:bg-violet-700 transition-colors"
+                className="w-9 h-9 bg-gradient-to-r from-purple-600 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium"
               >
                 {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
               </Link>
@@ -1651,25 +1643,96 @@ function DashboardContent() {
               </div>
             </div>
 
-            {/* Stats Row - Lectures and Courses */}
-            <div className="flex gap-3 mb-6">
-              {/* Lectures Stat */}
-              <div className="flex-1 bg-white dark:bg-[#1a2235] rounded-2xl px-4 py-5 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-1">
-                <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl mb-2 bg-purple-100 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400">
-                  <FiFileText className="text-lg" />
+            {/* Monthly Goal */}
+            {(() => {
+              // Calculate this month's progress
+              const now = new Date()
+              const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+              const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+              const daysInMonth = endOfMonth.getDate()
+              const currentDay = now.getDate()
+              const daysRemaining = daysInMonth - currentDay
+              const monthIndex = now.getMonth()
+
+              // Define monthly goals that cycle
+              const monthlyGoals = [
+                {
+                  id: 'lectures',
+                  title: 'Record 10 lectures',
+                  description: 'Record <span class="font-semibold text-violet-600 dark:text-violet-400">10 lectures</span> this month',
+                  target: 10,
+                  getCurrent: () => lectures.filter(l => new Date(l.created_at) >= startOfMonth).length,
+                  gradient: 'from-violet-500 to-purple-600',
+                },
+                {
+                  id: 'study_hours',
+                  title: 'Study for 8 hours',
+                  description: 'Accumulate <span class="font-semibold text-blue-600 dark:text-blue-400">8 hours</span> of lecture time',
+                  target: 8,
+                  getCurrent: () => Math.floor(lectures.filter(l => new Date(l.created_at) >= startOfMonth).reduce((sum, l) => sum + (l.duration || 0), 0) / 3600),
+                  gradient: 'from-blue-500 to-cyan-500',
+                },
+                {
+                  id: 'courses',
+                  title: 'Create 3 courses',
+                  description: 'Create <span class="font-semibold text-emerald-600 dark:text-emerald-400">3 new courses</span> this month',
+                  target: 3,
+                  getCurrent: () => courses.filter(c => new Date(c.created_at) >= startOfMonth).length,
+                  gradient: 'from-emerald-500 to-teal-500',
+                },
+                {
+                  id: 'streak',
+                  title: 'Reach 15-day streak',
+                  description: 'Maintain a <span class="font-semibold text-orange-600 dark:text-orange-400">15-day streak</span> this month',
+                  target: 15,
+                  getCurrent: () => streak,
+                  gradient: 'from-orange-500 to-amber-500',
+                },
+              ]
+
+              // Cycle through goals based on month
+              const currentGoal = monthlyGoals[monthIndex % monthlyGoals.length]
+              const currentValue = currentGoal.getCurrent()
+              const progress = Math.min((currentValue / currentGoal.target) * 100, 100)
+              const isCompleted = currentValue >= currentGoal.target
+
+              return (
+                <div className="bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-6 animate-card-in card-stagger-1">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${currentGoal.gradient} flex items-center justify-center`}>
+                        <Trophy className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Monthly Goal</h3>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400">{daysRemaining} days remaining</p>
+                      </div>
+                    </div>
+                    {isCompleted && (
+                      <span className="text-xs font-semibold text-green-500 bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-full">
+                        Completed!
+                      </span>
+                    )}
+                  </div>
+
+                  <p
+                    className="text-sm text-gray-600 dark:text-gray-300 mb-3"
+                    dangerouslySetInnerHTML={{ __html: currentGoal.description }}
+                  />
+
+                  {/* Progress Bar */}
+                  <div className="relative h-6 bg-gray-100 dark:bg-[#0B1220] rounded-full overflow-hidden">
+                    <div
+                      className={`absolute inset-y-0 left-0 bg-gradient-to-r ${currentGoal.gradient} rounded-full transition-all duration-500`}
+                      style={{ width: `${progress}%` }}
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-white">
+                      {currentValue} / {currentGoal.target}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{lectures.length}</p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider mt-0.5">Lectures</p>
-              </div>
-              {/* Courses Stat */}
-              <div className="flex-1 bg-white dark:bg-[#1a2235] rounded-2xl px-4 py-5 border border-gray-100 dark:border-white/[0.06] text-center animate-card-in card-stagger-2">
-                <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl mb-2 bg-teal-100 dark:bg-teal-500/15 text-teal-600 dark:text-teal-400">
-                  <FiBook className="text-lg" />
-                </div>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{courses.length}</p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-500 uppercase tracking-wider mt-0.5">Courses</p>
-              </div>
-            </div>
+              )
+            })()}
 
             {/* Section Header */}
             <div className="flex items-center justify-between mb-4">

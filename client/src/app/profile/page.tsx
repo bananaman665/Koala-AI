@@ -5,28 +5,28 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   Settings,
-  Award,
   BookOpen,
   Clock,
   TrendingUp,
   Loader2,
   Flame,
-  Target,
   Mic,
   GraduationCap,
-  Trophy,
-  Zap,
   ChevronLeft,
   Pencil,
   Check,
-  X
+  X,
+  Gift,
+  Lock,
+  HelpCircle,
+  Timer
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 import { useStreak } from '@/components/StreakDisplay'
-import AppIcon from '@/components/AppIcon'
+import { useLevel, XP_REWARDS } from '@/hooks/useLevel'
 
 interface Lecture {
   id: string
@@ -45,16 +45,52 @@ interface Course {
   color: string
 }
 
+// Track which quests were rewarded today
+const QUEST_REWARDS_KEY = 'koala_quest_rewards'
+
+function getRewardedQuestsToday(): string[] {
+  if (typeof window === 'undefined') return []
+  const stored = localStorage.getItem(QUEST_REWARDS_KEY)
+  if (!stored) return []
+  try {
+    const data = JSON.parse(stored)
+    const today = new Date().toDateString()
+    if (data.date !== today) return []
+    return data.rewarded || []
+  } catch {
+    return []
+  }
+}
+
+function markQuestRewarded(questId: string): void {
+  if (typeof window === 'undefined') return
+  const today = new Date().toDateString()
+  const current = getRewardedQuestsToday()
+  if (!current.includes(questId)) {
+    localStorage.setItem(QUEST_REWARDS_KEY, JSON.stringify({
+      date: today,
+      rewarded: [...current, questId]
+    }))
+  }
+}
+
 export default function ProfilePage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
   const { streak } = useStreak()
+  const { addXP } = useLevel()
   const [lectures, setLectures] = useState<Lecture[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [isEditingName, setIsEditingName] = useState(false)
   const [newName, setNewName] = useState('')
   const [isSavingName, setIsSavingName] = useState(false)
+  const [rewardedQuests, setRewardedQuests] = useState<string[]>([])
+
+  // Load rewarded quests on mount
+  useEffect(() => {
+    setRewardedQuests(getRewardedQuestsToday())
+  }, [])
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -66,6 +102,35 @@ export default function ProfilePage() {
       fetchData()
     }
   }, [user, authLoading])
+
+  // Award XP for newly completed quests (must be before early returns)
+  useEffect(() => {
+    // Only run when data is loaded
+    if (authLoading || loading || !user) return
+
+    const today = new Date().toDateString()
+    const lecturesRecordedToday = lectures.filter(l => new Date(l.created_at).toDateString() === today).length
+    const studyMinutesToday = Math.floor(lectures.filter(l => new Date(l.created_at).toDateString() === today).reduce((sum, l) => sum + (l.duration || 0), 0) / 60)
+
+    const questsStatus = [
+      { id: 'record_lecture', completed: lecturesRecordedToday >= 1 },
+      { id: 'study_10_min', completed: studyMinutesToday >= 10 },
+      { id: 'maintain_streak', completed: streak > 0 },
+    ]
+
+    questsStatus.forEach(quest => {
+      if (quest.completed && !rewardedQuests.includes(quest.id)) {
+        const questTitles: Record<string, string> = {
+          'record_lecture': 'Record a lecture',
+          'study_10_min': 'Study for 10 minutes',
+          'maintain_streak': 'Maintain your streak',
+        }
+        addXP(XP_REWARDS.DAILY_QUEST, `Daily Quest: ${questTitles[quest.id]}`)
+        markQuestRewarded(quest.id)
+        setRewardedQuests(prev => [...prev, quest.id])
+      }
+    })
+  }, [authLoading, loading, user, lectures, streak, rewardedQuests, addXP])
 
   const fetchData = async () => {
     if (!user?.id) return
@@ -173,14 +238,57 @@ export default function ProfilePage() {
     }
   })
 
-  // Calculate achievements based on real data
-  const achievements: { icon: typeof Flame; name: string; description: string; bgClass: string; iconClass: string }[] = []
-  if (streak >= 7) achievements.push({ icon: Flame, name: 'Week Warrior', description: '7 day streak', bgClass: 'bg-orange-100 dark:bg-orange-500/15', iconClass: 'text-orange-500 dark:text-orange-400' })
-  if (totalLectures >= 20) achievements.push({ icon: BookOpen, name: 'Bookworm', description: '20+ lectures', bgClass: 'bg-blue-100 dark:bg-blue-500/15', iconClass: 'text-blue-500 dark:text-blue-400' })
-  if (parseFloat(totalHours) >= 40) achievements.push({ icon: Clock, name: 'Time Master', description: '40+ hours', bgClass: 'bg-purple-100 dark:bg-purple-500/15', iconClass: 'text-purple-500 dark:text-purple-400' })
-  if (streak >= 3) achievements.push({ icon: Target, name: 'Getting Started', description: '3 day streak', bgClass: 'bg-green-100 dark:bg-green-500/15', iconClass: 'text-green-500 dark:text-green-400' })
-  if (totalLectures >= 1) achievements.push({ icon: Mic, name: 'First Recording', description: 'First lecture', bgClass: 'bg-pink-100 dark:bg-pink-500/15', iconClass: 'text-pink-500 dark:text-pink-400' })
-  if (courses.length >= 3) achievements.push({ icon: GraduationCap, name: 'Multi-tasker', description: '3+ courses', bgClass: 'bg-cyan-100 dark:bg-cyan-500/15', iconClass: 'text-cyan-500 dark:text-cyan-400' })
+  // Calculate time until midnight for quest reset
+  const now = new Date()
+  const midnight = new Date(now)
+  midnight.setHours(24, 0, 0, 0)
+  const hoursUntilReset = Math.floor((midnight.getTime() - now.getTime()) / (1000 * 60 * 60))
+  const minutesUntilReset = Math.floor(((midnight.getTime() - now.getTime()) % (1000 * 60 * 60)) / (1000 * 60))
+
+  // Calculate today's progress for daily quests
+  const today = new Date().toDateString()
+  const lecturesRecordedToday = lectures.filter(l => new Date(l.created_at).toDateString() === today).length
+  const studyMinutesToday = Math.floor(lectures.filter(l => new Date(l.created_at).toDateString() === today).reduce((sum, l) => sum + (l.duration || 0), 0) / 60)
+
+  // Daily Quests
+  const dailyQuests = [
+    {
+      id: 'record_lecture',
+      icon: Mic,
+      title: 'Record a lecture',
+      current: Math.min(lecturesRecordedToday, 1),
+      target: 1,
+      iconBgClass: 'bg-amber-100 dark:bg-amber-500/20',
+      iconClass: 'text-amber-500',
+      progressClass: 'bg-amber-400',
+      completed: lecturesRecordedToday >= 1,
+      xpReward: XP_REWARDS.DAILY_QUEST
+    },
+    {
+      id: 'study_10_min',
+      icon: Clock,
+      title: 'Study for 10 minutes',
+      current: Math.min(studyMinutesToday, 10),
+      target: 10,
+      iconBgClass: 'bg-blue-100 dark:bg-blue-500/20',
+      iconClass: 'text-blue-500',
+      progressClass: 'bg-blue-400',
+      completed: studyMinutesToday >= 10,
+      xpReward: XP_REWARDS.DAILY_QUEST
+    },
+    {
+      id: 'maintain_streak',
+      icon: Flame,
+      title: 'Maintain your streak',
+      current: streak > 0 ? 1 : 0,
+      target: 1,
+      iconBgClass: 'bg-orange-100 dark:bg-orange-500/20',
+      iconClass: 'text-orange-500',
+      progressClass: 'bg-orange-400',
+      completed: streak > 0,
+      xpReward: XP_REWARDS.DAILY_QUEST
+    },
+  ]
 
   // Study progress from real courses
   const studyProgress = courses.slice(0, 4).map(course => {
@@ -304,31 +412,6 @@ export default function ProfilePage() {
                 </Link>
               </div>
             </div>
-
-            {/* Achievements */}
-            <div className="bg-white dark:bg-[#151E2F] rounded-xl shadow-sm border border-gray-200 dark:border-[#1E293B] p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-[#F1F5F9] mb-4">Achievements</h3>
-              {achievements.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3">
-                  {achievements.slice(0, 4).map((achievement, i) => {
-                    const AchievementIcon = achievement.icon
-                    return (
-                      <div key={i} className="text-center p-4 bg-gray-50 dark:bg-[#1E293B] rounded-xl">
-                        <div className={`w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center ${achievement.bgClass}`}>
-                          <AchievementIcon className={`w-5 h-5 ${achievement.iconClass}`} />
-                        </div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-[#F1F5F9]">{achievement.name}</div>
-                        <div className="text-xs text-gray-500 dark:text-[#94A3B8]">{achievement.description}</div>
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500 dark:text-[#94A3B8] text-center py-4">
-                  Start recording lectures to earn achievements!
-                </p>
-              )}
-            </div>
           </div>
 
           {/* Right Column - Stats & Activity */}
@@ -347,6 +430,86 @@ export default function ProfilePage() {
                   </div>
                 )
               })}
+            </div>
+
+            {/* Daily Quests */}
+            <div className="bg-white dark:bg-[#151E2F] rounded-xl shadow-sm border border-gray-200 dark:border-[#1E293B] overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between p-5 pb-4">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-[#F1F5F9]">Daily Quests</h3>
+                <div className="flex items-center gap-1.5 text-amber-500">
+                  <Timer className="w-4 h-4" />
+                  <span className="text-sm font-semibold">{hoursUntilReset}H {minutesUntilReset}M</span>
+                </div>
+              </div>
+
+              {/* Quest Cards */}
+              <div className="px-5 pb-5 space-y-3">
+                {dailyQuests.map((quest, i) => {
+                  const QuestIcon = quest.icon
+                  const progressPercent = (quest.current / quest.target) * 100
+                  return (
+                    <div
+                      key={i}
+                      className="relative bg-gray-50 dark:bg-[#1E293B] rounded-xl p-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        {/* Icon */}
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${quest.iconBgClass}`}>
+                          <QuestIcon className={`w-5 h-5 ${quest.iconClass}`} />
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-gray-900 dark:text-[#F1F5F9]">{quest.title}</h4>
+                          </div>
+                          {/* Progress Bar */}
+                          <div className="relative h-5 bg-gray-200 dark:bg-[#0B1220] rounded-full overflow-hidden">
+                            <div
+                              className={`absolute inset-y-0 left-0 ${quest.progressClass} rounded-full transition-all duration-500`}
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                            <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-white">
+                              {quest.current} / {quest.target}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Reward Icon */}
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${quest.completed ? 'bg-green-100 dark:bg-green-500/20' : 'bg-gray-200 dark:bg-[#0B1220]'}`}>
+                          {quest.completed ? (
+                            <Check className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <Gift className="w-5 h-5 text-gray-400" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+
+                {/* Upcoming Quests */}
+                <div className="pt-2">
+                  <h4 className="text-sm font-semibold text-gray-500 dark:text-[#94A3B8] mb-3">Upcoming</h4>
+                  <div className="space-y-3">
+                    <div className="bg-gray-50 dark:bg-[#1E293B] rounded-xl p-4 opacity-60">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200 dark:bg-[#0B1220]">
+                          <HelpCircle className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-500 dark:text-[#94A3B8]">Revealed tomorrow</h4>
+                          <div className="h-5 bg-gray-200 dark:bg-[#0B1220] rounded-full mt-2" />
+                        </div>
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-200 dark:bg-[#0B1220]">
+                          <Lock className="w-5 h-5 text-gray-400" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Recent Activity */}

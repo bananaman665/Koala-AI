@@ -11,6 +11,7 @@ export const XP_REWARDS = {
   GENERATE_NOTES: 20,
   DAILY_STREAK: 15,
   FIRST_LECTURE: 100, // Bonus for first lecture
+  DAILY_QUEST: 20, // Reward for completing a daily quest
 } as const
 
 // Level definitions with thresholds and names
