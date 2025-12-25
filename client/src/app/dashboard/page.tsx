@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2, FiEdit2 } from 'react-icons/fi'
-import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem, Flame } from 'lucide-react'
+import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem } from 'lucide-react'
 import { Fire } from '@phosphor-icons/react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
@@ -1497,7 +1497,7 @@ function DashboardContent() {
                 onClick={() => { hapticButton(); setShowStreakModal(true) }}
                 className="flex items-center gap-1 px-2.5 py-1.5 bg-orange-50 dark:bg-orange-500/10 rounded-full"
               >
-                <Flame className="w-4 h-4 text-orange-500" />
+                <Fire size={18} weight="fill" className="text-orange-500" />
                 <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{streak} {streak === 1 ? 'day' : 'days'}</span>
               </button>
             </div>

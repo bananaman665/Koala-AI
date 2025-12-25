@@ -90,7 +90,7 @@ export function StreakDisplay({
       <div
         className={`flex items-center gap-1.5 ${config.container} rounded-full
           ${streak > 0
-            ? 'bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-200 dark:border-orange-800'
+            ? 'bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800'
             : 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
           }
           transition-all duration-300 ${isAnimating ? 'scale-110' : 'scale-100'}
@@ -133,14 +133,14 @@ export function StreakDisplay({
       {/* Milestone celebration popup */}
       {showMilestone && (
         <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-50 animate-bounce">
-          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full shadow-lg whitespace-nowrap">
+          <div className="bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg whitespace-nowrap">
             <div className="flex items-center gap-2">
               <Trophy size={20} weight="fill" className="text-yellow-300" />
               <span className="font-bold text-sm">{getMilestoneMessage()}</span>
             </div>
           </div>
           {/* Arrow */}
-          <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-red-500" />
+          <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-orange-500" />
         </div>
       )}
 
@@ -164,16 +164,16 @@ export function StreakDisplay({
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center
                       ${isActive
-                        ? 'bg-gradient-to-br from-orange-400 to-red-500'
-                        : 'bg-gray-100 dark:bg-gray-700'
+                        ? 'bg-amber-100 dark:bg-amber-900/40'
+                        : 'bg-gray-100 dark:bg-gray-800'
                       }
                     `}
                   >
-                    {isActive ? (
-                      <Fire size={16} weight="fill" className="text-white" />
-                    ) : (
-                      <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-500" />
-                    )}
+                    <Fire
+                      size={16}
+                      weight={isActive ? 'fill' : 'regular'}
+                      className={isActive ? 'text-orange-500' : 'text-gray-300 dark:text-gray-600'}
+                    />
                   </div>
                   <span className="text-xs text-gray-500 dark:text-gray-400">{day}</span>
                 </div>
