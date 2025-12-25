@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiTrendingUp, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2, FiEdit2 } from 'react-icons/fi'
-import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem } from 'lucide-react'
+import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem, Flame } from 'lucide-react'
 import { Fire } from '@phosphor-icons/react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
@@ -1439,42 +1439,51 @@ function DashboardContent() {
         <nav className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-[#1a2235]/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/[0.06] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-3 sm:px-4">
           <div className="flex justify-between items-center h-14 sm:h-16">
-            {/* Level Badge */}
-            <button 
-              onClick={() => { hapticButton(); setShowLevelModal(true) }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-all hover:scale-105 active:scale-95"
-            >
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
-                <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
+            {/* Left side - Progress indicators */}
+            <div className="flex items-center gap-2">
+              {/* Level Badge */}
+              <button
+                onClick={() => { hapticButton(); setShowLevelModal(true) }}
+                className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+              >
+                <div className="w-5 h-5 rounded-full bg-violet-600 flex items-center justify-center">
+                  <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
+                </div>
+                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{levelInfo.name}</span>
+              </button>
+
+              {/* Streak */}
+              <button
+                onClick={() => { hapticButton(); setShowStreakModal(true) }}
+                className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+              >
+                <Flame className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{streak}</span>
+              </button>
+            </div>
+
+            {/* Right side - Actions */}
+            <div className="flex items-center gap-3">
+              {/* Achievements */}
+              <button
+                onClick={() => { hapticButton(); setShowAchievementsModal(true) }}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+              >
+                <Trophy className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
+
+              {/* Settings */}
+              <Link
+                href="/settings"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+              >
+                <FiSettings className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </Link>
+
+              {/* Avatar */}
+              <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 text-xs font-medium">
+                {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
               </div>
-              <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{levelInfo.name}</span>
-            </button>
-
-            {/* Achievements */}
-            <button
-              onClick={() => { hapticButton(); setShowAchievementsModal(true) }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 transition-all hover:scale-105 active:scale-95"
-            >
-              <Trophy className="w-4 h-4 text-amber-500" />
-              <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">{unlockedCount}/{totalCount}</span>
-            </button>
-
-            {/* Streak */}
-            <button onClick={() => { hapticButton(); setShowStreakModal(true) }}>
-              <StreakDisplay streak={streak} size="sm" />
-            </button>
-
-            {/* Settings */}
-            <Link
-              href="/settings"
-              className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-full transition-colors"
-            >
-              <FiSettings className="text-gray-500 dark:text-gray-400 text-lg" />
-            </Link>
-
-            {/* Avatar */}
-            <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-purple-500/20">
-              {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
             </div>
           </div>
         </div>
@@ -1543,7 +1552,7 @@ function DashboardContent() {
         {!selectedCourse && (
           <>
             {/* Hero Card - Greeting + Record CTA */}
-            <div className="bg-white dark:bg-[#1a2233]/80 rounded-3xl p-6 mb-6 border border-gray-100 dark:border-white/[0.06] animate-card-in">
+            <div className="bg-white dark:bg-[#1a2233]/80 rounded-2xl p-6 mb-6 border border-gray-100 dark:border-white/[0.06] animate-card-in">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -1566,7 +1575,7 @@ function DashboardContent() {
                   </p>
                   <button
                     onClick={() => setShowReadyToRecordModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-medium text-sm rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-medium text-sm rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
                   >
                     <Mic className="w-4 h-4" />
                     Start Recording
@@ -1682,7 +1691,7 @@ function DashboardContent() {
             ) : courses.length === 0 ? (
               /* Empty State */
               <div className="col-span-2 text-center py-12 px-6">
-                <div className="w-20 h-20 mx-auto mb-4 bg-violet-100 dark:bg-violet-500/10 rounded-3xl flex items-center justify-center">
+                <div className="w-20 h-20 mx-auto mb-4 bg-violet-100 dark:bg-violet-500/10 rounded-2xl flex items-center justify-center">
                   <FiBook className="text-violet-600 dark:text-violet-400 text-3xl" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No courses yet</h3>
@@ -1702,6 +1711,7 @@ function DashboardContent() {
                 <SwipeToDelete
                   key={course.id}
                   onDelete={() => deleteCourse(course.id)}
+                  itemName={`"${course.name}"`}
                 >
                   <div
                     onClick={() => setSelectedCourse(course.id)}
@@ -1709,7 +1719,7 @@ function DashboardContent() {
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <div className={`w-11 h-11 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                        <FiBook className={`${courseColorClasses[course.color]?.text || courseColorClasses.blue.text} text-lg`} />
+                        <FiBook className={`text-lg ${courseColorClasses[course.color]?.text || courseColorClasses.blue.text}`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
@@ -1748,7 +1758,7 @@ function DashboardContent() {
                   <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5">Continue</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5">Continue</p>
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{lectures[0].title}</h3>
                 </div>
                 <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0" />
@@ -1763,7 +1773,7 @@ function DashboardContent() {
                 <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">Daily Tip</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">Daily Tip</p>
                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                   {(() => {
                     const tips = [
@@ -2490,6 +2500,7 @@ function DashboardContent() {
                     <SwipeToDelete
                       key={lecture.id}
                       onDelete={() => deleteLecture(lecture.id)}
+                      itemName={`"${lecture.title}"`}
                       className={`animate-list-item stagger-${Math.min(index + 1, 10)}`}
                     >
                       <div
