@@ -1691,18 +1691,11 @@ function DashboardContent() {
             ) : courses.length === 0 ? (
               /* Empty State */
               <div className="col-span-2 text-center py-12 px-6">
-                <div className="w-20 h-20 mx-auto mb-4 bg-violet-100 dark:bg-violet-500/10 rounded-2xl flex items-center justify-center">
-                  <FiBook className="text-violet-600 dark:text-violet-400 text-3xl" />
+                <div className="w-14 h-14 mx-auto mb-4 bg-violet-100 dark:bg-violet-500/10 rounded-xl flex items-center justify-center">
+                  <FiBook className="text-violet-600 dark:text-violet-400 text-2xl" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No courses yet</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">Create your first course to organize your lectures</p>
-                <button
-                  onClick={() => setShowNewCourseModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 text-white font-medium rounded-xl hover:bg-violet-700 transition-colors"
-                >
-                  <FiPlus />
-                  Create Course
-                </button>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">Tap + Add to create your first course</p>
               </div>
             ) : (
               courses.map((course, index) => {
