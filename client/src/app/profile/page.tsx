@@ -174,13 +174,13 @@ export default function ProfilePage() {
   })
 
   // Calculate achievements based on real data
-  const achievements = []
-  if (streak >= 7) achievements.push({ icon: Flame, name: 'Week Warrior', description: '7 day streak', color: 'orange' })
-  if (totalLectures >= 20) achievements.push({ icon: BookOpen, name: 'Bookworm', description: '20+ lectures', color: 'blue' })
-  if (parseFloat(totalHours) >= 40) achievements.push({ icon: Clock, name: 'Time Master', description: '40+ hours', color: 'purple' })
-  if (streak >= 3) achievements.push({ icon: Target, name: 'Getting Started', description: '3 day streak', color: 'green' })
-  if (totalLectures >= 1) achievements.push({ icon: Mic, name: 'First Recording', description: 'First lecture', color: 'pink' })
-  if (courses.length >= 3) achievements.push({ icon: GraduationCap, name: 'Multi-tasker', description: '3+ courses', color: 'cyan' })
+  const achievements: { icon: typeof Flame; name: string; description: string; bgClass: string; iconClass: string }[] = []
+  if (streak >= 7) achievements.push({ icon: Flame, name: 'Week Warrior', description: '7 day streak', bgClass: 'bg-orange-100 dark:bg-orange-500/15', iconClass: 'text-orange-500 dark:text-orange-400' })
+  if (totalLectures >= 20) achievements.push({ icon: BookOpen, name: 'Bookworm', description: '20+ lectures', bgClass: 'bg-blue-100 dark:bg-blue-500/15', iconClass: 'text-blue-500 dark:text-blue-400' })
+  if (parseFloat(totalHours) >= 40) achievements.push({ icon: Clock, name: 'Time Master', description: '40+ hours', bgClass: 'bg-purple-100 dark:bg-purple-500/15', iconClass: 'text-purple-500 dark:text-purple-400' })
+  if (streak >= 3) achievements.push({ icon: Target, name: 'Getting Started', description: '3 day streak', bgClass: 'bg-green-100 dark:bg-green-500/15', iconClass: 'text-green-500 dark:text-green-400' })
+  if (totalLectures >= 1) achievements.push({ icon: Mic, name: 'First Recording', description: 'First lecture', bgClass: 'bg-pink-100 dark:bg-pink-500/15', iconClass: 'text-pink-500 dark:text-pink-400' })
+  if (courses.length >= 3) achievements.push({ icon: GraduationCap, name: 'Multi-tasker', description: '3+ courses', bgClass: 'bg-cyan-100 dark:bg-cyan-500/15', iconClass: 'text-cyan-500 dark:text-cyan-400' })
 
   // Study progress from real courses
   const studyProgress = courses.slice(0, 4).map(course => {
@@ -216,7 +216,7 @@ export default function ProfilePage() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-28 sm:pt-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-32 sm:pt-28">
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Left Column - Profile Info */}
           <div className="lg:col-span-1 space-y-5">
@@ -314,8 +314,8 @@ export default function ProfilePage() {
                     const AchievementIcon = achievement.icon
                     return (
                       <div key={i} className="text-center p-4 bg-gray-50 dark:bg-[#1E293B] rounded-xl">
-                        <div className={`w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center bg-${achievement.color}-100 dark:bg-${achievement.color}-500/20`}>
-                          <AchievementIcon className={`w-6 h-6 text-${achievement.color}-600 dark:text-${achievement.color}-400`} />
+                        <div className={`w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center ${achievement.bgClass}`}>
+                          <AchievementIcon className={`w-5 h-5 ${achievement.iconClass}`} />
                         </div>
                         <div className="text-sm font-medium text-gray-900 dark:text-[#F1F5F9]">{achievement.name}</div>
                         <div className="text-xs text-gray-500 dark:text-[#94A3B8]">{achievement.description}</div>

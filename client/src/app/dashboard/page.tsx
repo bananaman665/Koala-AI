@@ -1481,9 +1481,12 @@ function DashboardContent() {
               </Link>
 
               {/* Avatar */}
-              <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 text-xs font-medium">
+              <Link
+                href="/profile"
+                className="w-8 h-8 bg-violet-600 rounded-full flex items-center justify-center text-white text-xs font-medium hover:bg-violet-700 transition-colors"
+              >
                 {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
-              </div>
+              </Link>
             </div>
           </div>
         </div>
