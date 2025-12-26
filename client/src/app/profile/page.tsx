@@ -217,10 +217,10 @@ export default function ProfilePage() {
   const memberSince = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
   const stats = [
-    { label: 'Study Time', value: studyTimeDisplay, icon: Clock, bgClass: 'bg-blue-100 dark:bg-blue-500/15', iconClass: 'text-blue-600 dark:text-blue-400' },
-    { label: 'Lectures', value: totalLectures.toString(), icon: FileText, bgClass: 'bg-purple-100 dark:bg-purple-500/15', iconClass: 'text-purple-600 dark:text-purple-400' },
-    { label: 'Courses', value: courses.length.toString(), icon: BookOpen, bgClass: 'bg-emerald-100 dark:bg-emerald-500/15', iconClass: 'text-emerald-600 dark:text-emerald-400' },
-    { label: 'Completed', value: `${completedPercent}%`, icon: Mic, bgClass: 'bg-orange-100 dark:bg-orange-500/15', iconClass: 'text-orange-600 dark:text-orange-400' },
+    { label: 'Study Time', value: studyTimeDisplay, icon: Clock, gradientClass: 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-800', borderClass: 'border-blue-200 dark:border-gray-700', iconClass: 'text-blue-600 dark:text-gray-400', valueClass: 'text-blue-900 dark:text-white', labelClass: 'text-blue-700 dark:text-gray-400' },
+    { label: 'Lectures', value: totalLectures.toString(), icon: FileText, gradientClass: 'bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-800', borderClass: 'border-purple-200 dark:border-gray-700', iconClass: 'text-purple-600 dark:text-gray-400', valueClass: 'text-purple-900 dark:text-white', labelClass: 'text-purple-700 dark:text-gray-400' },
+    { label: 'Courses', value: courses.length.toString(), icon: BookOpen, gradientClass: 'bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-800', borderClass: 'border-green-200 dark:border-gray-700', iconClass: 'text-green-600 dark:text-gray-400', valueClass: 'text-green-900 dark:text-white', labelClass: 'text-green-700 dark:text-gray-400' },
+    { label: 'Completed', value: `${completedPercent}%`, icon: Mic, gradientClass: 'bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-800', borderClass: 'border-orange-200 dark:border-gray-700', iconClass: 'text-orange-600 dark:text-gray-400', valueClass: 'text-orange-900 dark:text-white', labelClass: 'text-orange-700 dark:text-gray-400' },
   ]
 
   // Get recent activity from real lectures
@@ -425,16 +425,16 @@ export default function ProfilePage() {
           {/* Right Column - Stats & Activity */}
           <div className="lg:col-span-2 space-y-5">
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               {stats.map((stat, i) => {
                 const Icon = stat.icon
                 return (
-                  <div key={i} className="bg-white dark:bg-[#151E2F] rounded-xl shadow-sm border border-gray-200 dark:border-[#1E293B] p-4 md:p-5">
-                    <div className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 ${stat.bgClass} rounded-xl mb-3`}>
-                      <Icon className={`w-5 h-5 md:w-6 md:h-6 ${stat.iconClass}`} />
+                  <div key={i} className={`${stat.gradientClass} rounded-lg p-4 border ${stat.borderClass}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <Icon className={`${stat.iconClass} text-xl`} />
                     </div>
-                    <div className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-[#F1F5F9] mb-1">{stat.value}</div>
-                    <div className="text-xs md:text-sm text-gray-500 dark:text-[#94A3B8]">{stat.label}</div>
+                    <p className={`text-2xl font-bold ${stat.valueClass}`}>{stat.value}</p>
+                    <p className={`text-xs ${stat.labelClass}`}>{stat.label}</p>
                   </div>
                 )
               })}
