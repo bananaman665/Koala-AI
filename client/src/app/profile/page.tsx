@@ -19,7 +19,8 @@ import {
   Gift,
   Lock,
   HelpCircle,
-  Timer
+  Timer,
+  FileText
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -34,6 +35,7 @@ interface Lecture {
   duration: number
   created_at: string
   course_id: string
+  transcription_status?: string
   courses?: {
     name: string
   }
@@ -202,17 +204,23 @@ export default function ProfilePage() {
 
   // Calculate real stats
   const totalLectures = lectures.length
-  const totalHours = (lectures.reduce((sum, l) => sum + (l.duration || 0), 0) / 3600).toFixed(1)
+  const totalSeconds = lectures.reduce((sum, l) => sum + (l.duration || 0), 0)
+  const studyHours = Math.floor(totalSeconds / 3600)
+  const studyMinutes = Math.floor((totalSeconds % 3600) / 60)
+  const studyTimeDisplay = studyHours > 0 ? `${studyHours}h ${studyMinutes}m` : `${studyMinutes}m`
+  const completedPercent = totalLectures > 0
+    ? Math.round((lectures.filter(l => l.transcription_status === 'completed').length / totalLectures) * 100)
+    : 0
   const userInitials = user.user_metadata?.full_name
     ? user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
     : user.email?.substring(0, 2).toUpperCase() || 'U'
   const memberSince = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
   const stats = [
-    { label: 'Total Lectures', value: totalLectures.toString(), icon: BookOpen, bgClass: 'bg-blue-100 dark:bg-blue-500/15', iconClass: 'text-blue-600 dark:text-blue-400' },
-    { label: 'Study Hours', value: `${totalHours}h`, icon: Clock, bgClass: 'bg-purple-100 dark:bg-purple-500/15', iconClass: 'text-purple-600 dark:text-purple-400' },
-    { label: 'Current Streak', value: `${streak} ${streak === 1 ? 'day' : 'days'}`, icon: TrendingUp, bgClass: 'bg-emerald-100 dark:bg-emerald-500/15', iconClass: 'text-emerald-600 dark:text-emerald-400' },
-    { label: 'Courses', value: courses.length.toString(), icon: GraduationCap, bgClass: 'bg-amber-100 dark:bg-amber-500/15', iconClass: 'text-amber-600 dark:text-amber-400' },
+    { label: 'Study Time', value: studyTimeDisplay, icon: Clock, bgClass: 'bg-blue-100 dark:bg-blue-500/15', iconClass: 'text-blue-600 dark:text-blue-400' },
+    { label: 'Lectures', value: totalLectures.toString(), icon: FileText, bgClass: 'bg-purple-100 dark:bg-purple-500/15', iconClass: 'text-purple-600 dark:text-purple-400' },
+    { label: 'Courses', value: courses.length.toString(), icon: BookOpen, bgClass: 'bg-emerald-100 dark:bg-emerald-500/15', iconClass: 'text-emerald-600 dark:text-emerald-400' },
+    { label: 'Completed', value: `${completedPercent}%`, icon: Mic, bgClass: 'bg-orange-100 dark:bg-orange-500/15', iconClass: 'text-orange-600 dark:text-orange-400' },
   ]
 
   // Get recent activity from real lectures
