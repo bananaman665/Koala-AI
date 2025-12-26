@@ -72,6 +72,14 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
   const isLastSlide = currentSlide === slides.length - 1
   const isFirstSlide = currentSlide === 0
 
+  // Prevent body scrolling while onboarding is active
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [])
+
   const goToNextSlide = () => {
     if (isAnimating) return
     hapticSelection()
