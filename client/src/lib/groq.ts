@@ -201,7 +201,7 @@ export async function generateLearnModeQuestions(
       case 'multiple_choice':
         return '- Multiple Choice: 4 options with one correct answer'
       case 'true_false':
-        return '- True/False: statement that is either true or false'
+        return '- True/False: a STATEMENT (not a question) that is either true or false. Example: "The mitochondria is the powerhouse of the cell." NOT "What is the powerhouse of the cell?"'
       case 'written':
         return '- Written: open-ended question requiring a short written response (1-3 sentences)'
       case 'fill_in_blank':
@@ -225,6 +225,7 @@ export async function generateLearnModeQuestions(
   - "correctAnswer": the exact text of the correct option`
       case 'true_false':
         return `For true_false:
+  - "question": must be a STATEMENT (not a question), e.g. "The sky is blue." NOT "Is the sky blue?"
   - "options": ["True", "False"]
   - "correctAnswer": either "True" or "False"`
       case 'written':

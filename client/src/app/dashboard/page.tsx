@@ -2164,7 +2164,10 @@ function DashboardContent() {
                             {(learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ||
                               learnModeQuestions[currentQuestionIndex].type === 'true_false') && (
                               <div className="space-y-3 sm:space-y-4">
-                                {learnModeQuestions[currentQuestionIndex].options.map((option, idx) => {
+                                {(learnModeQuestions[currentQuestionIndex].type === 'true_false' && (!learnModeQuestions[currentQuestionIndex].options || learnModeQuestions[currentQuestionIndex].options.length === 0)
+                                  ? ['True', 'False']
+                                  : learnModeQuestions[currentQuestionIndex].options
+                                ).map((option, idx) => {
                                   const isSelected = selectedAnswer === option
                                   const isCorrect = option === learnModeQuestions[currentQuestionIndex].correctAnswer
                                   const showCorrect = showExplanation && isCorrect
@@ -2883,7 +2886,10 @@ function DashboardContent() {
 
               {/* Answer Options */}
               <div className="space-y-3">
-                {learnModeQuestions[currentQuestionIndex].options.map((option, idx) => {
+                {(learnModeQuestions[currentQuestionIndex].type === 'true_false' && (!learnModeQuestions[currentQuestionIndex].options || learnModeQuestions[currentQuestionIndex].options.length === 0)
+                  ? ['True', 'False']
+                  : learnModeQuestions[currentQuestionIndex].options
+                ).map((option, idx) => {
                   const isSelected = selectedAnswer === option
                   const isCorrect = option === learnModeQuestions[currentQuestionIndex].correctAnswer
                   const showCorrect = showExplanation && isCorrect
