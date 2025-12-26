@@ -1515,7 +1515,7 @@ function DashboardContent() {
               {/* Avatar */}
               <Link
                 href="/profile"
-                className="w-9 h-9 bg-gradient-to-r from-purple-600 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                className="w-9 h-9 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium"
               >
                 {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
               </Link>
@@ -1530,7 +1530,7 @@ function DashboardContent() {
           <div className="max-w-7xl mx-auto">
             <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
               <div
-                className="bg-gradient-to-r from-green-500 to-emerald-600 h-1.5 rounded-full transition-all duration-300"
+                className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
                 style={{ width: `${((currentQuestionIndex + (showExplanation ? 1 : 0)) / learnModeQuestions.length) * 100}%` }}
               ></div>
             </div>
@@ -1548,7 +1548,7 @@ function DashboardContent() {
           <div className="max-w-7xl mx-auto">
             <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
               <div
-                className="bg-gradient-to-r from-purple-500 to-purple-600 h-1.5 rounded-full transition-all duration-300"
+                className="bg-purple-500 h-1.5 rounded-full transition-all duration-300"
                 style={{ width: `${((currentFlashcardIndex + 1) / flashcards.length) * 100}%` }}
               ></div>
             </div>
@@ -1582,7 +1582,7 @@ function DashboardContent() {
             animationType={activeScreen === 'dashboard' ? (animationType?.enter || 'fade') : (animationType?.exit || 'fade')}
             isActive={activeScreen === 'dashboard'}
           >
-            <div className="overflow-y-auto bg-gray-50 dark:bg-gradient-to-b dark:from-[#0f1420] dark:via-[#111827] dark:to-[#151c28] h-full relative">
+            <div className="overflow-y-auto bg-gray-50 dark:bg-[#111827] h-full relative">
               <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40`}>
         {!selectedCourse && (
           <>
@@ -1710,7 +1710,7 @@ function DashboardContent() {
                   description: 'Record <span class="font-semibold text-violet-600 dark:text-violet-400">10 lectures</span> this month',
                   target: 10,
                   getCurrent: () => lectures.filter(l => new Date(l.created_at) >= startOfMonth).length,
-                  gradient: 'from-violet-500 to-purple-600',
+                  bgColor: 'bg-violet-500',
                 },
                 {
                   id: 'study_hours',
@@ -1718,7 +1718,7 @@ function DashboardContent() {
                   description: 'Accumulate <span class="font-semibold text-blue-600 dark:text-blue-400">8 hours</span> of lecture time',
                   target: 8,
                   getCurrent: () => Math.floor(lectures.filter(l => new Date(l.created_at) >= startOfMonth).reduce((sum, l) => sum + (l.duration || 0), 0) / 3600),
-                  gradient: 'from-blue-500 to-cyan-500',
+                  bgColor: 'bg-blue-500',
                 },
                 {
                   id: 'courses',
@@ -1726,7 +1726,7 @@ function DashboardContent() {
                   description: 'Create <span class="font-semibold text-emerald-600 dark:text-emerald-400">3 new courses</span> this month',
                   target: 3,
                   getCurrent: () => courses.filter(c => new Date(c.created_at) >= startOfMonth).length,
-                  gradient: 'from-emerald-500 to-teal-500',
+                  bgColor: 'bg-emerald-500',
                 },
                 {
                   id: 'streak',
@@ -1734,7 +1734,7 @@ function DashboardContent() {
                   description: 'Maintain a <span class="font-semibold text-orange-600 dark:text-orange-400">15-day streak</span> this month',
                   target: 15,
                   getCurrent: () => streak,
-                  gradient: 'from-orange-500 to-amber-500',
+                  bgColor: 'bg-orange-500',
                 },
               ]
 
@@ -1748,7 +1748,7 @@ function DashboardContent() {
                 <div className="bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-6 animate-card-in card-stagger-1">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${currentGoal.gradient} flex items-center justify-center`}>
+                      <div className={`w-8 h-8 rounded-xl ${currentGoal.bgColor} flex items-center justify-center`}>
                         <Trophy className="w-4 h-4 text-white" />
                       </div>
                       <div>
@@ -1771,7 +1771,7 @@ function DashboardContent() {
                   {/* Progress Bar */}
                   <div className="relative h-6 bg-gray-100 dark:bg-[#0B1220] rounded-full overflow-hidden">
                     <div
-                      className={`absolute inset-y-0 left-0 bg-gradient-to-r ${currentGoal.gradient} rounded-full transition-all duration-500`}
+                      className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500`}
                       style={{ width: `${progress}%` }}
                     />
                     <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-white">
@@ -1978,7 +1978,7 @@ function DashboardContent() {
                   </div>
 
                   {(transcript || interimTranscript) && (
-                    <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
+                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                         <p className="text-sm font-medium text-gray-700">Live Transcription</p>
@@ -2110,7 +2110,7 @@ function DashboardContent() {
 
                   {/* Learn Mode Tab */}
                   {studyViewMode === 'learn' && learnModeQuestions.length > 0 && (
-                        <div className="mt-4 p-4 sm:p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-[#0B1220] dark:to-[#0F172A] border-2 border-green-200 dark:border-[#1E293B] rounded-xl shadow-lg dark:shadow-2xl">
+                        <div className="mt-4 p-4 sm:p-6 bg-green-50 dark:bg-[#0B1220] border-2 border-green-200 dark:border-[#1E293B] rounded-xl shadow-lg dark:shadow-2xl">
                           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
                             <div>
                               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-[#F1F5F9]">Learn Mode</h3>
@@ -2128,7 +2128,7 @@ function DashboardContent() {
                           <div className="mb-4 sm:mb-6">
                             <div className="w-full bg-gray-200 dark:bg-[#1E293B] rounded-full h-2 sm:h-3">
                               <div
-                                className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 sm:h-3 rounded-full transition-all duration-300"
+                                className="bg-purple-500 h-2 sm:h-3 rounded-full transition-all duration-300"
                                 style={{ width: `${((currentQuestionIndex + (showExplanation ? 1 : 0)) / learnModeQuestions.length) * 100}%` }}
                               ></div>
                             </div>
@@ -2326,14 +2326,14 @@ function DashboardContent() {
                                       ? !selectedAnswer
                                       : !writtenAnswer.trim()
                                   }
-                                  className="flex-1 px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white btn-press rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm sm:text-base shadow-lg dark:shadow-purple-500/20"
+                                  className="flex-1 px-4 py-3 sm:px-6 sm:py-4 bg-purple-600 hover:bg-purple-700 text-white btn-press rounded-xl font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm sm:text-base"
                                 >
                                   Submit Answer
                                 </button>
                               ) : (
                                 <button
                                   onClick={handleNextQuestion}
-                                  className="flex-1 px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl btn-press font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all text-sm sm:text-base shadow-lg dark:shadow-blue-500/20"
+                                  className="flex-1 px-4 py-3 sm:px-6 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl btn-press font-semibold transition-all text-sm sm:text-base"
                                 >
                                   {currentQuestionIndex < learnModeQuestions.length - 1 ? 'Next Question' : incorrectQuestions.length > 0 ? 'Start Next Round' : 'Complete!'}
                                 </button>
@@ -2814,7 +2814,7 @@ function DashboardContent() {
                   }
                 }}
                 disabled={isGeneratingLearnMode}
-                className="flex items-center justify-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-4 rounded-xl hover:from-indigo-700 hover:to-purple-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20"
+                className="flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-4 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {isGeneratingLearnMode ? (
                   <FiLoader className="animate-spin text-lg" />
@@ -2937,14 +2937,14 @@ function DashboardContent() {
               {!showExplanation && selectedAnswer ? (
                 <button
                   onClick={handleSubmitAnswer}
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-xl transition-all shadow-lg dark:shadow-purple-500/20"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-xl transition-all"
                 >
                   Submit Answer
                 </button>
               ) : showExplanation ? (
                 <button
                   onClick={handleNextQuestion}
-                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium py-3 rounded-xl transition-all shadow-lg dark:shadow-blue-500/20"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition-all"
                 >
                   {currentQuestionIndex < learnModeQuestions.length - 1 ? 'Next Question' : 'Complete'}
                 </button>
@@ -2982,7 +2982,7 @@ function DashboardContent() {
 
                 {/* Back - Answer */}
                 <div
-                  className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-2xl shadow-lg border border-purple-200 dark:border-purple-700 p-6 flex flex-col items-center justify-center backface-hidden rotate-y-180"
+                  className="absolute inset-0 bg-purple-50 dark:bg-purple-900/30 rounded-2xl shadow-lg border border-purple-200 dark:border-purple-700 p-6 flex flex-col items-center justify-center backface-hidden rotate-y-180"
                   style={{
                     backfaceVisibility: 'hidden',
                     transform: 'rotateY(180deg)'
@@ -3123,7 +3123,7 @@ function DashboardContent() {
 
                 return (
                   <>
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
+                    <div className="bg-blue-50 dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
                       <div className="flex items-center justify-between mb-2">
                         <FiClock className="text-blue-600 dark:text-gray-400 text-xl" />
                       </div>
@@ -3138,7 +3138,7 @@ function DashboardContent() {
                       <p className="text-xs text-blue-700 dark:text-gray-400">Study Time</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-purple-200 dark:border-gray-700">
+                    <div className="bg-purple-50 dark:bg-gray-800 rounded-lg p-4 border border-purple-200 dark:border-gray-700">
                       <div className="flex items-center justify-between mb-2">
                         <FiFileText className="text-purple-600 dark:text-gray-400 text-xl" />
                       </div>
@@ -3146,7 +3146,7 @@ function DashboardContent() {
                       <p className="text-xs text-purple-700 dark:text-gray-400">Lectures</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-green-200 dark:border-gray-700">
+                    <div className="bg-green-50 dark:bg-gray-800 rounded-lg p-4 border border-green-200 dark:border-gray-700">
                       <div className="flex items-center justify-between mb-2">
                         <FiBook className="text-green-600 dark:text-gray-400 text-xl" />
                       </div>
@@ -3154,7 +3154,7 @@ function DashboardContent() {
                       <p className="text-xs text-green-700 dark:text-gray-400">Courses</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-800 rounded-lg p-4 border border-orange-200 dark:border-gray-700">
+                    <div className="bg-orange-50 dark:bg-gray-800 rounded-lg p-4 border border-orange-200 dark:border-gray-700">
                       <div className="flex items-center justify-between mb-2">
                         <FiMic className="text-orange-600 dark:text-gray-400 text-xl" />
                       </div>
@@ -4132,8 +4132,8 @@ function DashboardContent() {
             disabled={isStoppingRecording || isGeneratingNotes || isTranscribing}
             className={`relative rounded-full shadow-lg flex items-center justify-center transition-all duration-150 ease-out active:scale-[0.95] active:shadow-md disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 mb-[-8px] ${
               isRecording
-                ? 'bg-gradient-to-b from-red-500 to-red-600 shadow-red-500/25 animate-recording-pulse'
-                : 'bg-gradient-to-b from-blue-500 to-blue-600 shadow-blue-500/30 hover:shadow-blue-500/40 hover:shadow-xl'
+                ? 'bg-red-500 shadow-red-500/25 animate-recording-pulse'
+                : 'bg-blue-500 shadow-blue-500/30 hover:shadow-blue-500/40 hover:shadow-xl'
             }`}
           >
             {isStoppingRecording || isGeneratingNotes || isTranscribing ? (
@@ -4182,7 +4182,7 @@ function DashboardContent() {
             {/* Content */}
             <div className="px-8 pt-6 pb-6">
               {/* Recording Icon with gradient background */}
-              <div className={`mx-auto w-32 h-32 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white mb-4 ${!isPaused && 'recording-indicator'}`}>
+              <div className={`mx-auto w-32 h-32 rounded-full bg-red-500 flex items-center justify-center text-white mb-4 ${!isPaused && 'recording-indicator'}`}>
                 <FiMic className="w-14 h-14" />
               </div>
 
@@ -4275,7 +4275,7 @@ function DashboardContent() {
                     setIsStoppingRecording(false)
                   }}
                   disabled={isStoppingRecording || isGeneratingNotes}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition-all disabled:opacity-50"
                 >
                   <FiSquare className="w-5 h-5" />
                   {isStoppingRecording || isGeneratingNotes ? 'Processing...' : 'Stop'}
@@ -4656,7 +4656,7 @@ function DashboardContent() {
                       </span>
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         isActive
-                          ? 'bg-gradient-to-br from-orange-400 to-red-500'
+                          ? 'bg-orange-500'
                           : isToday
                           ? 'bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-400 dark:border-blue-500'
                           : 'bg-gray-200 dark:bg-gray-600'
@@ -4691,7 +4691,7 @@ function DashboardContent() {
                     key={days}
                     className={`flex-shrink-0 px-4 py-3 rounded-xl text-center ${
                       streak >= days
-                        ? 'bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-200 dark:border-orange-800'
+                        ? 'bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800'
                         : 'bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
                     }`}
                   >

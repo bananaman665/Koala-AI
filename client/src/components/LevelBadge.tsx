@@ -31,11 +31,11 @@ export function LevelBadge({ levelInfo, totalXP, size = 'sm', onClick }: LevelBa
 
   // Color based on level
   const getLevelColor = () => {
-    if (levelInfo.level <= 2) return 'from-blue-400 to-blue-500'
-    if (levelInfo.level <= 4) return 'from-green-400 to-emerald-500'
-    if (levelInfo.level <= 6) return 'from-blue-400 to-indigo-500'
-    if (levelInfo.level <= 8) return 'from-purple-400 to-violet-500'
-    return 'from-amber-400 to-orange-500'
+    if (levelInfo.level <= 2) return 'bg-blue-500'
+    if (levelInfo.level <= 4) return 'bg-green-500'
+    if (levelInfo.level <= 6) return 'bg-blue-500'
+    if (levelInfo.level <= 8) return 'bg-purple-500'
+    return 'bg-amber-500'
   }
 
   const getBgColor = () => {
@@ -59,7 +59,7 @@ export function LevelBadge({ levelInfo, totalXP, size = 'sm', onClick }: LevelBa
       onClick={onClick}
       className={`flex items-center ${config.container} rounded-full border ${getBgColor()} transition-all hover:scale-105 active:scale-95`}
     >
-      <div className={`${config.icon} rounded-full bg-gradient-to-br ${getLevelColor()} flex items-center justify-center`}>
+      <div className={`${config.icon} rounded-full ${getLevelColor()} flex items-center justify-center`}>
         <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
       </div>
       <div className="flex flex-col items-start">
@@ -89,11 +89,11 @@ export function LevelProgressModal({ isOpen, onClose, levelInfo, totalXP, xpHist
   if (!isOpen) return null
 
   const getLevelColor = (level: number) => {
-    if (level <= 2) return 'from-blue-400 to-blue-500'
-    if (level <= 4) return 'from-green-400 to-emerald-500'
-    if (level <= 6) return 'from-blue-400 to-indigo-500'
-    if (level <= 8) return 'from-purple-400 to-violet-500'
-    return 'from-amber-400 to-orange-500'
+    if (level <= 2) return 'bg-blue-500'
+    if (level <= 4) return 'bg-green-500'
+    if (level <= 6) return 'bg-blue-500'
+    if (level <= 8) return 'bg-purple-500'
+    return 'bg-amber-500'
   }
 
   const getProgressColor = () => {
@@ -108,7 +108,7 @@ export function LevelProgressModal({ isOpen, onClose, levelInfo, totalXP, xpHist
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-md shadow-xl overflow-hidden">
         {/* Header with Level */}
-        <div className={`bg-gradient-to-br ${getLevelColor(levelInfo.level)} p-6 text-center text-white`}>
+        <div className={`${getLevelColor(levelInfo.level)} p-6 text-center text-white`}>
           <div className="w-20 h-20 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
             <span className="text-4xl font-bold">{levelInfo.level}</span>
           </div>
@@ -147,7 +147,7 @@ export function LevelProgressModal({ isOpen, onClose, levelInfo, totalXP, xpHist
                   key={level.level}
                   className={`aspect-square rounded-xl flex flex-col items-center justify-center text-center p-1 ${
                     levelInfo.level >= level.level
-                      ? `bg-gradient-to-br ${getLevelColor(level.level)} text-white`
+                      ? `${getLevelColor(level.level)} text-white`
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-400'
                   }`}
                 >
@@ -198,18 +198,18 @@ export function LevelUpModal({ isOpen, onClose, newLevel }: LevelUpModalProps) {
   if (!isOpen || !newLevel) return null
 
   const getLevelColor = (level: number) => {
-    if (level <= 2) return 'from-blue-400 to-blue-500'
-    if (level <= 4) return 'from-green-400 to-emerald-500'
-    if (level <= 6) return 'from-blue-400 to-indigo-500'
-    if (level <= 8) return 'from-purple-400 to-violet-500'
-    return 'from-amber-400 to-orange-500'
+    if (level <= 2) return 'bg-blue-500'
+    if (level <= 4) return 'bg-green-500'
+    if (level <= 6) return 'bg-blue-500'
+    if (level <= 8) return 'bg-purple-500'
+    return 'bg-amber-500'
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm shadow-xl overflow-hidden animate-bounce-in">
         {/* Celebration Header */}
-        <div className={`bg-gradient-to-br ${getLevelColor(newLevel.level)} p-8 text-center text-white relative overflow-hidden`}>
+        <div className={`${getLevelColor(newLevel.level)} p-8 text-center text-white relative overflow-hidden`}>
           {/* Confetti particles */}
           <div className="absolute inset-0 overflow-hidden">
             {[...Array(20)].map((_, i) => (
@@ -242,7 +242,7 @@ export function LevelUpModal({ isOpen, onClose, newLevel }: LevelUpModalProps) {
           </p>
           <button
             onClick={onClose}
-            className={`w-full py-3 bg-gradient-to-r ${getLevelColor(newLevel.level)} text-white rounded-xl font-medium transition-transform hover:scale-105 active:scale-95`}
+            className={`w-full py-3 ${getLevelColor(newLevel.level)} text-white rounded-xl font-medium transition-transform hover:scale-105 active:scale-95`}
           >
             Awesome!
           </button>

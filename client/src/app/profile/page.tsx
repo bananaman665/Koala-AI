@@ -217,10 +217,10 @@ export default function ProfilePage() {
   const memberSince = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
   const stats = [
-    { label: 'Study Time', value: studyTimeDisplay, icon: Clock, gradientClass: 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-800', borderClass: 'border-blue-200 dark:border-gray-700', iconClass: 'text-blue-600 dark:text-gray-400', valueClass: 'text-blue-900 dark:text-white', labelClass: 'text-blue-700 dark:text-gray-400' },
-    { label: 'Lectures', value: totalLectures.toString(), icon: FileText, gradientClass: 'bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-800 dark:to-gray-800', borderClass: 'border-purple-200 dark:border-gray-700', iconClass: 'text-purple-600 dark:text-gray-400', valueClass: 'text-purple-900 dark:text-white', labelClass: 'text-purple-700 dark:text-gray-400' },
-    { label: 'Courses', value: courses.length.toString(), icon: BookOpen, gradientClass: 'bg-gradient-to-br from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-800', borderClass: 'border-green-200 dark:border-gray-700', iconClass: 'text-green-600 dark:text-gray-400', valueClass: 'text-green-900 dark:text-white', labelClass: 'text-green-700 dark:text-gray-400' },
-    { label: 'Completed', value: `${completedPercent}%`, icon: Mic, gradientClass: 'bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-800', borderClass: 'border-orange-200 dark:border-gray-700', iconClass: 'text-orange-600 dark:text-gray-400', valueClass: 'text-orange-900 dark:text-white', labelClass: 'text-orange-700 dark:text-gray-400' },
+    { label: 'Study Time', value: studyTimeDisplay, icon: Clock, bgClass: 'bg-blue-50 dark:bg-gray-800', borderClass: 'border-blue-200 dark:border-gray-700', iconClass: 'text-blue-600 dark:text-gray-400', valueClass: 'text-blue-900 dark:text-white', labelClass: 'text-blue-700 dark:text-gray-400' },
+    { label: 'Lectures', value: totalLectures.toString(), icon: FileText, bgClass: 'bg-purple-50 dark:bg-gray-800', borderClass: 'border-purple-200 dark:border-gray-700', iconClass: 'text-purple-600 dark:text-gray-400', valueClass: 'text-purple-900 dark:text-white', labelClass: 'text-purple-700 dark:text-gray-400' },
+    { label: 'Courses', value: courses.length.toString(), icon: BookOpen, bgClass: 'bg-green-50 dark:bg-gray-800', borderClass: 'border-green-200 dark:border-gray-700', iconClass: 'text-green-600 dark:text-gray-400', valueClass: 'text-green-900 dark:text-white', labelClass: 'text-green-700 dark:text-gray-400' },
+    { label: 'Completed', value: `${completedPercent}%`, icon: Mic, bgClass: 'bg-orange-50 dark:bg-gray-800', borderClass: 'border-orange-200 dark:border-gray-700', iconClass: 'text-orange-600 dark:text-gray-400', valueClass: 'text-orange-900 dark:text-white', labelClass: 'text-orange-700 dark:text-gray-400' },
   ]
 
   // Get recent activity from real lectures
@@ -340,7 +340,7 @@ export default function ProfilePage() {
             <div className="bg-white dark:bg-[#151E2F] rounded-xl shadow-sm border border-gray-200 dark:border-[#1E293B] p-6">
               <div className="text-center">
                 <div className="inline-block relative">
-                  <div className="w-24 h-24 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">
+                  <div className="w-24 h-24 bg-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">
                     {userInitials}
                   </div>
                 </div>
@@ -413,7 +413,7 @@ export default function ProfilePage() {
               <div className="mt-6">
                 <Link
                   href="/settings"
-                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg dark:shadow-purple-500/20 transition-all"
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-all"
                 >
                   <Settings className="w-5 h-5" />
                   <span>Settings</span>
@@ -429,7 +429,7 @@ export default function ProfilePage() {
               {stats.map((stat, i) => {
                 const Icon = stat.icon
                 return (
-                  <div key={i} className={`${stat.gradientClass} rounded-lg p-4 border ${stat.borderClass}`}>
+                  <div key={i} className={`${stat.bgClass} rounded-lg p-4 border ${stat.borderClass}`}>
                     <div className="flex items-center justify-between mb-2">
                       <Icon className={`${stat.iconClass} text-xl`} />
                     </div>
@@ -571,7 +571,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="w-full bg-gray-100 dark:bg-[#1E293B] rounded-full h-2">
                         <div
-                          className="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full"
+                          className="bg-purple-600 h-2 rounded-full"
                           style={{ width: `${Math.min((course.lectures / course.total) * 100, 100)}%` }}
                         ></div>
                       </div>

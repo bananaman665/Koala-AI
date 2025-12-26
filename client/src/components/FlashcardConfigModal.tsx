@@ -36,7 +36,7 @@ export function FlashcardConfigModal({
     <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
       <div className="bg-white dark:bg-[#0D1117] rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-scale-in">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6 text-white">
+        <div className="bg-purple-600 p-6 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -98,7 +98,7 @@ export function FlashcardConfigModal({
           <button
             onClick={handleGenerate}
             disabled={isGenerating}
-            className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-semibold text-lg transition-all disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg shadow-purple-200 dark:shadow-purple-900/30"
+            className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold text-lg transition-all disabled:opacity-50 flex items-center justify-center gap-3"
           >
             {isGenerating ? (
               <>

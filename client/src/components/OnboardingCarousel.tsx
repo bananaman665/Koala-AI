@@ -31,25 +31,25 @@ const slides: Slide[] = [
     icon: <GraduationCap size={80} weight="duotone" />,
     title: 'Welcome to Koala.ai',
     description: 'Your AI-powered study companion for recording, transcribing, and mastering your lectures.',
-    color: 'from-blue-500 to-purple-600',
+    color: 'bg-blue-500',
   },
   {
     icon: <Microphone size={80} weight="duotone" />,
     title: 'One-Tap Recording',
     description: 'Record lectures with a single tap. We\'ll transcribe everything automatically using AI.',
-    color: 'from-green-500 to-emerald-600',
+    color: 'bg-green-500',
   },
   {
     icon: <Sparkle size={80} weight="duotone" />,
     title: 'AI-Powered Notes',
     description: 'Get intelligent, structured notes with summaries, key points, and action items.',
-    color: 'from-amber-500 to-orange-600',
+    color: 'bg-amber-500',
   },
   {
     icon: <Books size={80} weight="duotone" />,
     title: 'Study Your Way',
     description: 'Review with interactive flashcards, learn mode quizzes, or browse your organized notes.',
-    color: 'from-pink-500 to-rose-600',
+    color: 'bg-pink-500',
   },
   {
     icon: (
@@ -60,7 +60,7 @@ const slides: Slide[] = [
     ),
     title: 'Track Your Progress',
     description: 'Build study streaks, earn milestones, and stay consistent with your learning journey.',
-    color: 'from-orange-500 to-red-600',
+    color: 'bg-orange-500',
   },
 ]
 
@@ -137,7 +137,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
         <div className="px-8 pt-8 pb-6">
           {/* Icon with gradient background */}
           <div
-            className={`mx-auto w-40 h-40 rounded-full bg-gradient-to-br ${slide.color} flex items-center justify-center text-white mb-6 transition-all duration-300 ${
+            className={`mx-auto w-40 h-40 rounded-full ${slide.color} flex items-center justify-center text-white mb-6 transition-all duration-300 ${
               isAnimating
                 ? slideDirection === 'right'
                   ? 'opacity-0 translate-x-8'
@@ -184,7 +184,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
               }}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 index === currentSlide
-                  ? 'w-6 bg-gradient-to-r from-blue-600 to-purple-600'
+                  ? 'w-6 bg-blue-600'
                   : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400'
               }`}
               aria-label={`Go to slide ${index + 1}`}
@@ -211,7 +211,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
           {/* Next/Get Started button */}
           <button
             onClick={goToNextSlide}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
             {isLastSlide ? (
               <>

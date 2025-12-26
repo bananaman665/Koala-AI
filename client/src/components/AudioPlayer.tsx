@@ -285,7 +285,7 @@ export function AudioPlayer({
   }
 
   return (
-    <div className={`bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-4 ${className}`}>
+    <div className={`bg-gray-900 rounded-xl p-4 ${className}`}>
       {/* Hidden audio element - only used for web player */}
       {!useNative && <audio ref={audioRef} src={audioUrl} preload="metadata" />}
 
@@ -302,7 +302,7 @@ export function AudioPlayer({
       >
         {/* Progress fill */}
         <div
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-100"
+          className="absolute top-0 left-0 h-full bg-blue-500 transition-all duration-100"
           style={{ width: `${progress}%` }}
         />
 

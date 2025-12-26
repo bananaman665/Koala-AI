@@ -172,9 +172,9 @@ body.dark {
   animation: recording-pulse 1.5s ease-in-out infinite;
 }
 
-/* Progress bar gradient */
+/* Progress bar solid color */
 .progress-bar-gradient {
-  background: linear-gradient(90deg, #8B5CF6, #3B82F6);
+  background: #8B5CF6;
 }
 
 /* Recording indicator */
@@ -441,14 +441,14 @@ body.dark {
 .card-stagger-6 { animation-delay: 0.3s; }
 
 /* ============================================
-   LAYERED GRADIENT BACKGROUNDS
+   SOLID DARK BACKGROUNDS
    ============================================ */
 .bg-gradient-dark {
-  background: linear-gradient(180deg, #0f1420 0%, #111827 50%, #151c28 100%);
+  background: #111827;
 }
 
 .bg-gradient-dark-subtle {
-  background: linear-gradient(180deg, #111827 0%, #0f1420 100%);
+  background: #111827;
 }
 
 /* Noise texture overlay for depth */
@@ -663,7 +663,7 @@ body.dark {
   align-items: center;
   justify-content: flex-end;
   padding-right: 1rem;
-  background: linear-gradient(to left, #ef4444 0%, #ef4444 70%, transparent 100%);
+  background: #ef4444;
   opacity: 0;
   transition: opacity 0.2s ease-out;
 }

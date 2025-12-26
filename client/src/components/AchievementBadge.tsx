@@ -35,15 +35,15 @@ export function AchievementCard({ achievement, size = 'md' }: AchievementCardPro
   // Category colors
   const getCategoryColor = () => {
     switch (achievement.category) {
-      case 'getting_started': return 'from-green-400 to-emerald-500'
-      case 'recording': return 'from-blue-400 to-indigo-500'
-      case 'time': return 'from-purple-400 to-violet-500'
-      case 'streak': return 'from-orange-400 to-red-500'
-      case 'quiz': return 'from-pink-400 to-rose-500'
-      case 'courses': return 'from-teal-400 to-cyan-500'
-      case 'level': return 'from-amber-400 to-yellow-500'
-      case 'special': return 'from-indigo-400 to-purple-500'
-      default: return 'from-gray-400 to-gray-500'
+      case 'getting_started': return 'bg-green-500'
+      case 'recording': return 'bg-blue-500'
+      case 'time': return 'bg-purple-500'
+      case 'streak': return 'bg-orange-500'
+      case 'quiz': return 'bg-pink-500'
+      case 'courses': return 'bg-teal-500'
+      case 'level': return 'bg-amber-500'
+      case 'special': return 'bg-indigo-500'
+      default: return 'bg-gray-500'
     }
   }
 
@@ -59,7 +59,7 @@ export function AchievementCard({ achievement, size = 'md' }: AchievementCardPro
         <div
           className={`${config.icon} rounded-xl flex items-center justify-center flex-shrink-0 ${
             achievement.isUnlocked
-              ? `bg-gradient-to-br ${getCategoryColor()}`
+              ? getCategoryColor()
               : 'bg-gray-200 dark:bg-gray-700'
           }`}
         >
@@ -119,7 +119,7 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
         <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center">
                 <Trophy className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -142,7 +142,7 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
           <div className="mt-4">
             <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500"
+                className="h-full bg-amber-500 rounded-full transition-all duration-500"
                 style={{ width: `${(unlockedCount / totalCount) * 100}%` }}
               />
             </div>
@@ -191,15 +191,15 @@ export function AchievementUnlockedModal({ isOpen, onClose, achievement }: Achie
 
   const getCategoryColor = () => {
     switch (achievement.category) {
-      case 'getting_started': return 'from-green-400 to-emerald-500'
-      case 'recording': return 'from-blue-400 to-indigo-500'
-      case 'time': return 'from-purple-400 to-violet-500'
-      case 'streak': return 'from-orange-400 to-red-500'
-      case 'quiz': return 'from-pink-400 to-rose-500'
-      case 'courses': return 'from-teal-400 to-cyan-500'
-      case 'level': return 'from-amber-400 to-yellow-500'
-      case 'special': return 'from-indigo-400 to-purple-500'
-      default: return 'from-gray-400 to-gray-500'
+      case 'getting_started': return 'bg-green-500'
+      case 'recording': return 'bg-blue-500'
+      case 'time': return 'bg-purple-500'
+      case 'streak': return 'bg-orange-500'
+      case 'quiz': return 'bg-pink-500'
+      case 'courses': return 'bg-teal-500'
+      case 'level': return 'bg-amber-500'
+      case 'special': return 'bg-indigo-500'
+      default: return 'bg-gray-500'
     }
   }
 
@@ -207,7 +207,7 @@ export function AchievementUnlockedModal({ isOpen, onClose, achievement }: Achie
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm shadow-xl overflow-hidden animate-bounce-in">
         {/* Celebration Header */}
-        <div className={`bg-gradient-to-br ${getCategoryColor()} p-8 text-center text-white relative overflow-hidden`}>
+        <div className={`${getCategoryColor()} p-8 text-center text-white relative overflow-hidden`}>
           {/* Sparkles */}
           <div className="absolute inset-0 overflow-hidden">
             {[...Array(12)].map((_, i) => (
@@ -245,7 +245,7 @@ export function AchievementUnlockedModal({ isOpen, onClose, achievement }: Achie
           </p>
           <button
             onClick={onClose}
-            className={`w-full py-3 bg-gradient-to-r ${getCategoryColor()} text-white rounded-xl font-medium transition-transform hover:scale-105 active:scale-95`}
+            className={`w-full py-3 ${getCategoryColor()} text-white rounded-xl font-medium transition-transform hover:scale-105 active:scale-95`}
           >
             Awesome!
           </button>
