@@ -332,83 +332,85 @@ export function AudioPlayer({
       </div>
 
       {/* Controls */}
-      <div className="flex items-center justify-between">
-        {/* Left: Time display */}
-        <div className="text-white/80 text-sm font-mono min-w-[100px]">
-          {formatTime(playerCurrentTime)} / {formatTime(playerDuration)}
-        </div>
+      <div className="space-y-4">
+        {/* Top row: Time, Playback controls, Speed */}
+        <div className="flex items-center justify-between">
+          {/* Left: Time display */}
+          <div className="text-white/80 text-sm font-mono min-w-[100px]">
+            {formatTime(playerCurrentTime)} / {formatTime(playerDuration)}
+          </div>
 
-        {/* Center: Playback controls */}
-        <div className="flex items-center space-x-3">
-          {/* Skip back 10s */}
-          <button
-            onClick={() => skip(-10)}
-            className="p-2 text-white/70 hover:text-white transition-colors"
-            title="Skip back 10 seconds"
-          >
-            <FiSkipBack className="w-5 h-5" />
-          </button>
-
-          {/* Play/Pause */}
-          <button
-            onClick={togglePlay}
-            disabled={playerIsLoading}
-            className="p-3 bg-white rounded-full text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-50"
-            title={playerIsPlaying ? 'Pause' : 'Play'}
-          >
-            {playerIsLoading ? (
-              <div className="w-6 h-6 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-            ) : playerIsPlaying ? (
-              <FiPause className="w-6 h-6" />
-            ) : (
-              <FiPlay className="w-6 h-6 ml-0.5" />
-            )}
-          </button>
-
-          {/* Skip forward 10s */}
-          <button
-            onClick={() => skip(10)}
-            className="p-2 text-white/70 hover:text-white transition-colors"
-            title="Skip forward 10 seconds"
-          >
-            <FiSkipForward className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Right: Volume and Speed */}
-        <div className="flex items-center space-x-3">
-          {/* Playback speed */}
-          <button
-            onClick={changePlaybackRate}
-            className="px-2 py-1 text-xs font-medium text-white/70 hover:text-white bg-white/10 rounded transition-colors min-w-[45px]"
-            title="Change playback speed"
-          >
-            {playerPlaybackRate}x
-          </button>
-
-          {/* Volume */}
-          <div className="flex items-center space-x-2">
+          {/* Center: Playback controls */}
+          <div className="flex items-center space-x-3">
+            {/* Skip back 10s */}
             <button
-              onClick={toggleMute}
-              className="p-1 text-white/70 hover:text-white transition-colors"
-              title={playerIsMuted ? 'Unmute' : 'Mute'}
+              onClick={() => skip(-10)}
+              className="p-2 text-white/70 hover:text-white transition-colors"
+              title="Skip back 10 seconds"
             >
-              {playerIsMuted ? (
-                <FiVolumeX className="w-5 h-5" />
+              <FiSkipBack className="w-5 h-5" />
+            </button>
+
+            {/* Play/Pause */}
+            <button
+              onClick={togglePlay}
+              disabled={playerIsLoading}
+              className="p-3 bg-white rounded-full text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-50"
+              title={playerIsPlaying ? 'Pause' : 'Play'}
+            >
+              {playerIsLoading ? (
+                <div className="w-6 h-6 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+              ) : playerIsPlaying ? (
+                <FiPause className="w-6 h-6" />
               ) : (
-                <FiVolume2 className="w-5 h-5" />
+                <FiPlay className="w-6 h-6 ml-0.5" />
               )}
             </button>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.1"
-              value={playerIsMuted ? 0 : playerVolume}
-              onChange={handleVolumeChange}
-              className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
-            />
+
+            {/* Skip forward 10s */}
+            <button
+              onClick={() => skip(10)}
+              className="p-2 text-white/70 hover:text-white transition-colors"
+              title="Skip forward 10 seconds"
+            >
+              <FiSkipForward className="w-5 h-5" />
+            </button>
           </div>
+
+          {/* Right: Playback speed */}
+          <div className="flex items-center justify-end min-w-[100px]">
+            <button
+              onClick={changePlaybackRate}
+              className="px-2 py-1 text-xs font-medium text-white/70 hover:text-white bg-white/10 rounded transition-colors min-w-[45px]"
+              title="Change playback speed"
+            >
+              {playerPlaybackRate}x
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom row: Volume bar (full width) */}
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={toggleMute}
+            className="p-1 text-white/70 hover:text-white transition-colors flex-shrink-0"
+            title={playerIsMuted ? 'Unmute' : 'Mute'}
+          >
+            {playerIsMuted ? (
+              <FiVolumeX className="w-5 h-5" />
+            ) : (
+              <FiVolume2 className="w-5 h-5" />
+            )}
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={playerIsMuted ? 0 : playerVolume}
+            onChange={handleVolumeChange}
+            className="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+          />
         </div>
       </div>
 
