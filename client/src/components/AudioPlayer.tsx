@@ -340,7 +340,7 @@ export function AudioPlayer({
             {formatTime(playerCurrentTime)} / {formatTime(playerDuration)}
           </div>
 
-          {/* Center: Playback controls */}
+          {/* Center: Playback controls + Speed */}
           <div className="flex items-center space-x-3">
             {/* Skip back 10s */}
             <button
@@ -375,10 +375,8 @@ export function AudioPlayer({
             >
               <FiSkipForward className="w-5 h-5" />
             </button>
-          </div>
 
-          {/* Right: Playback speed */}
-          <div className="flex items-center justify-end min-w-[100px]">
+            {/* Playback speed */}
             <button
               onClick={changePlaybackRate}
               className="px-2 py-1 text-xs font-medium text-white/70 hover:text-white bg-white/10 rounded transition-colors min-w-[45px]"
@@ -386,6 +384,11 @@ export function AudioPlayer({
             >
               {playerPlaybackRate}x
             </button>
+          </div>
+
+          {/* Right: Remaining time */}
+          <div className="text-white/80 text-sm font-mono min-w-[100px] text-right">
+            -{formatTime(Math.max(0, playerDuration - playerCurrentTime))}
           </div>
         </div>
 
