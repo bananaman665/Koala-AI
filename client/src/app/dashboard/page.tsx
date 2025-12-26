@@ -2795,7 +2795,7 @@ function DashboardContent() {
                   </div>
                 </div>
               ) : selectedLectureNotes ? (
-                <div className="prose prose-sm max-w-none dark:prose-invert prose-p:mb-8 prose-headings:mt-8 prose-headings:mb-4 prose-ul:my-6 prose-li:my-3">
+                <div className="prose prose-sm max-w-none dark:prose-invert prose-headings:font-bold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h1:mb-4 prose-h2:mb-3 prose-h3:mb-2 prose-h1:mt-6 prose-h2:mt-5 prose-h3:mt-4 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4 prose-ul:my-4 prose-ul:ml-6 prose-li:my-2 prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-semibold">
                   <ReactMarkdown>{selectedLectureNotes}</ReactMarkdown>
                 </div>
               ) : (
