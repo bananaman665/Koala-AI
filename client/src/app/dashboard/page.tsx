@@ -260,7 +260,6 @@ function DashboardContent() {
     name: '',
     code: '',
     professor: '',
-    description: '',
     color: 'blue'
   })
   const [isCreatingClass, setIsCreatingClass] = useState(false)
@@ -871,7 +870,6 @@ function DashboardContent() {
           name: newClassData.name.trim(),
           code: newClassData.code.trim(),
           professor: newClassData.professor.trim(),
-          description: newClassData.description.trim(),
           color: newClassData.color,
         }),
       })
@@ -887,7 +885,6 @@ function DashboardContent() {
           name: '',
           code: '',
           professor: '',
-          description: '',
           color: 'blue'
         })
         setShowCreateClassScreen(false)
@@ -3512,32 +3509,13 @@ function DashboardContent() {
       {showCreateClassScreen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Class</h2>
-              <button
-                onClick={() => {
-                  hapticButton()
-                  setShowCreateClassScreen(false)
-                  setNewClassData({
-                    name: '',
-                    code: '',
-                    professor: '',
-                    description: '',
-                    color: 'blue'
-                  })
-                }}
-                disabled={isCreatingClass}
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-50"
-              >
-                ✕
-              </button>
-            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Create New Class</h2>
 
             <div className="space-y-4">
               {/* Class Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Class Name *
+                  Class Name
                 </label>
                 <input
                   type="text"
@@ -3552,7 +3530,7 @@ function DashboardContent() {
               {/* Class Code */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Class Code * <span className="text-xs text-gray-500">(6+ characters, students will use this to join)</span>
+                  Class Code
                 </label>
                 <input
                   type="text"
@@ -3569,7 +3547,7 @@ function DashboardContent() {
               {/* Professor */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Professor Name *
+                  Professor
                 </label>
                 <input
                   type="text"
@@ -3581,24 +3559,9 @@ function DashboardContent() {
                 />
               </div>
 
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Description (optional)
-                </label>
-                <textarea
-                  value={newClassData.description}
-                  onChange={(e) => setNewClassData({ ...newClassData, description: e.target.value })}
-                  placeholder="e.g., Fall 2024 section. Advanced data structures and algorithms."
-                  rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700 resize-none"
-                  disabled={isCreatingClass}
-                />
-              </div>
-
               {/* Color Theme */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Color Theme
                 </label>
                 <div className="flex space-x-2">
@@ -3631,7 +3594,6 @@ function DashboardContent() {
                       name: '',
                       code: '',
                       professor: '',
-                      description: '',
                       color: 'blue'
                     })
                   }}
