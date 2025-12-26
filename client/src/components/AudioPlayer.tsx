@@ -379,17 +379,15 @@ export function AudioPlayer({
             {/* Playback speed */}
             <button
               onClick={changePlaybackRate}
-              className="px-2 py-1 text-xs font-medium text-white/70 hover:text-white bg-white/10 rounded transition-colors min-w-[45px]"
+              className="px-4 py-1.5 text-sm font-medium text-white/70 hover:text-white bg-white/10 rounded transition-colors min-w-[70px]"
               title="Change playback speed"
             >
               {playerPlaybackRate}x
             </button>
           </div>
 
-          {/* Right: Remaining time */}
-          <div className="text-white/80 text-sm font-mono min-w-[100px] text-right">
-            -{formatTime(Math.max(0, playerDuration - playerCurrentTime))}
-          </div>
+          {/* Right spacer for balance */}
+          <div className="min-w-[100px]" />
         </div>
 
         {/* Bottom row: Volume bar (full width) */}
