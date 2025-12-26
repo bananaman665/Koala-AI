@@ -1,9 +1,25 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import logger from '../utils/logger';
 
+/**
+ * Service for managing database operations in Supabase.
+ * Handles CRUD operations for lectures, transcripts, notes, and user data.
+ *
+ * @example
+ * ```typescript
+ * const dbService = new SupabaseDatabaseService();
+ * const lecture = await dbService.getLecture(lectureId);
+ * await dbService.saveTranscript(lectureId, userId, transcriptText);
+ * ```
+ */
 export class SupabaseDatabaseService {
   private client: SupabaseClient;
 
+  /**
+   * Initializes the Supabase Database service.
+   *
+   * @throws {Error} If SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables are not set
+   */
   constructor() {
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -17,6 +33,21 @@ export class SupabaseDatabaseService {
   }
 
   // Lecture operations
+
+  /**
+   * Retrieves a lecture by its ID.
+   *
+   * @param lectureId - UUID of the lecture to retrieve
+   * @returns Lecture data object
+   *
+   * @throws {Error} If lecture not found or database error occurs
+   *
+   * @example
+   * ```typescript
+   * const lecture = await dbService.getLecture('123e4567-e89b-12d3-a456-426614174001');
+   * console.log(lecture.title); // "Introduction to Computer Science"
+   * ```
+   */
   async getLecture(lectureId: string) {
     try {
       const { data, error } = await this.client
@@ -55,6 +86,24 @@ export class SupabaseDatabaseService {
   }
 
   // Transcript operations
+
+  /**
+   * Saves a transcript for a lecture and updates the lecture's transcription status.
+   *
+   * @param lectureId - UUID of the lecture this transcript belongs to
+   * @param userId - UUID of the user who owns this transcript
+   * @param content - Transcript content as a JSON string or plain text
+   * @returns ID of the created transcript
+   *
+   * @throws {Error} If save fails or database error occurs
+   *
+   * @example
+   * ```typescript
+   * const transcriptData = JSON.stringify({ text: '...', segments: [...] });
+   * const transcriptId = await dbService.saveTranscript(lectureId, userId, transcriptData);
+   * console.log(transcriptId); // "123e4567-e89b-12d3-a456-426614174002"
+   * ```
+   */
   async saveTranscript(
     lectureId: string,
     userId: string,

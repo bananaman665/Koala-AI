@@ -1,11 +1,27 @@
 import Groq from 'groq-sdk';
 import logger from '../utils/logger';
 
+/**
+ * Service for interacting with Groq AI APIs.
+ * Handles audio transcription using Whisper and text generation using Llama models.
+ *
+ * @example
+ * ```typescript
+ * const groqService = new GroqService();
+ * const result = await groqService.transcribeAudio(audioBuffer, 'en');
+ * const notes = await groqService.generateNotes(result.text);
+ * ```
+ */
 export class GroqService {
   private client: Groq;
   private model: string;
   private whisperModel: string;
 
+  /**
+   * Initializes the Groq service with API credentials.
+   *
+   * @throws {Error} If GROQ_API_KEY environment variable is not set
+   */
   constructor() {
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
@@ -22,6 +38,23 @@ export class GroqService {
     });
   }
 
+  /**
+   * Transcribes audio file to text using Groq's Whisper model.
+   *
+   * @param audioFile - Audio file as Buffer or File object
+   * @param language - ISO language code (e.g., 'en', 'es', 'fr'). If omitted, language is auto-detected
+   * @param mimeType - MIME type of audio file (e.g., 'audio/wav', 'audio/mp3'). Defaults to 'audio/wav'
+   * @returns Transcription result with text, language, duration, and optional segments
+   *
+   * @throws {Error} If transcription fails or API returns an error
+   *
+   * @example
+   * ```typescript
+   * const audioBuffer = fs.readFileSync('lecture.mp3');
+   * const result = await groqService.transcribeAudio(audioBuffer, 'en', 'audio/mp3');
+   * console.log(result.text); // "Today we will discuss..."
+   * ```
+   */
   async transcribeAudio(audioFile: Buffer | File, language?: string, mimeType?: string): Promise<{
     text: string;
     language: string;
@@ -70,6 +103,28 @@ export class GroqService {
     }
   }
 
+  /**
+   * Generates structured study notes from a lecture transcript using Groq's Llama model.
+   *
+   * @param transcript - Full text of the lecture transcript
+   * @param options - Note generation options
+   * @param options.style - Note style: 'detailed', 'concise', or 'bullet' (default: 'detailed')
+   * @param options.includeTimestamps - Whether to include timestamps in notes
+   * @param options.topics - Optional array of specific topics to focus on
+   * @returns JSON string containing structured notes with title, summary, key points, topics, vocabulary, assignments, and questions
+   *
+   * @throws {Error} If note generation fails or API returns an error
+   *
+   * @example
+   * ```typescript
+   * const notes = await groqService.generateNotes(transcript, {
+   *   style: 'detailed',
+   *   topics: ['quantum mechanics', 'wave functions']
+   * });
+   * const parsed = JSON.parse(notes);
+   * console.log(parsed.title); // "Introduction to Quantum Mechanics"
+   * ```
+   */
   async generateNotes(
     transcript: string,
     options: {
@@ -152,6 +207,25 @@ Format the notes as a JSON object with this structure:
     }
   }
 
+  /**
+   * Generates a text completion using Groq's Llama model.
+   * General-purpose method for any AI text generation task.
+   *
+   * @param prompt - The user prompt to send to the AI
+   * @param systemPrompt - Optional system prompt to guide AI behavior
+   * @returns Generated text completion
+   *
+   * @throws {Error} If completion generation fails or API returns an error
+   *
+   * @example
+   * ```typescript
+   * const summary = await groqService.generateCompletion(
+   *   'Summarize the key concepts from this lecture',
+   *   'You are a helpful teaching assistant'
+   * );
+   * console.log(summary);
+   * ```
+   */
   async generateCompletion(prompt: string, systemPrompt?: string): Promise<string> {
     try {
       const messages: any[] = [];
