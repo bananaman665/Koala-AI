@@ -40,6 +40,11 @@ const courseColorClasses: Record<string, { bg: string; text: string; bar: string
   yellow: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-600 dark:text-yellow-400', bar: 'bg-yellow-500' },
 }
 
+// Storage limits for free tier
+const MAX_LECTURES = 10
+const MAX_COURSES = 5
+const LECTURE_WARNING_THRESHOLD = 8 // Show warning at 80%
+
 type Course = Database['public']['Tables']['courses']['Row']
 type Lecture = Database['public']['Tables']['lectures']['Row']
 type LectureWithCourse = Lecture & {
@@ -664,6 +669,19 @@ function DashboardContent() {
     setIsCreatingCourse(true)
 
     try {
+      // Check course limit before inserting
+      const { count: courseCount } = await (supabase as any)
+        .from('courses')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+
+      if (courseCount !== null && courseCount >= MAX_COURSES) {
+        hapticError()
+        toast.error(`Course limit reached! You can only create ${MAX_COURSES} courses on the free plan. Please delete some courses to continue.`)
+        setIsCreatingCourse(false)
+        return
+      }
+
       // @ts-ignore - Supabase typing issue with Database generic
       const { data, error } = await (supabase as any)
         .from('courses')
@@ -1583,6 +1601,24 @@ function DashboardContent() {
               <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40`}>
         {!selectedCourse && (
           <>
+            {/* Storage Warning Banner */}
+            {lectures.length >= LECTURE_WARNING_THRESHOLD && (
+              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6 animate-card-in">
+                <div className="flex items-start gap-3">
+                  <FiAlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-1">
+                      Storage Almost Full
+                    </h3>
+                    <p className="text-sm text-amber-800 dark:text-amber-200">
+                      You're using {lectures.length} of {MAX_LECTURES} available lecture slots.
+                      {lectures.length >= MAX_LECTURES ? ' Delete some lectures to continue recording.' : ' Consider deleting old lectures to free up space.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Hero Card - Greeting + Record CTA */}
             <div className="bg-white dark:bg-[#1a2233]/80 rounded-2xl p-6 mb-6 border border-gray-100 dark:border-white/[0.06] animate-card-in">
               <div className="flex items-center justify-between">
@@ -4463,6 +4499,18 @@ function DashboardContent() {
                       }
                     } else {
                       console.log('[SaveLecture Modal] No audioBlob available to upload')
+                    }
+
+                    // Check lecture limit before inserting
+                    const { count: lectureCount } = await (supabase as any)
+                      .from('lectures')
+                      .select('*', { count: 'exact', head: true })
+                      .eq('user_id', user!.id)
+
+                    if (lectureCount !== null && lectureCount >= MAX_LECTURES) {
+                      hapticError()
+                      toast.error(`Storage limit reached! You can only store ${MAX_LECTURES} lectures on the free plan. Please delete some lectures to continue.`)
+                      throw new Error('Lecture limit reached')
                     }
 
                     const { data: lecture, error: lectureError } = await (supabase as any)
