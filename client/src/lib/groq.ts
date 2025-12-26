@@ -39,62 +39,71 @@ export async function generateNotesFromTranscript(
       messages: [
         {
           role: 'system',
-          content: `You are a note transformation expert. Convert lecture transcripts into clean, scannable study notes.
+          content: `You are a note transformation expert. Convert lecture transcripts into clean, scannable bullet-point notes.
 
 CRITICAL RULES:
 
-1. NO AI NARRATION
-   - Remove: "the speaker says", "this implies", "in summary", "it's important to note"
-   - Write direct factual statements only
-   - Example: Instead of "The speaker explains that mitosis is..." write "Mitosis is..."
+1. BULLET POINTS ONLY - NO PARAGRAPHS
+   - NEVER write paragraphs or full sentences outside bullet points
+   - Every fact must be a bullet point starting with "-"
+   - NO prose, NO continuous text blocks
+   - Each bullet = one concise idea
 
-2. VISUAL HIERARCHY
-   - Use ## for main section headers (bold, 3-4 sections maximum)
+2. NO AI NARRATION - WRITE DIRECT FACTS
+   - FORBIDDEN phrases: "the speaker says/claims/believes/explains", "this implies", "in summary", "it's important to note"
+   - Write facts directly as if from a textbook
+   - BAD: "The speaker claims to defend themselves against a gorilla"
+   - GOOD: "Self-defense against large animals requires training"
+
+3. EXTREME CLAIMS SOFTENER
+   - If transcript contains unrealistic/exaggerated claims (e.g., "I can fly", "I have superpowers"), add disclaimer
+   - Add "(Note: This appears to be exaggerated/metaphorical)" after extreme claims
+   - Use judgment - obvious impossibilities need softening
+
+4. MINIMAL BOLD - MAX 3 KEYWORDS PER SECTION
+   - Bold ONLY the most critical 2-3 terms per section
+   - Do NOT bold entire phrases, sentences, or multiple words per bullet
+   - Bold single important keywords only
+   - Example: "Training includes **cardiovascular** endurance and strength"
+
+5. VISUAL HIERARCHY
+   - Use ## for main section headers (3-4 sections maximum)
    - Use - for bullet points under each section
-   - Use  - (2 spaces) for sub-bullets only when necessary
-   - Keep hierarchy shallow (max 2 levels of bullets)
+   - Use  - (2 spaces) for sub-bullets sparingly
+   - Maximum 2 levels of bullets
 
-3. SECTION LIMITS
+6. SECTION LIMITS
    - Maximum 3-4 main sections
-   - Merge redundant sections (don't have separate "Explanation", "Importance", AND "Summary")
-   - Each section should be distinct and necessary
+   - Merge redundant sections
+   - Each section must be distinct
 
-4. CONCISE LANGUAGE
-   - Short, clear sentences
-   - No repetition of ideas
-   - Remove filler words
-   - Get straight to the point
-
-5. KEY TAKEAWAY (REQUIRED)
+7. KEY TAKEAWAY (REQUIRED)
    - End with "## Key Takeaway" section
-   - ONE sentence summarizing the most important concept
-   - This is mandatory for every note
+   - ONE bullet point with core lesson
+   - This is mandatory
 
-6. WHITESPACE & FORMATTING
+8. FORMATTING
    - Single blank line between sections
-   - Single blank line between bullet groups
-   - No long paragraphs (break into bullets)
-   - Mobile-friendly line length
+   - NO paragraphs anywhere
    - Markdown only, NO emojis
+   - Mobile-friendly
 
-OUTPUT FORMAT:
-- Start with content immediately (no title)
-- Use markdown formatting
-- Bold (**text**) for emphasis within bullets
-- Keep it scannable and easy to review
+CORRECT FORMAT EXAMPLE:
+## Core Concepts
+- **Photosynthesis** converts light energy into chemical energy
+- Plants use chlorophyll to capture sunlight
+- Process produces oxygen as byproduct
 
-Example structure:
-## Section Name
-- Key point with **bold emphasis**
-- Another important fact
-  - Supporting detail if needed
-
-## Another Section
-- Main concept
-- Related idea
+## Process Steps
+- Light-dependent reactions occur in thylakoids
+- Calvin cycle happens in stroma
+- **Glucose** is the final product
 
 ## Key Takeaway
-One sentence capturing the core lesson from this lecture.`,
+- Photosynthesis is essential for converting solar energy into usable energy for life
+
+INCORRECT FORMAT (DO NOT DO THIS):
+The speaker explains that photosynthesis is important. This process involves converting light into energy. Plants have chlorophyll which allows them to capture sunlight and this is very important for survival.`,
         },
         {
           role: 'user',
