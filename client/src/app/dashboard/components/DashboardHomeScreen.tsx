@@ -1,0 +1,392 @@
+'use client'
+
+import { FiAlertCircle, FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader } from 'react-icons/fi'
+import { Mic, Trophy, Lightbulb } from 'lucide-react'
+import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
+import { SwipeToDelete } from '@/components/SwipeToDelete'
+import type { Database } from '@/lib/supabase'
+
+type Course = Database['public']['Tables']['courses']['Row']
+type Lecture = Database['public']['Tables']['lectures']['Row']
+
+const MAX_LECTURES = 10
+const LECTURE_WARNING_THRESHOLD = 8
+
+// Color classes for course icons
+const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
+  blue: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', bar: 'bg-blue-500' },
+  purple: { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-600 dark:text-purple-400', bar: 'bg-purple-500' },
+  green: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400', bar: 'bg-green-500' },
+  orange: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', bar: 'bg-orange-500' },
+  pink: { bg: 'bg-pink-100 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-400', bar: 'bg-pink-500' },
+  yellow: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-600 dark:text-yellow-400', bar: 'bg-yellow-500' },
+}
+
+interface DashboardHomeScreenProps {
+  user: any
+  lectures: Lecture[]
+  courses: Course[]
+  selectedCourse: string | null
+  streak: number
+  isLoadingCourses: boolean
+  onStartRecording: () => void
+  onCreateCourse: () => void
+  onSelectCourse: (courseId: string) => void
+  onDeleteCourse: (courseId: string) => void
+  onSelectLecture: (lectureId: string) => void
+  onNavigateToLibrary: () => void
+}
+
+export function DashboardHomeScreen({
+  user,
+  lectures,
+  courses,
+  selectedCourse,
+  streak,
+  isLoadingCourses,
+  onStartRecording,
+  onCreateCourse,
+  onSelectCourse,
+  onDeleteCourse,
+  onSelectLecture,
+  onNavigateToLibrary,
+}: DashboardHomeScreenProps) {
+  const totalStudyTime = lectures.reduce((sum, lecture) => sum + lecture.duration, 0)
+  const todaysLectures = lectures.filter(l => {
+    const today = new Date().toDateString()
+    return new Date(l.created_at).toDateString() === today
+  })
+
+  return (
+    <div className="overflow-y-auto bg-gray-50 dark:bg-[#111827] h-full relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40">
+        {/* Storage Warning Banner */}
+        {lectures.length >= LECTURE_WARNING_THRESHOLD && (
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6 animate-card-in">
+            <div className="flex items-start gap-3">
+              <FiAlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-1">
+                  Storage Almost Full
+                </h3>
+                <p className="text-sm text-amber-800 dark:text-amber-200">
+                  You're using {lectures.length} of {MAX_LECTURES} available lecture slots.
+                  {lectures.length >= MAX_LECTURES
+                    ? ' Delete some lectures to continue recording.'
+                    : ' Consider deleting old lectures to free up space.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Hero Card - Greeting + Record CTA + Daily Goal Ring */}
+        <div className="bg-white dark:bg-[#1a2233]/80 rounded-2xl p-6 mb-6 border border-gray-100 dark:border-white/[0.06] animate-card-in">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-1.5 tracking-tight">
+                {(() => {
+                  const hour = new Date().getHours()
+                  const firstName = user?.user_metadata?.full_name || user?.user_metadata?.display_name
+                    ? (user?.user_metadata?.full_name || user?.user_metadata?.display_name).split(' ')[0]
+                    : ''
+                  if (hour < 12) return `Good morning${firstName ? `, ${firstName}` : ''}`
+                  if (hour < 17) return 'Good afternoon!'
+                  return `Good evening${firstName ? `, ${firstName}` : ''}`
+                })()}
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 text-base font-medium mb-4">
+                {lectures.length === 0 ? 'Record your first lecture to get started!' : (() => {
+                  const motivationalMessages = [
+                    "You're on fire today!",
+                    "Keep up the great work!",
+                    "You're crushing it today!",
+                    "Amazing progress so far!",
+                    "You're a learning machine!",
+                    "Stay focused, stay sharp!",
+                    "Every lecture counts!",
+                  ]
+                  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
+                  return motivationalMessages[dayOfYear % motivationalMessages.length]
+                })()}
+              </p>
+              <button
+                onClick={onStartRecording}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-medium text-sm rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
+              >
+                <Mic className="w-4 h-4" />
+                Start Recording
+              </button>
+            </div>
+            {/* Daily Goal Ring */}
+            <div className="flex flex-col items-center ml-4 sm:ml-6">
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24">
+                <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90">
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="32"
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    fill="none"
+                    className="text-gray-200 dark:text-white/10 sm:hidden"
+                  />
+                  <circle
+                    cx="48"
+                    cy="48"
+                    r="40"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    fill="none"
+                    className="text-gray-200 dark:text-white/10 hidden sm:block"
+                  />
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="32"
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    fill="none"
+                    strokeDasharray={201}
+                    strokeDashoffset={201 - (201 * Math.min(todaysLectures.length, 1)) / 1}
+                    strokeLinecap="round"
+                    className="text-green-500 transition-all duration-500 sm:hidden"
+                  />
+                  <circle
+                    cx="48"
+                    cy="48"
+                    r="40"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    fill="none"
+                    strokeDasharray={251.2}
+                    strokeDashoffset={251.2 - (251.2 * Math.min(todaysLectures.length, 1)) / 1}
+                    strokeLinecap="round"
+                    className="text-green-500 transition-all duration-500 hidden sm:block"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                    {todaysLectures.length}
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">Today</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Monthly Goal */}
+        {(() => {
+          // Calculate this month's progress
+          const now = new Date()
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+          const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+          const daysInMonth = endOfMonth.getDate()
+          const currentDay = now.getDate()
+          const daysRemaining = daysInMonth - currentDay
+          const monthIndex = now.getMonth()
+
+          // Define monthly goals that cycle
+          const monthlyGoals = [
+            {
+              id: 'lectures',
+              title: 'Record 10 lectures',
+              description: 'Record <span class="font-semibold text-violet-600 dark:text-violet-400">10 lectures</span> this month',
+              target: 10,
+              getCurrent: () => lectures.filter(l => new Date(l.created_at) >= startOfMonth).length,
+              bgColor: 'bg-violet-500',
+            },
+            {
+              id: 'study_hours',
+              title: 'Study for 8 hours',
+              description: 'Accumulate <span class="font-semibold text-blue-600 dark:text-blue-400">8 hours</span> of lecture time',
+              target: 8,
+              getCurrent: () => Math.floor(lectures.filter(l => new Date(l.created_at) >= startOfMonth).reduce((sum, l) => sum + (l.duration || 0), 0) / 3600),
+              bgColor: 'bg-blue-500',
+            },
+            {
+              id: 'courses',
+              title: 'Create 3 courses',
+              description: 'Create <span class="font-semibold text-emerald-600 dark:text-emerald-400">3 new courses</span> this month',
+              target: 3,
+              getCurrent: () => courses.filter(c => new Date(c.created_at) >= startOfMonth).length,
+              bgColor: 'bg-emerald-500',
+            },
+            {
+              id: 'streak',
+              title: 'Reach 15-day streak',
+              description: 'Maintain a <span class="font-semibold text-orange-600 dark:text-orange-400">15-day streak</span> this month',
+              target: 15,
+              getCurrent: () => streak,
+              bgColor: 'bg-orange-500',
+            },
+          ]
+
+          // Cycle through goals based on month
+          const currentGoal = monthlyGoals[monthIndex % monthlyGoals.length]
+          const currentValue = currentGoal.getCurrent()
+          const progress = Math.min((currentValue / currentGoal.target) * 100, 100)
+          const isCompleted = currentValue >= currentGoal.target
+
+          return (
+            <div className="bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-6 animate-card-in card-stagger-1">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className={`w-8 h-8 rounded-xl ${currentGoal.bgColor} flex items-center justify-center`}>
+                    <Trophy className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">Monthly Goal</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{daysRemaining} days remaining</p>
+                  </div>
+                </div>
+                {isCompleted && (
+                  <span className="text-xs font-semibold text-green-500 bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-full">
+                    Completed!
+                  </span>
+                )}
+              </div>
+
+              <p
+                className="text-sm text-gray-600 dark:text-gray-300 mb-3"
+                dangerouslySetInnerHTML={{ __html: currentGoal.description }}
+              />
+
+              {/* Progress Bar */}
+              <div className="relative h-6 bg-gray-100 dark:bg-[#0B1220] rounded-full overflow-hidden">
+                <div
+                  className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500`}
+                  style={{ width: `${progress}%` }}
+                />
+                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-white">
+                  {currentValue} / {currentGoal.target}
+                </span>
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* Section Header */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Courses</h2>
+          <button
+            onClick={onCreateCourse}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-full transition-colors"
+          >
+            <FiPlus className="text-sm" />
+            Add
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {/* Courses Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {isLoadingCourses ? (
+              <div className="col-span-2 text-center py-12">
+                <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">Loading courses...</p>
+              </div>
+            ) : courses.length === 0 ? (
+              /* Empty State */
+              <div className="col-span-2 text-center py-12 px-6">
+                <div className="w-14 h-14 mx-auto mb-4 bg-violet-100 dark:bg-violet-500/10 rounded-xl flex items-center justify-center">
+                  <FiBook className="text-violet-600 dark:text-violet-400 text-2xl" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No courses yet</h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">Tap + Add to create your first course</p>
+              </div>
+            ) : (
+              courses.map((course, index) => {
+                const lectureCount = lectures.filter(l => l.course_id === course.id).length
+                return (
+                  <SwipeToDelete
+                    key={course.id}
+                    onDelete={() => onDeleteCourse(course.id)}
+                    itemName={`"${course.name}"`}
+                  >
+                    <div
+                      onClick={() => onSelectCourse(course.id)}
+                      className={`bg-white dark:bg-[#1a2233]/80 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] animate-card-in card-stagger-${Math.min(index + 1, 6)}`}
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`w-11 h-11 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                          <FiBook className={`text-lg ${courseColorClasses[course.color]?.text || courseColorClasses.blue.text}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
+                            {course.name}
+                          </h3>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">
+                            {lectureCount} lecture{lectureCount !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <FiChevronRight className="text-gray-300 dark:text-white/30 text-lg flex-shrink-0" />
+                      </div>
+                      {/* Progress Bar */}
+                      <div className="h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${courseColorClasses[course.color]?.bar || 'bg-blue-500'}`}
+                          style={{ width: `${lectureCount > 0 ? Math.min((lectureCount / 10) * 100, 100) : 0}%` }}
+                        />
+                      </div>
+                    </div>
+                  </SwipeToDelete>
+                )
+              })
+            )}
+          </div>
+
+          {/* Continue Learning - only show if there are lectures */}
+          {lectures.length > 0 && (
+            <div className="bg-white dark:bg-[#1a2233]/80 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-4">
+              <div
+                onClick={() => {
+                  onSelectLecture(lectures[0].id)
+                  onNavigateToLibrary()
+                }}
+                className="cursor-pointer group flex items-center gap-3"
+              >
+                <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5">Continue</p>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{lectures[0].title}</h3>
+                </div>
+                <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0" />
+              </div>
+            </div>
+          )}
+
+          {/* Study Tip */}
+          <div className="bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-amber-100 dark:bg-amber-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">Daily Tip</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {(() => {
+                    const tips = [
+                      "Review your notes within 24 hours to boost retention by up to 80%!",
+                      "Use the Learn Mode quiz feature to test your knowledge and improve recall.",
+                      "Break study sessions into 25-minute chunks with 5-minute breaks.",
+                      "Record lectures in a quiet space for better transcription accuracy.",
+                      "Create flashcards from your notes to reinforce key concepts.",
+                      "Study the same material in different locations to strengthen memory."
+                    ]
+                    const today = new Date()
+                    const index = (today.getDate() + today.getMonth()) % tips.length
+                    return tips[index]
+                  })()}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,261 @@
+'use client'
+
+import { useState } from 'react'
+import { FiClock, FiFileText, FiBook, FiMic, FiTrendingUp } from 'react-icons/fi'
+import { hapticButton } from '@/lib/haptics'
+import type { Database } from '@/lib/supabase'
+
+type Course = Database['public']['Tables']['courses']['Row']
+type Lecture = Database['public']['Tables']['lectures']['Row']
+
+interface AnalyticsScreenProps {
+  lectures: Lecture[]
+  courses: Course[]
+  streak: number
+  isActiveToday: () => boolean
+  onLectureClick: (lectureId: string) => void
+}
+
+export function AnalyticsScreen({
+  lectures,
+  courses,
+  streak,
+  isActiveToday,
+  onLectureClick,
+}: AnalyticsScreenProps) {
+  const [timeFilter, setTimeFilter] = useState<'week' | 'month' | 'all'>('week')
+
+  // Filter lectures based on time period
+  const filteredLectures = lectures.filter((lecture) => {
+    const lectureDate = new Date(lecture.created_at)
+    const now = new Date()
+
+    if (timeFilter === 'week') {
+      const oneWeekAgo = new Date()
+      oneWeekAgo.setDate(now.getDate() - 7)
+      return lectureDate >= oneWeekAgo
+    } else if (timeFilter === 'month') {
+      const oneMonthAgo = new Date()
+      oneMonthAgo.setMonth(now.getMonth() - 1)
+      return lectureDate >= oneMonthAgo
+    }
+
+    return true // 'all' - show everything
+  })
+
+  // Calculate study time
+  const totalSeconds = filteredLectures.reduce((sum, lec) => sum + lec.duration, 0)
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const studyTime = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+
+  // Calculate completion rate
+  const completionRate = filteredLectures.length > 0
+    ? Math.round((filteredLectures.filter(l => l.transcription_status === 'completed').length / filteredLectures.length) * 100)
+    : 0
+
+  return (
+    <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40">
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
+
+          {/* Time Period Selector */}
+          <div className="flex space-x-2 overflow-x-auto pb-2">
+            <button
+              onClick={() => setTimeFilter('week')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
+                timeFilter === 'week'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              This Week
+            </button>
+            <button
+              onClick={() => setTimeFilter('month')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
+                timeFilter === 'month'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              This Month
+            </button>
+            <button
+              onClick={() => setTimeFilter('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
+                timeFilter === 'all'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              All Time
+            </button>
+          </div>
+
+          {/* Stats Cards */}
+          <div key={timeFilter} className="grid grid-cols-2 gap-3 animate-fade-in-slow">
+            <div className="bg-blue-50 dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <FiClock className="text-blue-600 dark:text-gray-400 text-xl" />
+              </div>
+              <p className="text-2xl font-bold text-blue-900 dark:text-white">{studyTime}</p>
+              <p className="text-xs text-blue-700 dark:text-gray-400">Study Time</p>
+            </div>
+
+            <div className="bg-purple-50 dark:bg-gray-800 rounded-lg p-4 border border-purple-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <FiFileText className="text-purple-600 dark:text-gray-400 text-xl" />
+              </div>
+              <p className="text-2xl font-bold text-purple-900 dark:text-white">{filteredLectures.length}</p>
+              <p className="text-xs text-purple-700 dark:text-gray-400">Lectures</p>
+            </div>
+
+            <div className="bg-green-50 dark:bg-gray-800 rounded-lg p-4 border border-green-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <FiBook className="text-green-600 dark:text-gray-400 text-xl" />
+              </div>
+              <p className="text-2xl font-bold text-green-900 dark:text-white">{courses.length}</p>
+              <p className="text-xs text-green-700 dark:text-gray-400">Courses</p>
+            </div>
+
+            <div className="bg-orange-50 dark:bg-gray-800 rounded-lg p-4 border border-orange-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <FiMic className="text-orange-600 dark:text-gray-400 text-xl" />
+              </div>
+              <p className="text-2xl font-bold text-orange-900 dark:text-white">{completionRate}%</p>
+              <p className="text-xs text-orange-700 dark:text-gray-400">Completed</p>
+            </div>
+          </div>
+
+          {/* Study Streak */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Study Streak</h3>
+            <div className="flex items-center space-x-2 mb-3">
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-2xl" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {streak} {streak === 1 ? 'Day' : 'Days'}
+                </p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">
+                  {streak === 0 ? 'Start your streak!' : streak >= 7 ? 'Amazing progress!' : 'Keep it up!'}
+                </p>
+              </div>
+            </div>
+            <div className="flex space-x-1">
+              {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => {
+                // Calculate which days should be active based on streak
+                const today = new Date().getDay()
+                const adjustedToday = today === 0 ? 6 : today - 1 // Convert Sunday=0 to index 6, Monday=1 to index 0
+                const isActive = isActiveToday()
+                  ? i <= adjustedToday && (adjustedToday - i) < streak
+                  : i < adjustedToday && (adjustedToday - 1 - i) < streak
+                return (
+                  <div key={i} className="flex-1 text-center">
+                    <div
+                      className={`w-full h-8 rounded ${
+                        isActive ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'
+                      } mb-1`}
+                    ></div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{day}</p>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Top Courses */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Top Courses</h3>
+            <div className="space-y-4">
+              {courses.length === 0 ? (
+                <p className="text-sm text-gray-300 dark:text-gray-600 text-center py-4">No courses yet</p>
+              ) : (
+                courses.slice(0, 3).map((course) => {
+                  const courseLectures = lectures.filter(l => l.course_id === course.id)
+                  const totalHours = courseLectures.reduce((sum, l) => sum + l.duration, 0) / 3600
+                  const maxHours = Math.max(
+                    ...courses.map(c =>
+                      lectures.filter(l => l.course_id === c.id).reduce((sum, l) => sum + l.duration, 0) / 3600
+                    ),
+                    1
+                  )
+
+                  return (
+                    <div key={course.id}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700 dark:text-white">{course.name}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">{totalHours.toFixed(1)}h</span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                        <div
+                          className="progress-bar-gradient h-3 rounded-full transition-all duration-500"
+                          style={{ width: `${(totalHours / maxHours) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Recent Activity</h3>
+            <div className="space-y-3">
+              {lectures.length === 0 ? (
+                <p className="text-sm text-gray-300 dark:text-gray-600 text-center py-4">No activity yet</p>
+              ) : (
+                lectures.slice(0, 5).map((lecture) => {
+                  const createdDate = new Date(lecture.created_at)
+                  const now = new Date()
+                  const diffHours = Math.floor((now.getTime() - createdDate.getTime()) / (1000 * 60 * 60))
+                  const timeDisplay = diffHours < 1
+                    ? 'Just now'
+                    : diffHours < 24
+                    ? `${diffHours}h ago`
+                    : diffHours < 48
+                    ? 'Yesterday'
+                    : `${Math.floor(diffHours / 24)}d ago`
+
+                  const statusText = lecture.transcription_status === 'completed' ? 'Completed lecture' :
+                                    lecture.transcription_status === 'failed' ? 'Lecture failed' :
+                                    lecture.transcription_status === 'processing' ? 'Processing lecture' : 'Recorded lecture'
+
+                  // Proper Tailwind classes for dark mode
+                  const iconBgClass = lecture.transcription_status === 'completed' ? 'bg-green-100 dark:bg-green-900/30' :
+                                     lecture.transcription_status === 'failed' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-blue-100 dark:bg-blue-900/30'
+                  const iconTextClass = lecture.transcription_status === 'completed' ? 'text-green-600 dark:text-green-400' :
+                                       lecture.transcription_status === 'failed' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'
+
+                  return (
+                    <div
+                      key={lecture.id}
+                      onClick={() => {
+                        hapticButton()
+                        onLectureClick(lecture.id)
+                      }}
+                      className="flex items-center space-x-3 p-2 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${iconBgClass}`}>
+                        <FiMic className={`text-lg ${iconTextClass}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{statusText}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{lecture.title} • {timeDisplay}</p>
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
