@@ -346,8 +346,10 @@ export function LibraryScreen({
           </div>
 
           {/* Audio Player */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Recording Playback</h3>
+          <div className="space-y-2">
+            <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
+              Recording
+            </h4>
             <AudioPlayer
               audioUrl={selectedLectureData?.audio_url || null}
               duration={selectedLectureData?.duration || 0}
