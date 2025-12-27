@@ -22,9 +22,6 @@ export default function HomePage() {
               <Link href="#how-it-works" className="text-gray-600 hover:text-gray-900">
                 How it Works
               </Link>
-              <Link href="#pricing" className="text-gray-600 hover:text-gray-900">
-                Pricing
-              </Link>
             </div>
             <div className="flex items-center space-x-4">
               <Link 
@@ -232,7 +229,7 @@ export default function HomePage() {
             href="/dashboard"
             className="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl transition-shadow"
           >
-            Start Free Trial
+            Get Started Free
           </Link>
         </div>
       </section>

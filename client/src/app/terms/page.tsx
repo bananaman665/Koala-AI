@@ -84,17 +84,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Payment and Subscriptions</h2>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Subscription fees are billed in advance on a monthly or annual basis</li>
-              <li>You can cancel your subscription at any time</li>
-              <li>Refunds are provided on a case-by-case basis within 14 days of purchase</li>
-              <li>We reserve the right to change pricing with 30 days notice</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Data Usage and Privacy</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Data Usage and Privacy</h2>
             <p className="text-gray-700 leading-relaxed">
               We process your recordings using Groq's Whisper API for transcription. Please review our{' '}
               <Link href="/privacy" className="text-blue-600 hover:text-blue-700 font-medium">
@@ -105,17 +95,17 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Service Limitations</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Service Limitations</h2>
             <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Storage limits apply based on your subscription plan</li>
               <li>Transcription accuracy may vary based on audio quality</li>
               <li>We do not guarantee 100% uptime or availability</li>
               <li>AI-generated notes should be reviewed for accuracy</li>
+              <li>Fair use policies apply to ensure service quality for all users</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">9. Account Termination</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Account Termination</h2>
             <p className="text-gray-700 leading-relaxed">
               We reserve the right to suspend or terminate your account if you violate these Terms of Service, 
               engage in fraudulent activity, or use the Service in a manner that could harm other users or the platform.
@@ -123,7 +113,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">10. Limitation of Liability</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">9. Limitation of Liability</h2>
             <p className="text-gray-700 leading-relaxed">
               Koala.ai is provided "as is" without warranties of any kind. We are not liable for any damages 
               arising from your use of the Service, including but not limited to lost data, missed recordings, 
@@ -132,7 +122,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">11. Changes to Terms</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">10. Changes to Terms</h2>
             <p className="text-gray-700 leading-relaxed">
               We may update these Terms of Service from time to time. We will notify you of any material changes 
               by email or through the Service. Your continued use of the Service after changes constitutes 
@@ -141,7 +131,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">12. Contact Information</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">11. Contact Information</h2>
             <p className="text-gray-700 leading-relaxed">
               If you have questions about these Terms of Service, please contact us at:{' '}
               <a href="mailto:andrewsahakian9@gmail.com" className="text-blue-600 hover:text-blue-700 font-medium">

@@ -83,7 +83,7 @@ export default function HelpPage() {
       title: 'Account & Settings',
       color: 'gray',
       articles: [
-        'Managing your subscription',
+        'Managing your account',
         'Privacy and data settings',
         'Notification preferences',
         'Deleting your account'
