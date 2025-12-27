@@ -8,8 +8,8 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
   },
-  // Use standalone output - requires dev server running for mobile development
-  output: 'standalone',
+  // Capacitor connects to the dev server via the URL in capacitor.config.ts
+  // Don't use static export since we have API routes
 }
 
 module.exports = nextConfig
