@@ -346,14 +346,16 @@ export function LibraryScreen({
           </div>
 
           {/* Audio Player */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
-              Recording
-            </h4>
-            <AudioPlayer
-              audioUrl={selectedLectureData?.audio_url || null}
-              duration={selectedLectureData?.duration || 0}
-            />
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-4">
+            <div className="space-y-2">
+              <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
+                Recording
+              </h4>
+              <AudioPlayer
+                audioUrl={selectedLectureData?.audio_url || null}
+                duration={selectedLectureData?.duration || 0}
+              />
+            </div>
           </div>
 
           {/* Notes */}

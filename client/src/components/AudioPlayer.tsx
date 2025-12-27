@@ -285,7 +285,7 @@ export function AudioPlayer({
   }
 
   return (
-    <div className={`bg-gray-900 rounded-xl p-4 ${className}`}>
+    <div className={`bg-transparent rounded-xl p-0 ${className}`}>
       {/* Hidden audio element - only used for web player */}
       {!useNative && <audio ref={audioRef} src={audioUrl} preload="metadata" />}
 
@@ -298,7 +298,7 @@ export function AudioPlayer({
       <div
         ref={progressRef}
         onClick={handleSeek}
-        className="relative h-12 bg-gray-700/50 rounded-lg cursor-pointer mb-4 overflow-hidden group"
+        className="relative h-12 bg-gray-200 dark:bg-gray-700 rounded-lg cursor-pointer mb-4 overflow-hidden group"
       >
         {/* Progress fill */}
         <div
@@ -317,7 +317,7 @@ export function AudioPlayer({
               <div
                 key={i}
                 className={`w-1 rounded-full transition-colors ${
-                  isActive ? 'bg-white/80' : 'bg-gray-500/50'
+                  isActive ? 'bg-white' : 'bg-gray-400'
                 }`}
                 style={{ height: `${height}%` }}
               />
@@ -326,7 +326,7 @@ export function AudioPlayer({
         </div>
 
         {/* Hover indicator */}
-        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 bg-gray-300/20 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
         {/* Time tooltip on hover would go here */}
       </div>
@@ -336,7 +336,7 @@ export function AudioPlayer({
         {/* Top row: Time, Playback controls, Speed */}
         <div className="flex items-center justify-between">
           {/* Left: Time display */}
-          <div className="text-white/80 text-sm font-mono min-w-[100px]">
+          <div className="text-gray-700 dark:text-white/80 text-sm font-mono min-w-[100px]">
             {formatTime(playerCurrentTime)} / {formatTime(playerDuration)}
           </div>
 
@@ -345,7 +345,7 @@ export function AudioPlayer({
             {/* Skip back 10s */}
             <button
               onClick={() => skip(-10)}
-              className="p-2 text-white/70 hover:text-white transition-colors"
+              className="p-2 text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors"
               title="Skip back 10 seconds"
             >
               <FiSkipBack className="w-5 h-5" />
@@ -370,7 +370,7 @@ export function AudioPlayer({
             {/* Skip forward 10s */}
             <button
               onClick={() => skip(10)}
-              className="p-2 text-white/70 hover:text-white transition-colors"
+              className="p-2 text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors"
               title="Skip forward 10 seconds"
             >
               <FiSkipForward className="w-5 h-5" />
@@ -379,7 +379,7 @@ export function AudioPlayer({
             {/* Playback speed */}
             <button
               onClick={changePlaybackRate}
-              className="px-4 py-1.5 text-sm font-medium text-white/70 hover:text-white bg-white/10 rounded transition-colors min-w-[70px]"
+              className="px-4 py-1.5 text-sm font-medium text-gray-700 dark:text-white/70 hover:text-gray-900 dark:hover:text-white bg-gray-200 dark:bg-white/10 rounded transition-colors min-w-[70px]"
               title="Change playback speed"
             >
               {playerPlaybackRate}x
@@ -394,7 +394,7 @@ export function AudioPlayer({
         <div className="flex items-center space-x-3">
           <button
             onClick={toggleMute}
-            className="p-1 text-white/70 hover:text-white transition-colors flex-shrink-0"
+            className="p-1 text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors flex-shrink-0"
             title={playerIsMuted ? 'Unmute' : 'Mute'}
           >
             {playerIsMuted ? (
@@ -410,7 +410,7 @@ export function AudioPlayer({
             step="0.1"
             value={playerIsMuted ? 0 : playerVolume}
             onChange={handleVolumeChange}
-            className="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+            className="flex-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-gray-700 dark:[&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
           />
         </div>
       </div>
