@@ -414,13 +414,6 @@ export function AudioPlayer({
           />
         </div>
       </div>
-
-      {/* Keyboard shortcuts hint */}
-      <div className="mt-3 text-center">
-        <p className="text-white/40 text-xs">
-          Space to play/pause | ← → to skip 10s | M to mute
-        </p>
-      </div>
     </div>
   )
 }
