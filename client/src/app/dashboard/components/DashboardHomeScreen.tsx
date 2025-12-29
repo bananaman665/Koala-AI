@@ -103,59 +103,17 @@ export function DashboardHomeScreen({
             </div>
           </div>
 
-          {/* Daily Goal Ring - Outside Box */}
-          <div className="flex flex-col items-center justify-center">
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24">
-              <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90">
-                <circle
-                  cx="40"
-                  cy="40"
-                  r="32"
-                  stroke="currentColor"
-                  strokeWidth="6"
-                  fill="none"
-                  className="text-gray-200 dark:text-white/10 sm:hidden"
-                />
-                <circle
-                  cx="48"
-                  cy="48"
-                  r="40"
-                  stroke="currentColor"
-                  strokeWidth="8"
-                  fill="none"
-                  className="text-gray-200 dark:text-white/10 hidden sm:block"
-                />
-                <circle
-                  cx="40"
-                  cy="40"
-                  r="32"
-                  stroke="currentColor"
-                  strokeWidth="6"
-                  fill="none"
-                  strokeDasharray={201}
-                  strokeDashoffset={201 - (201 * Math.min(todaysLectures.length, 1)) / 1}
-                  strokeLinecap="round"
-                  className="text-green-500 transition-all duration-500 sm:hidden"
-                />
-                <circle
-                  cx="48"
-                  cy="48"
-                  r="40"
-                  stroke="currentColor"
-                  strokeWidth="8"
-                  fill="none"
-                  strokeDasharray={251.2}
-                  strokeDashoffset={251.2 - (251.2 * Math.min(todaysLectures.length, 1)) / 1}
-                  strokeLinecap="round"
-                  className="text-green-500 transition-all duration-500 hidden sm:block"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                  {todaysLectures.length}
-                </span>
-                <span className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">Today</span>
-              </div>
+          {/* Daily Goal Progress Bar - Full Width */}
+          <div className="w-full">
+            <div className="flex items-end justify-between mb-2">
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">Today</span>
+              <span className="text-sm font-bold text-green-600 dark:text-green-400">{todaysLectures.length} lecture{todaysLectures.length !== 1 ? 's' : ''}</span>
+            </div>
+            <div className="w-full h-3 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-green-500 transition-all duration-500 rounded-full"
+                style={{ width: `${Math.min((todaysLectures.length / 1) * 100, 100)}%` }}
+              />
             </div>
           </div>
         </div>
