@@ -80,43 +80,56 @@ export function DashboardHomeScreen({
           </div>
         )}
 
-        {/* Hero Card - Greeting + Record CTA + Daily Goal Ring */}
-        <div className="flex flex-col sm:flex-row items-start gap-4 mb-6">
-          {/* Greeting - No Box */}
-          <div className="flex-1">
-            <div className="flex flex-col items-start">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">
-                {(() => {
-                  const hour = new Date().getHours()
-                  if (hour < 12) return 'Good morning! 👋'
-                  if (hour < 17) return 'Good afternoon! 👋'
-                  return 'Good evening! 👋'
-                })()}
-              </h1>
-              <button
-                onClick={onStartRecording}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-medium text-sm rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
-              >
-                <Mic className="w-4 h-4" />
-                Start Recording
-              </button>
-            </div>
+        {/* Hero Section - Clean & Focused */}
+        <div className="mb-8">
+          {/* Greeting */}
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">
+            {(() => {
+              const hour = new Date().getHours()
+              if (hour < 12) return 'Good morning! 👋'
+              if (hour < 17) return 'Good afternoon! 👋'
+              return 'Good evening! 👋'
+            })()}
+          </h1>
+
+          {/* Metadata Pill */}
+          <div className="flex items-center gap-2 mb-6">
+            <span className="text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-full">
+              Beginner · 🔥 {streak}
+            </span>
           </div>
 
-          {/* Daily Goal Progress Bar - Full Width */}
-          <div className="w-full">
-            <div className="flex items-end justify-between mb-2">
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">Today</span>
-              <span className="text-sm font-bold text-green-600 dark:text-green-400">{todaysLectures.length} lecture{todaysLectures.length !== 1 ? 's' : ''}</span>
-            </div>
-            <div className="w-full h-3 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-green-500 transition-all duration-500 rounded-full"
-                style={{ width: `${Math.min((todaysLectures.length / 1) * 100, 100)}%` }}
-              />
+          {/* Hero Button */}
+          <button
+            onClick={onStartRecording}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold text-base rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
+          >
+            <Mic className="w-5 h-5" />
+            Start Recording
+          </button>
+        </div>
+
+        {/* Continue Learning - Right under button */}
+        {lectures.length > 0 && (
+          <div className="bg-white dark:bg-[#1a2233]/80 rounded-xl border border-gray-100 dark:border-white/[0.06] p-4 mb-8">
+            <div
+              onClick={() => {
+                onSelectLecture(lectures[0].id)
+                onNavigateToLibrary()
+              }}
+              className="cursor-pointer group flex items-center gap-3"
+            >
+              <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5">Continue</p>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{lectures[0].title}</h3>
+              </div>
+              <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0" />
             </div>
           </div>
-        </div>
+        )}
 
         {/* Monthly Goal */}
         {(() => {
@@ -279,27 +292,6 @@ export function DashboardHomeScreen({
             )}
           </div>
 
-          {/* Continue Learning - only show if there are lectures */}
-          {lectures.length > 0 && (
-            <div className="bg-white dark:bg-[#1a2233]/80 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-4">
-              <div
-                onClick={() => {
-                  onSelectLecture(lectures[0].id)
-                  onNavigateToLibrary()
-                }}
-                className="cursor-pointer group flex items-center gap-3"
-              >
-                <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5">Continue</p>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{lectures[0].title}</h3>
-                </div>
-                <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0" />
-              </div>
-            </div>
-          )}
 
           {/* Study Tip */}
           <div className="bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4">
