@@ -4,14 +4,14 @@ import AppIcon from '@/components/AppIcon'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 pt-safe-header">
             <div className="flex items-center space-x-2">
               <AppIcon size="lg" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-gray-900">
                 Koala.ai
               </span>
             </div>
@@ -32,7 +32,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/dashboard"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-shadow"
+                className="bg-accent-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-accent-700 transition-colors shadow-sm"
               >
                 Get Started
               </Link>
@@ -42,40 +42,40 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         <div className="text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
             Turn Lectures Into
-            <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent pb-2">
+            <span className="block text-accent-600">
               Intelligent Notes
             </span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Record your professor's lectures and let AI transform them into structured, 
+          <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Record your professor's lectures and let AI transform them into structured,
             searchable notes. Never miss an important concept again.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link
               href="/dashboard"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl transition-shadow"
+              className="bg-accent-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-accent-700 transition-all shadow-lg hover:shadow-xl"
             >
               Start Recording Free
             </Link>
-            <button className="bg-white text-gray-700 px-8 py-4 rounded-lg font-semibold text-lg border-2 border-gray-200 hover:border-gray-300 transition-colors">
+            <button className="bg-white text-gray-700 px-8 py-4 rounded-xl font-semibold text-lg border-2 border-gray-200 hover:border-gray-300 transition-colors">
               Watch Demo
             </button>
           </div>
         </div>
 
         {/* Hero Image/Mockup */}
-        <div className="mt-16 relative">
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 h-12 flex items-center px-4 space-x-2">
-              <div className="w-3 h-3 rounded-full bg-white/30"></div>
-              <div className="w-3 h-3 rounded-full bg-white/30"></div>
-              <div className="w-3 h-3 rounded-full bg-white/30"></div>
+        <div className="mt-20 relative">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+            <div className="bg-gray-100 h-12 flex items-center px-4 space-x-2 border-b border-gray-200">
+              <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+              <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+              <div className="w-3 h-3 rounded-full bg-gray-300"></div>
             </div>
-            <div className="p-8 grid md:grid-cols-2 gap-8">
+            <div className="p-10 grid md:grid-cols-2 gap-10">
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
@@ -116,9 +116,9 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="bg-white py-20">
+      <section id="features" className="bg-gray-50 py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-20">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Everything You Need to Ace Your Classes
             </h2>
@@ -127,42 +127,42 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-10">
             {/* Feature 1 */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
-                <FiMic className="text-white text-2xl" />
+            <div className="bg-white rounded-xl p-8 hover:shadow-md transition-all border border-gray-100 hover:border-accent-200">
+              <div className="w-14 h-14 bg-accent-100 rounded-xl flex items-center justify-center mb-5">
+                <FiMic className="text-accent-600 text-2xl" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 One-Click Recording
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 leading-relaxed">
                 Record lectures with a single click. Works on any device, even in the background.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-8 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4">
-                <FiZap className="text-white text-2xl" />
+            <div className="bg-white rounded-xl p-8 hover:shadow-md transition-all border border-gray-100 hover:border-accent-200">
+              <div className="w-14 h-14 bg-accent-100 rounded-xl flex items-center justify-center mb-5">
+                <FiZap className="text-accent-600 text-2xl" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 AI-Powered Transcription
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 leading-relaxed">
                 Whisper AI converts speech to text with industry-leading accuracy.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
-                <FiFileText className="text-white text-2xl" />
+            <div className="bg-white rounded-xl p-8 hover:shadow-md transition-all border border-gray-100 hover:border-accent-200">
+              <div className="w-14 h-14 bg-accent-100 rounded-xl flex items-center justify-center mb-5">
+                <FiFileText className="text-accent-600 text-2xl" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 Smart Notes Generation
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 leading-relaxed">
                 Get structured notes with key points, summaries, and study guides automatically.
               </p>
             </div>
@@ -171,9 +171,9 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20">
+      <section id="how-it-works" className="py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-20">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               How It Works
             </h2>
@@ -182,33 +182,33 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12">
+          <div className="grid md:grid-cols-3 gap-16">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+              <div className="w-20 h-20 bg-accent-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-6 shadow-lg shadow-accent-600/25">
                 1
               </div>
-              <h3 className="text-xl font-semibold mb-2">Record</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Record</h3>
+              <p className="text-gray-600 leading-relaxed">
                 Hit record before class starts. We'll capture everything clearly.
               </p>
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+              <div className="w-20 h-20 bg-accent-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-6 shadow-lg shadow-accent-600/25">
                 2
               </div>
-              <h3 className="text-xl font-semibold mb-2">Transcribe</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Transcribe</h3>
+              <p className="text-gray-600 leading-relaxed">
                 Our AI transcribes your lecture with high accuracy in minutes.
               </p>
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+              <div className="w-20 h-20 bg-accent-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-6 shadow-lg shadow-accent-600/25">
                 3
               </div>
-              <h3 className="text-xl font-semibold mb-2">Study</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Study</h3>
+              <p className="text-gray-600 leading-relaxed">
                 Review AI-generated notes, summaries, and key concepts instantly.
               </p>
             </div>
@@ -217,17 +217,17 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-20">
+      <section className="bg-accent-600 py-32">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Ready to Transform Your Study Habits?
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
+          <p className="text-xl md:text-2xl text-white/90 mb-10">
             Join thousands of students using Koala.ai to ace their classes
           </p>
           <Link
             href="/dashboard"
-            className="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl transition-shadow"
+            className="inline-block bg-white text-accent-700 px-10 py-5 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all shadow-xl"
           >
             Get Started Free
           </Link>
@@ -235,9 +235,9 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
+      <footer className="bg-gray-900 text-gray-400 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-4 gap-12">
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <AppIcon size="lg" />
@@ -271,7 +271,7 @@ export default function HomePage() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-sm text-center">
+          <div className="border-t border-gray-800 mt-12 pt-8 text-sm text-center">
             © 2025 Koala.ai. All rights reserved.
           </div>
         </div>

@@ -38,6 +38,15 @@ module.exports = {
           800: '#115e59',
           900: '#134e4a',
         },
+        // Landing page accent color (green)
+        accent: {
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          500: '#22c55e',
+          600: '#16a34a',
+          700: '#15803d',
+        },
         // Card background for dark mode
         card: {
           dark: '#1f2937', // gray-800

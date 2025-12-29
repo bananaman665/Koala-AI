@@ -12,7 +12,7 @@ export default function AppIcon({ size = 'md', className = '' }: AppIconProps) {
   }
 
   return (
-    <div className={`${sizeClasses[size]} rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ${className}`}>
+    <div className={`${sizeClasses[size]} rounded-lg bg-accent-600 flex items-center justify-center ${className}`}>
       <svg
         viewBox="0 0 24 24"
         fill="none"
