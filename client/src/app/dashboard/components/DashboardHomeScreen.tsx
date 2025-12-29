@@ -82,8 +82,8 @@ export function DashboardHomeScreen({
 
         {/* Hero Card - Greeting + Record CTA + Daily Goal Ring */}
         <div className="flex flex-col sm:flex-row items-start gap-4 mb-6">
-          {/* Greeting Card */}
-          <div className="flex-1 bg-white dark:bg-[#1a2233]/80 rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] animate-card-in">
+          {/* Greeting - No Box */}
+          <div className="flex-1">
             <div className="flex flex-col items-start">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">
                 {(() => {
