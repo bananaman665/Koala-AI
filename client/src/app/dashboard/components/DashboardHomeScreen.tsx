@@ -80,10 +80,17 @@ export function DashboardHomeScreen({
           </div>
         )}
 
+        {/* Status Pill - Top Bar */}
+        <div className="mb-6">
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-full inline-block">
+            Beginner · 🔥 {streak}
+          </span>
+        </div>
+
         {/* Hero Section - Clean & Focused */}
         <div className="mb-8">
           {/* Greeting */}
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-6 tracking-tight">
             {(() => {
               const hour = new Date().getHours()
               if (hour < 12) return 'Good morning! 👋'
@@ -91,13 +98,6 @@ export function DashboardHomeScreen({
               return 'Good evening! 👋'
             })()}
           </h1>
-
-          {/* Metadata Pill */}
-          <div className="flex items-center gap-2 mb-6">
-            <span className="text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-full">
-              Beginner · 🔥 {streak}
-            </span>
-          </div>
 
           {/* Hero Button */}
           <button
