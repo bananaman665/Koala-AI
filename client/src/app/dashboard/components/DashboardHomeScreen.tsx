@@ -80,13 +80,6 @@ export function DashboardHomeScreen({
           </div>
         )}
 
-        {/* Status Pill - Top Bar */}
-        <div className="mb-6">
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-full inline-block">
-            Beginner · 🔥 {streak}
-          </span>
-        </div>
-
         {/* Hero Section - Clean & Focused */}
         <div className="mb-8">
           {/* Greeting */}

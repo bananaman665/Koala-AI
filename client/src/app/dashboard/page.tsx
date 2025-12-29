@@ -1495,28 +1495,19 @@ function DashboardContent() {
         <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-14 sm:h-16">
-            {/* Left side - Level & Streak */}
-            <div className="flex items-center gap-2">
-              {/* Level Badge */}
-              <button
-                onClick={() => { hapticButton(); setShowLevelModal(true) }}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 dark:bg-purple-500/10 rounded-full"
-              >
-                <div className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center">
-                  <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
-                </div>
-                <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">{levelInfo.name}</span>
-              </button>
-
-              {/* Streak */}
-              <button
-                onClick={() => { hapticButton(); setShowStreakModal(true) }}
-                className="flex items-center gap-1 px-2.5 py-1.5 bg-orange-50 dark:bg-orange-500/10 rounded-full"
-              >
-                <Fire size={18} weight="fill" className="text-orange-500" />
-                <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{streak} {streak === 1 ? 'day' : 'days'}</span>
-              </button>
-            </div>
+            {/* Left side - Combined Level & Streak Pill */}
+            <button
+              onClick={() => { hapticButton(); setShowLevelModal(true) }}
+              className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 dark:bg-purple-500/10 rounded-full hover:bg-purple-100 dark:hover:bg-purple-500/20 transition-colors"
+            >
+              <div className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
+              </div>
+              <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">{levelInfo.name}</span>
+              <span className="text-gray-300 dark:text-gray-600">·</span>
+              <Fire size={14} weight="fill" className="text-orange-500 flex-shrink-0" />
+              <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">{streak}</span>
+            </button>
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-4">
