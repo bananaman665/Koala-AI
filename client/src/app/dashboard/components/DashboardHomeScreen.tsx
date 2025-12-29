@@ -1,6 +1,7 @@
 'use client'
 
-import { FiAlertCircle, FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader } from 'react-icons/fi'
+import { useState } from 'react'
+import { FiAlertCircle, FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader, FiChevronDown } from 'react-icons/fi'
 import { Mic, Trophy, Lightbulb } from 'lucide-react'
 import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
@@ -51,6 +52,9 @@ export function DashboardHomeScreen({
   onSelectLecture,
   onNavigateToLibrary,
 }: DashboardHomeScreenProps) {
+  const [showGoals, setShowGoals] = useState(false)
+  const [showTips, setShowTips] = useState(false)
+
   const totalStudyTime = lectures.reduce((sum, lecture) => sum + lecture.duration, 0)
   const todaysLectures = lectures.filter(l => {
     const today = new Date().toDateString()
@@ -83,7 +87,7 @@ export function DashboardHomeScreen({
         {/* Hero Section - Clean & Focused */}
         <div className="mb-8">
           {/* Greeting */}
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-6 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 dark:text-white mb-6 tracking-tight">
             {(() => {
               const hour = new Date().getHours()
               if (hour < 12) return 'Good morning! 👋'
@@ -112,8 +116,8 @@ export function DashboardHomeScreen({
               }}
               className="cursor-pointer group flex items-center gap-3"
             >
-              <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
-                <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
+              <div className="w-11 h-11 bg-gray-100 dark:bg-gray-700/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                <FiPlay className="text-gray-600 dark:text-gray-400 text-lg" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5">Continue</p>
@@ -124,7 +128,7 @@ export function DashboardHomeScreen({
           </div>
         )}
 
-        {/* Monthly Goal */}
+        {/* Monthly Goal - Collapsible */}
         {(() => {
           // Calculate this month's progress
           const now = new Date()
@@ -140,31 +144,31 @@ export function DashboardHomeScreen({
             {
               id: 'lectures',
               title: 'Record 10 lectures',
-              description: 'Record <span class="font-semibold text-violet-600 dark:text-violet-400">10 lectures</span> this month',
+              description: 'Record <span class="font-semibold text-gray-900 dark:text-gray-100">10 lectures</span> this month',
               target: 10,
               getCurrent: () => lectures.filter(l => new Date(l.created_at) >= startOfMonth).length,
-              bgColor: 'bg-violet-500',
+              bgColor: 'bg-orange-500',
             },
             {
               id: 'study_hours',
               title: 'Study for 8 hours',
-              description: 'Accumulate <span class="font-semibold text-blue-600 dark:text-blue-400">8 hours</span> of lecture time',
+              description: 'Accumulate <span class="font-semibold text-gray-900 dark:text-gray-100">8 hours</span> of lecture time',
               target: 8,
               getCurrent: () => Math.floor(lectures.filter(l => new Date(l.created_at) >= startOfMonth).reduce((sum, l) => sum + (l.duration || 0), 0) / 3600),
-              bgColor: 'bg-blue-500',
+              bgColor: 'bg-orange-500',
             },
             {
               id: 'courses',
               title: 'Create 3 courses',
-              description: 'Create <span class="font-semibold text-emerald-600 dark:text-emerald-400">3 new courses</span> this month',
+              description: 'Create <span class="font-semibold text-gray-900 dark:text-gray-100">3 new courses</span> this month',
               target: 3,
               getCurrent: () => courses.filter(c => new Date(c.created_at) >= startOfMonth).length,
-              bgColor: 'bg-emerald-500',
+              bgColor: 'bg-orange-500',
             },
             {
               id: 'streak',
               title: 'Reach 15-day streak',
-              description: 'Maintain a <span class="font-semibold text-orange-600 dark:text-orange-400">15-day streak</span> this month',
+              description: 'Maintain a <span class="font-semibold text-gray-900 dark:text-gray-100">15-day streak</span> this month',
               target: 15,
               getCurrent: () => streak,
               bgColor: 'bg-orange-500',
@@ -178,39 +182,48 @@ export function DashboardHomeScreen({
           const isCompleted = currentValue >= currentGoal.target
 
           return (
-            <div className="bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-6 animate-card-in card-stagger-1">
-              <div className="flex items-center justify-between mb-3">
+            <div className="mb-6">
+              <button
+                onClick={() => setShowGoals(!showGoals)}
+                className="w-full bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#1f2844] transition-colors animate-card-in card-stagger-1"
+              >
                 <div className="flex items-center gap-2">
                   <div className={`w-8 h-8 rounded-xl ${currentGoal.bgColor} flex items-center justify-center`}>
                     <Trophy className="w-4 h-4 text-white" />
                   </div>
-                  <div>
+                  <div className="text-left">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white">Monthly Goal</h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{daysRemaining} days remaining</p>
                   </div>
                 </div>
-                {isCompleted && (
-                  <span className="text-xs font-semibold text-green-500 bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-full">
-                    Completed!
-                  </span>
-                )}
-              </div>
+                <FiChevronDown className={`text-gray-400 transition-transform ${showGoals ? 'rotate-180' : ''}`} />
+              </button>
 
-              <p
-                className="text-sm text-gray-600 dark:text-gray-300 mb-3"
-                dangerouslySetInnerHTML={{ __html: currentGoal.description }}
-              />
+              {showGoals && (
+                <div className="bg-white dark:bg-[#1a2235] rounded-b-2xl border border-t-0 border-gray-100 dark:border-white/[0.06] p-4 -mt-2 pt-0">
+                  {isCompleted && (
+                    <span className="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-full mb-3 inline-block">
+                      Completed!
+                    </span>
+                  )}
 
-              {/* Progress Bar */}
-              <div className="relative h-6 bg-gray-100 dark:bg-[#0B1220] rounded-full overflow-hidden">
-                <div
-                  className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500`}
-                  style={{ width: `${progress}%` }}
-                />
-                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-white">
-                  {currentValue} / {currentGoal.target}
-                </span>
-              </div>
+                  <p
+                    className="text-sm text-gray-600 dark:text-gray-300 mb-3"
+                    dangerouslySetInnerHTML={{ __html: currentGoal.description }}
+                  />
+
+                  {/* Progress Bar */}
+                  <div className="relative h-6 bg-gray-100 dark:bg-[#0B1220] rounded-full overflow-hidden">
+                    <div
+                      className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500`}
+                      style={{ width: `${progress}%` }}
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-white">
+                      {currentValue} / {currentGoal.target}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )
         })()}
@@ -286,32 +299,58 @@ export function DashboardHomeScreen({
           </div>
 
 
-          {/* Study Tip */}
-          <div className="bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4">
+          {/* Daily Tip - Collapsible */}
+          <button
+            onClick={() => setShowTips(!showTips)}
+            className="w-full bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#1f2844] transition-colors text-left"
+          >
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-amber-100 dark:bg-amber-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Lightbulb className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">Daily Tip</p>
-                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {(() => {
-                    const tips = [
-                      "Review your notes within 24 hours to boost retention by up to 80%!",
-                      "Use the Learn Mode quiz feature to test your knowledge and improve recall.",
-                      "Break study sessions into 25-minute chunks with 5-minute breaks.",
-                      "Record lectures in a quiet space for better transcription accuracy.",
-                      "Create flashcards from your notes to reinforce key concepts.",
-                      "Study the same material in different locations to strengthen memory."
-                    ]
-                    const today = new Date()
-                    const index = (today.getDate() + today.getMonth()) % tips.length
-                    return tips[index]
-                  })()}
-                </p>
+                {!showTips && (
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed truncate">
+                    {(() => {
+                      const tips = [
+                        "Review your notes within 24 hours to boost retention by up to 80%!",
+                        "Use the Learn Mode quiz feature to test your knowledge and improve recall.",
+                        "Break study sessions into 25-minute chunks with 5-minute breaks.",
+                        "Record lectures in a quiet space for better transcription accuracy.",
+                        "Create flashcards from your notes to reinforce key concepts.",
+                        "Study the same material in different locations to strengthen memory."
+                      ]
+                      const today = new Date()
+                      const index = (today.getDate() + today.getMonth()) % tips.length
+                      return tips[index]
+                    })()}
+                  </p>
+                )}
               </div>
             </div>
-          </div>
+            <FiChevronDown className={`text-gray-400 transition-transform flex-shrink-0 ml-2 ${showTips ? 'rotate-180' : ''}`} />
+          </button>
+
+          {showTips && (
+            <div className="bg-white dark:bg-[#1a2235] rounded-b-2xl border border-t-0 border-gray-100 dark:border-white/[0.06] p-4 -mt-2 pt-4">
+              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                {(() => {
+                  const tips = [
+                    "Review your notes within 24 hours to boost retention by up to 80%!",
+                    "Use the Learn Mode quiz feature to test your knowledge and improve recall.",
+                    "Break study sessions into 25-minute chunks with 5-minute breaks.",
+                    "Record lectures in a quiet space for better transcription accuracy.",
+                    "Create flashcards from your notes to reinforce key concepts.",
+                    "Study the same material in different locations to strengthen memory."
+                  ]
+                  const today = new Date()
+                  const index = (today.getDate() + today.getMonth()) % tips.length
+                  return tips[index]
+                })()}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
