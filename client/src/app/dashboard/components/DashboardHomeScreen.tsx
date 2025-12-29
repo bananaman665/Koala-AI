@@ -81,80 +81,80 @@ export function DashboardHomeScreen({
         )}
 
         {/* Hero Card - Greeting + Record CTA + Daily Goal Ring */}
-        <div className="bg-white dark:bg-[#1a2233]/80 rounded-2xl p-4 mb-6 border border-gray-100 dark:border-white/[0.06] animate-card-in">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex flex-col items-start">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight ml-1">
-                  {(() => {
-                    const hour = new Date().getHours()
-                    if (hour < 12) return 'Good morning!'
-                    if (hour < 17) return 'Good afternoon!'
-                    return 'Good evening!'
-                  })()}
-                </h1>
-                <button
-                  onClick={onStartRecording}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-medium text-sm rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
-                >
-                  <Mic className="w-4 h-4" />
-                  Start Recording
-                </button>
-              </div>
+        <div className="flex flex-col sm:flex-row items-start gap-4 mb-6">
+          {/* Greeting Card */}
+          <div className="flex-1 bg-white dark:bg-[#1a2233]/80 rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] animate-card-in">
+            <div className="flex flex-col items-start">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">
+                {(() => {
+                  const hour = new Date().getHours()
+                  if (hour < 12) return 'Good morning! 👋'
+                  if (hour < 17) return 'Good afternoon! 👋'
+                  return 'Good evening! 👋'
+                })()}
+              </h1>
+              <button
+                onClick={onStartRecording}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-medium text-sm rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
+              >
+                <Mic className="w-4 h-4" />
+                Start Recording
+              </button>
             </div>
-            {/* Daily Goal Ring */}
-            <div className="flex flex-col items-center ml-2 sm:ml-4">
-              <div className="relative w-20 h-20 sm:w-24 sm:h-24">
-                <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90">
-                  <circle
-                    cx="40"
-                    cy="40"
-                    r="32"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    fill="none"
-                    className="text-gray-200 dark:text-white/10 sm:hidden"
-                  />
-                  <circle
-                    cx="48"
-                    cy="48"
-                    r="40"
-                    stroke="currentColor"
-                    strokeWidth="8"
-                    fill="none"
-                    className="text-gray-200 dark:text-white/10 hidden sm:block"
-                  />
-                  <circle
-                    cx="40"
-                    cy="40"
-                    r="32"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    fill="none"
-                    strokeDasharray={201}
-                    strokeDashoffset={201 - (201 * Math.min(todaysLectures.length, 1)) / 1}
-                    strokeLinecap="round"
-                    className="text-green-500 transition-all duration-500 sm:hidden"
-                  />
-                  <circle
-                    cx="48"
-                    cy="48"
-                    r="40"
-                    stroke="currentColor"
-                    strokeWidth="8"
-                    fill="none"
-                    strokeDasharray={251.2}
-                    strokeDashoffset={251.2 - (251.2 * Math.min(todaysLectures.length, 1)) / 1}
-                    strokeLinecap="round"
-                    className="text-green-500 transition-all duration-500 hidden sm:block"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                    {todaysLectures.length}
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">Today</span>
-                </div>
+          </div>
+
+          {/* Daily Goal Ring - Outside Box */}
+          <div className="flex flex-col items-center justify-center">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24">
+              <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90">
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="32"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  fill="none"
+                  className="text-gray-200 dark:text-white/10 sm:hidden"
+                />
+                <circle
+                  cx="48"
+                  cy="48"
+                  r="40"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  fill="none"
+                  className="text-gray-200 dark:text-white/10 hidden sm:block"
+                />
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="32"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  fill="none"
+                  strokeDasharray={201}
+                  strokeDashoffset={201 - (201 * Math.min(todaysLectures.length, 1)) / 1}
+                  strokeLinecap="round"
+                  className="text-green-500 transition-all duration-500 sm:hidden"
+                />
+                <circle
+                  cx="48"
+                  cy="48"
+                  r="40"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  fill="none"
+                  strokeDasharray={251.2}
+                  strokeDashoffset={251.2 - (251.2 * Math.min(todaysLectures.length, 1)) / 1}
+                  strokeLinecap="round"
+                  className="text-green-500 transition-all duration-500 hidden sm:block"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                  {todaysLectures.length}
+                </span>
+                <span className="text-[9px] sm:text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">Today</span>
               </div>
             </div>
           </div>
