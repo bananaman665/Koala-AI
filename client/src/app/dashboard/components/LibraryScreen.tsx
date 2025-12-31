@@ -1,6 +1,6 @@
 'use client'
 
-import { FiSearch, FiClock, FiLoader, FiChevronLeft, FiEdit2, FiFileText, FiBook, FiTrash2 } from 'react-icons/fi'
+import { FiSearch, FiClock, FiLoader, FiChevronLeft, FiEdit2, FiFileText, FiBook, FiTrash2, FiShare2 } from 'react-icons/fi'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 import { AudioPlayer } from '@/components/AudioPlayer'
 import ReactMarkdown from 'react-markdown'
@@ -61,6 +61,8 @@ interface LibraryScreenProps {
   onShowLearnModeConfig: () => void
   onShowFlashcardConfig: () => void
   onShowDeleteModal: () => void
+  onShowShareModal: (lectureId: string) => void
+  isLectureShared: (lectureId: string) => boolean
   onSetIsFlashcardModeActive: (active: boolean) => void
   onSetCurrentFlashcardIndex: (index: number) => void
 
@@ -106,6 +108,8 @@ export function LibraryScreen({
   onShowLearnModeConfig,
   onShowFlashcardConfig,
   onShowDeleteModal,
+  onShowShareModal,
+  isLectureShared,
   onSetIsFlashcardModeActive,
   onSetCurrentFlashcardIndex,
   onAnswerSelect,
@@ -237,22 +241,42 @@ export function LibraryScreen({
                             <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{lecture.title}</h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400">{lecture.courses?.name || 'No course'}</p>
                           </div>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            lecture.transcription_status === 'completed' ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400' :
-                            lecture.transcription_status === 'failed' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
-                            'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-                          }`}>
-                            {lecture.transcription_status === 'completed' ? 'Ready' :
-                             lecture.transcription_status === 'failed' ? 'Failed' :
-                             lecture.transcription_status === 'processing' ? 'Processing' : 'Pending'}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            {isLectureShared(lecture.id) && (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
+                                Shared
+                              </span>
+                            )}
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              lecture.transcription_status === 'completed' ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400' :
+                              lecture.transcription_status === 'failed' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
+                              'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
+                            }`}>
+                              {lecture.transcription_status === 'completed' ? 'Ready' :
+                               lecture.transcription_status === 'failed' ? 'Failed' :
+                               lecture.transcription_status === 'processing' ? 'Processing' : 'Pending'}
+                            </span>
+                          </div>
                         </div>
                         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                           <span className="flex items-center">
                             <FiClock className="mr-1" />
                             {formattedDuration}
                           </span>
-                          <span>{formattedDate}</span>
+                          <div className="flex items-center gap-2">
+                            <span>{formattedDate}</span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                hapticButton()
+                                onShowShareModal(lecture.id)
+                              }}
+                              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                              aria-label="Share lecture"
+                            >
+                              <FiShare2 className="text-gray-600 dark:text-gray-400" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </SwipeToDelete>
@@ -472,6 +496,18 @@ export function LibraryScreen({
               <span>{isGeneratingFlashcards ? 'Generating...' : 'Flashcards'}</span>
             </button>
           </div>
+
+          {/* Share to Class Button */}
+          <button
+            onClick={() => {
+              hapticButton()
+              onShowShareModal(selectedLecture)
+            }}
+            className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-4 rounded-xl hover:bg-blue-700 font-medium transition-colors"
+          >
+            <FiShare2 className="text-lg" />
+            <span>{isLectureShared(selectedLecture) ? 'Manage Class Sharing' : 'Share to Class'}</span>
+          </button>
 
           {/* Delete Lecture Button */}
           <button

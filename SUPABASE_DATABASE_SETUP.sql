@@ -241,6 +241,19 @@ CREATE POLICY "Users can insert own transcripts"
   ON transcripts FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Class members can view lecture transcripts" ON transcripts;
+CREATE POLICY "Class members can view lecture transcripts"
+  ON transcripts FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM lectures
+      JOIN class_memberships ON class_memberships.class_id = lectures.class_id
+      WHERE lectures.id = transcripts.lecture_id
+      AND class_memberships.user_id = auth.uid()
+      AND lectures.class_id IS NOT NULL
+    )
+  );
+
 -- Notes policies
 DROP POLICY IF EXISTS "Users can view own notes" ON notes;
 CREATE POLICY "Users can view own notes"
@@ -261,6 +274,19 @@ DROP POLICY IF EXISTS "Users can delete own notes" ON notes;
 CREATE POLICY "Users can delete own notes"
   ON notes FOR DELETE
   USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Class members can view lecture notes" ON notes;
+CREATE POLICY "Class members can view lecture notes"
+  ON notes FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM lectures
+      JOIN class_memberships ON class_memberships.class_id = lectures.class_id
+      WHERE lectures.id = notes.lecture_id
+      AND class_memberships.user_id = auth.uid()
+      AND lectures.class_id IS NOT NULL
+    )
+  );
 
 -- Classes policies
 DROP POLICY IF EXISTS "Users can view owned classes" ON classes;

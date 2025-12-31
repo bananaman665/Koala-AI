@@ -35,6 +35,7 @@ import { FlashcardMode } from './components/FlashcardMode'
 import { LearnMode } from './components/LearnMode'
 import { DashboardHomeScreen } from './components/DashboardHomeScreen'
 import { LibraryScreen } from './components/LibraryScreen'
+import { ShareLectureToClassModal } from './components/ShareLectureToClassModal'
 
 // Color classes for course icons (full class names for Tailwind to detect)
 const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
@@ -278,6 +279,10 @@ function DashboardContent() {
   const [showShareCourseModal, setShowShareCourseModal] = useState(false)
   const [selectedCourseToShare, setSelectedCourseToShare] = useState<string | null>(null)
   const [isSharingCourse, setIsSharingCourse] = useState(false)
+  const [showShareLectureModal, setShowShareLectureModal] = useState(false)
+  const [lectureToShare, setLectureToShare] = useState<string | null>(null)
+  const [selectedClassForLecture, setSelectedClassForLecture] = useState<string | null>(null)
+  const [isSharingLecture, setIsSharingLecture] = useState(false)
   const [newCourseData, setNewCourseData] = useState({
     name: '',
     code: '',
@@ -505,6 +510,28 @@ function DashboardContent() {
 
     fetchClasses()
   }, [user])
+
+  // Delete class function
+  const deleteClass = async (classId: string) => {
+    if (!user?.id) return
+
+    try {
+      const response = await fetch(`/api/classes/${classId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-id': user.id,
+        },
+      })
+      const result = await response.json()
+      if (result.success) {
+        setUserClasses(prev => prev.filter(c => c.id !== classId))
+      } else {
+        console.error('Failed to delete class:', result.error)
+      }
+    } catch (error) {
+      console.error('Failed to delete class:', error)
+    }
+  }
 
   // Delete lecture function
   const deleteLecture = async (lectureId: string) => {
@@ -1045,6 +1072,99 @@ function DashboardContent() {
       toast.error(`Failed to share course: ${error.message}`)
     } finally {
       setIsSharingCourse(false)
+    }
+  }
+
+  // Check if a lecture is shared to any class
+  const isLectureShared = (lectureId: string): boolean => {
+    const lecture = lectures.find(l => l.id === lectureId)
+    return lecture?.class_id !== null && lecture?.class_id !== undefined
+  }
+
+  // Get current class ID for a lecture
+  const getLectureClassId = (lectureId: string): string | null => {
+    const lecture = lectures.find(l => l.id === lectureId)
+    return lecture?.class_id || null
+  }
+
+  // Show share lecture modal
+  const handleShowShareLectureModal = (lectureId: string) => {
+    setLectureToShare(lectureId)
+    const currentClassId = getLectureClassId(lectureId)
+    setSelectedClassForLecture(currentClassId)
+    setShowShareLectureModal(true)
+  }
+
+  // Share a lecture to a class
+  const handleShareLecture = async () => {
+    if (!lectureToShare) {
+      toast.error('No lecture selected')
+      return
+    }
+
+    // If selectedClassForLecture is null, we're unsharing
+    const isUnsharing = selectedClassForLecture === null
+    const currentClassId = getLectureClassId(lectureToShare)
+
+    // Confirmation if overwriting an existing share
+    if (!isUnsharing && currentClassId && currentClassId !== selectedClassForLecture) {
+      const shouldContinue = confirm(
+        'This lecture is already shared to another class. Do you want to move it to the selected class?'
+      )
+      if (!shouldContinue) return
+    }
+
+    setIsSharingLecture(true)
+    try {
+      const response = await fetch(`/api/lectures/${lectureToShare}/share`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': user?.id || '',
+        },
+        body: JSON.stringify({ classId: selectedClassForLecture }),
+      })
+
+      const result = await response.json()
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to share lecture')
+      }
+
+      hapticSuccess()
+      toast.success(result.message || (isUnsharing ? 'Lecture unshared from class' : 'Lecture shared to class'))
+
+      // Update local state
+      setLectures(prevLectures =>
+        prevLectures.map(lecture =>
+          lecture.id === lectureToShare
+            ? { ...lecture, class_id: selectedClassForLecture }
+            : lecture
+        )
+      )
+
+      // If we're viewing a class and this lecture was/is in it, refresh class lectures
+      if (selectedClass && (selectedClass === currentClassId || selectedClass === selectedClassForLecture)) {
+        const lecturesResponse = await fetch(`/api/classes/${selectedClass}/lectures`, {
+          headers: {
+            'x-user-id': user?.id || '',
+          },
+        })
+        const lecturesResult = await lecturesResponse.json()
+        if (lecturesResult.success) {
+          setClassLectures(lecturesResult.data || [])
+        }
+      }
+
+      // Close modal and reset state
+      setShowShareLectureModal(false)
+      setLectureToShare(null)
+      setSelectedClassForLecture(null)
+    } catch (error: any) {
+      hapticError()
+      toast.error(`Failed to share lecture: ${error.message}`)
+    } finally {
+      setIsSharingLecture(false)
     }
   }
 
@@ -2276,6 +2396,8 @@ function DashboardContent() {
               onShowLearnModeConfig={() => setShowLearnModeConfigModal(true)}
               onShowFlashcardConfig={() => setShowFlashcardConfigModal(true)}
               onShowDeleteModal={() => setShowDeleteLectureModal(true)}
+              onShowShareModal={handleShowShareLectureModal}
+              isLectureShared={isLectureShared}
               onSetIsFlashcardModeActive={setIsFlashcardModeActive}
               onSetCurrentFlashcardIndex={setCurrentFlashcardIndex}
               onAnswerSelect={handleAnswerSelect}
@@ -2318,6 +2440,7 @@ function DashboardContent() {
               onJoinClassCodeChange={setJoinClassCode}
               onJoinClass={handleJoinClass}
               onCreateNewClass={() => setShowCreateClassScreen(true)}
+              onDeleteClass={deleteClass}
               onViewClass={handleViewClass}
             />
           </ScreenTransition>
@@ -2718,6 +2841,25 @@ function DashboardContent() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Share Lecture to Class Modal */}
+      {showShareLectureModal && lectureToShare && (
+        <ShareLectureToClassModal
+          isOpen={showShareLectureModal}
+          onClose={() => {
+            setShowShareLectureModal(false)
+            setLectureToShare(null)
+            setSelectedClassForLecture(null)
+          }}
+          lectureTitle={lectures.find(l => l.id === lectureToShare)?.title || 'Lecture'}
+          currentClassId={getLectureClassId(lectureToShare)}
+          userClasses={userClasses}
+          selectedClassId={selectedClassForLecture}
+          onClassSelect={setSelectedClassForLecture}
+          onConfirmShare={handleShareLecture}
+          isSharing={isSharingLecture}
+        />
       )}
 
       {/* Edit Profile Modal */}

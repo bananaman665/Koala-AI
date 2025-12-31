@@ -206,7 +206,7 @@ export function AnalyticsScreen({
           {/* Recent Activity */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-4">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Recent Activity</h3>
-            <div className="space-y-3">
+            <div className="divide-y divide-gray-100 dark:divide-gray-700">
               {lectures.length === 0 ? (
                 <p className="text-sm text-gray-300 dark:text-gray-600 text-center py-4">No activity yet</p>
               ) : (
@@ -239,7 +239,7 @@ export function AnalyticsScreen({
                         hapticButton()
                         onLectureClick(lecture.id)
                       }}
-                      className="flex items-center space-x-3 p-2 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      className="flex items-center space-x-3 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${iconBgClass}`}>
                         <FiMic className={`text-lg ${iconTextClass}`} />

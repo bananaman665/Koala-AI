@@ -95,7 +95,7 @@ export function DashboardHomeScreen({
           {/* Hero Button */}
           <button
             onClick={onStartRecording}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold text-base rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold text-base rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
           >
             <Mic className="w-5 h-5" />
             Start Recording
@@ -104,7 +104,7 @@ export function DashboardHomeScreen({
 
         {/* Continue Learning - Right under button */}
         {lectures.length > 0 && (
-          <div className="bg-white dark:bg-[#1a2233]/80 rounded-xl border border-gray-100 dark:border-white/[0.06] p-4 mb-8">
+          <div className="bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-8">
             <div
               onClick={() => {
                 onSelectLecture(lectures[0].id)

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { FiPlus, FiUsers } from 'react-icons/fi'
 import { Lightbulb } from 'lucide-react'
 import { hapticButton } from '@/lib/haptics'
+import { SwipeToDelete } from '@/components/SwipeToDelete'
 
 // Color classes for course icons (full class names for Tailwind to detect)
 const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
@@ -23,6 +24,7 @@ interface FeedScreenProps {
   onJoinClass: () => void
   onCreateNewClass: () => void
   onViewClass: (classId: string) => void
+  onDeleteClass: (classId: string) => void
 }
 
 export function FeedScreen({
@@ -33,6 +35,7 @@ export function FeedScreen({
   onJoinClass,
   onCreateNewClass,
   onViewClass,
+  onDeleteClass,
 }: FeedScreenProps) {
   return (
     <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
@@ -66,40 +69,45 @@ export function FeedScreen({
               {userClasses && userClasses.length > 0 ? (
                 <div className="space-y-3">
                   {userClasses.map((cls: any) => (
-                    <div
+                    <SwipeToDelete
                       key={cls.id}
-                      className="p-4 bg-white dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-md transition-all cursor-pointer"
+                      onDelete={() => onDeleteClass(cls.id)}
+                      itemName={`"${cls.name}"`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3 flex-1 min-w-0">
-                          <div
-                            className={`w-10 h-10 ${
-                              courseColorClasses[cls.color]?.bg || courseColorClasses.blue.bg
-                            } rounded-xl flex items-center justify-center flex-shrink-0`}
+                      <div
+                        className="p-4 bg-white dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3 flex-1 min-w-0">
+                            <div
+                              className={`w-10 h-10 ${
+                                courseColorClasses[cls.color]?.bg || courseColorClasses.blue.bg
+                              } rounded-xl flex items-center justify-center flex-shrink-0`}
+                            >
+                              <FiUsers
+                                className={`${courseColorClasses[cls.color]?.text || courseColorClasses.blue.text}`}
+                              />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h4 className="font-semibold text-gray-900 dark:text-white truncate">{cls.name}</h4>
+                              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                                {cls.code && `${cls.code} • `}
+                                {cls.class_memberships?.length || 0} members
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => {
+                              hapticButton()
+                              onViewClass(cls.id)
+                            }}
+                            className="px-3 py-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg font-medium transition-colors text-sm flex-shrink-0"
                           >
-                            <FiUsers
-                              className={`${courseColorClasses[cls.color]?.text || courseColorClasses.blue.text}`}
-                            />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="font-semibold text-gray-900 dark:text-white truncate">{cls.name}</h4>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                              {cls.code && `${cls.code} • `}
-                              {cls.class_memberships?.length || 0} members
-                            </p>
-                          </div>
+                            View
+                          </button>
                         </div>
-                        <button
-                          onClick={() => {
-                            hapticButton()
-                            onViewClass(cls.id)
-                          }}
-                          className="px-3 py-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg font-medium transition-colors text-sm flex-shrink-0"
-                        >
-                          View
-                        </button>
                       </div>
-                    </div>
+                    </SwipeToDelete>
                   ))}
                 </div>
               ) : (
