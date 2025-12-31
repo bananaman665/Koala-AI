@@ -1,7 +1,7 @@
 'use client'
 
-import { FiAlertCircle, FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader } from 'react-icons/fi'
-import { Mic, Trophy, Lightbulb } from 'lucide-react'
+import { FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader } from 'react-icons/fi'
+import { Mic, Trophy } from 'lucide-react'
 import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 import type { Database } from '@/lib/supabase'
@@ -10,7 +10,6 @@ type Course = Database['public']['Tables']['courses']['Row']
 type Lecture = Database['public']['Tables']['lectures']['Row']
 
 const MAX_LECTURES = 10
-const LECTURE_WARNING_THRESHOLD = 8
 
 // Color classes for course icons
 const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
@@ -82,26 +81,6 @@ export function DashboardHomeScreen({
             Start Recording
           </button>
         </div>
-
-        {/* Storage Warning Banner */}
-        {lectures.length >= LECTURE_WARNING_THRESHOLD && (
-          <div className="bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-white/[0.06] border-l-4 border-l-amber-500 rounded-xl p-5 mb-6 animate-card-in dark:hover:bg-white/5 transition-colors">
-            <div className="flex items-start gap-3">
-              <FiAlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                  Storage Almost Full
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  You're using {lectures.length} of {MAX_LECTURES} available lecture slots.
-                  {lectures.length >= MAX_LECTURES
-                    ? ' Delete some lectures to continue recording.'
-                    : ' Consider deleting old lectures to free up space.'}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Continue Learning - Right under button */}
         {lectures.length > 0 && (
@@ -284,34 +263,6 @@ export function DashboardHomeScreen({
                 )
               })
             )}
-          </div>
-
-
-          {/* Study Tip */}
-          <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 dark:hover:bg-white/5 transition-colors">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-amber-100 dark:bg-amber-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-1">Daily Tip</p>
-                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {(() => {
-                    const tips = [
-                      "Review your notes within 24 hours to boost retention by up to 80%!",
-                      "Use the Learn Mode quiz feature to test your knowledge and improve recall.",
-                      "Break study sessions into 25-minute chunks with 5-minute breaks.",
-                      "Record lectures in a quiet space for better transcription accuracy.",
-                      "Create flashcards from your notes to reinforce key concepts.",
-                      "Study the same material in different locations to strengthen memory."
-                    ]
-                    const today = new Date()
-                    const index = (today.getDate() + today.getMonth()) % tips.length
-                    return tips[index]
-                  })()}
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
