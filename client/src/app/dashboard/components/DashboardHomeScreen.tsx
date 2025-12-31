@@ -83,19 +83,20 @@ export function DashboardHomeScreen({
         {/* Hero Section - Clean & Focused */}
         <div className="mb-8">
           {/* Greeting */}
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-6 tracking-tight">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             {(() => {
               const hour = new Date().getHours()
-              if (hour < 12) return 'Good morning! 👋'
-              if (hour < 17) return 'Good afternoon! 👋'
-              return 'Good evening! 👋'
+              const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+              const fullName = user?.fullName || user?.displayName || user?.email?.split('@')[0] || ''
+              const userName = fullName.slice(0, 7)
+              return `${greeting}${userName ? ', ' + userName : ''}! 👋`
             })()}
           </h1>
 
           {/* Hero Button */}
           <button
             onClick={onStartRecording}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold text-base rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-200 active:scale-[0.97]"
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold text-base rounded-xl transition-all duration-200 active:scale-[0.97]"
           >
             <Mic className="w-5 h-5" />
             Start Recording

@@ -3072,7 +3072,7 @@ function DashboardContent() {
       `}</style>
 
       {/* Mobile Bottom Navigation with Center Record Button */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-[#1a2235]/90 backdrop-blur-2xl backdrop-saturate-150 border-t border-gray-200/80 dark:border-white/[0.08] z-50 pb-8">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a2235] border-t border-gray-200 dark:border-white/[0.08] z-50 pb-8">
         <div className="flex items-end justify-evenly h-16 px-4 pt-2">
           {/* Home */}
           <button
@@ -3098,11 +3098,6 @@ function DashboardContent() {
 
           {/* Center Record Button */}
           <div className="relative">
-            {isRecording && (
-              <span className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-75" />
-            )}
-            {/* Outer glow ring */}
-            <div className={`absolute inset-[-3px] rounded-full ${isRecording ? 'bg-red-500/20' : 'bg-blue-500/20'} blur-sm`} />
             <button
               onClick={async () => {
                 hapticImpact('medium')
