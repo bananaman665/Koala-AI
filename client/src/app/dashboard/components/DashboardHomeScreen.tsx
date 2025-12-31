@@ -208,7 +208,7 @@ export function DashboardHomeScreen({
                   className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500`}
                   style={{ width: `${progress}%` }}
                 />
-                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-white">
+                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-gray-400">
                   {currentValue} / {currentGoal.target}
                 </span>
               </div>

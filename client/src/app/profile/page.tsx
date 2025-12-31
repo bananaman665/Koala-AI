@@ -486,7 +486,7 @@ export default function ProfilePage() {
                               className={`absolute inset-y-0 left-0 ${quest.progressClass} rounded-full transition-all duration-500`}
                               style={{ width: `${progressPercent}%` }}
                             />
-                            <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-white">
+                            <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-gray-400">
                               {quest.current} / {quest.target}
                             </span>
                           </div>
