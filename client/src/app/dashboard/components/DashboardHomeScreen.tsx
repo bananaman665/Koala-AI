@@ -60,7 +60,7 @@ export function DashboardHomeScreen({
             {(() => {
               const hour = new Date().getHours()
               const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
-              const fullName = user?.fullName || user?.displayName || user?.email?.split('@')[0] || ''
+              const fullName = user?.fullName || user?.displayName || user?.username || ''
               const userName = fullName.slice(0, 7)
               return `${greeting}${userName ? ', ' + userName : ''}! 👋`
             })()}
