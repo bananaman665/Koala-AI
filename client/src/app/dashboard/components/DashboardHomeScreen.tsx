@@ -61,7 +61,7 @@ export function DashboardHomeScreen({
     <div className="overflow-y-auto bg-gray-50 dark:bg-[#111827] h-full relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40">
         {/* Hero Section - Clean & Focused */}
-        <div className="mb-8">
+        <div className="mb-6">
           {/* Greeting */}
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             {(() => {
@@ -105,7 +105,7 @@ export function DashboardHomeScreen({
 
         {/* Continue Learning - Right under button */}
         {lectures.length > 0 && (
-          <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-8 dark:hover:bg-white/5 transition-colors">
+          <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-6 dark:hover:bg-white/5 transition-colors">
             <div
               onClick={() => {
                 onSelectLecture(lectures[0].id)
@@ -217,7 +217,7 @@ export function DashboardHomeScreen({
         })()}
 
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Courses</h2>
           <button
             onClick={onCreateCourse}
@@ -228,7 +228,7 @@ export function DashboardHomeScreen({
           </button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* Courses Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {isLoadingCourses ? (
@@ -288,7 +288,7 @@ export function DashboardHomeScreen({
 
 
           {/* Study Tip */}
-          <div className="bg-white dark:bg-[#1a2235] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4">
+          <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 dark:hover:bg-white/5 transition-colors">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 bg-amber-100 dark:bg-amber-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
