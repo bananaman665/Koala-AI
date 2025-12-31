@@ -155,21 +155,21 @@ export function DashboardHomeScreen({
           // If month is over, show summary card
           if (isMonthOver) {
             return (
-              <div className="bg-gray-100 dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-5 mb-6 opacity-60">
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-6 dark:hover:bg-white/5 transition-colors">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-xl ${currentGoal.bgColor} flex items-center justify-center opacity-50`}>
+                    <div className={`w-8 h-8 rounded-xl ${currentGoal.bgColor} flex items-center justify-center`}>
                       <Trophy className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-gray-600 dark:text-gray-400">Month Completed</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-500">Last month's summary</p>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-white">Month Completed</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Last month's summary</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-700 dark:text-gray-400">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
                     {currentGoal.id === 'streak'
                       ? `Streak achieved: ${currentValue} ${currentValue === 1 ? 'day' : 'days'}`
                       : currentGoal.id === 'lectures'
