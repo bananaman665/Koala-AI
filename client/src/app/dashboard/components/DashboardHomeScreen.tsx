@@ -154,6 +154,24 @@ export function DashboardHomeScreen({
 
           // If month is over, show summary card
           if (isMonthOver) {
+            // Calculate completion percentage
+            const completionPercent = Math.min((currentValue / currentGoal.target) * 100, 100)
+
+            // Generate motivational message based on performance
+            const getMotivationalMessage = () => {
+              if (isCompleted) {
+                return 'Great job! 🎉'
+              } else if (completionPercent >= 90) {
+                return 'So close! You\'ve got this next month! 💪'
+              } else if (completionPercent >= 75) {
+                return 'Nice effort! Keep pushing next month! 🚀'
+              } else if (completionPercent >= 50) {
+                return 'Good start! You\'ll crush it next time! 👊'
+              } else {
+                return 'Don\'t worry, every month is a new chance! 💫'
+              }
+            }
+
             return (
               <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-6 dark:hover:bg-white/5 transition-colors">
                 <div className="flex items-center justify-between mb-3">
@@ -163,26 +181,25 @@ export function DashboardHomeScreen({
                     </div>
                     <div>
                       <h3 className="text-base font-semibold text-gray-900 dark:text-white">Month Completed</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Last month's summary</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{currentValue} / {currentGoal.target}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    {currentGoal.id === 'streak'
-                      ? `Streak achieved: ${currentValue} ${currentValue === 1 ? 'day' : 'days'}`
-                      : currentGoal.id === 'lectures'
-                      ? `Lectures recorded: ${currentValue}`
-                      : currentGoal.id === 'study_hours'
-                      ? `Study hours: ${currentValue}h`
-                      : `Courses created: ${currentValue}`
-                    }
-                  </p>
-                  <p className={`text-xs font-medium ${isCompleted ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-500'}`}>
-                    {isCompleted ? '✓ Goal achieved' : 'Goal not reached'}
-                  </p>
+                {/* Progress Bar */}
+                <div className="relative h-6 bg-gray-100 dark:bg-[#0B1220] rounded-full overflow-hidden mb-3">
+                  <div
+                    className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500`}
+                    style={{ width: `${completionPercent}%` }}
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                    {Math.round(completionPercent)}%
+                  </span>
                 </div>
+
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  {getMotivationalMessage()}
+                </p>
               </div>
             )
           }
