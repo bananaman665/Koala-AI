@@ -62,14 +62,14 @@ export function DashboardHomeScreen({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40">
         {/* Storage Warning Banner */}
         {lectures.length >= LECTURE_WARNING_THRESHOLD && (
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6 animate-card-in">
+          <div className="bg-white dark:bg-[#1a2235] border border-gray-100 dark:border-white/[0.06] rounded-xl p-4 mb-6 animate-card-in">
             <div className="flex items-start gap-3">
-              <FiAlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <FiAlertCircle className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-1">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
                   Storage Almost Full
                 </h3>
-                <p className="text-sm text-amber-800 dark:text-amber-200">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   You're using {lectures.length} of {MAX_LECTURES} available lecture slots.
                   {lectures.length >= MAX_LECTURES
                     ? ' Delete some lectures to continue recording.'
