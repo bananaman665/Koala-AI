@@ -34,24 +34,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* On touch devices, disable :hover to prevent sticky states after touch */
-@media (hover: none) and (pointer: coarse) {
-  /* Override Tailwind hover utilities on touch devices */
-  [class*="hover:"] {
-    /* Remove hover class effects */
-  }
-
-  /* Suppress the :hover pseudo-class from showing any visual changes on touch */
-  *:hover {
-    background-color: inherit !important;
-    border-color: inherit !important;
-    color: inherit !important;
-    opacity: 1 !important;
-    box-shadow: none !important;
-    transform: none !important;
-  }
-}
-
 /* Re-enable selection for input fields and textareas */
 input, textarea {
   -webkit-user-select: text;
