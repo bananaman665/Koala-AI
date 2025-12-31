@@ -69,7 +69,7 @@ export function DashboardHomeScreen({
           {/* Hero Button */}
           <button
             onClick={onStartRecording}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-gray-900 dark:text-white font-medium text-base rounded-xl transition-all duration-200 active:scale-[0.97]"
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base rounded-xl transition-all duration-200 active:scale-[0.97]"
           >
             <Mic className="w-5 h-5" />
             Start Recording
@@ -189,7 +189,7 @@ export function DashboardHomeScreen({
                 {/* Progress Bar */}
                 <div className="relative h-6 bg-gray-100 dark:bg-[#0B1220] rounded-full overflow-hidden mb-3">
                   <div
-                    className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500`}
+                    className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500 progress-animate`}
                     style={{ width: `${completionPercent}%` }}
                   />
                   <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
@@ -232,7 +232,7 @@ export function DashboardHomeScreen({
               {/* Progress Bar */}
               <div className="relative h-6 bg-gray-100 dark:bg-[#0B1220] rounded-full overflow-hidden">
                 <div
-                  className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500`}
+                  className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500 progress-animate`}
                   style={{ width: `${progress}%` }}
                 />
                 <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>

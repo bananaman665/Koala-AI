@@ -192,7 +192,7 @@ export function AnalyticsScreen({
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                         <div
-                          className="progress-bar-gradient h-3 rounded-full transition-all duration-500"
+                          className="progress-bar-gradient h-3 rounded-full transition-all duration-500 progress-animate"
                           style={{ width: `${(totalHours / maxHours) * 100}%` }}
                         ></div>
                       </div>

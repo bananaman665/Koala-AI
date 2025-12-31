@@ -483,7 +483,7 @@ export default function ProfilePage() {
                           {/* Progress Bar */}
                           <div className="relative h-5 bg-gray-200 dark:bg-[#0B1220] rounded-full overflow-hidden">
                             <div
-                              className={`absolute inset-y-0 left-0 ${quest.progressClass} rounded-full transition-all duration-500`}
+                              className={`absolute inset-y-0 left-0 ${quest.progressClass} rounded-full transition-all duration-500 progress-animate`}
                               style={{ width: `${progressPercent}%` }}
                             />
                             <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white dark:text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
@@ -579,7 +579,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="w-full bg-gray-100 dark:bg-white/10 rounded-full h-2.5">
                         <div
-                          className="bg-purple-600 h-2.5 rounded-full transition-all duration-500"
+                          className="bg-purple-600 h-2.5 rounded-full transition-all duration-500 progress-animate"
                           style={{ width: `${Math.min((course.lectures / course.total) * 100, 100)}%` }}
                         ></div>
                       </div>
