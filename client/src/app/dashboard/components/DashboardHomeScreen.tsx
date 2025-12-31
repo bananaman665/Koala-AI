@@ -69,7 +69,7 @@ export function DashboardHomeScreen({
           {/* Hero Button */}
           <button
             onClick={onStartRecording}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold text-base rounded-xl transition-all duration-200 active:scale-[0.97]"
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-gray-900 dark:text-white font-medium text-base rounded-xl transition-all duration-200 active:scale-[0.97]"
           >
             <Mic className="w-5 h-5" />
             Start Recording
