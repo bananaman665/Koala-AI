@@ -85,9 +85,9 @@ export function DashboardHomeScreen({
 
         {/* Storage Warning Banner */}
         {lectures.length >= LECTURE_WARNING_THRESHOLD && (
-          <div className="bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-white/[0.06] rounded-xl p-5 mb-6 animate-card-in dark:hover:bg-white/5 transition-colors">
+          <div className="bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-white/[0.06] border-l-4 border-l-amber-500 rounded-xl p-5 mb-6 animate-card-in dark:hover:bg-white/5 transition-colors">
             <div className="flex items-start gap-3">
-              <FiAlertCircle className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-0.5" />
+              <FiAlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
                   Storage Almost Full
