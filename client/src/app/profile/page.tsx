@@ -312,7 +312,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0B1220]">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#151E2F] border-b border-gray-200 dark:border-[#1E293B] pt-12 sm:pt-0">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#0B1220] border-b border-gray-200 dark:border-white/[0.06] pt-12 sm:pt-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/dashboard" className="flex items-center space-x-2 w-20">
@@ -337,7 +337,7 @@ export default function ProfilePage() {
           {/* Left Column - Profile Info */}
           <div className="lg:col-span-1 space-y-5">
             {/* Profile Card */}
-            <div className="bg-white dark:bg-[#151E2F] rounded-xl shadow-sm border border-gray-200 dark:border-[#1E293B] p-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6 dark:hover:bg-white/5 transition-colors">
               <div className="text-center">
                 <div className="inline-block relative">
                   <div className="w-24 h-24 bg-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">
@@ -429,7 +429,7 @@ export default function ProfilePage() {
               {stats.map((stat, i) => {
                 const Icon = stat.icon
                 return (
-                  <div key={i} className={`${stat.bgClass} rounded-lg p-4 border ${stat.borderClass}`}>
+                  <div key={i} className={`${stat.bgClass} rounded-xl p-4 border ${stat.borderClass} transition-colors hover:bg-opacity-70 dark:hover:bg-white/10`}>
                     <div className="flex items-center justify-between mb-2">
                       <Icon className={`${stat.iconClass} text-xl`} />
                     </div>
@@ -441,9 +441,9 @@ export default function ProfilePage() {
             </div>
 
             {/* Daily Quests */}
-            <div className="bg-white dark:bg-[#151E2F] rounded-xl shadow-sm border border-gray-200 dark:border-[#1E293B] overflow-hidden">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] dark:hover:bg-white/5 transition-colors">
               {/* Header */}
-              <div className="flex items-center justify-between p-5 pb-4">
+              <div className="flex items-center justify-between p-5">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-[#F1F5F9]">Daily Quests</h3>
                 <div className="flex items-center gap-1.5 text-amber-500">
                   <Timer className="w-4 h-4" />
@@ -456,10 +456,18 @@ export default function ProfilePage() {
                 {dailyQuests.map((quest, i) => {
                   const QuestIcon = quest.icon
                   const progressPercent = (quest.current / quest.target) * 100
+
+                  // Map quest IDs to border colors
+                  const borderColors: Record<string, string> = {
+                    'record_lecture': 'border-l-amber-500',
+                    'study_10_min': 'border-l-blue-500',
+                    'maintain_streak': 'border-l-orange-500'
+                  }
+
                   return (
                     <div
                       key={i}
-                      className="relative bg-gray-50 dark:bg-[#1E293B] rounded-xl p-4"
+                      className={`relative bg-white dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] border-l-4 ${borderColors[quest.id]} rounded-xl p-4 transition-colors hover:bg-gray-50 dark:hover:bg-white/10`}
                     >
                       <div className="flex items-center gap-3">
                         {/* Icon */}
@@ -501,7 +509,7 @@ export default function ProfilePage() {
                 <div className="pt-2">
                   <h4 className="text-sm font-semibold text-gray-500 dark:text-[#94A3B8] mb-3">Upcoming</h4>
                   <div className="space-y-3">
-                    <div className="bg-gray-50 dark:bg-[#1E293B] rounded-xl p-4 opacity-60">
+                    <div className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] border-l-4 border-l-gray-300 dark:border-l-gray-600 rounded-xl p-4 opacity-60">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200 dark:bg-[#0B1220]">
                           <HelpCircle className="w-5 h-5 text-gray-400" />
@@ -521,7 +529,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white dark:bg-[#151E2F] rounded-xl shadow-sm border border-gray-200 dark:border-[#1E293B] p-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6 dark:hover:bg-white/5 transition-colors">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-[#F1F5F9]">Recent Activity</h3>
                 <Link
@@ -536,7 +544,7 @@ export default function ProfilePage() {
                   {recentActivity.map((activity, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#1E293B] rounded-xl hover:bg-gray-100 dark:hover:bg-[#263549] transition-colors cursor-pointer"
+                      className="flex items-center justify-between p-4 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 transition-colors cursor-pointer"
                     >
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900 dark:text-[#F1F5F9] mb-1">{activity.lecture}</h4>
@@ -558,7 +566,7 @@ export default function ProfilePage() {
 
             {/* Study Progress */}
             {studyProgress.length > 0 && (
-              <div className="bg-white dark:bg-[#151E2F] rounded-xl shadow-sm border border-gray-200 dark:border-[#1E293B] p-6">
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6 dark:hover:bg-white/5 transition-colors">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-[#F1F5F9] mb-5">Study Progress</h3>
                 <div className="space-y-4">
                   {studyProgress.map((course, i) => (
@@ -569,9 +577,9 @@ export default function ProfilePage() {
                           {course.lectures} lectures
                         </span>
                       </div>
-                      <div className="w-full bg-gray-100 dark:bg-[#1E293B] rounded-full h-2">
+                      <div className="w-full bg-gray-100 dark:bg-white/10 rounded-full h-2.5">
                         <div
-                          className="bg-purple-600 h-2 rounded-full"
+                          className="bg-purple-600 h-2.5 rounded-full transition-all duration-500"
                           style={{ width: `${Math.min((course.lectures / course.total) * 100, 100)}%` }}
                         ></div>
                       </div>
