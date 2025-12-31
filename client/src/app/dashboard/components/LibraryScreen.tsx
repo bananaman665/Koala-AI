@@ -234,7 +234,7 @@ export function LibraryScreen({
                     >
                       <div
                         onClick={() => onSelectLecture(lecture.id)}
-                        className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer card-press"
+                        className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer card-press dark:hover:bg-white/5"
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
@@ -335,14 +335,14 @@ export function LibraryScreen({
           {/* Back Button */}
           <button
             onClick={onExitLecture}
-            className="flex items-center space-x-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors shadow-sm"
+            className="flex items-center space-x-2 px-4 py-2.5 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors shadow-sm"
           >
             <FiChevronLeft className="text-lg" />
             <span>Back to Library</span>
           </button>
 
           {/* Lecture Header */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 dark:hover:bg-white/5 transition-colors">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               {selectedLectureData?.title || 'Lecture'}
             </h1>
@@ -370,7 +370,7 @@ export function LibraryScreen({
           </div>
 
           {/* Audio Player */}
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-4">
+          <div className="bg-gray-100 dark:bg-[#1E293B] rounded-xl p-4 dark:hover:bg-white/5 transition-colors">
             <div className="space-y-2">
               <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
                 Recording
@@ -383,7 +383,7 @@ export function LibraryScreen({
           </div>
 
           {/* Notes */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 dark:hover:bg-white/5 transition-colors">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
