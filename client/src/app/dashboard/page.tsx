@@ -1626,7 +1626,7 @@ function DashboardContent() {
               <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">{levelInfo.name}</span>
               <span className="text-gray-300 dark:text-gray-600">·</span>
               <Fire size={14} weight="fill" className="text-orange-500 flex-shrink-0" />
-              <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">{streak}</span>
+              <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">{streak} day{streak !== 1 ? 's' : ''}</span>
             </button>
 
             {/* Right side - Actions */}
