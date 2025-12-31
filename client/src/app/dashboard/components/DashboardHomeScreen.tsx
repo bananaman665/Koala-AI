@@ -85,7 +85,7 @@ export function DashboardHomeScreen({
 
         {/* Storage Warning Banner */}
         {lectures.length >= LECTURE_WARNING_THRESHOLD && (
-          <div className="bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-white/[0.06] rounded-xl p-4 mb-6 animate-card-in dark:hover:bg-white/5 transition-colors">
+          <div className="bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-white/[0.06] rounded-xl p-5 mb-8 animate-card-in dark:hover:bg-white/5 transition-colors">
             <div className="flex items-start gap-3">
               <FiAlertCircle className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
@@ -105,7 +105,7 @@ export function DashboardHomeScreen({
 
         {/* Continue Learning - Right under button */}
         {lectures.length > 0 && (
-          <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-6 dark:hover:bg-white/5 transition-colors">
+          <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-8 dark:hover:bg-white/5 transition-colors">
             <div
               onClick={() => {
                 onSelectLecture(lectures[0].id)
@@ -179,7 +179,7 @@ export function DashboardHomeScreen({
           const isCompleted = currentValue >= currentGoal.target
 
           return (
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 mb-6 animate-card-in card-stagger-1 dark:hover:bg-white/5 transition-colors">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-8 animate-card-in card-stagger-1 dark:hover:bg-white/5 transition-colors">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className={`w-8 h-8 rounded-xl ${currentGoal.bgColor} flex items-center justify-center`}>
@@ -217,7 +217,7 @@ export function DashboardHomeScreen({
         })()}
 
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Courses</h2>
           <button
             onClick={onCreateCourse}
@@ -256,7 +256,7 @@ export function DashboardHomeScreen({
                   >
                     <div
                       onClick={() => onSelectCourse(course.id)}
-                      className={`bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] dark:hover:bg-white/5 animate-card-in card-stagger-${Math.min(index + 1, 6)}`}
+                      className={`bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] dark:hover:bg-white/5 animate-card-in card-stagger-${Math.min(index + 1, 6)}`}
                     >
                       <div className="flex items-center gap-3 mb-3">
                         <div className={`w-11 h-11 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -288,7 +288,7 @@ export function DashboardHomeScreen({
 
 
           {/* Study Tip */}
-          <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 dark:hover:bg-white/5 transition-colors">
+          <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 dark:hover:bg-white/5 transition-colors">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 bg-amber-100 dark:bg-amber-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
