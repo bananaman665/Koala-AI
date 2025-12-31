@@ -11,31 +11,6 @@
   display: none;
 }
 
-/* ============================================
-   TOUCH DEVICE HOVER FIX
-   ============================================ */
-/* On touch devices, disable hover effects to prevent sticky states after finger lift */
-.touch-device *:not(button):not(a):not([role="button"]):hover {
-  background-color: inherit !important;
-  border-color: inherit !important;
-  box-shadow: inherit !important;
-  color: inherit !important;
-  opacity: 1 !important;
-  transform: none !important;
-}
-
-/* For interactive elements on touch devices, only show feedback on active */
-.touch-device button:hover,
-.touch-device a:hover,
-.touch-device [role="button"]:hover {
-  /* Suppress hover state persistence on interactive elements too */
-}
-
-/* But keep active state for all elements since :active clears when touch ends */
-.touch-device *:active {
-  /* Active state works fine on touch devices */
-}
-
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
