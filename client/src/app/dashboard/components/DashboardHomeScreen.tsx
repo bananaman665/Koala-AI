@@ -60,26 +60,6 @@ export function DashboardHomeScreen({
   return (
     <div className="overflow-y-auto bg-gray-50 dark:bg-[#111827] h-full relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40">
-        {/* Storage Warning Banner */}
-        {lectures.length >= LECTURE_WARNING_THRESHOLD && (
-          <div className="bg-white dark:bg-[#1a2235] border border-gray-100 dark:border-white/[0.06] rounded-xl p-4 mb-6 animate-card-in">
-            <div className="flex items-start gap-3">
-              <FiAlertCircle className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                  Storage Almost Full
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  You're using {lectures.length} of {MAX_LECTURES} available lecture slots.
-                  {lectures.length >= MAX_LECTURES
-                    ? ' Delete some lectures to continue recording.'
-                    : ' Consider deleting old lectures to free up space.'}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Hero Section - Clean & Focused */}
         <div className="mb-8">
           {/* Greeting */}
@@ -102,6 +82,26 @@ export function DashboardHomeScreen({
             Start Recording
           </button>
         </div>
+
+        {/* Storage Warning Banner */}
+        {lectures.length >= LECTURE_WARNING_THRESHOLD && (
+          <div className="bg-white dark:bg-[#1a2235] border border-gray-100 dark:border-white/[0.06] rounded-xl p-4 mb-6 animate-card-in">
+            <div className="flex items-start gap-3">
+              <FiAlertCircle className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                  Storage Almost Full
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  You're using {lectures.length} of {MAX_LECTURES} available lecture slots.
+                  {lectures.length >= MAX_LECTURES
+                    ? ' Delete some lectures to continue recording.'
+                    : ' Consider deleting old lectures to free up space.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Continue Learning - Right under button */}
         {lectures.length > 0 && (
