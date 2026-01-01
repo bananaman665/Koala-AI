@@ -55,7 +55,7 @@ export function DashboardHomeScreen({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40">
         {/* Greeting - Reduced prominence */}
         <div className="mb-4">
-          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <p className="text-2xl font-medium text-gray-600 dark:text-gray-400">
             {(() => {
               const hour = new Date().getHours()
               const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
