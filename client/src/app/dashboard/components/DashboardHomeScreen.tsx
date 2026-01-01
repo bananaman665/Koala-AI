@@ -1,6 +1,6 @@
 'use client'
 
-import { FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader } from 'react-icons/fi'
+import { FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader, FiClock } from 'react-icons/fi'
 import { Mic, Trophy } from 'lucide-react'
 import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
@@ -28,6 +28,8 @@ interface DashboardHomeScreenProps {
   selectedCourse: string | null
   streak: number
   isLoadingCourses: boolean
+  courseFilter: 'active' | 'all'
+  onCourseFilterChange: (filter: 'active' | 'all') => void
   onStartRecording: () => void
   onCreateCourse: () => void
   onSelectCourse: (courseId: string) => void
@@ -42,6 +44,8 @@ export function DashboardHomeScreen({
   selectedCourse,
   streak,
   isLoadingCourses,
+  courseFilter,
+  onCourseFilterChange,
   onStartRecording,
   onCreateCourse,
   onSelectCourse,
@@ -54,6 +58,30 @@ export function DashboardHomeScreen({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40">
         {/* Page Title */}
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Home</h1>
+
+        {/* Course Filter Tabs */}
+        <div className="flex space-x-2 overflow-x-auto pb-2 mb-6">
+          <button
+            onClick={() => onCourseFilterChange('all')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
+              courseFilter === 'all'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            All Courses
+          </button>
+          <button
+            onClick={() => onCourseFilterChange('active')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
+              courseFilter === 'active'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            Active
+          </button>
+        </div>
 
         {/* Continue Learning - Primary focal element */}
         {lectures.length > 0 && (
@@ -101,10 +129,20 @@ export function DashboardHomeScreen({
               /* Empty State */
               <div className="col-span-2 text-center py-12 px-6">
                 <div className="w-14 h-14 mx-auto mb-4 bg-violet-100 dark:bg-violet-500/10 rounded-xl flex items-center justify-center">
-                  <FiBook className="text-violet-600 dark:text-violet-400 text-2xl" />
+                  {courseFilter === 'active' ? (
+                    <FiClock className="text-violet-600 dark:text-violet-400 text-2xl" />
+                  ) : (
+                    <FiBook className="text-violet-600 dark:text-violet-400 text-2xl" />
+                  )}
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No courses yet</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">Tap + Add to create your first course</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {courseFilter === 'active' ? 'No active courses' : 'No courses yet'}
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  {courseFilter === 'active'
+                    ? 'Record a lecture to make a course active!'
+                    : 'Tap + Add to create your first course'}
+                </p>
               </div>
             ) : (
               courses.map((course, index) => {

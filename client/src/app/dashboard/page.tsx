@@ -253,6 +253,9 @@ function DashboardContent() {
   const [librarySearchQuery, setLibrarySearchQuery] = useState('')
   const [libraryFilter, setLibraryFilter] = useState<'all' | 'week'>('all')
 
+  // Home page course filter state
+  const [courseFilter, setCourseFilter] = useState<'active' | 'all'>('all')
+
   // Course management state
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
   const [showNewCourseModal, setShowNewCourseModal] = useState(false)
@@ -347,9 +350,45 @@ function DashboardContent() {
     }
   }, [user, isCheckingAuth])
 
+  // Load course filter preference from localStorage
+  useEffect(() => {
+    if (user) {
+      const savedFilter = localStorage.getItem('koala_course_filter_preference')
+      if (savedFilter === 'active' || savedFilter === 'all') {
+        setCourseFilter(savedFilter as 'active' | 'all')
+      }
+    }
+  }, [user])
+
   const handleOnboardingComplete = () => {
     localStorage.setItem('onboarding_completed', 'true')
     setShowOnboarding(false)
+  }
+
+  const handleCourseFilterChange = (filter: 'active' | 'all') => {
+    setCourseFilter(filter)
+    localStorage.setItem('koala_course_filter_preference', filter)
+    hapticSelection?.()
+  }
+
+  // Filter courses based on activity (courses with lectures in last 7 days)
+  const getFilteredCourses = () => {
+    if (courseFilter === 'all') {
+      return courses
+    }
+
+    // Active: courses with lectures in last 7 days
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+    const activeCourseIds = new Set(
+      lectures
+        .filter(lecture => new Date(lecture.created_at) >= sevenDaysAgo)
+        .map(lecture => lecture.course_id)
+        .filter(Boolean)
+    )
+
+    return courses.filter(course => activeCourseIds.has(course.id))
   }
 
   // Check and award XP for monthly goal completion
@@ -1712,10 +1751,12 @@ function DashboardContent() {
               <DashboardHomeScreen
                 user={user}
                 lectures={lectures}
-                courses={courses}
+                courses={getFilteredCourses()}
                 selectedCourse={selectedCourse}
                 streak={streak}
                 isLoadingCourses={isLoadingCourses}
+                courseFilter={courseFilter}
+                onCourseFilterChange={handleCourseFilterChange}
                 onStartRecording={() => setShowReadyToRecordModal(true)}
                 onCreateCourse={() => setShowNewCourseModal(true)}
                 onSelectCourse={(courseId) => setSelectedCourse(courseId)}
