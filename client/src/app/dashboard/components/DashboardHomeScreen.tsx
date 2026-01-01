@@ -37,7 +37,6 @@ interface DashboardHomeScreenProps {
 }
 
 export function DashboardHomeScreen({
-  user,
   lectures,
   courses,
   selectedCourse,
