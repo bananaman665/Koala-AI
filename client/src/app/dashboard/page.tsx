@@ -254,7 +254,7 @@ function DashboardContent() {
   const [libraryFilter, setLibraryFilter] = useState<'all' | 'week'>('all')
 
   // Home page course filter state
-  const [courseFilter, setCourseFilter] = useState<'active' | 'all'>('all')
+  const [courseFilter, setCourseFilter] = useState<'active' | 'all' | 'favorites'>('all')
 
   // Course management state
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
@@ -354,8 +354,8 @@ function DashboardContent() {
   useEffect(() => {
     if (user) {
       const savedFilter = localStorage.getItem('koala_course_filter_preference')
-      if (savedFilter === 'active' || savedFilter === 'all') {
-        setCourseFilter(savedFilter as 'active' | 'all')
+      if (savedFilter === 'active' || savedFilter === 'all' || savedFilter === 'favorites') {
+        setCourseFilter(savedFilter as 'active' | 'all' | 'favorites')
       }
     }
   }, [user])
@@ -365,7 +365,7 @@ function DashboardContent() {
     setShowOnboarding(false)
   }
 
-  const handleCourseFilterChange = (filter: 'active' | 'all') => {
+  const handleCourseFilterChange = (filter: 'active' | 'all' | 'favorites') => {
     setCourseFilter(filter)
     localStorage.setItem('koala_course_filter_preference', filter)
     hapticSelection?.()
@@ -375,6 +375,11 @@ function DashboardContent() {
   const getFilteredCourses = () => {
     if (courseFilter === 'all') {
       return courses
+    }
+
+    if (courseFilter === 'favorites') {
+      // Favorites: courses marked as favorites
+      return courses.filter(course => (course as any).is_favorite === true)
     }
 
     // Active: courses with lectures in last 7 days

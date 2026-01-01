@@ -1,6 +1,6 @@
 'use client'
 
-import { FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader, FiClock } from 'react-icons/fi'
+import { FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader, FiClock, FiStar } from 'react-icons/fi'
 import { Mic, Trophy } from 'lucide-react'
 import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
@@ -28,8 +28,8 @@ interface DashboardHomeScreenProps {
   selectedCourse: string | null
   streak: number
   isLoadingCourses: boolean
-  courseFilter: 'active' | 'all'
-  onCourseFilterChange: (filter: 'active' | 'all') => void
+  courseFilter: 'active' | 'all' | 'favorites'
+  onCourseFilterChange: (filter: 'active' | 'all' | 'favorites') => void
   onStartRecording: () => void
   onCreateCourse: () => void
   onSelectCourse: (courseId: string) => void
@@ -81,6 +81,16 @@ export function DashboardHomeScreen({
           >
             Active
           </button>
+          <button
+            onClick={() => onCourseFilterChange('favorites')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
+              courseFilter === 'favorites'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            Favorites
+          </button>
         </div>
 
         {/* Continue Learning - Primary focal element */}
@@ -131,16 +141,24 @@ export function DashboardHomeScreen({
                 <div className="w-14 h-14 mx-auto mb-4 bg-violet-100 dark:bg-violet-500/10 rounded-xl flex items-center justify-center">
                   {courseFilter === 'active' ? (
                     <FiClock className="text-violet-600 dark:text-violet-400 text-2xl" />
+                  ) : courseFilter === 'favorites' ? (
+                    <FiStar className="text-violet-600 dark:text-violet-400 text-2xl" />
                   ) : (
                     <FiBook className="text-violet-600 dark:text-violet-400 text-2xl" />
                   )}
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  {courseFilter === 'active' ? 'No active courses' : 'No courses yet'}
+                  {courseFilter === 'active'
+                    ? 'No active courses'
+                    : courseFilter === 'favorites'
+                    ? 'No favorites yet'
+                    : 'No courses yet'}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 text-sm">
                   {courseFilter === 'active'
                     ? 'Record a lecture to make a course active!'
+                    : courseFilter === 'favorites'
+                    ? 'Star your favorite courses to see them here'
                     : 'Tap + Add to create your first course'}
                 </p>
               </div>
