@@ -53,18 +53,8 @@ export function DashboardHomeScreen({
   return (
     <div className="overflow-y-auto bg-gray-50 dark:bg-[#111827] h-full relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40">
-        {/* Greeting */}
-        <div className="mb-6 text-center">
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">
-            {(() => {
-              const hour = new Date().getHours()
-              const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
-              const fullName = user?.fullName || user?.displayName || user?.username || ''
-              const userName = fullName.slice(0, 7)
-              return `${greeting}${userName ? ', ' + userName : ''}! 👋`
-            })()}
-          </p>
-        </div>
+        {/* Page Title */}
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Home</h1>
 
         {/* Continue Learning - Primary focal element */}
         {lectures.length > 0 && (
