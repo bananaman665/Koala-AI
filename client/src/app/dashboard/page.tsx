@@ -2377,31 +2377,28 @@ function DashboardContent() {
                           setSelectedCourse(null)
                           setActiveScreen('library')
                         }}
-                        className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer card-press dark:hover:bg-white/5"
+                        className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] dark:hover:bg-white/5"
                       >
-                        <div className="mb-1.5">
-                          <h3 className="font-semibold text-gray-900 dark:text-white">{lecture.title}</h3>
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                          <span className="flex items-center">
-                            <FiClock className="mr-1" />
-                            {formattedDuration}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <span>{dateDisplay}</span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                hapticButton()
-                                setLectureToShare(lecture.id)
-                                setShowShareLectureModal(true)
-                              }}
-                              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                              aria-label="Share lecture"
-                            >
-                              <FiShare2 className="text-gray-600 dark:text-gray-400" />
-                            </button>
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-11 h-11 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <FiPlay className="text-lg text-blue-600 dark:text-blue-400" />
                           </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
+                              {lecture.title}
+                            </h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {formattedDuration}
+                            </p>
+                          </div>
+                          <FiChevronRight className="text-gray-300 dark:text-white/30 text-lg flex-shrink-0" />
+                        </div>
+                        {/* Progress Bar - represents completion/ready status */}
+                        <div className="h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-500 progress-animate bg-blue-500"
+                            style={{ width: lecture.transcription_status === 'completed' ? '100%' : '50%' }}
+                          />
                         </div>
                       </div>
                     )
