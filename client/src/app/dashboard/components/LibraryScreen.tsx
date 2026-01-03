@@ -214,9 +214,11 @@ export function LibraryScreen({
 
                 return filteredLectures.map((lecture, index) => {
                   const durationMinutes = Math.floor(lecture.duration / 60)
+                  const hours = Math.floor(durationMinutes / 60)
+                  const mins = durationMinutes % 60
                   const formattedDuration = durationMinutes >= 60
-                    ? `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`
-                    : `${durationMinutes}m`
+                    ? `${hours}h ${mins} minutes`
+                    : `${durationMinutes} minutes`
                   const createdDate = new Date(lecture.created_at)
                   const formattedDate = createdDate.toLocaleDateString('en-US', {
                     month: 'short',
