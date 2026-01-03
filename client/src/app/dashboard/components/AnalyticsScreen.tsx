@@ -140,7 +140,7 @@ export function AnalyticsScreen({
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {streak} {streak === 1 ? 'Day' : 'Days'}
                 </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">
+                <p className="text-xs text-gray-400 dark:text-gray-400">
                   {streak === 0 ? 'Start your streak!' : streak >= 7 ? 'Amazing progress!' : 'Keep it up!'}
                 </p>
               </div>
