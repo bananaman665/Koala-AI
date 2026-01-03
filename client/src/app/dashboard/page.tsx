@@ -2419,7 +2419,6 @@ function DashboardContent() {
                               </div>
                             )
                           })()}
-                          </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
                               {lecture.title}
