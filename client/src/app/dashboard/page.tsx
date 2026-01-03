@@ -48,6 +48,18 @@ const courseColorClasses: Record<string, { bg: string; text: string; bar: string
   yellow: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-600 dark:text-yellow-400', bar: 'bg-yellow-500' },
 }
 
+// Color classes for lecture icons
+const lectureColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
+  blue: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', bar: 'bg-blue-500' },
+  purple: { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-600 dark:text-purple-400', bar: 'bg-purple-500' },
+  green: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400', bar: 'bg-green-500' },
+  orange: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', bar: 'bg-orange-500' },
+  pink: { bg: 'bg-pink-100 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-400', bar: 'bg-pink-500' },
+  yellow: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-600 dark:text-yellow-400', bar: 'bg-yellow-500' },
+}
+
+const lectureColorKeys = Object.keys(lectureColorClasses)
+
 // Storage limits for free tier
 const MAX_LECTURES = 10
 const MAX_COURSES = 5
@@ -85,6 +97,7 @@ function DashboardContent() {
   const [monthlyGoalRewarded, setMonthlyGoalRewarded] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [lectureColors, setLectureColors] = useState<Record<string, string>>({})
   const {
     isRecording,
     isPaused,
@@ -117,6 +130,21 @@ function DashboardContent() {
   const analyserRef = useRef<AnalyserNode | null>(null)
   const mediaStreamRef = useRef<MediaStream | null>(null)
   const animationFrameRef = useRef<number | null>(null)
+
+  // Function to get or assign a color to a lecture
+  const getLectureColor = (lectureId: string): string => {
+    if (lectureColors[lectureId]) {
+      return lectureColors[lectureId]
+    }
+
+    // Assign a random color
+    const randomColor = lectureColorKeys[Math.floor(Math.random() * lectureColorKeys.length)]
+    setLectureColors(prev => ({
+      ...prev,
+      [lectureId]: randomColor
+    }))
+    return randomColor
+  }
 
   // Audio visualization effect
   useEffect(() => {
@@ -2382,8 +2410,15 @@ function DashboardContent() {
                         className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] dark:hover:bg-white/5"
                       >
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="w-11 h-11 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <FiPlay className="text-lg text-blue-600 dark:text-blue-400" />
+                          {(() => {
+                            const color = getLectureColor(lecture.id)
+                            const colorClass = lectureColorClasses[color] || lectureColorClasses.blue
+                            return (
+                              <div className={`w-11 h-11 ${colorClass.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                                <FiPlay className={`text-lg ${colorClass.text}`} />
+                              </div>
+                            )
+                          })()}
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
@@ -2396,12 +2431,18 @@ function DashboardContent() {
                           <FiChevronRight className="text-gray-300 dark:text-white/30 text-lg flex-shrink-0" />
                         </div>
                         {/* Progress Bar - represents completion/ready status */}
-                        <div className="h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-500 progress-animate bg-blue-500"
-                            style={{ width: lecture.transcription_status === 'completed' ? '100%' : '50%' }}
-                          />
-                        </div>
+                        {(() => {
+                          const color = getLectureColor(lecture.id)
+                          const colorClass = lectureColorClasses[color] || lectureColorClasses.blue
+                          return (
+                            <div className="h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-500 progress-animate ${colorClass.bar}`}
+                                style={{ width: lecture.transcription_status === 'completed' ? '100%' : '50%' }}
+                              />
+                            </div>
+                          )
+                        })()}
                       </div>
                     )
                   })
