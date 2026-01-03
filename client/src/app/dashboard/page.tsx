@@ -1730,10 +1730,10 @@ function DashboardContent() {
                 onClick={() => { hapticButton(); setShowLevelModal(true) }}
                 className="flex items-center gap-2 hover:bg-purple-100 dark:hover:bg-purple-500/20 px-1 rounded-full transition-colors"
               >
-                <div className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
+                <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                  <span className="text-white text-xs font-bold">{levelInfo.level}</span>
                 </div>
-                <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">{levelInfo.name}</span>
+                <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">{levelInfo.name}</span>
               </button>
 
               <span className="text-gray-300 dark:text-gray-600">·</span>
@@ -1743,8 +1743,8 @@ function DashboardContent() {
                 onClick={() => { hapticButton(); setShowStreakModal(true) }}
                 className="flex items-center gap-1 hover:bg-purple-100 dark:hover:bg-purple-500/20 px-1 rounded-full transition-colors"
               >
-                <Fire size={14} weight="fill" className="text-orange-500 flex-shrink-0" />
-                <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">{streak} day{streak !== 1 ? 's' : ''}</span>
+                <Fire size={16} weight="fill" className="text-orange-500 flex-shrink-0" />
+                <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{streak} day{streak !== 1 ? 's' : ''}</span>
               </button>
             </div>
 
