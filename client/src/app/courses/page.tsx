@@ -181,6 +181,14 @@ export default function CoursesPage() {
   const handleDeleteCourse = async () => {
     if (!courseToDelete) return
 
+    // Check if trying to delete default "My Course"
+    if (courseToDelete.name === 'My Course' && courseToDelete.code === '100') {
+      toast.error('Cannot delete your default course')
+      setShowDeleteModal(false)
+      setCourseToDelete(null)
+      return
+    }
+
     setIsDeleting(true)
     try {
       if (isTestMode) {
@@ -385,10 +393,17 @@ export default function CoursesPage() {
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
-                  openDeleteModal(course)
+                  if (course.name !== 'My Course' || course.code !== '100') {
+                    openDeleteModal(course)
+                  }
                 }}
-                className="absolute top-4 right-4 z-10 p-2 bg-white dark:bg-gray-700 rounded-lg shadow-md hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
-                title="Delete course"
+                disabled={course.name === 'My Course' && course.code === '100'}
+                className={`absolute top-4 right-4 z-10 p-2 bg-white dark:bg-gray-700 rounded-lg shadow-md transition-colors opacity-0 group-hover:opacity-100 ${
+                  course.name === 'My Course' && course.code === '100'
+                    ? 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-500'
+                    : 'hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600'
+                }`}
+                title={course.name === 'My Course' && course.code === '100' ? 'Cannot delete your default course' : 'Delete course'}
               >
                 <FiTrash2 className="w-4 h-4" />
               </button>

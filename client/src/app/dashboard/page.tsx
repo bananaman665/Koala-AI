@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2, FiEdit2 } from 'react-icons/fi'
+import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2, FiEdit2, FiShare2 } from 'react-icons/fi'
 import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem } from 'lucide-react'
 import { Fire } from '@phosphor-icons/react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
@@ -36,6 +36,7 @@ import { LearnMode } from './components/LearnMode'
 import { DashboardHomeScreen } from './components/DashboardHomeScreen'
 import { LibraryScreen } from './components/LibraryScreen'
 import { ShareLectureToClassModal } from './components/ShareLectureToClassModal'
+import { DailyGreeting } from '@/components/DailyGreeting'
 
 // Color classes for course icons (full class names for Tailwind to detect)
 const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
@@ -80,6 +81,7 @@ function DashboardContent() {
   } = useAchievements()
   const [showLevelModal, setShowLevelModal] = useState(false)
   const [showAchievementsModal, setShowAchievementsModal] = useState(false)
+  const [showDailyGreeting, setShowDailyGreeting] = useState(false)
   const [monthlyGoalRewarded, setMonthlyGoalRewarded] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
@@ -346,6 +348,20 @@ function DashboardContent() {
       const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true'
       if (!hasCompletedOnboarding) {
         setShowOnboarding(true)
+      }
+    }
+  }, [user, isCheckingAuth])
+
+  // Check if user should see daily greeting
+  useEffect(() => {
+    if (user && !isCheckingAuth) {
+      const today = new Date().toDateString()
+      const lastGreetingDate = localStorage.getItem('daily_greeting_date')
+
+      // Show greeting if they haven't seen it today
+      if (lastGreetingDate !== today) {
+        setShowDailyGreeting(true)
+        localStorage.setItem('daily_greeting_date', today)
       }
     }
   }, [user, isCheckingAuth])
@@ -621,6 +637,14 @@ function DashboardContent() {
   // Delete course function
   const deleteCourse = async (courseId: string) => {
     if (!user?.id) return
+
+    // Find the course to check if it's the default "My Course"
+    const courseToDelete = courses.find(c => c.id === courseId)
+    if (courseToDelete && courseToDelete.name === 'My Course' && courseToDelete.code === '100') {
+      hapticError()
+      toast.error('Cannot delete your default course')
+      return
+    }
 
     try {
       // First delete all lectures in this course
@@ -1655,23 +1679,49 @@ function DashboardContent() {
             onSkip={handleOnboardingComplete}
           />
         )}
+
+        {/* Daily Greeting - Shows once per day */}
+        {showDailyGreeting && (
+          <DailyGreeting
+            streak={streak}
+            totalXP={totalXP}
+            lecturesCompletedToday={lectures.filter(l => {
+              const lectureDate = new Date(l.created_at).toDateString()
+              const today = new Date().toDateString()
+              return lectureDate === today
+            }).length}
+            onDismiss={() => setShowDailyGreeting(false)}
+          />
+        )}
+
         {/* Top Navigation */}
         <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Left side - Combined Level & Streak Pill */}
-            <button
-              onClick={() => { hapticButton(); setShowLevelModal(true) }}
-              className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 dark:bg-purple-500/10 rounded-full hover:bg-purple-100 dark:hover:bg-purple-500/20 transition-colors"
-            >
-              <div className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
-              </div>
-              <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">{levelInfo.name}</span>
+            <div className="flex items-center gap-0 px-3 py-1.5 bg-purple-50 dark:bg-purple-500/10 rounded-full">
+              {/* Level button */}
+              <button
+                onClick={() => { hapticButton(); setShowLevelModal(true) }}
+                className="flex items-center gap-2 hover:bg-purple-100 dark:hover:bg-purple-500/20 px-1 rounded-full transition-colors"
+              >
+                <div className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                  <span className="text-white text-[10px] font-bold">{levelInfo.level}</span>
+                </div>
+                <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">{levelInfo.name}</span>
+              </button>
+
               <span className="text-gray-300 dark:text-gray-600">·</span>
-              <Fire size={14} weight="fill" className="text-orange-500 flex-shrink-0" />
-              <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">{streak} day{streak !== 1 ? 's' : ''}</span>
-            </button>
+
+              {/* Streak button */}
+              <button
+                onClick={() => { hapticButton(); setShowStreakModal(true) }}
+                className="flex items-center gap-1 hover:bg-purple-100 dark:hover:bg-purple-500/20 px-1 rounded-full transition-colors"
+              >
+                <Fire size={14} weight="fill" className="text-orange-500 flex-shrink-0" />
+                <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">{streak} day{streak !== 1 ? 's' : ''}</span>
+              </button>
+            </div>
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-4">
@@ -1803,7 +1853,7 @@ function DashboardContent() {
                   <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                     {course.code ? `${course.code} - ${course.name}` : course.name}
                   </h1>
-                  <p className="text-gray-600 text-sm mt-1">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
                     {lectureCount} {lectureCount === 1 ? 'lecture' : 'lectures'}
                     {course.professor && ` • ${course.professor}`}
                   </p>
@@ -2289,15 +2339,15 @@ function DashboardContent() {
             )}
 
             {/* Lectures in this Course */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mt-6">
+            <div className="mt-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">All Lectures</h3>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {(() => {
                   const courseLectures = lectures.filter(l => l.course_id === selectedCourse)
 
                   if (courseLectures.length === 0) {
                     return (
-                      <div className="text-center py-8">
+                      <div className="text-center py-8 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-700">
                         <FiFileText className="text-gray-300 text-4xl mx-auto mb-2" />
                         <p className="text-gray-500 text-sm">No lectures in this course yet</p>
                       </div>
@@ -2319,34 +2369,42 @@ function DashboardContent() {
                       : `${Math.floor(diffHours / 24)} days ago`
 
                     return (
-                      <div 
-                        key={lecture.id} 
+                      <div
+                        key={lecture.id}
                         onClick={() => {
                           hapticSelection()
                           setSelectedLecture(lecture.id)
                           setSelectedCourse(null)
                           setActiveScreen('library')
                         }}
-                        className="p-4 bg-white dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-md transition-all cursor-pointer"
+                        className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer card-press dark:hover:bg-white/5"
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-gray-900 dark:text-white">{lecture.title}</h4>
-                          <span className={`text-xs px-3 py-1 rounded-full ${
-                            lecture.transcription_status === 'completed' ? 'bg-teal-100 dark:bg-teal-500/15 text-teal-700 dark:text-teal-400' :
-                            lecture.transcription_status === 'failed' ? 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-400' :
-                            'bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-400'
-                          }`}>
-                            {lecture.transcription_status === 'completed' ? 'Completed' :
-                             lecture.transcription_status === 'failed' ? 'Failed' :
-                             lecture.transcription_status === 'processing' ? 'Processing' : 'Pending'}
-                          </span>
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{lecture.title}</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{lecture.courses?.name || 'No course'}</p>
+                          </div>
                         </div>
-                        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-4">
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                           <span className="flex items-center">
                             <FiClock className="mr-1" />
                             {formattedDuration}
                           </span>
-                          <span>{dateDisplay}</span>
+                          <div className="flex items-center gap-2">
+                            <span>{dateDisplay}</span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                hapticButton()
+                                setLectureToShare(lecture.id)
+                                setShowShareLectureModal(true)
+                              }}
+                              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                              aria-label="Share lecture"
+                            >
+                              <FiShare2 className="text-gray-600 dark:text-gray-400" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )

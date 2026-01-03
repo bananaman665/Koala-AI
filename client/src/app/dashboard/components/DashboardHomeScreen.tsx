@@ -170,6 +170,7 @@ export function DashboardHomeScreen({
                     key={course.id}
                     onDelete={() => onDeleteCourse(course.id)}
                     itemName={`"${course.name}"`}
+                    disabled={course.name === 'My Course' && course.code === '100'}
                   >
                     <div
                       onClick={() => onSelectCourse(course.id)}
@@ -183,7 +184,7 @@ export function DashboardHomeScreen({
                           <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
                             {course.name}
                           </h3>
-                          <p className="text-xs text-gray-400 dark:text-gray-500">
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
                             {lectureCount} lecture{lectureCount !== 1 ? 's' : ''}
                           </p>
                         </div>
@@ -192,7 +193,7 @@ export function DashboardHomeScreen({
                       {/* Progress Bar */}
                       <div className="h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-500 ${courseColorClasses[course.color]?.bar || 'bg-blue-500'}`}
+                          className={`h-full rounded-full transition-all duration-500 progress-animate ${courseColorClasses[course.color]?.bar || 'bg-blue-500'}`}
                           style={{ width: `${lectureCount > 0 ? Math.min((lectureCount / 10) * 100, 100) : 0}%` }}
                         />
                       </div>

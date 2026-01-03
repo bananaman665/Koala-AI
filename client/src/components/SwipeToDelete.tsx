@@ -10,6 +10,7 @@ interface SwipeToDeleteProps {
   deleteThreshold?: number
   className?: string
   itemName?: string
+  disabled?: boolean
 }
 
 export function SwipeToDelete({
@@ -18,6 +19,7 @@ export function SwipeToDelete({
   deleteThreshold = 80,
   className = '',
   itemName = 'this item',
+  disabled = false,
 }: SwipeToDeleteProps) {
   const [translateX, setTranslateX] = useState(0)
   const [isSwiping, setIsSwiping] = useState(false)
@@ -29,7 +31,7 @@ export function SwipeToDelete({
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (isSliding || isCollapsing || showConfirmation) return
+    if (disabled || isSliding || isCollapsing || showConfirmation) return
     startX.current = e.touches[0].clientX
     currentX.current = e.touches[0].clientX
     setIsSwiping(true)

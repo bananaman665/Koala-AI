@@ -196,11 +196,17 @@ export function AudioPlayer({
     }
   }, [useNative, nativeAudio, playerIsPlaying])
 
+  // Apply playback rate to audio element
+  useEffect(() => {
+    if (useNative || !audioRef.current) return
+    audioRef.current.playbackRate = playbackRate
+  }, [playbackRate, useNative])
+
   // Audio event handlers (only for web player)
   useEffect(() => {
     // Skip setting up web audio events if using native
     if (useNative) return
-    
+
     const audio = audioRef.current
     if (!audio) return
 
@@ -212,6 +218,8 @@ export function AudioPlayer({
     const handleLoadedMetadata = () => {
       setDuration(audio.duration || totalDuration)
       setIsLoading(false)
+      // Reapply playback rate after audio loads
+      audio.playbackRate = playbackRate
     }
 
     const handlePlay = () => setIsPlaying(true)
@@ -243,7 +251,7 @@ export function AudioPlayer({
       audio.removeEventListener('canplay', handleCanPlay)
       audio.removeEventListener('error', handleError)
     }
-  }, [totalDuration, onTimeUpdate, useNative])
+  }, [totalDuration, onTimeUpdate, useNative, playbackRate])
 
   // Keyboard shortcuts
   useEffect(() => {

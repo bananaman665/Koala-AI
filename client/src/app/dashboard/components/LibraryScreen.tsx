@@ -247,15 +247,6 @@ export function LibraryScreen({
                                 Shared
                               </span>
                             )}
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              lecture.transcription_status === 'completed' ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400' :
-                              lecture.transcription_status === 'failed' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
-                              'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-                            }`}>
-                              {lecture.transcription_status === 'completed' ? 'Ready' :
-                               lecture.transcription_status === 'failed' ? 'Failed' :
-                               lecture.transcription_status === 'processing' ? 'Processing' : 'Pending'}
-                            </span>
                           </div>
                         </div>
                         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
@@ -363,7 +354,7 @@ export function LibraryScreen({
                   minute: '2-digit'
                 }) : 'N/A'}
               </span>
-              <span className="px-2 py-1 bg-teal-100 dark:bg-teal-500/15 text-teal-700 dark:text-teal-400 rounded-full text-xs font-medium">
+              <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium">
                 Completed
               </span>
             </div>
@@ -448,8 +439,10 @@ export function LibraryScreen({
                 </div>
               </div>
             ) : selectedLectureNotes ? (
-              <div className="prose prose-sm max-w-none dark:prose-invert prose-h1:text-2xl prose-h1:text-center prose-h1:font-bold prose-h1:mb-8 prose-h1:pb-4 prose-h1:border-b prose-h1:border-gray-200 dark:prose-h1:border-gray-700 prose-h2:text-xl prose-h2:font-extrabold prose-h2:text-gray-900 dark:prose-h2:text-white prose-h2:mb-3 prose-h2:mt-6 prose-h3:text-lg prose-h3:font-bold prose-h3:text-gray-900 dark:prose-h3:text-white prose-h3:mb-2 prose-h3:mt-5 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-3 prose-p:ml-6 prose-ul:my-3 prose-ul:ml-12 prose-li:my-1.5 prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-semibold">
-                <ReactMarkdown>{selectedLectureNotes}</ReactMarkdown>
+              <div className="text-white">
+                <div className="prose prose-sm max-w-none dark:prose-invert prose-h1:text-2xl prose-h1:text-center prose-h1:font-bold prose-h1:mb-8 prose-h1:pb-4 prose-h1:border-b prose-h1:border-gray-200 dark:prose-h1:border-gray-700 prose-h2:text-xl prose-h2:font-extrabold prose-h2:text-gray-900 dark:prose-h2:text-white prose-h2:mb-3 prose-h2:mt-6 prose-h3:text-lg prose-h3:font-bold prose-h3:text-gray-900 dark:prose-h3:text-white prose-h3:mb-2 prose-h3:mt-5 prose-p:text-gray-700 dark:prose-p:text-white prose-p:leading-relaxed prose-p:mb-3 prose-p:ml-6 prose-ul:my-3 prose-ul:ml-12 prose-li:my-1.5 prose-li:text-gray-700 dark:prose-li:text-white prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-semibold">
+                  <ReactMarkdown>{selectedLectureNotes}</ReactMarkdown>
+                </div>
               </div>
             ) : (
               <p className="text-gray-500 dark:text-gray-400">No notes available for this lecture.</p>
