@@ -236,10 +236,9 @@ export function LibraryScreen({
                         onClick={() => onSelectLecture(lecture.id)}
                         className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer card-press dark:hover:bg-white/5"
                       >
-                        <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-start justify-between mb-1.5">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{lecture.title}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{lecture.courses?.name || 'No course'}</p>
+                            <h3 className="font-semibold text-gray-900 dark:text-white">{lecture.title}</h3>
                           </div>
                           <div className="flex items-center gap-2">
                             {isLectureShared(lecture.id) && (

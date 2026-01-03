@@ -1695,11 +1695,11 @@ function DashboardContent() {
         )}
 
         {/* Top Navigation */}
-        <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-[#1a2235] border-b border-gray-200 dark:border-white/[0.08] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-14 sm:h-16">
-            {/* Left side - Combined Level & Streak Pill */}
-            <div className="flex items-center gap-0 px-3 py-1.5 bg-purple-50 dark:bg-purple-500/10 rounded-full">
+            {/* Left side - Combined Level & Streak */}
+            <div className="flex items-center gap-0">
               {/* Level button */}
               <button
                 onClick={() => { hapticButton(); setShowLevelModal(true) }}
@@ -2379,11 +2379,8 @@ function DashboardContent() {
                         }}
                         className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer card-press dark:hover:bg-white/5"
                       >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{lecture.title}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{lecture.courses?.name || 'No course'}</p>
-                          </div>
+                        <div className="mb-1.5">
+                          <h3 className="font-semibold text-gray-900 dark:text-white">{lecture.title}</h3>
                         </div>
                         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                           <span className="flex items-center">
