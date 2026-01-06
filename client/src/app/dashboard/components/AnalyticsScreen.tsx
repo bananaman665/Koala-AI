@@ -56,7 +56,7 @@ export function AnalyticsScreen({
 
   return (
     <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40">
+      <div className="max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-32 sm:pt-36 lg:pt-8 larger-phone:pt-36 larger-phone:sm:pt-40 lg:larger-phone:pt-8">
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
 

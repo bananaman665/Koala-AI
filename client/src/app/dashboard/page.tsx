@@ -15,6 +15,7 @@ import { StreakDisplay, useStreak } from '@/components/StreakDisplay'
 import { OnboardingCarousel } from '@/components/OnboardingCarousel'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
+import { soundSuccess, soundSave, soundWhoosh } from '@/lib/sounds'
 import { supabase, uploadAudioFile, reorganizeAudioFile } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
@@ -37,6 +38,7 @@ import { DashboardHomeScreen } from './components/DashboardHomeScreen'
 import { LibraryScreen } from './components/LibraryScreen'
 import { ShareLectureToClassModal } from './components/ShareLectureToClassModal'
 import { DailyGreeting } from '@/components/DailyGreeting'
+import { Sidebar } from '@/components/Sidebar'
 
 // Color classes for course icons (full class names for Tailwind to detect)
 const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
@@ -472,7 +474,13 @@ function DashboardContent() {
   useEffect(() => {
     const screen = searchParams.get('screen')
     if (screen && ['dashboard', 'library', 'analytics', 'feed'].includes(screen)) {
-      setActiveScreen(prev => prev !== screen ? screen as 'dashboard' | 'library' | 'analytics' | 'feed' : prev)
+      setActiveScreen(prev => {
+        const newScreen = screen as 'dashboard' | 'library' | 'analytics' | 'feed'
+        if (prev !== newScreen) {
+          soundWhoosh()
+        }
+        return prev !== newScreen ? newScreen : prev
+      })
     }
   }, [searchParams])
 
@@ -1715,8 +1723,8 @@ function DashboardContent() {
           />
         )}
 
-        {/* Top Navigation */}
-        <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-[#1a2235] border-b border-gray-200 dark:border-white/[0.08] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        {/* Top Navigation - Mobile Only */}
+        <nav className="lg:hidden fixed top-0 left-0 right-0 bg-white dark:bg-[#1a2235] border-b border-gray-200 dark:border-white/[0.08] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Left side - Combined Level & Streak */}
@@ -1766,9 +1774,29 @@ function DashboardContent() {
         </div>
       </nav>
 
+      {/* Desktop Sidebar */}
+      <Sidebar
+        activeScreen={activeScreen}
+        onNavigate={(screen) => {
+          hapticSelection()
+          soundWhoosh()
+          setActiveScreen(screen)
+        }}
+        onStartRecording={() => setShowReadyToRecordModal(true)}
+        levelInfo={levelInfo}
+        streak={streak}
+        userEmail={user?.email}
+        isRecording={isRecording}
+        isStoppingRecording={isStoppingRecording}
+        isGeneratingNotes={isGeneratingNotes}
+        isTranscribing={isTranscribing}
+        onShowLevelModal={() => { hapticButton(); setShowLevelModal(true) }}
+        onShowStreakModal={() => { hapticButton(); setShowStreakModal(true) }}
+      />
+
       {/* Learn Mode Progress Bar - Attached to Top */}
       {activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0 && (
-        <div className="fixed top-14 sm:top-16 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
+        <div className="fixed top-14 sm:top-16 lg:top-0 left-0 lg:left-[280px] right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
           <div className="max-w-7xl mx-auto">
             <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
               <div
@@ -1786,7 +1814,7 @@ function DashboardContent() {
 
       {/* Flashcard Mode Progress Bar - Attached to Top */}
       {activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0 && (
-        <div className="fixed top-14 sm:top-16 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
+        <div className="fixed top-14 sm:top-16 lg:top-0 left-0 lg:left-[280px] right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
           <div className="max-w-7xl mx-auto">
             <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
               <div
@@ -1816,7 +1844,7 @@ function DashboardContent() {
       )}
 
       {/* Main scrollable content area */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden lg:ml-[280px]">
         {/* Dashboard Screen */}
         {(activeScreen === 'dashboard' || (isTransitioning && previousScreen === 'dashboard')) && (
           <ScreenTransition
@@ -1838,7 +1866,10 @@ function DashboardContent() {
                 onSelectCourse={(courseId) => setSelectedCourse(courseId)}
                 onDeleteCourse={deleteCourse}
                 onSelectLecture={setSelectedLecture}
-                onNavigateToLibrary={() => setActiveScreen('library')}
+                onNavigateToLibrary={() => {
+                  soundWhoosh()
+                  setActiveScreen('library')
+                }}
               />
             )}
 
@@ -2396,6 +2427,9 @@ function DashboardContent() {
                         key={lecture.id}
                         onClick={() => {
                           hapticSelection()
+                          if (activeScreen !== 'library') {
+                            soundWhoosh()
+                          }
                           setSelectedLecture(lecture.id)
                           setSelectedCourse(null)
                           setActiveScreen('library')
@@ -2538,6 +2572,9 @@ function DashboardContent() {
               streak={streak}
               isActiveToday={isActiveToday}
               onLectureClick={(lectureId) => {
+                if (activeScreen !== 'library') {
+                  soundWhoosh()
+                }
                 setSelectedLecture(lectureId)
                 setActiveScreen('library')
               }}
@@ -3190,11 +3227,17 @@ function DashboardContent() {
       `}</style>
 
       {/* Mobile Bottom Navigation with Center Record Button */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a2235] border-t border-gray-200 dark:border-white/[0.08] z-50 pb-8">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a2235] border-t border-gray-200 dark:border-white/[0.08] z-50 pb-8">
         <div className="flex items-end justify-evenly h-16 px-4 pt-2">
           {/* Home */}
           <button
-            onClick={() => { hapticSelection(); setActiveScreen('dashboard') }}
+            onClick={() => {
+              if (activeScreen !== 'dashboard') {
+                hapticSelection()
+                soundWhoosh()
+                setActiveScreen('dashboard')
+              }
+            }}
             className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
               activeScreen === 'dashboard' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
@@ -3205,7 +3248,13 @@ function DashboardContent() {
 
           {/* Library */}
           <button
-            onClick={() => { hapticSelection(); setActiveScreen('library') }}
+            onClick={() => {
+              if (activeScreen !== 'library') {
+                hapticSelection()
+                soundWhoosh()
+                setActiveScreen('library')
+              }
+            }}
             className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
               activeScreen === 'library' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
@@ -3275,7 +3324,13 @@ function DashboardContent() {
 
           {/* Analytics */}
           <button
-            onClick={() => { hapticSelection(); setActiveScreen('analytics') }}
+            onClick={() => {
+              if (activeScreen !== 'analytics') {
+                hapticSelection()
+                soundWhoosh()
+                setActiveScreen('analytics')
+              }
+            }}
             className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
               activeScreen === 'analytics' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
@@ -3286,7 +3341,13 @@ function DashboardContent() {
 
           {/* Classes */}
           <button
-            onClick={() => { hapticSelection(); setActiveScreen('feed') }}
+            onClick={() => {
+              if (activeScreen !== 'feed') {
+                hapticSelection()
+                soundWhoosh()
+                setActiveScreen('feed')
+              }
+            }}
             className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
               activeScreen === 'feed' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
@@ -3723,6 +3784,7 @@ function DashboardContent() {
                     // Record study activity for streak
                     recordActivity()
                     hapticSuccess()
+                    soundSuccess()
 
                     setShowCourseSelectionModal(false)
                     setSelectedCourseForRecording(null)
