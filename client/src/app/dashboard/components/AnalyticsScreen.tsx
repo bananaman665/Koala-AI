@@ -95,7 +95,7 @@ export function AnalyticsScreen({
           </div>
 
           {/* Stats Cards */}
-          <div key={timeFilter} className="grid grid-cols-2 gap-3 animate-fade-in-slow">
+          <div key={timeFilter} className="grid grid-cols-2 lg:grid-cols-4 gap-3 animate-fade-in-slow">
             <div className="bg-blue-50 dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-2">
                 <FiClock className="text-blue-600 dark:text-gray-400 text-xl" />

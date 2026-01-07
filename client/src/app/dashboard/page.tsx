@@ -1794,6 +1794,18 @@ function DashboardContent() {
         onShowStreakModal={() => { hapticButton(); setShowStreakModal(true) }}
       />
 
+      {/* Desktop Floating Action Button - Record */}
+      <button
+        onClick={() => setShowReadyToRecordModal(true)}
+        disabled={isRecording || isStoppingRecording || isGeneratingNotes || isTranscribing}
+        className="hidden lg:flex fixed bottom-8 right-8 w-16 h-16 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-full items-center justify-center shadow-2xl shadow-purple-500/30 z-50 transition-all hover:scale-110"
+        style={{
+          animation: isRecording ? 'none' : 'pulse-slow 2s ease-in-out infinite'
+        }}
+      >
+        <Mic className="w-7 h-7" strokeWidth={2} />
+      </button>
+
       {/* Learn Mode Progress Bar - Attached to Top */}
       {activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0 && (
         <div className="fixed top-14 sm:top-16 lg:top-0 left-0 lg:left-[280px] right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
@@ -3223,6 +3235,16 @@ function DashboardContent() {
         }
         .recording-indicator {
           animation: recording 2s ease-in-out infinite;
+        }
+        @keyframes pulse-slow {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.9;
+            transform: scale(1.05);
+          }
         }
       `}</style>
 

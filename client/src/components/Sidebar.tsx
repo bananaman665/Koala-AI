@@ -72,15 +72,15 @@ export function Sidebar({
           )
         })}
 
-        {/* Record Button - Centered, prominent */}
-        <button
+        {/* Record Button - Hidden (using FAB on desktop instead) */}
+        {/* <button
           onClick={onStartRecording}
           disabled={isDisabled}
           className="w-full mt-6 flex items-center justify-center gap-2 px-4 py-4 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
         >
           <Mic className="w-5 h-5" />
           <span>Record Lecture</span>
-        </button>
+        </button> */}
       </nav>
 
       {/* User Info Section - Bottom */}
