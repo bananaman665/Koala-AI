@@ -54,12 +54,12 @@ export function DashboardHomeScreen({
   onNavigateToLibrary,
 }: DashboardHomeScreenProps) {
   return (
-    <div className="overflow-hidden bg-gray-50 dark:bg-gray-900 h-full flex flex-col lg:flex-row">
-      {/* Left Panel - Course Filter (320px on desktop) */}
-      <div className="flex-1 lg:w-[320px] lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto">
-        <div className="px-4 sm:px-6 lg:px-4 pt-32 sm:pt-36 lg:pt-4 pb-8 lg:pb-4">
-          {/* Mobile: Page Title */}
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 lg:hidden">Home</h1>
+    <div className="overflow-hidden bg-gray-50 dark:bg-gray-900 h-full flex flex-col">
+      {/* Main Panel */}
+      <div className="flex-1 lg:overflow-y-auto">
+        <div className="px-4 sm:px-6 lg:px-8 xl:px-12 pt-32 sm:pt-36 lg:pt-4 pb-8 lg:pb-4">
+          {/* Page Title */}
+          <h1 className="text-2xl lg:text-xl font-bold text-gray-900 dark:text-white mb-6">Home</h1>
 
           {/* Course Filter Tabs */}
           <div className="flex space-x-2 overflow-x-auto pb-2 lg:pb-0 mb-6">
@@ -95,6 +95,28 @@ export function DashboardHomeScreen({
             </button>
           </div>
 
+          {/* Continue Learning - Desktop only */}
+          {lectures.length > 0 && (
+            <div className="hidden lg:block bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-6 dark:hover:bg-white/5 transition-colors shadow-sm">
+              <div
+                onClick={() => {
+                  onSelectLecture(lectures[0].id)
+                  onNavigateToLibrary()
+                }}
+                className="cursor-pointer group flex items-center gap-3"
+              >
+                <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Resume</p>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">{lectures[0].title}</h3>
+                </div>
+                <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0" />
+              </div>
+            </div>
+          )}
+
           {/* Desktop: Course List */}
           <div key={courseFilter} className="hidden lg:flex lg:flex-col lg:space-y-2 animate-fade-in">
             <div className="flex items-center justify-between mb-3">
@@ -124,18 +146,18 @@ export function DashboardHomeScreen({
                   <div
                     key={course.id}
                     onClick={() => onSelectCourse(course.id)}
-                    className={`p-3 lg:p-4 rounded-lg cursor-pointer transition-all border ${
+                    className={`p-3 lg:p-5 rounded-lg lg:rounded-xl cursor-pointer transition-all border ${
                       selectedCourse === course.id
                         ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-300 dark:border-blue-500'
                         : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                     }`}
                   >
-                    <div className="flex items-start gap-2">
-                      <div className={`w-8 h-8 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5`}>
-                        <FiBook className={`text-sm ${courseColorClasses[course.color]?.text || courseColorClasses.blue.text}`} />
+                    <div className="flex items-start gap-2 lg:gap-3">
+                      <div className={`w-8 h-8 lg:w-11 lg:h-11 ${courseColorClasses[course.color]?.bg || courseColorClasses.blue.bg} rounded-lg lg:rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 lg:mt-0`}>
+                        <FiBook className={`text-sm lg:text-lg ${courseColorClasses[course.color]?.text || courseColorClasses.blue.text}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-xs font-semibold text-gray-900 dark:text-white truncate">{course.name}</h3>
+                        <h3 className="text-xs lg:text-base font-semibold text-gray-900 dark:text-white truncate">{course.name}</h3>
                         <p className="text-xs text-gray-500 dark:text-gray-400">{lectureCount} lecture{lectureCount !== 1 ? 's' : ''}</p>
                       </div>
                     </div>
@@ -143,6 +165,40 @@ export function DashboardHomeScreen({
                 )
               })
             )}
+          </div>
+
+          {/* Mobile: Continue Learning */}
+          {lectures.length > 0 && (
+            <div className="lg:hidden bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-8 dark:hover:bg-white/5 transition-colors shadow-sm">
+              <div
+                onClick={() => {
+                  onSelectLecture(lectures[0].id)
+                  onNavigateToLibrary()
+                }}
+                className="cursor-pointer group flex items-center gap-3"
+              >
+                <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Resume</p>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">{lectures[0].title}</h3>
+                </div>
+                <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0" />
+              </div>
+            </div>
+          )}
+
+          {/* Mobile: Section Header */}
+          <div className="flex items-center justify-between mb-6 lg:hidden">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Courses</h2>
+            <button
+              onClick={onCreateCourse}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-full transition-colors"
+            >
+              <FiPlus className="text-sm" />
+              Add
+            </button>
           </div>
         </div>
       </div>
