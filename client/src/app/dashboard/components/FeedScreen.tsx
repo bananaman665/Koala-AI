@@ -1,7 +1,5 @@
 'use client'
-
-import { useState } from 'react'
-import { FiPlus, FiUsers } from 'react-icons/fi'
+import { FiPlus, FiUsers, FiChevronRight } from 'react-icons/fi'
 import { Lightbulb } from 'lucide-react'
 import { hapticButton } from '@/lib/haptics'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
@@ -117,36 +115,31 @@ export function FeedScreen({
                     itemName={`"${cls.name}"`}
                   >
                     <div
-                      className="p-4 bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/30 transition-all cursor-pointer"
+                      onClick={() => {
+                        hapticButton()
+                        onViewClass(cls.id)
+                      }}
+                      className="bg-white dark:bg-[#1E293B] rounded-2xl lg:rounded-xl border border-gray-100 dark:border-white/[0.06] p-5 lg:p-4 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] dark:hover:bg-white/5 hover:border-blue-300 dark:hover:border-blue-500/30"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3 flex-1 min-w-0">
-                          <div
-                            className={`w-10 h-10 ${
-                              courseColorClasses[cls.color]?.bg || courseColorClasses.blue.bg
-                            } rounded-xl flex items-center justify-center flex-shrink-0`}
-                          >
-                            <FiUsers
-                              className={`${courseColorClasses[cls.color]?.text || courseColorClasses.blue.text}`}
-                            />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="font-semibold text-gray-900 dark:text-white truncate">{cls.name}</h4>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                              {cls.code && `${cls.code} • `}
-                              {cls.class_memberships?.length || 0} members
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => {
-                            hapticButton()
-                            onViewClass(cls.id)
-                          }}
-                          className="px-3 py-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg font-medium transition-colors text-sm flex-shrink-0"
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`w-11 h-11 lg:w-10 lg:h-10 ${
+                            courseColorClasses[cls.color]?.bg || courseColorClasses.blue.bg
+                          } rounded-xl flex items-center justify-center flex-shrink-0`}
                         >
-                          View
-                        </button>
+                          <FiUsers
+                            className={`text-lg lg:text-base ${courseColorClasses[cls.color]?.text || courseColorClasses.blue.text}`}
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5 hidden lg:block">Class</p>
+                          <h4 className="text-base lg:text-sm font-semibold text-gray-900 dark:text-white truncate">{cls.name}</h4>
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">
+                            {cls.code && `${cls.code} • `}
+                            {cls.class_memberships?.length || 0} members
+                          </p>
+                        </div>
+                        <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0 hidden lg:block" />
                       </div>
                     </div>
                   </SwipeToDelete>
