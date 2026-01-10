@@ -62,33 +62,33 @@ export function DashboardHomeScreen({
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 lg:hidden">Home</h1>
 
           {/* Course Filter Tabs */}
-          <div className="flex lg:flex-col space-x-2 lg:space-x-0 lg:space-y-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 mb-6">
+          <div className="flex space-x-2 overflow-x-auto pb-2 lg:pb-0 mb-6">
             <button
               onClick={() => onCourseFilterChange('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex-shrink-0 lg:w-full lg:text-left transition-colors ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
                 courseFilter === 'all'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 lg:hover:bg-gray-200 dark:lg:hover:bg-gray-600'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
               }`}
             >
               All Courses
             </button>
             <button
               onClick={() => onCourseFilterChange('active')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex-shrink-0 lg:w-full lg:text-left transition-colors ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
                 courseFilter === 'active'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 lg:hover:bg-gray-200 dark:lg:hover:bg-gray-600'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
               }`}
             >
               Active
             </button>
             <button
               onClick={() => onCourseFilterChange('favorites')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap flex-shrink-0 lg:w-full lg:text-left transition-colors ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
                 courseFilter === 'favorites'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 lg:hover:bg-gray-200 dark:lg:hover:bg-gray-600'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
               }`}
             >
               Favorites
