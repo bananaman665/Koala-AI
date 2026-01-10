@@ -105,7 +105,7 @@ export function FeedScreen({
 
       {/* Right Panel - Main Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-7xl lg:max-w-none mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pb-32 lg:pb-8 pt-8 lg:pt-4">
+        <div className="max-w-7xl lg:max-w-none mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pb-32 lg:pb-8 pt-8 lg:pt-8">
           {/* Desktop: Page Title */}
           <h1 className="hidden lg:block text-xl font-bold text-gray-900 dark:text-white mb-6">Your Classes</h1>
 
