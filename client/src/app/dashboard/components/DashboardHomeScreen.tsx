@@ -101,7 +101,7 @@ export function DashboardHomeScreen({
               <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Courses</h2>
               <button
                 onClick={onCreateCourse}
-                className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-1.5 bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600 rounded-full transition-colors"
               >
                 <FiPlus className="text-sm" />
               </button>
