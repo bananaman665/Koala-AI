@@ -90,7 +90,7 @@ export function FeedScreen({
         <div className="max-w-7xl lg:max-w-none mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pb-32 lg:pb-8 pt-8 lg:pt-4">
           {/* Desktop: Page Title + Action */}
           <div className="hidden lg:flex items-center justify-between mb-6">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Classes</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Your Classes</h1>
             <button
               onClick={() => {
                 hapticButton()
@@ -103,11 +103,11 @@ export function FeedScreen({
             </button>
           </div>
 
-          {/* Your Classes */}
-          <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 dark:hover:bg-white/5 transition-colors">
+          {/* Mobile: Your Classes Container */}
+          <div className="lg:hidden bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 dark:hover:bg-white/5 transition-colors">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Your Classes</h3>
             {userClasses && userClasses.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {userClasses.map((cls: any) => (
                   <SwipeToDelete
                     key={cls.id}
@@ -119,27 +119,25 @@ export function FeedScreen({
                         hapticButton()
                         onViewClass(cls.id)
                       }}
-                      className="bg-white dark:bg-[#1E293B] rounded-2xl lg:rounded-xl border border-gray-100 dark:border-white/[0.06] p-5 lg:p-4 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] dark:hover:bg-white/5 hover:border-blue-300 dark:hover:border-blue-500/30"
+                      className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] dark:hover:bg-white/5 hover:border-blue-300 dark:hover:border-blue-500/30"
                     >
                       <div className="flex items-start gap-3">
                         <div
-                          className={`w-11 h-11 lg:w-10 lg:h-10 ${
+                          className={`w-11 h-11 ${
                             courseColorClasses[cls.color]?.bg || courseColorClasses.blue.bg
                           } rounded-xl flex items-center justify-center flex-shrink-0`}
                         >
                           <FiUsers
-                            className={`text-lg lg:text-base ${courseColorClasses[cls.color]?.text || courseColorClasses.blue.text}`}
+                            className={`text-lg ${courseColorClasses[cls.color]?.text || courseColorClasses.blue.text}`}
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5 hidden lg:block">Class</p>
-                          <h4 className="text-base lg:text-sm font-semibold text-gray-900 dark:text-white truncate">{cls.name}</h4>
+                          <h4 className="text-base font-semibold text-gray-900 dark:text-white truncate">{cls.name}</h4>
                           <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">
                             {cls.code && `${cls.code} • `}
                             {cls.class_memberships?.length || 0} members
                           </p>
                         </div>
-                        <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0 hidden lg:block" />
                       </div>
                     </div>
                   </SwipeToDelete>
@@ -157,6 +155,58 @@ export function FeedScreen({
               </div>
             )}
           </div>
+
+          {/* Desktop: Classes Grid (No Container) */}
+          {userClasses && userClasses.length > 0 ? (
+            <div className="hidden lg:grid lg:grid-cols-2 gap-4">
+              {userClasses.map((cls: any) => (
+                <SwipeToDelete
+                  key={cls.id}
+                  onDelete={() => onDeleteClass(cls.id)}
+                  itemName={`"${cls.name}"`}
+                >
+                  <div
+                    onClick={() => {
+                      hapticButton()
+                      onViewClass(cls.id)
+                    }}
+                    className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-white/[0.06] p-4 transition-all cursor-pointer group dark:hover:bg-white/5 hover:border-blue-300 dark:hover:border-blue-500/30"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`w-10 h-10 ${
+                          courseColorClasses[cls.color]?.bg || courseColorClasses.blue.bg
+                        } rounded-xl flex items-center justify-center flex-shrink-0`}
+                      >
+                        <FiUsers
+                          className={`text-base ${courseColorClasses[cls.color]?.text || courseColorClasses.blue.text}`}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Class</p>
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{cls.name}</h4>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">
+                          {cls.code && `${cls.code} • `}
+                          {cls.class_memberships?.length || 0} members
+                        </p>
+                      </div>
+                      <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0" />
+                    </div>
+                  </div>
+                </SwipeToDelete>
+              ))}
+            </div>
+          ) : (
+            <div className="hidden lg:block text-center py-12">
+              <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700/50 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <FiUsers className="w-6 h-6 text-gray-300 dark:text-gray-500" />
+              </div>
+              <p className="text-base font-semibold text-gray-900 dark:text-white mb-1">No classes yet</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Create or join a class to get started
+              </p>
+            </div>
+          )}
 
           {/* Mobile: Action Button */}
           <button
