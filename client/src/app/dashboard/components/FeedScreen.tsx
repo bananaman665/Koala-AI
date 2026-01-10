@@ -107,7 +107,7 @@ export function FeedScreen({
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-7xl lg:max-w-none mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pb-32 lg:pb-8 pt-8 lg:pt-8">
           {/* Desktop: Page Title */}
-          <h1 className="hidden lg:block text-xl font-bold text-gray-900 dark:text-white mb-6">Your Classes</h1>
+          <h1 className="hidden lg:block text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">Your Classes</h1>
 
           {/* Mobile: Your Classes Container */}
           <div className="lg:hidden bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 dark:hover:bg-white/5 transition-colors">
