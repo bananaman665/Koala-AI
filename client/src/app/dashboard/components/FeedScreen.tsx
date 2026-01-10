@@ -62,9 +62,12 @@ export function FeedScreen({
                   />
                 </div>
                 <button
-                  onClick={onJoinClass}
-                  disabled={isJoiningClass || !joinClassCode.trim()}
-                  className="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  onClick={() => {
+                    if (joinClassCode.trim() && !isJoiningClass) {
+                      onJoinClass()
+                    }
+                  }}
+                  className="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
                 >
                   {isJoiningClass ? 'Joining...' : 'Join Class'}
                 </button>
