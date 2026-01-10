@@ -67,7 +67,7 @@ export function FeedScreen({
                       onJoinClass()
                     }
                   }}
-                  className="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
+                  className="w-full px-4 py-2.5 bg-blue-600 dark:bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors text-sm"
                 >
                   {isJoiningClass ? 'Joining...' : 'Join Class'}
                 </button>
