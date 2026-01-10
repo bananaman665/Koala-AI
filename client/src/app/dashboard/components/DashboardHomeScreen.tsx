@@ -200,48 +200,6 @@ export function DashboardHomeScreen({
               Add
             </button>
           </div>
-        </div>
-      </div>
-
-      {/* Right Panel - Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-7xl lg:max-w-none mx-auto px-4 sm:px-6 lg:px-8 pb-32 lg:pb-8 pt-8 lg:pt-4">
-          {/* Desktop: Page Title */}
-          <h1 className="hidden lg:block text-xl font-bold text-gray-900 dark:text-white mb-6">Home</h1>
-
-          {/* Continue Learning - Primary focal element */}
-          {lectures.length > 0 && (
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-8 dark:hover:bg-white/5 transition-colors shadow-sm">
-              <div
-                onClick={() => {
-                  onSelectLecture(lectures[0].id)
-                  onNavigateToLibrary()
-                }}
-                className="cursor-pointer group flex items-center gap-3"
-              >
-                <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Resume</p>
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">{lectures[0].title}</h3>
-                </div>
-                <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0" />
-              </div>
-            </div>
-          )}
-
-          {/* Mobile: Section Header */}
-          <div className="flex items-center justify-between mb-6 lg:hidden">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Courses</h2>
-            <button
-              onClick={onCreateCourse}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-full transition-colors"
-            >
-              <FiPlus className="text-sm" />
-              Add
-            </button>
-          </div>
 
           {/* Mobile: Courses Grid */}
           <div className="lg:hidden space-y-6 mb-8">
@@ -321,7 +279,7 @@ export function DashboardHomeScreen({
             </div>
           </div>
 
-          {/* Monthly Goal / Analytics */}
+          {/* Desktop: Monthly Goal */}
           {(() => {
             // Calculate this month's progress
             const now = new Date()
@@ -396,7 +354,7 @@ export function DashboardHomeScreen({
               }
 
               return (
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-6 dark:hover:bg-white/5 transition-colors">
+                <div className="hidden lg:block bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-6 dark:hover:bg-white/5 transition-colors">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className={`w-8 h-8 rounded-xl ${currentGoal.bgColor} flex items-center justify-center`}>
@@ -429,7 +387,152 @@ export function DashboardHomeScreen({
 
             // Regular card for current month
             return (
-              <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-6 animate-card-in card-stagger-1 dark:hover:bg-white/5 transition-colors">
+              <div className="hidden lg:block bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-6 dark:hover:bg-white/5 transition-colors">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-8 h-8 rounded-xl ${currentGoal.bgColor} flex items-center justify-center`}>
+                      <Trophy className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-white">Monthly Goal</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{daysRemaining} days remaining</p>
+                    </div>
+                  </div>
+                  {isCompleted && (
+                    <span className="text-xs font-semibold text-green-500 bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-full">
+                      Completed!
+                    </span>
+                  )}
+                </div>
+
+                <p
+                  className="text-sm text-gray-600 dark:text-gray-300 mb-3"
+                  dangerouslySetInnerHTML={{ __html: currentGoal.description }}
+                />
+
+                {/* Progress Bar */}
+                <div className="relative h-6 bg-gray-100 dark:bg-[#0B1220] rounded-full overflow-hidden">
+                  <div
+                    className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500 progress-animate`}
+                    style={{ width: `${progress}%` }}
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                    {currentValue} / {currentGoal.target}
+                  </span>
+                </div>
+              </div>
+            )
+          })()}
+
+          {/* Mobile: Monthly Goal */}
+          {(() => {
+            // Calculate this month's progress
+            const now = new Date()
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+            const daysInMonth = endOfMonth.getDate()
+            const currentDay = now.getDate()
+            const daysRemaining = daysInMonth - currentDay
+            const monthIndex = now.getMonth()
+
+            // Define monthly goals that cycle
+            const monthlyGoals = [
+              {
+                id: 'lectures',
+                title: 'Record 10 lectures',
+                description: 'Record <span class="font-semibold text-violet-600 dark:text-violet-400">10 lectures</span> this month',
+                target: 10,
+                getCurrent: () => lectures.filter(l => new Date(l.created_at) >= startOfMonth).length,
+                bgColor: 'bg-violet-500',
+              },
+              {
+                id: 'study_hours',
+                title: 'Study for 8 hours',
+                description: 'Accumulate <span class="font-semibold text-blue-600 dark:text-blue-400">8 hours</span> of lecture time',
+                target: 8,
+                getCurrent: () => Math.floor(lectures.filter(l => new Date(l.created_at) >= startOfMonth).reduce((sum, l) => sum + (l.duration || 0), 0) / 3600),
+                bgColor: 'bg-blue-500',
+              },
+              {
+                id: 'courses',
+                title: 'Create 3 courses',
+                description: 'Create <span class="font-semibold text-emerald-600 dark:text-emerald-400">3 new courses</span> this month',
+                target: 3,
+                getCurrent: () => courses.filter(c => new Date(c.created_at) >= startOfMonth).length,
+                bgColor: 'bg-emerald-500',
+              },
+              {
+                id: 'streak',
+                title: 'Reach 15-day streak',
+                description: 'Maintain a <span class="font-semibold text-orange-600 dark:text-orange-400">15-day streak</span> this month',
+                target: 15,
+                getCurrent: () => streak,
+                bgColor: 'bg-orange-500',
+              },
+            ]
+
+            // Cycle through goals based on month
+            const currentGoal = monthlyGoals[monthIndex % monthlyGoals.length]
+            const currentValue = currentGoal.getCurrent()
+            const progress = Math.min((currentValue / currentGoal.target) * 100, 100)
+            const isCompleted = currentValue >= currentGoal.target
+            const isMonthOver = daysRemaining <= 0
+
+            // If month is over, show summary card
+            if (isMonthOver) {
+              // Calculate completion percentage
+              const completionPercent = Math.min((currentValue / currentGoal.target) * 100, 100)
+
+              // Generate motivational message based on performance
+              const getMotivationalMessage = () => {
+                if (isCompleted) {
+                  return 'Great job! 🎉'
+                } else if (completionPercent >= 90) {
+                  return 'So close! You\'ve got this next month! 💪'
+                } else if (completionPercent >= 75) {
+                  return 'Nice effort! Keep pushing next month! 🚀'
+                } else if (completionPercent >= 50) {
+                  return 'Good start! You\'ll crush it next time! 👊'
+                } else {
+                  return 'Don\'t worry, every month is a new chance! 💫'
+                }
+              }
+
+              return (
+                <div className="lg:hidden bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-6 dark:hover:bg-white/5 transition-colors">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-8 h-8 rounded-xl ${currentGoal.bgColor} flex items-center justify-center`}>
+                        <Trophy className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-semibold text-gray-900 dark:text-white">Month Completed</h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{currentValue} / {currentGoal.target}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="relative h-6 bg-gray-100 dark:bg-[#0B1220] rounded-full overflow-hidden mb-3">
+                    <div
+                      className={`absolute inset-y-0 left-0 ${currentGoal.bgColor} rounded-full transition-all duration-500 progress-animate`}
+                      style={{ width: `${completionPercent}%` }}
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                      {Math.round(completionPercent)}%
+                    </span>
+                  </div>
+
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    {getMotivationalMessage()}
+                  </p>
+                </div>
+              )
+            }
+
+            // Regular card for current month
+            return (
+              <div className="lg:hidden bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 mb-6 animate-card-in card-stagger-1 dark:hover:bg-white/5 transition-colors">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <div className={`w-8 h-8 rounded-xl ${currentGoal.bgColor} flex items-center justify-center`}>
