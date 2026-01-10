@@ -124,7 +124,7 @@ export function DashboardHomeScreen({
                   <div
                     key={course.id}
                     onClick={() => onSelectCourse(course.id)}
-                    className={`p-3 rounded-lg cursor-pointer transition-all border ${
+                    className={`p-3 lg:p-4 rounded-lg cursor-pointer transition-all border ${
                       selectedCourse === course.id
                         ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-300 dark:border-blue-500'
                         : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
