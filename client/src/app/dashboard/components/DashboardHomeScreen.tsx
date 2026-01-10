@@ -113,9 +113,9 @@ export function DashboardHomeScreen({
                 <p className="text-xs text-gray-500 dark:text-gray-400">Loading...</p>
               </div>
             ) : courses.length === 0 ? (
-              <div className="text-center py-8 px-2">
-                <FiBook className="text-gray-400 text-xl mx-auto mb-2" />
-                <p className="text-xs text-gray-500 dark:text-gray-400">No courses</p>
+              <div className="text-center py-8 px-2 lg:py-16 lg:px-4">
+                <FiBook className="text-gray-400 text-xl lg:text-5xl mx-auto mb-2 lg:mb-4" />
+                <p className="text-xs lg:text-xl text-gray-500 dark:text-gray-400">No courses</p>
               </div>
             ) : (
               courses.map((course) => {
