@@ -10,7 +10,7 @@ const config: CapacitorConfig = {
   // },
   // Development - use local server for testing
   server: {
-    url: 'http://10.200.1.147:3000', // Your Mac's local IP
+    url: 'http://10.200.1.32:3000', // Your Mac's local IP
     cleartext: true,
   },
   plugins: {

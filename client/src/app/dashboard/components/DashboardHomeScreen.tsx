@@ -96,7 +96,7 @@ export function DashboardHomeScreen({
           </div>
 
           {/* Desktop: Course List */}
-          <div className="hidden lg:flex lg:flex-col lg:space-y-2">
+          <div key={courseFilter} className="hidden lg:flex lg:flex-col lg:space-y-2 animate-fade-in">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Courses</h2>
               <button

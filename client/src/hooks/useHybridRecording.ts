@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { SpeechRecognition } from '@capacitor-community/speech-recognition'
 import { VoiceRecorder } from 'capacitor-voice-recorder'
+import { soundRecordingStart, soundRecordingStop, soundRecordingPause, soundRecordingResume } from '@/lib/sounds'
 
 interface HybridRecordingState {
   isRecording: boolean
@@ -454,6 +455,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
         interimTranscript: '',
       }))
 
+      // Play recording start sound
+      soundRecordingStart()
+
       startTimer()
 
       // Start audio recording for playback (non-blocking)
@@ -484,6 +488,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
   const pauseRecording = useCallback(async () => {
     console.log('[Recording] Pausing...')
 
+    // Play pause sound
+    soundRecordingPause()
+
     if (useNativeSpeechRecognition) {
       // Native doesn't support pause, so we stop and save transcript
       try {
@@ -506,6 +513,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
   // Resume recording
   const resumeRecording = useCallback(async () => {
     console.log('[Recording] Resuming...')
+
+    // Play resume sound
+    soundRecordingResume()
 
     if (useNativeSpeechRecognition) {
       try {
@@ -561,6 +571,9 @@ export function useHybridRecording(): UseHybridRecordingResult {
     }))
 
     console.log('[Recording] Stopped. Final transcript length:', finalTranscript.length)
+
+    // Play recording stop sound
+    soundRecordingStop()
 
     return { transcript: finalTranscript, audioBlob }
   }, [useNativeSpeechRecognition, stopNativeSpeechRecognition, stopTimer, stopAudioRecording])

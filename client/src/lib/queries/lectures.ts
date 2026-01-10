@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
 import { hapticSuccess, hapticError } from '@/lib/haptics'
+import { soundSave } from '@/lib/sounds'
 
 type Lecture = Database['public']['Tables']['lectures']['Row']
 type LectureWithCourse = Lecture & {
@@ -126,6 +127,7 @@ export function useUpdateNotes() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['lecture', variables.lectureId] })
       hapticSuccess()
+      soundSave()
       toast.success('Notes saved successfully')
     },
     onError: (error: Error) => {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { hapticSuccess } from '@/lib/haptics'
+import { soundAchievement, soundStreakExtended } from '@/lib/sounds'
 import { 
   Mic, 
   BookOpen, 
@@ -308,9 +309,17 @@ export function useAchievements() {
       }))
 
       // Show the first new achievement
-      setNewAchievement(newlyUnlocked[0])
+      const firstAchievement = newlyUnlocked[0]
+      setNewAchievement(firstAchievement)
       setShowAchievementModal(true)
       hapticSuccess()
+
+      // Play achievement sound (use streak sound for streak achievements)
+      if (firstAchievement.id.includes('streak')) {
+        soundStreakExtended()
+      } else {
+        soundAchievement()
+      }
 
       // Award XP for achievements
       if (addXP) {
