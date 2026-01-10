@@ -146,10 +146,10 @@ export function DashboardHomeScreen({
                   <div
                     key={course.id}
                     onClick={() => onSelectCourse(course.id)}
-                    className={`p-3 lg:p-5 rounded-lg lg:rounded-xl cursor-pointer transition-all border ${
+                    className={`p-3 lg:p-5 rounded-lg lg:rounded-2xl cursor-pointer transition-all border ${
                       selectedCourse === course.id
                         ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-300 dark:border-blue-500'
-                        : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                        : 'bg-white dark:bg-[#1E293B] border-gray-100 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/5'
                     }`}
                   >
                     <div className="flex items-start gap-2 lg:gap-3">
