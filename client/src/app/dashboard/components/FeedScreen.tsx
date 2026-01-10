@@ -158,7 +158,7 @@ export function FeedScreen({
 
           {/* Desktop: Classes Grid (No Container) */}
           {userClasses && userClasses.length > 0 ? (
-            <div className="hidden lg:grid lg:grid-cols-2 gap-4">
+            <div className="hidden lg:grid lg:grid-cols-1 gap-4">
               {userClasses.map((cls: any) => (
                 <SwipeToDelete
                   key={cls.id}
