@@ -165,7 +165,7 @@ export function LibraryScreen({
       <div className="overflow-hidden bg-gray-50 dark:bg-gray-900 h-full flex flex-col lg:flex-row">
         {/* Mobile: Full width on mobile, Desktop: Left panel (320px) */}
         <div className="flex-1 lg:w-[320px] lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto">
-          <div className="px-3 sm:px-6 lg:px-4 py-4 sm:py-8 lg:py-4 pt-32 sm:pt-36 lg:pt-4 larger-phone:pt-36 larger-phone:sm:pt-40 lg:larger-phone:pt-4">
+          <div className="px-3 sm:px-6 lg:px-2 py-4 sm:py-8 lg:py-4 pt-32 sm:pt-36 lg:pt-4 larger-phone:pt-36 larger-phone:sm:pt-40 lg:larger-phone:pt-4">
             <div className="space-y-4">
               <div className="flex items-center justify-between lg:flex-col lg:items-start lg:gap-3">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Library</h2>
@@ -357,7 +357,7 @@ export function LibraryScreen({
     <div className="overflow-hidden bg-gray-50 dark:bg-gray-900 h-full flex flex-col lg:flex-row">
       {/* Mobile: Full width on mobile, Desktop: Left panel with lecture list */}
       <div className="flex-1 lg:w-[320px] lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto hidden lg:flex lg:flex-col">
-        <div className="px-4 py-4 space-y-4">
+        <div className="px-2 py-4 space-y-4">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Library</h2>
