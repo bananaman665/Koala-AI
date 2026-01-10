@@ -59,7 +59,7 @@ export function DashboardHomeScreen({
       <div className="flex-1 lg:overflow-y-auto">
         <div className="px-4 sm:px-6 lg:px-8 xl:px-12 pt-32 sm:pt-36 lg:pt-4 pb-8 lg:pb-4">
           {/* Page Title */}
-          <h1 className="text-2xl lg:text-xl font-bold text-gray-900 dark:text-white mb-6">Home</h1>
+          <h1 className="text-2xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-6">Home</h1>
 
           {/* Course Filter Tabs */}
           <div className="flex space-x-2 overflow-x-auto pb-2 lg:pb-0 mb-6">
