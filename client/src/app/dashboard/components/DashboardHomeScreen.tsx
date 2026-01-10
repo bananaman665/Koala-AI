@@ -98,7 +98,7 @@ export function DashboardHomeScreen({
           {/* Desktop: Course List */}
           <div key={courseFilter} className="hidden lg:flex lg:flex-col lg:space-y-2 animate-fade-in">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Courses</h2>
+              <h2 className="text-sm lg:text-base font-semibold text-gray-700 dark:text-gray-300">Courses</h2>
               <button
                 onClick={onCreateCourse}
                 className="p-1.5 bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600 rounded-full transition-colors"
