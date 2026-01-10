@@ -270,7 +270,7 @@ export function LibraryScreen({
                       >
                         <div
                           onClick={() => onSelectLecture(lecture.id)}
-                          className="bg-white dark:bg-[#1E293B] rounded-2xl lg:rounded-xl border border-gray-100 dark:border-white/[0.06] p-5 lg:p-3 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] dark:hover:bg-white/5 hover:border-blue-300 dark:hover:border-blue-500/30"
+                          className="bg-white dark:bg-[#1E293B] rounded-2xl lg:rounded-xl border border-gray-100 dark:border-white/[0.06] p-6 lg:p-4 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] dark:hover:bg-white/5 hover:border-blue-300 dark:hover:border-blue-500/30"
                         >
                           <div className="flex items-start gap-3">
                             {(() => {
@@ -416,7 +416,7 @@ export function LibraryScreen({
                   <div
                     key={lecture.id}
                     onClick={() => onSelectLecture(lecture.id)}
-                    className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
                       isCurrentLecture
                         ? 'bg-blue-50 dark:bg-blue-500/20 border-blue-300 dark:border-blue-500'
                         : 'bg-white dark:bg-[#1E293B] border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/30'
