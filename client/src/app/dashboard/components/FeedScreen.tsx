@@ -71,6 +71,24 @@ export function FeedScreen({
               </div>
             </div>
 
+            {/* Create New Class - Desktop Only */}
+            <div className="hidden lg:block bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 dark:hover:bg-white/5 transition-colors">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Class</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                Start a new class and share the code with your classmates.
+              </p>
+              <button
+                onClick={() => {
+                  hapticButton()
+                  onCreateNewClass()
+                }}
+                className="w-full px-4 py-2.5 bg-blue-600 dark:bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors text-sm flex items-center justify-center gap-2"
+              >
+                <FiPlus />
+                <span>New Class</span>
+              </button>
+            </div>
+
             {/* Pro Tip */}
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 dark:hover:bg-white/5 transition-colors">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
@@ -88,20 +106,8 @@ export function FeedScreen({
       {/* Right Panel - Main Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-7xl lg:max-w-none mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pb-32 lg:pb-8 pt-8 lg:pt-4">
-          {/* Desktop: Page Title + Action */}
-          <div className="hidden lg:flex items-center justify-between mb-6">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Your Classes</h1>
-            <button
-              onClick={() => {
-                hapticButton()
-                onCreateNewClass()
-              }}
-              className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center space-x-2"
-            >
-              <FiPlus />
-              <span>New Class</span>
-            </button>
-          </div>
+          {/* Desktop: Page Title */}
+          <h1 className="hidden lg:block text-xl font-bold text-gray-900 dark:text-white mb-6">Your Classes</h1>
 
           {/* Mobile: Your Classes Container */}
           <div className="lg:hidden bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 dark:hover:bg-white/5 transition-colors">
