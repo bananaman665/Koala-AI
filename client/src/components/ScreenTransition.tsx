@@ -46,9 +46,10 @@ export const ScreenTransition: React.FC<ScreenTransitionProps> = ({
 
   return (
     <div
-      className={`absolute inset-0 w-full h-full ${getAnimationClass()}`}
+      className={`absolute inset-0 overflow-y-auto overflow-x-hidden ${getAnimationClass()}`}
       style={{
         pointerEvents: isActive ? 'auto' : 'none',
+        WebkitOverflowScrolling: 'touch',
       }}
     >
       {children}

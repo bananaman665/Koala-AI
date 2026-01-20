@@ -1,7 +1,8 @@
 'use client'
 
-import { useMemo } from 'react'
-import { FiSearch, FiClock, FiLoader, FiChevronLeft, FiEdit2, FiFileText, FiBook, FiTrash2, FiShare2, FiPlay, FiChevronRight } from 'react-icons/fi'
+import { useMemo, useState } from 'react'
+import { FiSearch, FiClock, FiLoader, FiChevronLeft, FiEdit2, FiFileText, FiBook, FiTrash2, FiShare2, FiPlay, FiChevronRight, FiStar } from 'react-icons/fi'
+import { hapticSelection } from '@/lib/haptics'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 import { AudioPlayer } from '@/components/AudioPlayer'
 import ReactMarkdown from 'react-markdown'
@@ -10,14 +11,6 @@ import { FlashcardMode } from './FlashcardMode'
 import { hapticButton } from '@/lib/haptics'
 import type { Database } from '@/lib/supabase'
 
-// Color classes for lecture icons
-const lectureColorClasses: Record<string, { bg: string; text: string; bgOpacity: string }> = {
-  blue: { bg: 'bg-blue-100 dark:bg-blue-500/15', text: 'text-blue-600 dark:text-blue-400', bgOpacity: 'dark:bg-blue-500/15' },
-  purple: { bg: 'bg-purple-100 dark:bg-purple-500/15', text: 'text-purple-600 dark:text-purple-400', bgOpacity: 'dark:bg-purple-500/15' },
-  orange: { bg: 'bg-orange-100 dark:bg-orange-500/15', text: 'text-orange-600 dark:text-orange-400', bgOpacity: 'dark:bg-orange-500/15' },
-}
-
-const colorKeys = Object.keys(lectureColorClasses)
 
 type Lecture = Database['public']['Tables']['lectures']['Row'] & {
   courses?: { name: string } | null
@@ -127,17 +120,7 @@ export function LibraryScreen({
   onNextQuestion,
   onExitLearnMode,
 }: LibraryScreenProps) {
-  // Function to get deterministic color based on lecture ID
-  const getLectureColor = (lectureId: string): string => {
-    // Use hash of lecture ID to deterministically assign a color
-    let hash = 0
-    for (let i = 0; i < lectureId.length; i++) {
-      hash = ((hash << 5) - hash) + lectureId.charCodeAt(i)
-      hash = hash & hash // Convert to 32bit integer
-    }
-    const colorIndex = Math.abs(hash) % colorKeys.length
-    return colorKeys[colorIndex]
-  }
+  const [favoritedLectures, setFavoritedLectures] = useState<Set<string>>(new Set())
 
   // Get filtered lectures for both list and detail view
   const getFilteredLectures = useMemo(() => {
@@ -162,10 +145,10 @@ export function LibraryScreen({
   // Library list view - Two column layout on desktop
   if (!selectedLecture) {
     return (
-      <div className="overflow-hidden bg-gray-50 dark:bg-gray-900 h-full flex flex-col lg:flex-row">
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-full lg:h-full lg:min-h-0 lg:overflow-hidden lg:flex lg:flex-row">
         {/* Mobile: Full width on mobile, Desktop: Left panel (320px) */}
-        <div className="flex-1 lg:w-[320px] lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto">
-          <div className="px-3 sm:px-6 lg:px-2 py-4 sm:py-8 lg:py-4 pt-32 sm:pt-36 lg:pt-4 larger-phone:pt-36 larger-phone:sm:pt-40 lg:larger-phone:pt-4">
+        <div className="lg:w-[320px] lg:h-full lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto lg:flex lg:flex-col">
+          <div className="px-3 sm:px-6 lg:px-2 py-4 sm:py-8 lg:py-4 pt-32 sm:pt-36 lg:pt-8 pb-32">
             <div className="space-y-4">
               <div className="flex items-center justify-between lg:flex-col lg:items-start lg:gap-3">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Library</h2>
@@ -260,6 +243,7 @@ export function LibraryScreen({
                       month: 'short',
                       day: 'numeric'
                     })
+                    const isFavorited = favoritedLectures.has(lecture.id)
 
                     return (
                       <SwipeToDelete
@@ -270,28 +254,55 @@ export function LibraryScreen({
                       >
                         <div
                           onClick={() => onSelectLecture(lecture.id)}
-                          className="bg-white dark:bg-[#1E293B] rounded-2xl lg:rounded-xl border border-gray-100 dark:border-white/[0.06] p-5 lg:p-4 transition-all cursor-pointer group touch-manipulation active:scale-[0.98] dark:hover:bg-white/5 hover:border-blue-300 dark:hover:border-blue-500/30"
+                          className="bg-white dark:bg-[#1E293B] rounded-2xl lg:rounded-xl border border-gray-100 dark:border-white/[0.06] p-5 lg:p-4 shadow-lg shadow-black/5 dark:shadow-black/25 hover:shadow-2xl hover:shadow-black/15 dark:hover:shadow-black/40 hover:scale-[1.01] hover:border-gray-200 dark:hover:border-white/[0.1] transition-all cursor-pointer group touch-manipulation active:scale-[0.98]"
                         >
-                          <div className="flex items-start gap-3">
-                            {(() => {
-                              const color = getLectureColor(lecture.id)
-                              const colorClass = lectureColorClasses[color] || lectureColorClasses.blue
-                              return (
-                                <div className={`w-11 h-11 lg:w-10 lg:h-10 ${colorClass.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                                  <FiPlay className={`text-lg lg:text-base ${colorClass.text}`} />
-                                </div>
-                              )
-                            })()}
+                          <div className="flex items-center gap-3">
+                            {/* Green Play Icon */}
+                            <div className="w-11 h-11 lg:w-10 lg:h-10 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                              <FiPlay className="text-green-600 dark:text-green-400 text-lg lg:text-base" />
+                            </div>
+
+                            {/* Content */}
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5 hidden lg:block">Lecture</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">
+                                Lecture
+                              </p>
                               <h3 className="text-base lg:text-sm font-semibold text-gray-900 dark:text-white truncate">
                                 {lecture.title}
                               </h3>
-                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                                 {hours > 0 ? `${hours}h ${mins}m` : `${durationMinutes}m`} • {formattedDate}
                               </p>
                             </div>
-                            <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0 hidden lg:block" />
+
+                            {/* Star Favorite Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                hapticSelection()
+                                setFavoritedLectures((prev) => {
+                                  const newSet = new Set(prev)
+                                  if (newSet.has(lecture.id)) {
+                                    newSet.delete(lecture.id)
+                                  } else {
+                                    newSet.add(lecture.id)
+                                  }
+                                  return newSet
+                                })
+                              }}
+                              className="p-1 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200 ml-1"
+                            >
+                              <FiStar
+                                className={`w-5 h-5 transition-all duration-200 ${
+                                  isFavorited
+                                    ? 'fill-yellow-400 text-yellow-400'
+                                    : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
+                                }`}
+                              />
+                            </button>
+
+                            {/* Chevron */}
+                            <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0 group-hover:text-gray-400 dark:group-hover:text-white/50 group-hover:translate-x-1 transition-all duration-200" />
                           </div>
                         </div>
                       </SwipeToDelete>
@@ -318,8 +329,8 @@ export function LibraryScreen({
   // Learn Mode view
   if (isLearnModeActive && learnModeQuestions.length > 0) {
     return (
-      <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-        <div className={`max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-32 sm:pt-36 lg:pt-8 larger-phone:pt-40 larger-phone:sm:pt-44 lg:larger-phone:pt-8`}>
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
+        <div className={`max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-16 sm:pt-20 lg:pt-8`}>
           <LearnMode
             questions={learnModeQuestions}
             currentIndex={currentQuestionIndex}
@@ -338,8 +349,8 @@ export function LibraryScreen({
   // Flashcard Mode view
   if (isFlashcardModeActive && flashcards.length > 0) {
     return (
-      <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-        <div className={`max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-32 sm:pt-36 lg:pt-8 larger-phone:pt-40 larger-phone:sm:pt-44 lg:larger-phone:pt-8`}>
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
+        <div className={`max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-16 sm:pt-20 lg:pt-8`}>
           <FlashcardMode
             flashcards={flashcards}
             onExit={() => {
@@ -354,10 +365,10 @@ export function LibraryScreen({
 
   // Lecture Detail view - Two column layout on desktop
   return (
-    <div className="overflow-hidden bg-gray-50 dark:bg-gray-900 h-full flex flex-col lg:flex-row">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-full lg:h-full lg:min-h-0 lg:overflow-hidden lg:flex lg:flex-row">
       {/* Mobile: Full width on mobile, Desktop: Left panel with lecture list */}
-      <div className="flex-1 lg:w-[320px] lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto hidden lg:flex lg:flex-col">
-        <div className="px-2 py-4 space-y-4">
+      <div className="flex-1 lg:w-[320px] lg:h-full lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto hidden lg:flex lg:flex-col">
+        <div className="px-2 py-4 space-y-4 pb-32">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Library</h2>
@@ -405,41 +416,60 @@ export function LibraryScreen({
                 const durationMinutes = Math.floor(lecture.duration / 60)
                 const hours = Math.floor(durationMinutes / 60)
                 const mins = durationMinutes % 60
-                const createdDate = new Date(lecture.created_at)
-                const formattedDate = createdDate.toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric'
-                })
                 const isCurrentLecture = lecture.id === selectedLecture
+                const isFavorited = favoritedLectures.has(lecture.id)
 
                 return (
                   <div
                     key={lecture.id}
                     onClick={() => onSelectLecture(lecture.id)}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                    className={`p-3 rounded-lg border transition-all cursor-pointer group ${
                       isCurrentLecture
-                        ? 'bg-blue-50 dark:bg-blue-500/20 border-blue-300 dark:border-blue-500'
-                        : 'bg-white dark:bg-[#1E293B] border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/30'
+                        ? 'bg-green-50 dark:bg-green-500/15 border-green-300 dark:border-green-500/30'
+                        : 'bg-white dark:bg-[#1E293B] border-gray-100 dark:border-white/[0.06] hover:border-green-300 dark:hover:border-green-500/30'
                     }`}
                   >
-                    <div className="flex items-start gap-3">
-                      {(() => {
-                        const color = getLectureColor(lecture.id)
-                        const colorClass = lectureColorClasses[color] || lectureColorClasses.blue
-                        return (
-                          <div className={`w-9 h-9 ${colorClass.bg} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                            <FiPlay className={`text-sm ${colorClass.text}`} />
-                          </div>
-                        )
-                      })()}
+                    <div className="flex items-center gap-2">
+                      {/* Green Play Icon */}
+                      <div className="w-8 h-8 bg-green-100 dark:bg-green-500/15 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <FiPlay className="text-green-600 dark:text-green-400 text-sm" />
+                      </div>
+
+                      {/* Content */}
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                           {lecture.title}
                         </h4>
                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                          {hours > 0 ? `${hours}h ${mins}m` : `${durationMinutes}m`} • {formattedDate}
+                          {hours > 0 ? `${hours}h ${mins}m` : `${durationMinutes}m`}
                         </p>
                       </div>
+
+                      {/* Star Favorite Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          hapticSelection()
+                          setFavoritedLectures((prev) => {
+                            const newSet = new Set(prev)
+                            if (newSet.has(lecture.id)) {
+                              newSet.delete(lecture.id)
+                            } else {
+                              newSet.add(lecture.id)
+                            }
+                            return newSet
+                          })
+                        }}
+                        className="p-1 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
+                      >
+                        <FiStar
+                          className={`w-4 h-4 transition-all duration-200 ${
+                            isFavorited
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
+                          }`}
+                        />
+                      </button>
                     </div>
                   </div>
                 )
@@ -450,20 +480,20 @@ export function LibraryScreen({
       </div>
 
       {/* Desktop: Right panel with expanded detail view, Mobile: Full screen */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="px-3 sm:px-6 lg:px-6 py-4 sm:py-8 pb-32 lg:pb-8 pt-32 sm:pt-36 lg:pt-4 larger-phone:pt-36 larger-phone:sm:pt-40 lg:larger-phone:pt-4">
-          <div className={`space-y-4 pb-20 ${isExitingLecture ? 'animate-zoom-out' : 'animate-zoom-in'}`}>
+      <div className="flex-1 min-h-full lg:overflow-y-auto">
+        <div className="px-3 sm:px-6 lg:px-6 py-4 sm:py-8 pb-40 lg:pb-24 pt-32 sm:pt-36 lg:pt-8">
+          <div className={`space-y-4 pb-32 lg:pb-20 ${isExitingLecture ? 'animate-zoom-out' : 'animate-zoom-in'}`}>
             {/* Back Button - Mobile only */}
             <button
               onClick={onExitLecture}
-              className="lg:hidden flex items-center space-x-2 px-4 py-2.5 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors shadow-sm"
+              className="lg:hidden flex items-center space-x-2 px-4 py-2.5 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors shadow-sm"
             >
               <FiChevronLeft className="text-lg" />
               <span>Back to Library</span>
             </button>
 
             {/* Lecture Header */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 dark:hover:bg-white/5 transition-colors">
+            <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {selectedLectureData?.title || 'Lecture'}
               </h1>
@@ -488,7 +518,7 @@ export function LibraryScreen({
             </div>
 
             {/* Audio Player */}
-            <div className="bg-gray-100 dark:bg-[#1E293B] rounded-xl p-4 dark:hover:bg-white/5 transition-colors">
+            <div className="bg-gray-100 dark:bg-[#1E293B] rounded-xl p-4">
               <div className="space-y-2">
                 <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
                   Recording
@@ -501,7 +531,7 @@ export function LibraryScreen({
             </div>
 
             {/* Notes */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 dark:hover:bg-white/5 transition-colors">
+            <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">

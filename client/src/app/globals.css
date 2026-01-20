@@ -11,6 +11,13 @@
   display: none;
 }
 
+/* Ensure scroll containers handle touch properly on iOS */
+.overflow-y-auto,
+.overflow-y-scroll {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;

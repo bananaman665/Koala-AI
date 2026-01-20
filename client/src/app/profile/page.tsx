@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
+import { KoalaIllustration } from '@/components/illustrations/Koala'
 
 export const dynamic = 'force-dynamic'
 import { useStreak } from '@/components/StreakDisplay'
@@ -211,9 +212,6 @@ export default function ProfilePage() {
   const completedPercent = totalLectures > 0
     ? Math.round((lectures.filter(l => l.transcription_status === 'completed').length / totalLectures) * 100)
     : 0
-  const userInitials = user.user_metadata?.full_name
-    ? user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
-    : user.email?.substring(0, 2).toUpperCase() || 'U'
   const memberSince = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
   const stats = [
@@ -337,14 +335,12 @@ export default function ProfilePage() {
           {/* Left Column - Profile Info */}
           <div className="lg:col-span-1 space-y-5">
             {/* Profile Card */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6 dark:hover:bg-white/5 transition-colors">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6">
               <div className="text-center">
-                <div className="inline-block relative">
-                  <div className="w-24 h-24 bg-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">
-                    {userInitials}
-                  </div>
+                <div className="w-32 h-32 mx-auto mb-6">
+                  <KoalaIllustration />
                 </div>
-                
+
                 {/* Name with edit feature */}
                 {isEditingName ? (
                   <div className="flex items-center justify-center gap-2 mb-1">
@@ -424,24 +420,8 @@ export default function ProfilePage() {
 
           {/* Right Column - Stats & Activity */}
           <div className="lg:col-span-2 space-y-5">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-3">
-              {stats.map((stat, i) => {
-                const Icon = stat.icon
-                return (
-                  <div key={i} className={`${stat.bgClass} rounded-xl p-4 border ${stat.borderClass} transition-colors hover:bg-opacity-70 dark:hover:bg-white/10`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <Icon className={`${stat.iconClass} text-xl`} />
-                    </div>
-                    <p className={`text-2xl font-bold ${stat.valueClass}`}>{stat.value}</p>
-                    <p className={`text-xs ${stat.labelClass}`}>{stat.label}</p>
-                  </div>
-                )
-              })}
-            </div>
-
             {/* Daily Quests */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] dark:hover:bg-white/5 transition-colors">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06]">
               {/* Header */}
               <div className="flex items-center justify-between p-5">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-[#F1F5F9]">Daily Quests</h3>
@@ -529,7 +509,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6 dark:hover:bg-white/5 transition-colors">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-[#F1F5F9]">Recent Activity</h3>
                 <Link
@@ -566,7 +546,7 @@ export default function ProfilePage() {
 
             {/* Study Progress */}
             {studyProgress.length > 0 && (
-              <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6 dark:hover:bg-white/5 transition-colors">
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-[#F1F5F9] mb-5">Study Progress</h3>
                 <div className="space-y-4">
                   {studyProgress.map((course, i) => (

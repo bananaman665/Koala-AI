@@ -95,6 +95,7 @@ export interface Database {
           duration: number
           audio_url: string | null
           transcription_status: 'pending' | 'processing' | 'completed' | 'failed'
+          is_favorite: boolean
           created_at: string
           updated_at: string
         }
@@ -106,6 +107,7 @@ export interface Database {
           duration: number
           audio_url?: string | null
           transcription_status?: 'pending' | 'processing' | 'completed' | 'failed'
+          is_favorite?: boolean
         }
         Update: {
           title?: string
@@ -113,6 +115,7 @@ export interface Database {
           audio_url?: string | null
           class_id?: string | null
           transcription_status?: 'pending' | 'processing' | 'completed' | 'failed'
+          is_favorite?: boolean
         }
       }
       transcripts: {

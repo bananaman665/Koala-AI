@@ -3,23 +3,15 @@
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 
-const COLORS = [
-  { value: 'blue', label: 'Blue', bg: 'bg-blue-500' },
-  { value: 'purple', label: 'Purple', bg: 'bg-purple-500' },
-  { value: 'green', label: 'Green', bg: 'bg-green-500' },
-  { value: 'orange', label: 'Orange', bg: 'bg-orange-500' },
-  { value: 'pink', label: 'Pink', bg: 'bg-pink-500' },
-  { value: 'yellow', label: 'Yellow', bg: 'bg-yellow-500' },
-]
-
-const CATEGORIES = [
-  'Computer Science',
-  'Mathematics',
-  'Physics',
+const SUBJECTS = [
+  'Math',
+  'Science',
   'Chemistry',
   'Biology',
+  'Physics',
+  'Genetics',
   'Engineering',
-  'Business',
+  'Literature',
   'Other',
 ]
 
@@ -29,13 +21,11 @@ interface NewCourseModalProps {
   name: string
   code: string
   professor: string
-  color: string
-  category: string
+  subject: string
   onNameChange: (value: string) => void
   onCodeChange: (value: string) => void
   onProfessorChange: (value: string) => void
-  onColorChange: (value: string) => void
-  onCategoryChange: (value: string) => void
+  onSubjectChange: (value: string) => void
   onSubmit: () => void
   isCreating: boolean
 }
@@ -46,13 +36,11 @@ export function NewCourseModal({
   name,
   code,
   professor,
-  color,
-  category,
+  subject,
   onNameChange,
   onCodeChange,
   onProfessorChange,
-  onColorChange,
-  onCategoryChange,
+  onSubjectChange,
   onSubmit,
   isCreating,
 }: NewCourseModalProps) {
@@ -127,48 +115,27 @@ export function NewCourseModal({
           />
         </div>
 
-        {/* Category */}
+        {/* Subject Selection */}
         <div>
           <label
-            htmlFor="category"
+            htmlFor="subject"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
-            Category
+            Subject
           </label>
           <select
-            id="category"
-            value={category}
-            onChange={(e) => onCategoryChange(e.target.value)}
+            id="subject"
+            value={subject}
+            onChange={(e) => onSubjectChange(e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-800"
           >
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
+            <option value="">Select a subject</option>
+            {SUBJECTS.map((subj) => (
+              <option key={subj} value={subj.toLowerCase()}>
+                {subj}
               </option>
             ))}
           </select>
-        </div>
-
-        {/* Color Selection */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Color
-          </label>
-          <div className="flex gap-3">
-            {COLORS.map((colorOption) => (
-              <button
-                key={colorOption.value}
-                type="button"
-                onClick={() => onColorChange(colorOption.value)}
-                className={`w-10 h-10 rounded-full ${colorOption.bg} transition-transform ${
-                  color === colorOption.value
-                    ? 'ring-4 ring-offset-2 ring-violet-500 scale-110'
-                    : 'hover:scale-105'
-                }`}
-                aria-label={`Select ${colorOption.label} color`}
-              />
-            ))}
-          </div>
         </div>
 
         {/* Action Buttons */}

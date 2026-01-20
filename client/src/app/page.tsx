@@ -42,7 +42,7 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-40 pb-12">
         <div className="text-center">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
             Turn Lectures Into
@@ -95,7 +95,7 @@ export default function HomePage() {
               </div>
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="text-sm text-gray-500 mb-3">Generated Notes</div>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-sm text-gray-700">
                   <div className="flex items-start space-x-2">
                     <FiCheck className="text-green-500 mt-1 flex-shrink-0" />
                     <span>Binary trees are hierarchical data structures</span>
@@ -116,7 +116,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="bg-gray-50 py-32">
+      <section id="features" className="bg-gray-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -171,7 +171,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-32">
+      <section id="how-it-works" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -217,7 +217,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-accent-600 py-32">
+      <section className="bg-accent-600 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Ready to Transform Your Study Habits?
@@ -235,7 +235,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-16">
+      <footer className="bg-gray-900 text-gray-400 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12">
             <div>

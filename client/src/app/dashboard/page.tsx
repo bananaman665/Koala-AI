@@ -39,6 +39,8 @@ import { LibraryScreen } from './components/LibraryScreen'
 import { ShareLectureToClassModal } from './components/ShareLectureToClassModal'
 import { DailyGreeting } from '@/components/DailyGreeting'
 import { Sidebar } from '@/components/Sidebar'
+import { TopNavigationBar } from '@/components/TopNavigationBar'
+import { LeftSidebar } from '@/components/LeftSidebar'
 
 // Color classes for course icons (full class names for Tailwind to detect)
 const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
@@ -129,16 +131,9 @@ function DashboardContent() {
   const mediaStreamRef = useRef<MediaStream | null>(null)
   const animationFrameRef = useRef<number | null>(null)
 
-  // Function to get deterministic color based on lecture ID
-  const getLectureColor = (lectureId: string): string => {
-    // Use hash of lecture ID to deterministically assign a color
-    let hash = 0
-    for (let i = 0; i < lectureId.length; i++) {
-      hash = ((hash << 5) - hash) + lectureId.charCodeAt(i)
-      hash = hash & hash // Convert to 32bit integer
-    }
-    const colorIndex = Math.abs(hash) % lectureColorKeys.length
-    return lectureColorKeys[colorIndex]
+  // Function to get lecture color - using consistent blue for all lectures
+  const getLectureColor = (_lectureId: string): string => {
+    return 'blue'
   }
 
   // Audio visualization effect
@@ -1774,14 +1769,8 @@ function DashboardContent() {
         </div>
       </nav>
 
-      {/* Desktop Sidebar */}
-      <Sidebar
-        activeScreen={activeScreen}
-        onNavigate={(screen) => {
-          hapticSelection()
-          soundWhoosh()
-          setActiveScreen(screen)
-        }}
+      {/* Desktop Top Navigation Bar */}
+      <TopNavigationBar
         onStartRecording={() => setShowReadyToRecordModal(true)}
         levelInfo={levelInfo}
         streak={streak}
@@ -1793,6 +1782,54 @@ function DashboardContent() {
         onShowLevelModal={() => { hapticButton(); setShowLevelModal(true) }}
         onShowStreakModal={() => { hapticButton(); setShowStreakModal(true) }}
       />
+
+      {/* Desktop Left Sidebar */}
+      {(() => {
+        const recentLectures = [...lectures]
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .slice(0, 5)
+
+        return (
+          <LeftSidebar
+            activeScreen={activeScreen}
+            onNavigate={(screen) => {
+              hapticSelection()
+              soundWhoosh()
+              setActiveScreen(screen)
+            }}
+            courseFilter={courseFilter}
+            onCourseFilterChange={handleCourseFilterChange}
+            recentLectures={recentLectures}
+            onSelectLecture={(lectureId) => {
+              hapticSelection()
+              setSelectedLecture(lectureId)
+              setActiveScreen('library')
+            }}
+            onToggleFavorite={(lectureId) => {
+              const lectureToUpdate = lectures.find(l => l.id === lectureId)
+              if (lectureToUpdate) {
+                // Optimistic UI update
+                const updatedLectures = lectures.map(l =>
+                  l.id === lectureId ? { ...l, is_favorite: !l.is_favorite } : l
+                )
+                setLectures(updatedLectures)
+
+                // Update database
+                ;(supabase.from('lectures') as any)
+                  .update({ is_favorite: !lectureToUpdate.is_favorite })
+                  .eq('id', lectureId)
+                  .then(({ error }: any) => {
+                    if (error) {
+                      // Revert on error
+                      setLectures(lectures)
+                      toast.error('Failed to update favorite')
+                    }
+                  })
+              }
+            }}
+          />
+        )
+      })()}
 
       {/* Desktop Floating Action Button - Record */}
       <button
@@ -1808,7 +1845,7 @@ function DashboardContent() {
 
       {/* Learn Mode Progress Bar - Attached to Top */}
       {activeScreen === 'library' && selectedLecture && isLearnModeActive && learnModeQuestions.length > 0 && (
-        <div className="fixed top-14 sm:top-16 lg:top-0 left-0 lg:left-[280px] right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
+        <div className="fixed top-14 sm:top-16 lg:top-16 left-0 lg:left-64 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
           <div className="max-w-7xl mx-auto">
             <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
               <div
@@ -1826,7 +1863,7 @@ function DashboardContent() {
 
       {/* Flashcard Mode Progress Bar - Attached to Top */}
       {activeScreen === 'library' && selectedLecture && isFlashcardModeActive && flashcards.length > 0 && (
-        <div className="fixed top-14 sm:top-16 lg:top-0 left-0 lg:left-[280px] right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
+        <div className="fixed top-14 sm:top-16 lg:top-16 left-0 lg:left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 px-3 sm:px-6 py-2">
           <div className="max-w-7xl mx-auto">
             <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
               <div
@@ -1856,7 +1893,7 @@ function DashboardContent() {
       )}
 
       {/* Main scrollable content area */}
-      <div className="flex-1 relative overflow-hidden lg:ml-[280px]">
+      <div className="flex-1 min-h-0 relative overflow-hidden lg:pt-16 lg:ml-64">
         {/* Dashboard Screen */}
         {(activeScreen === 'dashboard' || (isTransitioning && previousScreen === 'dashboard')) && (
           <ScreenTransition
@@ -1881,6 +1918,28 @@ function DashboardContent() {
                 onNavigateToLibrary={() => {
                   soundWhoosh()
                   setActiveScreen('library')
+                }}
+                onToggleFavorite={(lectureId) => {
+                  const lectureToUpdate = lectures.find(l => l.id === lectureId)
+                  if (lectureToUpdate) {
+                    // Optimistic UI update
+                    const updatedLectures = lectures.map(l =>
+                      l.id === lectureId ? { ...l, is_favorite: !l.is_favorite } : l
+                    )
+                    setLectures(updatedLectures)
+
+                    // Update database
+                    ;(supabase.from('lectures') as any)
+                      .update({ is_favorite: !lectureToUpdate.is_favorite })
+                      .eq('id', lectureId)
+                      .then(({ error }: any) => {
+                        if (error) {
+                          // Revert on error
+                          setLectures(lectures)
+                          toast.error('Failed to update favorite')
+                        }
+                      })
+                  }
                 }}
               />
             )}
@@ -2439,7 +2498,7 @@ function DashboardContent() {
                         key={lecture.id}
                         onClick={() => {
                           hapticSelection()
-                          if (activeScreen !== 'library') {
+                          if ((activeScreen as any) !== 'library') {
                             soundWhoosh()
                           }
                           setSelectedLecture(lecture.id)
@@ -2584,7 +2643,7 @@ function DashboardContent() {
               streak={streak}
               isActiveToday={isActiveToday}
               onLectureClick={(lectureId) => {
-                if (activeScreen !== 'library') {
+                if ((activeScreen as any) !== 'library') {
                   soundWhoosh()
                 }
                 setSelectedLecture(lectureId)
@@ -3271,7 +3330,7 @@ function DashboardContent() {
           {/* Library */}
           <button
             onClick={() => {
-              if (activeScreen !== 'library') {
+              if ((activeScreen as any) !== 'library') {
                 hapticSelection()
                 soundWhoosh()
                 setActiveScreen('library')

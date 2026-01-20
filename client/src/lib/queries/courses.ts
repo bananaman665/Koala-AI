@@ -25,8 +25,7 @@ export function useCourses(userId: string | undefined) {
 
       // Create default course if none exists
       if (!data || data.length === 0) {
-        const { data: newCourse, error: createError } = await supabase
-          .from('courses')
+        const { data: newCourse, error: createError } = await (supabase.from('courses') as any)
           .insert([{
             user_id: userId,
             name: 'My Course',
@@ -84,8 +83,7 @@ export function useCreateCourse() {
         )
       }
 
-      const { data, error } = await supabase
-        .from('courses')
+      const { data, error } = await (supabase.from('courses') as any)
         .insert([{
           user_id: userId,
           name: name.trim(),

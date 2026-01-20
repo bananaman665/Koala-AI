@@ -55,8 +55,8 @@ export function AnalyticsScreen({
     : 0
 
   return (
-    <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900 h-full">
-      <div className="max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-32 sm:pt-36 lg:pt-8 larger-phone:pt-36 larger-phone:sm:pt-40 lg:larger-phone:pt-8">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
+      <div className="max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-32 sm:pt-36 lg:pt-8">
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
 
@@ -64,30 +64,30 @@ export function AnalyticsScreen({
           <div className="flex space-x-2 overflow-x-auto pb-2">
             <button
               onClick={() => setTimeFilter('week')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                 timeFilter === 'week'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner border-b-2 border-[#0052CC]'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               This Week
             </button>
             <button
               onClick={() => setTimeFilter('month')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                 timeFilter === 'month'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               This Month
             </button>
             <button
               onClick={() => setTimeFilter('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                 timeFilter === 'all'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               All Time
@@ -95,7 +95,7 @@ export function AnalyticsScreen({
           </div>
 
           {/* Study Streak */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Study Streak</h3>
             <div className="flex items-center space-x-2 mb-3">
               <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
@@ -122,8 +122,8 @@ export function AnalyticsScreen({
                   <div key={i} className="flex-1 text-center">
                     <div
                       className={`w-full h-8 rounded ${
-                        isActive ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'
-                      } mb-1`}
+                        isActive ? 'bg-[#0066FF] shadow-lg shadow-blue-500/40' : 'bg-gray-200 dark:bg-gray-700'
+                      } mb-1 transition-all duration-200`}
                     ></div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{day}</p>
                   </div>
@@ -133,7 +133,7 @@ export function AnalyticsScreen({
           </div>
 
           {/* Top Courses */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Top Courses</h3>
             <div className="space-y-4">
               {courses.length === 0 ? (
@@ -169,7 +169,7 @@ export function AnalyticsScreen({
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-[#2C3E50] p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Recent Activity</h3>
             <div className="divide-y divide-gray-100 dark:divide-gray-700">
               {lectures.length === 0 ? (
