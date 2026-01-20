@@ -1,6 +1,7 @@
 'use client'
-import { FiPlus, FiUsers, FiChevronRight } from 'react-icons/fi'
-import { hapticButton } from '@/lib/haptics'
+import { useState } from 'react'
+import { FiPlus, FiUsers, FiChevronRight, FiStar } from 'react-icons/fi'
+import { hapticButton, hapticSelection } from '@/lib/haptics'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 
 // Color classes for course icons
@@ -34,6 +35,8 @@ export function FeedScreen({
   onViewClass,
   onDeleteClass,
 }: FeedScreenProps) {
+  const [favoritedClasses, setFavoritedClasses] = useState<Set<string>>(new Set())
+
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
       {/* Main Content */}
@@ -114,22 +117,49 @@ export function FeedScreen({
                         }}
                         className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-white/[0.06] p-4 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 hover:scale-[1.02] transition-all duration-200 cursor-pointer group hover:border-blue-300 dark:hover:border-blue-500/30"
                       >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-10 h-10 ${colorClasses.bg} rounded-xl flex items-center justify-center flex-shrink-0`}
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div
+                              className={`w-10 h-10 ${colorClasses.bg} rounded-xl flex items-center justify-center flex-shrink-0`}
+                            >
+                              <FiUsers
+                                className={`text-base ${colorClasses.text}`}
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Class</p>
+                              <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{cls.name}</h4>
+                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">
+                                {cls.code && `${cls.code} • `}
+                                {memberCount} member{memberCount !== 1 ? 's' : ''}
+                              </p>
+                            </div>
+                          </div>
+                          {/* Star Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              hapticSelection()
+                              setFavoritedClasses((prev) => {
+                                const newSet = new Set(prev)
+                                if (newSet.has(cls.id)) {
+                                  newSet.delete(cls.id)
+                                } else {
+                                  newSet.add(cls.id)
+                                }
+                                return newSet
+                              })
+                            }}
+                            className="p-2 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
                           >
-                            <FiUsers
-                              className={`text-base ${colorClasses.text}`}
+                            <FiStar
+                              className={`w-5 h-5 transition-all duration-200 ${
+                                favoritedClasses.has(cls.id)
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
+                              }`}
                             />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Class</p>
-                            <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{cls.name}</h4>
-                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">
-                              {cls.code && `${cls.code} • `}
-                              {memberCount} member{memberCount !== 1 ? 's' : ''}
-                            </p>
-                          </div>
+                          </button>
                         </div>
                       </div>
                     </SwipeToDelete>
