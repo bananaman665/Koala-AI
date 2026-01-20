@@ -121,7 +121,7 @@ export function ResumeLectureCarousel({
     <div className="mb-6">
       {/* Carousel Card */}
       <div
-        className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/25 hover:shadow-2xl hover:shadow-black/15 dark:hover:shadow-black/40 hover:scale-[1.01] hover:border-gray-200 dark:hover:border-white/[0.1] transition-all duration-300 cursor-pointer"
+        className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 hover:scale-[1.02] active:scale-[0.98] hover:border-gray-200 dark:hover:border-white/[0.1] transition-all duration-200 cursor-pointer"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         onTouchStart={handleTouchStart}
