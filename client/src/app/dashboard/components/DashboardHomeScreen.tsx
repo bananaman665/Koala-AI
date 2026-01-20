@@ -1,7 +1,8 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader, FiClock, FiStar } from 'react-icons/fi'
+import { hapticSelection } from '@/lib/haptics'
 import { Mic, Trophy, FileText, GraduationCap, Calculator, Beaker, Atom, TestTube, Microscope, Dna, Zap, BookOpen } from 'lucide-react'
 import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
@@ -86,6 +87,8 @@ export function DashboardHomeScreen({
   onNavigateToLibrary,
   onToggleFavorite,
 }: DashboardHomeScreenProps) {
+  const [favoritedCourses, setFavoritedCourses] = useState<Set<string>>(new Set())
+
   // Calculate quick stats
   const getQuickStats = () => {
     const now = new Date()
@@ -274,21 +277,48 @@ export function DashboardHomeScreen({
                     <div
                       key={course.id}
                       onClick={() => onSelectCourse(course.id)}
-                      className={`bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer animate-card-in card-stagger-${Math.min(index + 1, 6)}`}
+                      className={`bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer group animate-card-in card-stagger-${Math.min(index + 1, 6)}`}
                     >
                       {/* Card Header */}
-                      <div className="flex items-center gap-3">
-                        <div className={`w-11 h-11 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                          <SubjectIcon className={`text-lg ${colors.text}`} />
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className={`w-11 h-11 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                            <SubjectIcon className={`text-lg ${colors.text}`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
+                              {course.name}
+                            </h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {lectureCount} {lectureCount === 1 ? 'lecture' : 'lectures'}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
-                            {course.name}
-                          </h3>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {lectureCount} {lectureCount === 1 ? 'lecture' : 'lectures'}
-                          </p>
-                        </div>
+                        {/* Star Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            hapticSelection()
+                            setFavoritedCourses((prev) => {
+                              const newSet = new Set(prev)
+                              if (newSet.has(course.id)) {
+                                newSet.delete(course.id)
+                              } else {
+                                newSet.add(course.id)
+                              }
+                              return newSet
+                            })
+                          }}
+                          className="p-2 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
+                        >
+                          <FiStar
+                            className={`w-5 h-5 transition-all duration-200 ${
+                              favoritedCourses.has(course.id)
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
+                            }`}
+                          />
+                        </button>
                       </div>
                     </div>
                   )
@@ -381,18 +411,45 @@ export function DashboardHomeScreen({
                           onClick={() => onSelectCourse(course.id)}
                           className={`bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 hover:scale-[1.02] transition-all duration-200 cursor-pointer group touch-manipulation active:scale-[0.98] animate-card-in card-stagger-${Math.min(index + 1, 6)}`}
                         >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-11 h-11 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                              <SubjectIcon className={`text-lg ${colors.text}`} />
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <div className={`w-11 h-11 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                                <SubjectIcon className={`text-lg ${colors.text}`} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
+                                  {course.name}
+                                </h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                  {course.lectureCount} {course.lectureCount === 1 ? 'lecture' : 'lectures'}
+                                </p>
+                              </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
-                                {course.name}
-                              </h3>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {course.lectureCount} {course.lectureCount === 1 ? 'lecture' : 'lectures'}
-                              </p>
-                            </div>
+                            {/* Star Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                hapticSelection()
+                                setFavoritedCourses((prev) => {
+                                  const newSet = new Set(prev)
+                                  if (newSet.has(course.id)) {
+                                    newSet.delete(course.id)
+                                  } else {
+                                    newSet.add(course.id)
+                                  }
+                                  return newSet
+                                })
+                              }}
+                              className="p-2 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
+                            >
+                              <FiStar
+                                className={`w-5 h-5 transition-all duration-200 ${
+                                  favoritedCourses.has(course.id)
+                                    ? 'fill-yellow-400 text-yellow-400'
+                                    : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
+                                }`}
+                              />
+                            </button>
                           </div>
                         </div>
                       </SwipeToDelete>
