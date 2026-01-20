@@ -126,7 +126,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
       />
 
       {/* Modal */}
-      <div className="relative w-full sm:max-w-md bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-in-up overflow-hidden mb-safe">
+      <div className="relative w-full sm:max-w-md bg-white dark:bg-[#1a2235] rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-in-up overflow-hidden mb-safe">
         {/* Handle bar for mobile */}
         <div className="sm:hidden flex justify-center pt-3">
           <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
