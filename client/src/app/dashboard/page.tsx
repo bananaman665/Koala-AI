@@ -3,8 +3,8 @@
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2, FiEdit2, FiShare2 } from 'react-icons/fi'
-import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem } from 'lucide-react'
+import { FiMic, FiPause, FiSquare, FiClock, FiFileText, FiFolder, FiSearch, FiPlus, FiSettings, FiPlay, FiLoader, FiAlertCircle, FiHome, FiBook, FiBarChart2, FiCheckCircle, FiUsers, FiX, FiChevronLeft, FiChevronRight, FiTrash2, FiEdit2, FiShare2, FiChevronDown, FiCheck } from 'react-icons/fi'
+import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem, Calculator, Beaker, TestTube, Microscope, Atom, Dna, Zap, BookOpen } from 'lucide-react'
 import { Fire } from '@phosphor-icons/react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
@@ -279,6 +279,7 @@ function DashboardContent() {
   // Course management state
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
   const [showNewCourseModal, setShowNewCourseModal] = useState(false)
+  const [showSubjectDropdown, setShowSubjectDropdown] = useState(false)
   const [isExitingCourse, setIsExitingCourse] = useState(false)
 
   // Classes state
@@ -2724,28 +2725,80 @@ function DashboardContent() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Subject
                 </label>
-                <select
-                  value={newCourseData.subject || ''}
-                  onChange={(e) => setNewCourseData({ ...newCourseData, subject: e.target.value })}
-                  disabled={isCreatingCourse}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                >
-                  <option value="">Select a subject</option>
-                  <option value="math">Math</option>
-                  <option value="science">Science</option>
-                  <option value="chemistry">Chemistry</option>
-                  <option value="biology">Biology</option>
-                  <option value="physics">Physics</option>
-                  <option value="genetics">Genetics</option>
-                  <option value="engineering">Engineering</option>
-                  <option value="literature">Literature</option>
-                  <option value="other">Other</option>
-                </select>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowSubjectDropdown(!showSubjectDropdown)}
+                    disabled={isCreatingCourse}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700 text-left flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span className="flex items-center gap-2">
+                      {newCourseData.subject ? (
+                        <>
+                          {(() => {
+                            const subjectIcons: Record<string, any> = {
+                              math: Calculator,
+                              science: Beaker,
+                              chemistry: TestTube,
+                              biology: Microscope,
+                              physics: Atom,
+                              genetics: Dna,
+                              engineering: Zap,
+                              literature: BookOpen,
+                              other: FiBook,
+                            }
+                            const SubjectIcon = subjectIcons[newCourseData.subject] || FiBook
+                            return <SubjectIcon className="w-4 h-4" />
+                          })()}
+                          <span className="capitalize">{newCourseData.subject}</span>
+                        </>
+                      ) : (
+                        <span className="text-gray-500 dark:text-gray-400">Select a subject</span>
+                      )}
+                    </span>
+                    <FiChevronDown className={`w-5 h-5 transition-transform ${showSubjectDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {showSubjectDropdown && (
+                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                      {[
+                        { value: 'math', label: 'Math', icon: Calculator },
+                        { value: 'science', label: 'Science', icon: Beaker },
+                        { value: 'chemistry', label: 'Chemistry', icon: TestTube },
+                        { value: 'biology', label: 'Biology', icon: Microscope },
+                        { value: 'physics', label: 'Physics', icon: Atom },
+                        { value: 'genetics', label: 'Genetics', icon: Dna },
+                        { value: 'engineering', label: 'Engineering', icon: Zap },
+                        { value: 'literature', label: 'Literature', icon: BookOpen },
+                        { value: 'other', label: 'Other', icon: FiBook },
+                      ].map((subject) => (
+                        <button
+                          key={subject.value}
+                          type="button"
+                          onClick={() => {
+                            setNewCourseData({ ...newCourseData, subject: subject.value })
+                            setShowSubjectDropdown(false)
+                          }}
+                          className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors text-left ${
+                            newCourseData.subject === subject.value ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                          }`}
+                        >
+                          <subject.icon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                          <span className="text-gray-900 dark:text-white">{subject.label}</span>
+                          {newCourseData.subject === subject.value && (
+                            <FiCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 ml-auto" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="flex space-x-3 pt-4">
                 <button
                   onClick={() => {
                     setShowNewCourseModal(false)
+                    setShowSubjectDropdown(false)
                     setNewCourseData({
                       name: '',
                       code: '',
