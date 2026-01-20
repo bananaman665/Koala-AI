@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader, FiClock, FiStar } from 'react-icons/fi'
+import { FiFolder, FiPlus, FiBook, FiChevronRight, FiPlay, FiLoader, FiClock, FiStar, FiTrash2 } from 'react-icons/fi'
 import { hapticSelection } from '@/lib/haptics'
 import { Mic, Trophy, FileText, GraduationCap, Calculator, Beaker, Atom, TestTube, Microscope, Dna, Zap, BookOpen } from 'lucide-react'
 import { AnimatedCounter, AnimatedTimeCounter } from '@/components/AnimatedCounter'
@@ -294,31 +294,47 @@ export function DashboardHomeScreen({
                             </p>
                           </div>
                         </div>
-                        {/* Star Button */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            hapticSelection()
-                            setFavoritedCourses((prev) => {
-                              const newSet = new Set(prev)
-                              if (newSet.has(course.id)) {
-                                newSet.delete(course.id)
-                              } else {
-                                newSet.add(course.id)
-                              }
-                              return newSet
-                            })
-                          }}
-                          className="p-2 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
-                        >
-                          <FiStar
-                            className={`w-5 h-5 transition-all duration-200 ${
-                              favoritedCourses.has(course.id)
-                                ? 'fill-yellow-400 text-yellow-400'
-                                : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
-                            }`}
-                          />
-                        </button>
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-1">
+                          {/* Star Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              hapticSelection()
+                              setFavoritedCourses((prev) => {
+                                const newSet = new Set(prev)
+                                if (newSet.has(course.id)) {
+                                  newSet.delete(course.id)
+                                } else {
+                                  newSet.add(course.id)
+                                }
+                                return newSet
+                              })
+                            }}
+                            className="p-2 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
+                          >
+                            <FiStar
+                              className={`w-5 h-5 transition-all duration-200 ${
+                                favoritedCourses.has(course.id)
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
+                              }`}
+                            />
+                          </button>
+                          {/* Trash Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              hapticSelection()
+                              onDeleteCourse(course.id)
+                            }}
+                            className="p-2 flex-shrink-0 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-200"
+                          >
+                            <FiTrash2
+                              className="w-5 h-5 text-gray-300 dark:text-white/30 group-hover:text-red-500 dark:group-hover:text-red-400 transition-all duration-200"
+                            />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )
