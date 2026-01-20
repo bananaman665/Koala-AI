@@ -310,6 +310,7 @@ function DashboardContent() {
     name: '',
     code: '',
     professor: '',
+    subject: '',
     color: 'blue',
     category: 'Computer Science'
   })
@@ -2720,21 +2721,25 @@ function DashboardContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Color Theme
+                  Subject
                 </label>
-                <div className="flex space-x-2">
-                  {['blue', 'purple', 'green', 'orange', 'pink', 'yellow'].map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => setNewCourseData({ ...newCourseData, color })}
-                      disabled={isCreatingCourse}
-                      className={`w-10 h-10 rounded-full bg-${color}-500 hover:scale-110 transition-transform ${
-                        newCourseData.color === color ? 'ring-4 ring-offset-2 ring-gray-400' : ''
-                      } ${isCreatingCourse ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    />
-                  ))}
-                </div>
+                <select
+                  value={newCourseData.subject || ''}
+                  onChange={(e) => setNewCourseData({ ...newCourseData, subject: e.target.value })}
+                  disabled={isCreatingCourse}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                >
+                  <option value="">Select a subject</option>
+                  <option value="math">Math</option>
+                  <option value="science">Science</option>
+                  <option value="chemistry">Chemistry</option>
+                  <option value="biology">Biology</option>
+                  <option value="physics">Physics</option>
+                  <option value="genetics">Genetics</option>
+                  <option value="engineering">Engineering</option>
+                  <option value="literature">Literature</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
               <div className="flex space-x-3 pt-4">
                 <button
@@ -2744,6 +2749,7 @@ function DashboardContent() {
                       name: '',
                       code: '',
                       professor: '',
+                      subject: '',
                       color: 'blue',
                       category: 'Computer Science'
                     })
