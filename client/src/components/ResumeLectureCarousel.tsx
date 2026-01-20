@@ -28,7 +28,28 @@ export function ResumeLectureCarousel({
   const [touchEnd, setTouchEnd] = useState(0)
 
   if (!lectures || lectures.length === 0) {
-    return null
+    return (
+      <div className="mb-6">
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20">
+          <div className="flex items-center gap-3">
+            {/* Microphone Icon */}
+            <div className="w-11 h-11 bg-gray-100 dark:bg-gray-700/50 rounded-xl flex items-center justify-center flex-shrink-0">
+              <FiPlay className="text-gray-400 dark:text-gray-500 text-lg" />
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">
+                Get Started
+              </p>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                Create lectures to boost your studying
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   const currentLecture = lectures[currentIndex]
