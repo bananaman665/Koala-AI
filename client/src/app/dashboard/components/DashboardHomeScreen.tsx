@@ -421,7 +421,6 @@ export function DashboardHomeScreen({
                         key={course.id}
                         onDelete={() => onDeleteCourse(course.id)}
                         itemName={`"${course.name}"`}
-                        disabled={course.name === 'My Course' && course.code === '100'}
                       >
                         <div
                           onClick={() => onSelectCourse(course.id)}
