@@ -664,14 +664,6 @@ function DashboardContent() {
   const deleteCourse = async (courseId: string) => {
     if (!user?.id) return
 
-    // Find the course to check if it's the default "My Course"
-    const courseToDelete = courses.find(c => c.id === courseId)
-    if (courseToDelete && courseToDelete.name === 'My Course' && courseToDelete.code === '100') {
-      hapticError()
-      toast.error('Cannot delete your default course')
-      return
-    }
-
     try {
       // First delete all lectures in this course
       await supabase
