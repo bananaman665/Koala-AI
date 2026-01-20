@@ -286,7 +286,7 @@ export function DashboardHomeScreen({
                             {course.name}
                           </h3>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {lectureCount}L
+                            {lectureCount} {lectureCount === 1 ? 'lecture' : 'lectures'}
                           </p>
                         </div>
                       </div>
@@ -390,7 +390,7 @@ export function DashboardHomeScreen({
                                 {course.name}
                               </h3>
                               <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {course.lectureCount}L
+                                {course.lectureCount} {course.lectureCount === 1 ? 'lecture' : 'lectures'}
                               </p>
                             </div>
                           </div>
