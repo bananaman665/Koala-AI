@@ -812,6 +812,7 @@ function DashboardContent() {
           name: newCourseData.name.trim(),
           code: newCourseData.code.trim(),
           professor: newCourseData.professor.trim(),
+          subject: newCourseData.subject,
           category: newCourseData.category,
           color: newCourseData.color,
           lectures: 0,
