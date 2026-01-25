@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { FiX, FiZap, FiBook, FiEdit3, FiCheckCircle, FiHelpCircle, FiTarget, FiTrendingUp, FiAlertCircle } from 'react-icons/fi'
-import { QuestionType, DifficultyLevel } from '@/lib/groq'
+import { QuestionType, DifficultyLevel } from '@/lib/claude'
 
 export interface LearnModeConfig {
   numberOfQuestions: number
@@ -89,7 +89,7 @@ export function LearnModeConfigModal({
                 <FiTarget className="text-2xl" />
               </div>
               <div>
-                <h2 className="text-xl font-bold">Learn Mode</h2>
+                <h2 className="text-xl font-bold">Quiz Configuration</h2>
                 <p className="text-white/80 text-sm">Test your knowledge</p>
               </div>
             </div>
@@ -201,7 +201,7 @@ export function LearnModeConfigModal({
             ) : (
               <>
                 <FiZap className="w-6 h-6" />
-                Start Learning
+                Create Quiz
               </>
             )}
           </button>

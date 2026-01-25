@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateNotesFromTranscript } from '@/lib/groq'
+import { generateNotesFromTranscript } from '@/lib/mistral'
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,14 +20,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate notes using Groq
+    // Generate notes using Claude
     const notes = await generateNotesFromTranscript(transcript, options)
 
     if (!notes || notes.trim().length === 0) {
       return NextResponse.json(
         {
           error: 'Failed to generate notes',
-          message: 'Groq API returned empty response',
+          message: 'Mistral API returned empty response',
         },
         { status: 500 }
       )

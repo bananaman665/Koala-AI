@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { QuestionType } from '@/lib/groq'
+import type { QuestionType } from '@/lib/claude'
 
 interface LearnModeQuestion {
   question: string
@@ -47,10 +47,10 @@ export function LearnMode({
     <div className="overflow-hidden h-full flex flex-col lg:flex-row bg-gray-50 dark:bg-gray-900">
       {/* Left Panel - Progress & Keywords (280px on desktop) */}
       <div className="flex-1 lg:w-[280px] lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto">
-        <div className="px-4 sm:px-6 lg:px-4 pt-4 pb-8 lg:pb-4">
+        <div className="px-4 sm:px-6 lg:px-4 pt-20 sm:pt-24 lg:pt-8 pb-8 lg:pb-4">
           {/* Mobile: Header */}
           <div className="flex items-center justify-between mb-4 lg:hidden">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Learn Mode</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Quiz</h2>
             <button
               onClick={onExit}
               className="px-4 py-2 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 text-sm font-medium transition-colors"
@@ -101,9 +101,8 @@ export function LearnMode({
             </div>
           )}
 
-          {/* Question Type */}
-          <div className="mt-6 space-y-2">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Type</h3>
+          {/* Question Type Badge */}
+          <div className="mt-6">
             <span className="inline-block px-3 py-1.5 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-semibold rounded-full">
               {currentQuestion.type === 'multiple_choice' ? 'Multiple Choice' : 'True/False'}
             </span>
@@ -121,10 +120,10 @@ export function LearnMode({
 
       {/* Right Panel - Question Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="space-y-4 pb-20 px-4 sm:px-6 lg:px-8 pt-4 animate-zoom-in">
+        <div className="space-y-4 pb-20 px-4 sm:px-6 lg:px-8 pt-24 sm:pt-32 lg:pt-12 animate-zoom-in">
           {/* Desktop: Header */}
           <div className="hidden lg:block">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Learn Mode</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Quiz</h2>
           </div>
 
           {/* Question Card */}

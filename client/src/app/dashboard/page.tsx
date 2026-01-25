@@ -15,7 +15,7 @@ import { StreakDisplay, useStreak } from '@/components/StreakDisplay'
 import { OnboardingCarousel } from '@/components/OnboardingCarousel'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
-import { soundSuccess, soundSave, soundWhoosh } from '@/lib/sounds'
+import { soundSuccess } from '@/lib/sounds'
 import { supabase, uploadAudioFile, reorganizeAudioFile } from '@/lib/supabase'
 import type { Database } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
@@ -29,7 +29,7 @@ import { LevelBadge, LevelProgressModal, LevelUpModal } from '@/components/Level
 import { AchievementsModal, AchievementUnlockedModal } from '@/components/AchievementBadge'
 import { LearnModeConfigModal, LearnModeConfig } from '@/components/LearnModeConfigModal'
 import { FlashcardConfigModal, FlashcardConfig } from '@/components/FlashcardConfigModal'
-import type { QuestionType } from '@/lib/groq'
+import type { QuestionType } from '@/lib/claude'
 import { AnalyticsScreen } from './components/AnalyticsScreen'
 import { FeedScreen } from './components/FeedScreen'
 import { FlashcardMode } from './components/FlashcardMode'
@@ -268,6 +268,7 @@ function DashboardContent() {
   const [showDeleteLectureModal, setShowDeleteLectureModal] = useState(false)
   const [isDeletingLecture, setIsDeletingLecture] = useState(false)
   const [showMicPermissionModal, setShowMicPermissionModal] = useState(false)
+  const [showFullScreenNotes, setShowFullScreenNotes] = useState(false)
 
   // Library search state
   const [librarySearchQuery, setLibrarySearchQuery] = useState('')
@@ -473,9 +474,6 @@ function DashboardContent() {
     if (screen && ['dashboard', 'library', 'analytics', 'feed'].includes(screen)) {
       setActiveScreen(prev => {
         const newScreen = screen as 'dashboard' | 'library' | 'analytics' | 'feed'
-        if (prev !== newScreen) {
-          soundWhoosh()
-        }
         return prev !== newScreen ? newScreen : prev
       })
     }
@@ -749,6 +747,25 @@ function DashboardContent() {
             setSelectedLectureNotes(null)
           } else {
             setSelectedLectureNotes(notesData?.content || null)
+            
+            // Save last viewed lecture for "Continue Studying" on home page
+            if (notesData?.content) {
+              const notesPreview = notesData.content
+                .replace(/^#+\s*/gm, '') // Remove markdown headers
+                .replace(/\*\*/g, '') // Remove bold markers
+                .replace(/^-\s*/gm, '• ') // Convert dashes to bullets
+                .split('\n')
+                .filter((line: string) => line.trim())
+                .slice(0, 3)
+                .join(' ')
+                .slice(0, 150)
+              
+              localStorage.setItem('koala_last_viewed_lecture', JSON.stringify({
+                lectureId: selectedLecture,
+                notesPreview: notesPreview || 'Continue where you left off...',
+                timestamp: Date.now()
+              }))
+            }
           }
         }
       } catch (error) {
@@ -829,6 +846,7 @@ function DashboardContent() {
         name: '',
         code: '',
         professor: '',
+        subject: 'computer_science',
         color: 'blue',
         category: 'Computer Science'
       })
@@ -879,6 +897,7 @@ function DashboardContent() {
           name: '',
           code: '',
           professor: '',
+          subject: 'computer_science',
           color: 'blue',
           category: 'Computer Science'
         })
@@ -1789,7 +1808,6 @@ function DashboardContent() {
             activeScreen={activeScreen}
             onNavigate={(screen) => {
               hapticSelection()
-              soundWhoosh()
               setActiveScreen(screen)
             }}
             courseFilter={courseFilter}
@@ -1888,7 +1906,7 @@ function DashboardContent() {
       )}
 
       {/* Main scrollable content area */}
-      <div className="flex-1 min-h-0 relative overflow-hidden lg:pt-16 lg:ml-64">
+      <div className="flex-1 min-h-0 relative overflow-y-auto lg:overflow-hidden lg:pt-16 lg:ml-64 hide-scrollbar-mobile">
         {/* Dashboard Screen */}
         {(activeScreen === 'dashboard' || (isTransitioning && previousScreen === 'dashboard')) && (
           <ScreenTransition
@@ -1911,7 +1929,6 @@ function DashboardContent() {
                 onDeleteCourse={deleteCourse}
                 onSelectLecture={setSelectedLecture}
                 onNavigateToLibrary={() => {
-                  soundWhoosh()
                   setActiveScreen('library')
                 }}
                 onToggleFavorite={(lectureId) => {
@@ -1940,9 +1957,10 @@ function DashboardContent() {
             )}
 
             {/* Course Detail View with Recording */}
+            {selectedCourse && (
             <div className="overflow-y-auto bg-gray-50 dark:bg-[#111827] h-full relative">
-              <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-8 pt-32 sm:pt-36 larger-phone:pt-36 larger-phone:sm:pt-40`}>
-        {activeScreen === 'dashboard' && selectedCourse && (() => {
+              <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 lg:pb-8 pt-24 sm:pt-28 larger-phone:pt-28 larger-phone:sm:pt-32`}>
+        {activeScreen === 'dashboard' && (() => {
           const course = courses.find(c => c.id === selectedCourse)
           const courseLectures = lectures.filter(l => l.course_id === selectedCourse)
           const lectureCount = courseLectures.length
@@ -1950,7 +1968,7 @@ function DashboardContent() {
           if (!course) return null
 
           return (
-          <div key={course.id} className={isExitingCourse ? 'animate-zoom-out' : 'animate-zoom-in'}>
+          <div key={course.id} className={`mt-6 ${isExitingCourse ? 'animate-zoom-out' : 'animate-zoom-in'}`}>
             {/* Course Header */}
             <div className="mb-6">
               <button
@@ -1961,20 +1979,61 @@ function DashboardContent() {
                     setIsExitingCourse(false)
                   }, 200)
                 }}
-                className="flex items-center space-x-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors mb-4 shadow-sm"
+                className="flex items-center space-x-2 px-4 py-2.5 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors mb-4 shadow-sm"
               >
                 <FiChevronLeft className="text-lg" />
                 <span>Back to Home</span>
               </button>
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center gap-4">
+                {/* Subject Icon */}
+                {(() => {
+                  const subjectIcons: Record<string, any> = {
+                    math: Calculator,
+                    science: Beaker,
+                    chemistry: TestTube,
+                    biology: Microscope,
+                    physics: Atom,
+                    genetics: Dna,
+                    engineering: Zap,
+                    literature: BookOpen,
+                    other: FiBook,
+                  }
+                  const subjectColors: Record<string, { bg: string; text: string }> = {
+                    math: { bg: 'bg-blue-100 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400' },
+                    science: { bg: 'bg-purple-100 dark:bg-purple-500/20', text: 'text-purple-600 dark:text-purple-400' },
+                    chemistry: { bg: 'bg-orange-100 dark:bg-orange-500/20', text: 'text-orange-600 dark:text-orange-400' },
+                    biology: { bg: 'bg-green-100 dark:bg-green-500/20', text: 'text-green-600 dark:text-green-400' },
+                    physics: { bg: 'bg-pink-100 dark:bg-pink-500/20', text: 'text-pink-600 dark:text-pink-400' },
+                    genetics: { bg: 'bg-indigo-100 dark:bg-indigo-500/20', text: 'text-indigo-600 dark:text-indigo-400' },
+                    engineering: { bg: 'bg-yellow-100 dark:bg-yellow-500/20', text: 'text-yellow-600 dark:text-yellow-400' },
+                    literature: { bg: 'bg-red-100 dark:bg-red-500/20', text: 'text-red-600 dark:text-red-400' },
+                    other: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-600 dark:text-gray-400' },
+                  }
+                  const subject = (course as any).subject?.toLowerCase() || 'other'
+                  const SubjectIcon = subjectIcons[subject] || FiBook
+                  const colors = subjectColors[subject] || subjectColors.other
+                  return (
+                    <div className={`w-14 h-14 ${colors.bg} rounded-2xl flex items-center justify-center flex-shrink-0`}>
+                      <SubjectIcon className={`w-7 h-7 ${colors.text}`} />
+                    </div>
+                  )
+                })()}
+                <div className="flex-1">
                   <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                    {course.code ? `${course.code} - ${course.name}` : course.name}
+                    {course.name}
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
-                    {lectureCount} {lectureCount === 1 ? 'lecture' : 'lectures'}
-                    {course.professor && ` • ${course.professor}`}
-                  </p>
+                  <div className="flex items-center gap-2 mt-1 text-sm text-gray-600 dark:text-gray-300">
+                    <span>{lectureCount} {lectureCount === 1 ? 'lecture' : 'lectures'}</span>
+                    {course.professor && (
+                      <>
+                        <span>•</span>
+                        <div className="flex items-center gap-1">
+                          <FiUsers className="w-3.5 h-3.5" />
+                          <span>{course.professor}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -2075,12 +2134,21 @@ function DashboardContent() {
                 </div>
 
                 {/* Tab Content */}
-                <div className="p-6">
+                <div className="p-4 font-['Inter',sans-serif]">
                   {/* Notes Tab */}
                   {studyViewMode === 'notes' && (
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">AI Generated Notes</h3>
-                      <div className="prose prose-sm max-w-none mb-4 dark:prose-invert prose-p:mb-8 prose-headings:mt-8 prose-headings:mb-4 prose-ul:my-6 prose-li:my-3">
+                      <div className="prose prose-sm max-w-none dark:prose-invert 
+                        prose-h2:text-base prose-h2:font-semibold prose-h2:text-gray-800 dark:prose-h2:text-gray-100 prose-h2:mb-2.5 prose-h2:mt-5 prose-h2:pb-1.5 prose-h2:border-b prose-h2:border-gray-200/60 dark:prose-h2:border-gray-700/60 prose-h2:tracking-wide prose-h2:uppercase prose-h2:text-[13px]
+                        prose-h3:text-sm prose-h3:font-medium prose-h3:text-gray-700 dark:prose-h3:text-gray-200 prose-h3:mb-2 prose-h3:mt-4
+                        prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-2 prose-p:text-[13px]
+                        prose-ul:my-1.5 prose-ul:ml-0 prose-ul:pl-4
+                        prose-li:my-0.5 prose-li:text-gray-600 dark:prose-li:text-gray-300 prose-li:text-[13px] prose-li:leading-snug prose-li:marker:text-gray-400 dark:prose-li:marker:text-gray-500
+                        prose-strong:text-gray-800 dark:prose-strong:text-white prose-strong:font-medium
+                        [&>*:first-child]:mt-0
+                        [&_ul]:list-disc [&_ul]:space-y-0.5
+                        mb-4
+                      ">
                         <ReactMarkdown>{notes || ''}</ReactMarkdown>
                       </div>
                       <div className="flex gap-3 flex-wrap">
@@ -2418,17 +2486,6 @@ function DashboardContent() {
                 </div>
               </div>
             )}
-            {notesError && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <FiAlertCircle className="text-red-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-red-800 text-sm font-medium mb-1">Notes Generation Error:</p>
-                    <p className="text-red-700 text-sm">{notesError}</p>
-                  </div>
-                </div>
-              </div>
-            )}
             {!isSupported && (
               <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <div className="flex items-start gap-3">
@@ -2458,21 +2515,75 @@ function DashboardContent() {
 
             {/* Lectures in this Course */}
             <div className="mt-6">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">All Lectures</h3>
-              <div className="space-y-4">
-                {(() => {
-                  const courseLectures = lectures.filter(l => l.course_id === selectedCourse)
+              {(() => {
+                const courseLectures = lectures.filter(l => l.course_id === selectedCourse)
 
-                  if (courseLectures.length === 0) {
-                    return (
-                      <div className="text-center py-8 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-700">
-                        <FiFileText className="text-gray-300 text-4xl mx-auto mb-2" />
-                        <p className="text-gray-500 text-sm">No lectures in this course yet</p>
+                if (courseLectures.length === 0) {
+                  return (
+                    <div className="space-y-6">
+                      {/* Start Recording CTA */}
+                      <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-gray-700 p-6 text-center">
+                        <div className="w-20 h-20 bg-blue-100 dark:bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Mic className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                          Record Your First Lecture
+                        </h3>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 max-w-sm mx-auto">
+                          Start capturing knowledge! Record a lecture and let AI transform it into smart notes.
+                        </p>
+                        <button
+                          onClick={() => setShowReadyToRecordModal(true)}
+                          disabled={isRecording || isStoppingRecording || isGeneratingNotes || isTranscribing}
+                          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Mic className="w-5 h-5 inline mr-2" />
+                          Start Recording
+                        </button>
                       </div>
-                    )
-                  }
 
-                  return courseLectures.map((lecture) => {
+                      {/* How It Works */}
+                      <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">How It Works</h4>
+                        <div className="space-y-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                              <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">1</span>
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900 dark:text-white text-sm">Tap record during lecture</p>
+                              <p className="text-gray-500 dark:text-gray-400 text-xs">Press the mic button when class starts</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 bg-purple-100 dark:bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                              <span className="text-purple-600 dark:text-purple-400 font-bold text-sm">2</span>
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900 dark:text-white text-sm">AI generates notes automatically</p>
+                              <p className="text-gray-500 dark:text-gray-400 text-xs">We transcribe and summarize key points</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                              <span className="text-green-600 dark:text-green-400 font-bold text-sm">3</span>
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900 dark:text-white text-sm">Review and study anytime</p>
+                              <p className="text-gray-500 dark:text-gray-400 text-xs">Access notes, flashcards, and quizzes</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }
+
+                return (
+                  <>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">All Lectures</h3>
+                    <div className="space-y-4">
+                      {courseLectures.map((lecture) => {
                     const durationMinutes = Math.floor(lecture.duration / 60)
                     const hours = Math.floor(durationMinutes / 60)
                     const mins = durationMinutes % 60
@@ -2493,9 +2604,6 @@ function DashboardContent() {
                         key={lecture.id}
                         onClick={() => {
                           hapticSelection()
-                          if ((activeScreen as any) !== 'library') {
-                            soundWhoosh()
-                          }
                           setSelectedLecture(lecture.id)
                           setSelectedCourse(null)
                           setActiveScreen('library')
@@ -2522,15 +2630,18 @@ function DashboardContent() {
                         </div>
                       </div>
                     )
-                  })
-                })()}
-              </div>
+                      })}
+                    </div>
+                  </>
+                )
+              })()}
             </div>
           </div>
           )
         })()}
               </div>
             </div>
+            )}
           </ScreenTransition>
         )}
 
@@ -2622,6 +2733,7 @@ function DashboardContent() {
               onSubmitAnswer={handleSubmitAnswer}
               onNextQuestion={handleNextQuestion}
               onExitLearnMode={exitLearnMode}
+              onShowViewNotesModal={() => setShowFullScreenNotes(true)}
             />
           </ScreenTransition>
         )}
@@ -2638,9 +2750,6 @@ function DashboardContent() {
               streak={streak}
               isActiveToday={isActiveToday}
               onLectureClick={(lectureId) => {
-                if ((activeScreen as any) !== 'library') {
-                  soundWhoosh()
-                }
                 setSelectedLecture(lectureId)
                 setActiveScreen('library')
               }}
@@ -2715,7 +2824,7 @@ function DashboardContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Subject
+                  Subject *
                 </label>
                 <div className="relative">
                   <button
@@ -2807,7 +2916,7 @@ function DashboardContent() {
                 </button>
                 <button
                   onClick={handleCreateCourse}
-                  disabled={isCreatingCourse}
+                  disabled={isCreatingCourse || !newCourseData.subject}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreatingCourse ? 'Creating...' : 'Create Course'}
@@ -3367,16 +3476,15 @@ function DashboardContent() {
             onClick={() => {
               if (activeScreen !== 'dashboard') {
                 hapticSelection()
-                soundWhoosh()
                 setActiveScreen('dashboard')
               }
             }}
-            className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
+            className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] ${
               activeScreen === 'dashboard' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
           >
-            <FiHome className={`transition-all ${activeScreen === 'dashboard' ? 'text-[23px]' : 'text-xl'}`} />
-            <span className={`text-[10px] font-medium ${activeScreen === 'dashboard' ? '' : 'dark:opacity-60'}`}>Home</span>
+            <FiHome className="text-xl" />
+            <span className="text-[10px] font-medium dark:opacity-60">Home</span>
           </button>
 
           {/* Library */}
@@ -3384,16 +3492,15 @@ function DashboardContent() {
             onClick={() => {
               if ((activeScreen as any) !== 'library') {
                 hapticSelection()
-                soundWhoosh()
                 setActiveScreen('library')
               }
             }}
-            className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
+            className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] ${
               activeScreen === 'library' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
           >
-            <FiBook className={`transition-all ${activeScreen === 'library' ? 'text-[23px]' : 'text-xl'}`} />
-            <span className={`text-[10px] font-medium ${activeScreen === 'library' ? '' : 'dark:opacity-60'}`}>Library</span>
+            <FiBook className="text-xl" />
+            <span className="text-[10px] font-medium dark:opacity-60">Library</span>
           </button>
 
           {/* Center Record Button */}
@@ -3460,16 +3567,15 @@ function DashboardContent() {
             onClick={() => {
               if (activeScreen !== 'analytics') {
                 hapticSelection()
-                soundWhoosh()
                 setActiveScreen('analytics')
               }
             }}
-            className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
+            className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] ${
               activeScreen === 'analytics' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
           >
-            <FiBarChart2 className={`transition-all ${activeScreen === 'analytics' ? 'text-[23px]' : 'text-xl'}`} />
-            <span className={`text-[10px] font-medium ${activeScreen === 'analytics' ? '' : 'dark:opacity-60'}`}>Analytics</span>
+            <FiBarChart2 className="text-xl" />
+            <span className="text-[10px] font-medium dark:opacity-60">Analytics</span>
           </button>
 
           {/* Classes */}
@@ -3477,16 +3583,15 @@ function DashboardContent() {
             onClick={() => {
               if (activeScreen !== 'feed') {
                 hapticSelection()
-                soundWhoosh()
                 setActiveScreen('feed')
               }
             }}
-            className={`flex flex-col items-center justify-center gap-0.5 transition-all min-w-[48px] ${
+            className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] ${
               activeScreen === 'feed' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
           >
-            <FiUsers className={`transition-all ${activeScreen === 'feed' ? 'text-[23px]' : 'text-xl'}`} />
-            <span className={`text-[10px] font-medium ${activeScreen === 'feed' ? '' : 'dark:opacity-60'}`}>Classes</span>
+            <FiUsers className="text-xl" />
+            <span className="text-[10px] font-medium dark:opacity-60">Classes</span>
           </button>
         </div>
       </nav>
@@ -4102,6 +4207,44 @@ function DashboardContent() {
         onGenerate={(config) => generateFlashcards(undefined, config)}
         isGenerating={isGeneratingFlashcards}
       />
+
+      {/* Full Screen Notes Modal */}
+      {showFullScreenNotes && selectedLectureNotes && (
+        <div className="fixed inset-0 bg-gray-50 dark:bg-gray-900 z-50 overflow-y-auto">
+          {/* Top bar */}
+          <div className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-50 px-4 sm:px-6 py-6 sm:py-8" style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}>
+            <div className="flex items-center justify-between max-w-4xl mx-auto">
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
+                {selectedLectureData?.title || 'Notes'}
+              </h1>
+              <button
+                onClick={() => setShowFullScreenNotes(false)}
+                className="ml-4 px-3 py-1.5 sm:px-4 sm:py-2 text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-lg transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+
+          {/* Notes content */}
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-28 pb-8">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sm:p-8">
+              <div className="prose prose-base sm:prose-lg dark:prose-invert max-w-none
+                prose-h2:text-xl sm:prose-h2:text-2xl prose-h2:font-bold prose-h2:text-gray-900 dark:prose-h2:text-white prose-h2:mb-4 prose-h2:mt-8 prose-h2:pb-2 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700
+                prose-h3:text-lg sm:prose-h3:text-xl prose-h3:font-semibold prose-h3:text-gray-800 dark:prose-h3:text-gray-100 prose-h3:mb-2 prose-h3:mt-6
+                prose-p:text-base sm:prose-p:text-lg prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-3
+                prose-ul:my-3 prose-ul:ml-0 prose-ul:pl-6
+                prose-li:my-1 prose-li:text-base sm:prose-li:text-lg prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:leading-relaxed prose-li:marker:text-blue-600 dark:prose-li:marker:text-blue-400
+                prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-semibold
+                [&>*:first-child]:mt-0
+                [&_ul]:list-disc [&_ul]:space-y-1
+              ">
+                <ReactMarkdown>{selectedLectureNotes}</ReactMarkdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       </div> {/* Close h-screen-safe */}
     </Suspense>

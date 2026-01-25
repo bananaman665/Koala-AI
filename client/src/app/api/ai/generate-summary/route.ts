@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateSummary } from '@/lib/groq'
+import { generateSummary } from '@/lib/mistral'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate summary using Groq
+    // Generate summary using Claude
     const summary = await generateSummary(content, { maxWords })
 
     return NextResponse.json({

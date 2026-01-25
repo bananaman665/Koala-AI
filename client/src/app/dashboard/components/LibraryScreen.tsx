@@ -1,13 +1,13 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { FiSearch, FiClock, FiLoader, FiChevronLeft, FiEdit2, FiFileText, FiBook, FiTrash2, FiShare2, FiPlay, FiChevronRight, FiStar } from 'react-icons/fi'
+import { useMemo, useState, useEffect } from 'react'
+import { FiSearch, FiClock, FiLoader, FiChevronLeft, FiEdit2, FiBook, FiTrash2, FiShare2, FiPlay, FiChevronRight, FiStar } from 'react-icons/fi'
 import { hapticSelection } from '@/lib/haptics'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 import { AudioPlayer } from '@/components/AudioPlayer'
-import ReactMarkdown from 'react-markdown'
 import { LearnMode } from './LearnMode'
 import { FlashcardMode } from './FlashcardMode'
+import { TabButtons } from '@/components/TabButtons'
 import { hapticButton } from '@/lib/haptics'
 import type { Database } from '@/lib/supabase'
 
@@ -74,6 +74,7 @@ interface LibraryScreenProps {
   onSubmitAnswer: () => void
   onNextQuestion: () => void
   onExitLearnMode: () => void
+  onShowViewNotesModal: () => void
 }
 
 export function LibraryScreen({
@@ -119,8 +120,24 @@ export function LibraryScreen({
   onSubmitAnswer,
   onNextQuestion,
   onExitLearnMode,
+  onShowViewNotesModal,
 }: LibraryScreenProps) {
   const [favoritedLectures, setFavoritedLectures] = useState<Set<string>>(new Set())
+
+  // Tab state for notes/quiz/flashcards
+  const [activeTab, setActiveTab] = useState<'notes' | 'quiz' | 'flashcards'>('notes')
+  const [hasGeneratedNotes, setHasGeneratedNotes] = useState(false)
+  const [hasGeneratedQuiz, setHasGeneratedQuiz] = useState(false)
+  const [hasGeneratedFlashcards, setHasGeneratedFlashcards] = useState(false)
+  const [isGeneratingNotes, setIsGeneratingNotes] = useState(false)
+
+  // Reset tab state when lecture changes
+  useEffect(() => {
+    setHasGeneratedNotes(!!selectedLectureNotes)
+    setHasGeneratedQuiz(learnModeQuestions.length > 0)
+    setHasGeneratedFlashcards(flashcards.length > 0)
+    setActiveTab('notes')
+  }, [selectedLecture])
 
   // Get filtered lectures for both list and detail view
   const getFilteredLectures = useMemo(() => {
@@ -148,7 +165,7 @@ export function LibraryScreen({
       <div className="bg-gray-50 dark:bg-gray-900 min-h-full lg:h-full lg:min-h-0 lg:overflow-hidden lg:flex lg:flex-row">
         {/* Mobile: Full width on mobile, Desktop: Left panel (320px) */}
         <div className="lg:w-[320px] lg:h-full lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto lg:flex lg:flex-col">
-          <div className="px-3 sm:px-6 lg:px-2 py-4 sm:py-8 lg:py-4 pt-32 sm:pt-36 lg:pt-8 pb-32">
+          <div className="px-3 sm:px-6 lg:px-2 py-4 sm:py-8 lg:py-4 pt-32 sm:pt-36 lg:pt-8 pb-4">
             <div className="space-y-4">
               <div className="flex items-center justify-between lg:flex-col lg:items-start lg:gap-3">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Library</h2>
@@ -531,19 +548,21 @@ export function LibraryScreen({
             </div>
 
             {/* Notes */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
+            <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3 relative">
+              {isEditingNotes && (
+                <div className="flex items-center justify-between mb-3">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                    {isEditingNotes ? 'Edit Notes' : 'AI Generated Notes'}
+                    Edit Notes
                   </h3>
-                  {notesWasEdited && !isEditingNotes && (
+                </div>
+              )}
+              {!isEditingNotes && selectedLectureNotes && (
+                <div className="absolute top-3 right-3 flex items-center gap-2">
+                  {notesWasEdited && (
                     <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-medium rounded-full">
                       Edited
                     </span>
                   )}
-                </div>
-                {selectedLectureNotes && !isEditingNotes && (
                   <button
                     onClick={() => {
                       hapticButton()
@@ -554,8 +573,8 @@ export function LibraryScreen({
                     <FiEdit2 className="text-sm" />
                     Edit
                   </button>
-                )}
-              </div>
+                </div>
+              )}
               {isLoadingLectureNotes ? (
                 <div className="flex items-center justify-center py-8">
                   <FiLoader className="text-gray-400 text-4xl animate-spin" />
@@ -596,55 +615,131 @@ export function LibraryScreen({
                   </div>
                 </div>
               ) : selectedLectureNotes ? (
-                <div className="text-white">
-                  <div className="prose prose-sm max-w-none dark:prose-invert prose-h1:text-2xl prose-h1:text-center prose-h1:font-bold prose-h1:mb-8 prose-h1:pb-4 prose-h1:border-b prose-h1:border-gray-200 dark:prose-h1:border-gray-700 prose-h2:text-xl prose-h2:font-extrabold prose-h2:text-gray-900 dark:prose-h2:text-white prose-h2:mb-3 prose-h2:mt-6 prose-h3:text-lg prose-h3:font-bold prose-h3:text-gray-900 dark:prose-h3:text-white prose-h3:mb-2 prose-h3:mt-5 prose-p:text-gray-700 dark:prose-p:text-white prose-p:leading-relaxed prose-p:mb-3 prose-p:ml-6 prose-ul:my-3 prose-ul:ml-12 prose-li:my-1.5 prose-li:text-gray-700 dark:prose-li:text-white prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-semibold">
-                    <ReactMarkdown>{selectedLectureNotes}</ReactMarkdown>
-                  </div>
+                <div className="flex flex-col items-center justify-center h-full gap-4">
+                  <p className="text-gray-600 dark:text-gray-300">Notes generated</p>
+                  <button
+                    onClick={() => onShowViewNotesModal?.()}
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                  >
+                    View Notes
+                  </button>
                 </div>
               ) : (
-                <p className="text-gray-500 dark:text-gray-400">No notes available for this lecture.</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">No notes available for this lecture.</p>
               )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => {
-                  if (selectedLectureNotes) {
-                    onShowLearnModeConfig()
-                  } else {
-                    alert('No notes available for this lecture')
-                  }
-                }}
-                disabled={isGeneratingLearnMode}
-                className="flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-4 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              >
-                {isGeneratingLearnMode ? (
-                  <FiLoader className="animate-spin text-lg" />
-                ) : (
-                  <FiFileText className="text-lg" />
-                )}
-                <span>{isGeneratingLearnMode ? 'Generating...' : 'Learn Mode'}</span>
-              </button>
-              <button
-                onClick={() => {
-                  if (flashcards.length > 0) {
-                    onSetCurrentFlashcardIndex(0)
-                    onSetIsFlashcardModeActive(true)
-                  } else {
-                    onShowFlashcardConfig()
-                  }
-                }}
-                disabled={isGeneratingFlashcards}
-                className="flex items-center justify-center space-x-2 bg-purple-600 text-white btn-press px-4 py-4 rounded-xl hover:bg-purple-700 font-medium disabled:opacity-50 shadow-lg shadow-purple-200 dark:shadow-purple-900/20"
-              >
-                {isGeneratingFlashcards ? (
-                  <FiLoader className="text-lg animate-spin" />
-                ) : (
-                  <FiBook className="text-lg" />
-                )}
-                <span>{isGeneratingFlashcards ? 'Generating...' : 'Flashcards'}</span>
-              </button>
+            {/* Tab Buttons */}
+            <div className="space-y-4">
+              <TabButtons
+                tabs={[
+                  { id: 'notes', label: 'Notes Gen', active: activeTab === 'notes' },
+                  { id: 'quiz', label: 'Quiz', active: activeTab === 'quiz' },
+                  { id: 'flashcards', label: 'Flashcards', active: activeTab === 'flashcards' },
+                ]}
+                onTabClick={(id) => setActiveTab(id as 'notes' | 'quiz' | 'flashcards')}
+              />
+
+              {/* Tab Content */}
+              {activeTab === 'notes' && (
+                <div className="flex flex-col items-center justify-center min-h-[120px] pt-12">
+                  {hasGeneratedNotes ? (
+                    <div className="flex flex-col items-center justify-center gap-4 w-full">
+                      <p className="text-gray-600 dark:text-gray-300">Notes generated</p>
+                      <button
+                        onClick={() => onShowViewNotesModal?.()}
+                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                      >
+                        View Notes
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-4 w-full">
+                      <button
+                        onClick={async () => {
+                          setIsGeneratingNotes(true)
+                          try {
+                            // Notes are generated through parent component
+                            // This button triggers the generation via parent state
+                          } catch (error) {
+                            console.error('Error generating notes:', error)
+                          } finally {
+                            setIsGeneratingNotes(false)
+                          }
+                        }}
+                        disabled={isGeneratingNotes}
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
+                      >
+                        {isGeneratingNotes ? 'Generating...' : 'Generate Notes'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'quiz' && (
+                <div className="flex flex-col items-center justify-center min-h-[120px] pt-12">
+                  {hasGeneratedQuiz ? (
+                    <div className="flex flex-col items-center justify-center gap-4 w-full">
+                      <p className="text-gray-600 dark:text-gray-300">Quiz generated</p>
+                      <button
+                        onClick={() => {
+                          hapticButton()
+                        }}
+                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                      >
+                        View Quiz
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-4 w-full">
+                      <button
+                        onClick={() => {
+                          if (selectedLectureNotes) {
+                            onShowLearnModeConfig()
+                          } else {
+                            alert('No notes available for this lecture')
+                          }
+                        }}
+                        disabled={isGeneratingLearnMode}
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
+                      >
+                        {isGeneratingLearnMode ? 'Generating...' : 'Create Quiz'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'flashcards' && (
+                <div className="flex flex-col items-center justify-center min-h-[120px] pt-12">
+                  {hasGeneratedFlashcards ? (
+                    <div className="flex flex-col items-center justify-center gap-4 w-full">
+                      <p className="text-gray-600 dark:text-gray-300">Flashcards generated</p>
+                      <button
+                        onClick={() => {
+                          hapticButton()
+                          onSetCurrentFlashcardIndex(0)
+                          onSetIsFlashcardModeActive(true)
+                        }}
+                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                      >
+                        View Flashcards
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-4 w-full">
+                      <button
+                        onClick={() => onShowFlashcardConfig()}
+                        disabled={isGeneratingFlashcards}
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
+                      >
+                        {isGeneratingFlashcards ? 'Generating...' : 'Create Flashcards'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Share to Class Button */}

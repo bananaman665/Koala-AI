@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateLearnModeQuestions, QuestionType, DifficultyLevel } from '@/lib/groq'
+import { generateLearnModeQuestions, QuestionType, DifficultyLevel } from '@/lib/mistral'
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate learn mode questions using Groq
+    // Generate learn mode questions using Claude
     const questions = await generateLearnModeQuestions(content, numberOfQuestions, {
       questionTypes: questionTypes as QuestionType[],
       difficulty: difficulty as DifficultyLevel,

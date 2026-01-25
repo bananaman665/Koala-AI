@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateFlashcards } from '@/lib/groq'
+import { generateFlashcards } from '@/lib/mistral'
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate flashcards using Groq
+    // Generate flashcards using Claude
     const flashcards = await generateFlashcards(content, numberOfCards)
 
     return NextResponse.json({
