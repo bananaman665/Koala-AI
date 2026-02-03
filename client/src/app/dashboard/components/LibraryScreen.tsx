@@ -220,7 +220,7 @@ export function LibraryScreen({
               onClick={onExitLecture}
               className="flex items-center gap-1 text-blue-500 hover:text-blue-600 active:scale-95 transition-all font-medium flex-shrink-0"
             >
-              <ChevronLeft size={18} />
+              <span className="text-lg">◀</span>
               <span>Back</span>
             </button>
           </div>
@@ -260,7 +260,7 @@ export function LibraryScreen({
                     {selectedLectureNotes ? 'Read your study notes' : 'Write your own notes'}
                   </p>
                 </div>
-                <ChevronRight size={20} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors flex-shrink-0" />
+                <span className="text-lg">▶</span>
               </div>
             </button>
 
@@ -289,7 +289,7 @@ export function LibraryScreen({
                     {hasGeneratedQuiz ? 'Test your knowledge' : 'Generate from notes'}
                   </p>
                 </div>
-                <ChevronRight size={20} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors flex-shrink-0" />
+                <span className="text-lg">▶</span>
               </div>
             </button>
 
@@ -319,7 +319,7 @@ export function LibraryScreen({
                     {hasGeneratedFlashcards ? 'Spaced repetition' : 'Generate from notes'}
                   </p>
                 </div>
-                <ChevronRight size={20} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors flex-shrink-0" />
+                <span className="text-lg">▶</span>
               </div>
             </button>
           </div>
@@ -609,7 +609,7 @@ export function LibraryScreen({
                                     className={isFavorited ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-400'}
                                   />
                                 </button>
-                                <ChevronRight size={20} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors" />
+                                <span className="text-lg">▶</span>
                               </div>
                             </div>
                           </SwipeToDelete>

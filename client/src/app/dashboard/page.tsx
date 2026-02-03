@@ -1854,7 +1854,7 @@ function DashboardContent() {
                 onClick={() => { hapticButton(); setShowStreakModal(true) }}
                 className="flex items-center gap-1 hover:bg-purple-100 dark:hover:bg-purple-500/20 px-1 rounded-full transition-colors"
               >
-                <Flame size={16} className="text-orange-500 flex-shrink-0" />
+                <span className="text-lg">🔥</span>
                 <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{streak} day{streak !== 1 ? 's' : ''}</span>
               </button>
             </div>
@@ -4230,7 +4230,7 @@ function DashboardContent() {
                           : 'bg-gray-200 dark:bg-gray-600'
                       }`}>
                         {isActive ? (
-                          <Flame size={20} className="text-white" />
+                          <span className="text-lg">🔥</span>
                         ) : (
                           <span className={`text-sm ${isToday ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-gray-400'}`}>
                             {isToday ? '?' : ''}

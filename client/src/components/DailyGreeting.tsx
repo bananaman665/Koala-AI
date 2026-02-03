@@ -104,7 +104,7 @@ export function DailyGreeting({
           {/* Streak */}
           <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
             <div className="flex justify-center mb-3 sm:mb-4">
-              <Flame size={40} className="text-orange-500" />
+              <span className="text-lg">🔥</span>
             </div>
             <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{streak}</div>
             <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Day Streak</div>
@@ -122,7 +122,7 @@ export function DailyGreeting({
           {/* Today's Lectures */}
           <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
             <div className="flex justify-center mb-3 sm:mb-4">
-              <CheckCircle size={40} className="text-green-500" />
+              <span className="text-lg">✅</span>
             </div>
             <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{lecturesCompletedToday}</div>
             <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Today's Lectures</div>

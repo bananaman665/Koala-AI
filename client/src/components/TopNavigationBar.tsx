@@ -65,7 +65,7 @@ export function TopNavigationBar({
             onClick={onShowStreakModal}
             className="flex items-center gap-2 hover:bg-orange-100 dark:hover:bg-orange-500/20 px-3 py-1.5 rounded-lg transition-colors"
           >
-            <Flame size={18} className="text-orange-500 flex-shrink-0" />
+            <span className="text-lg">🔥</span>
             <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
               {streak}
             </span>

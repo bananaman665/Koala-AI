@@ -241,7 +241,7 @@ export function FeedScreen({
                           className={isFavorited ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-400'}
                         />
                       </button>
-                      <ChevronRight size={20} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors" />
+                      <span className="text-lg">▶</span>
                     </div>
                   </div>
                 </SwipeToDelete>
@@ -290,7 +290,7 @@ export function FeedScreen({
           <div className="mt-6 bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06]">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-amber-100 dark:bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Sparkle size={16} className="text-amber-600 dark:text-amber-400" />
+                <span className="text-lg">✨</span>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900 dark:text-white">Pro Tip</p>

@@ -144,7 +144,7 @@ export function LearnMode({
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-green-50 dark:bg-green-500/10 rounded-xl p-4 text-center">
                 <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center mx-auto mb-2">
-                  <CheckCircle size={20} className="text-green-600 dark:text-green-400" />
+                  <span className="text-lg">✅</span>
                 </div>
                 <p className="text-2xl font-bold text-green-700 dark:text-green-400">{correctAnswers}</p>
                 <p className="text-xs text-green-600 dark:text-green-500">Correct</p>
@@ -172,7 +172,7 @@ export function LearnMode({
               className="w-full py-3.5 rounded-xl bg-purple-500 text-white font-semibold hover:bg-purple-600 active:scale-[0.98] transition-all shadow-lg shadow-purple-500/25"
             >
               <span className="flex items-center justify-center gap-2">
-                <RotateCw size={20} />
+                <span className="text-lg">🔄</span>
                 Try Again
               </span>
             </button>
@@ -223,7 +223,7 @@ export function LearnMode({
         <div className="flex items-center justify-center gap-6 mb-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
-              <CheckCircle size={18} className="text-green-600 dark:text-green-400" />
+              <span className="text-lg">✅</span>
             </div>
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400">Correct</p>
@@ -318,7 +318,7 @@ export function LearnMode({
                           : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                       }`}>
                         {showCorrect ? (
-                          <CheckCircle size={18} />
+                          <span className="text-lg">✅</span>
                         ) : showIncorrect ? (
                           <XCircle size={18} />
                         ) : (
@@ -344,7 +344,7 @@ export function LearnMode({
                     isCorrect ? 'bg-green-100 dark:bg-green-500/20' : 'bg-red-100 dark:bg-red-500/20'
                   }`}>
                     {isCorrect ? (
-                      <Sparkle size={18} className="text-green-600 dark:text-green-400" />
+                      <span className="text-lg">✨</span>
                     ) : (
                       <Lightning size={18} className="text-red-600 dark:text-red-400" />
                     )}

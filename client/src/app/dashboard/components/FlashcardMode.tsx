@@ -99,7 +99,7 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
         {/* Content */}
         <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center px-6 py-12 pt-20">
           <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center mb-6 shadow-lg shadow-green-500/25">
-            <Sparkle size={48} className="text-white" />
+            <span className="text-lg">✨</span>
           </div>
           
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -146,7 +146,7 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <CheckCircle size={32} className="text-green-500" />
+                  <span className="text-lg">✅</span>
                 </div>
               </div>
             </div>
@@ -164,7 +164,7 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
               className="w-full py-3.5 rounded-xl bg-blue-500 text-white font-semibold hover:bg-blue-600 active:scale-[0.98] transition-all shadow-lg shadow-blue-500/25"
             >
               <span className="flex items-center justify-center gap-2">
-                <RotateCw size={20} />
+                <span className="text-lg">🔄</span>
                 Study Again
               </span>
             </button>
@@ -215,7 +215,7 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
         <div className="flex items-center justify-center gap-6 mb-2">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
-              <CheckCircle size={18} className="text-green-600 dark:text-green-400" />
+              <span className="text-lg">✅</span>
             </div>
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400">Mastered</p>
@@ -225,7 +225,7 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
           <div className="h-8 w-px bg-gray-200 dark:bg-gray-700" />
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-              <Circle size={18} className="text-gray-400 dark:text-gray-500" />
+              <span className="text-lg">⭐</span>
             </div>
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400">Remaining</p>
@@ -268,7 +268,7 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
                   </span>
                   {masteredCards.has(currentIndex) && (
                     <span className="px-2 py-1 rounded-full bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 text-xs font-semibold flex items-center gap-1">
-                      <CheckCircle size={12} />
+                      <span className="text-lg">✅</span>
                       Mastered
                     </span>
                   )}
@@ -321,7 +321,7 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
               disabled={currentIndex === 0}
               className="w-14 h-14 rounded-full bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-white/[0.06] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-white/10 active:scale-95 transition-all shadow-sm"
             >
-              <ChevronLeft size={24} className="text-gray-700 dark:text-gray-300" />
+              <span className="text-lg">◀</span>
             </button>
 
             <button
@@ -334,7 +334,7 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
             >
               {masteredCards.has(currentIndex) ? (
                 <span className="flex items-center gap-2">
-                  <CheckCircle size={18} />
+                  <span className="text-lg">✅</span>
                   Mastered
                 </span>
               ) : (
@@ -350,7 +350,7 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
               disabled={currentIndex === flashcards.length - 1 && masteredCards.size === 0}
               className="w-14 h-14 rounded-full bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-white/[0.06] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-white/10 active:scale-95 transition-all shadow-sm"
             >
-              <ChevronRight size={24} className="text-gray-700 dark:text-gray-300" />
+              <span className="text-lg">▶</span>
             </button>
           </div>
 

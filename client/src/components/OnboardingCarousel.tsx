@@ -43,7 +43,7 @@ const slides: Slide[] = [
   {
     icon: (
       <div className="flex items-center gap-2">
-        <Flame size={70} />
+        <span className="text-lg">🔥</span>
         <Trophy size={70} />
       </div>
     ),
