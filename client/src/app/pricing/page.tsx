@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { Zap, Check, Star, TrendingUp } from 'lucide-react'
 import AppIcon from '@/components/AppIcon'
 
 export default function PricingPage() {
@@ -81,7 +80,7 @@ export default function PricingPage() {
             <ul className="mt-8 space-y-4">
               {features.map((feature, i) => (
                 <li key={i} className="flex items-start">
-                  <Check className="w-5 h-5 text-green-600 dark:text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                  <span className="text-lg">✅</span>
                   <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                 </li>
               ))}
@@ -100,7 +99,7 @@ export default function PricingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
-                <Zap className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                <span className="text-lg">⚡</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">AI-Powered</h3>
               <p className="text-gray-600 dark:text-gray-400">
@@ -110,7 +109,7 @@ export default function PricingPage() {
 
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full mb-4">
-                <Star className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                <span className="text-lg">⭐</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">High Quality</h3>
               <p className="text-gray-600 dark:text-gray-400">
@@ -120,7 +119,7 @@ export default function PricingPage() {
 
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
-                <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400" />
+                <span className="text-lg">📈</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Analytics</h3>
               <p className="text-gray-600 dark:text-gray-400">

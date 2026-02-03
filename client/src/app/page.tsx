@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Mic, FileText, Zap, Check } from 'lucide-react'
 import AppIcon from '@/components/AppIcon'
 
 export default function HomePage() {
@@ -79,7 +78,7 @@ export default function HomePage() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-                    <Mic className="text-white text-xl" />
+                    <span className="text-lg">🎤</span>
                   </div>
                   <div>
                     <div className="text-sm text-gray-500">Recording</div>
@@ -97,15 +96,15 @@ export default function HomePage() {
                 <div className="text-sm text-gray-500 mb-3">Generated Notes</div>
                 <div className="space-y-2 text-sm text-gray-700">
                   <div className="flex items-start space-x-2">
-                    <Check className="text-green-500 mt-1 flex-shrink-0" />
+                    <span className="text-lg">✅</span>
                     <span>Binary trees are hierarchical data structures</span>
                   </div>
                   <div className="flex items-start space-x-2">
-                    <Check className="text-green-500 mt-1 flex-shrink-0" />
+                    <span className="text-lg">✅</span>
                     <span>Each node has at most two children</span>
                   </div>
                   <div className="flex items-start space-x-2">
-                    <Check className="text-green-500 mt-1 flex-shrink-0" />
+                    <span className="text-lg">✅</span>
                     <span>Time complexity: O(log n) for balanced trees</span>
                   </div>
                 </div>
@@ -131,7 +130,7 @@ export default function HomePage() {
             {/* Feature 1 */}
             <div className="bg-white rounded-xl p-8 hover:shadow-md transition-all border border-gray-100 hover:border-accent-200">
               <div className="w-14 h-14 bg-accent-100 rounded-xl flex items-center justify-center mb-5">
-                <Mic className="text-accent-600 text-2xl" />
+                <span className="text-lg">🎤</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 One-Click Recording
@@ -144,7 +143,7 @@ export default function HomePage() {
             {/* Feature 2 */}
             <div className="bg-white rounded-xl p-8 hover:shadow-md transition-all border border-gray-100 hover:border-accent-200">
               <div className="w-14 h-14 bg-accent-100 rounded-xl flex items-center justify-center mb-5">
-                <Zap className="text-accent-600 text-2xl" />
+                <span className="text-lg">⚡</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 AI-Powered Transcription
@@ -157,7 +156,7 @@ export default function HomePage() {
             {/* Feature 3 */}
             <div className="bg-white rounded-xl p-8 hover:shadow-md transition-all border border-gray-100 hover:border-accent-200">
               <div className="w-14 h-14 bg-accent-100 rounded-xl flex items-center justify-center mb-5">
-                <FileText className="text-accent-600 text-2xl" />
+                <span className="text-lg">📄</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 Smart Notes Generation

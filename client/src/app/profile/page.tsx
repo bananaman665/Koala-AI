@@ -3,23 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import {
-  Settings,
-  BookOpen,
-  Clock,
-  Loader2,
-  Flame,
-  Mic,
-  ChevronLeft,
-  Pencil,
-  Check,
-  X,
-  Gift,
-  Lock,
-  HelpCircle,
-  Timer,
-  FileText
-} from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 
@@ -191,7 +174,7 @@ export default function ProfilePage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-[#0B1220] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <span className="text-lg">⏳</span>
       </div>
     )
   }
@@ -212,10 +195,10 @@ export default function ProfilePage() {
   const memberSince = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
   const stats = [
-    { label: 'Study Time', value: studyTimeDisplay, icon: Clock, bgClass: 'bg-blue-50 dark:bg-gray-800', borderClass: 'border-blue-200 dark:border-gray-700', iconClass: 'text-blue-600 dark:text-gray-400', valueClass: 'text-blue-900 dark:text-white', labelClass: 'text-blue-700 dark:text-gray-400' },
-    { label: 'Lectures', value: totalLectures.toString(), icon: FileText, bgClass: 'bg-purple-50 dark:bg-gray-800', borderClass: 'border-purple-200 dark:border-gray-700', iconClass: 'text-purple-600 dark:text-gray-400', valueClass: 'text-purple-900 dark:text-white', labelClass: 'text-purple-700 dark:text-gray-400' },
-    { label: 'Courses', value: courses.length.toString(), icon: BookOpen, bgClass: 'bg-green-50 dark:bg-gray-800', borderClass: 'border-green-200 dark:border-gray-700', iconClass: 'text-green-600 dark:text-gray-400', valueClass: 'text-green-900 dark:text-white', labelClass: 'text-green-700 dark:text-gray-400' },
-    { label: 'Completed', value: `${completedPercent}%`, icon: Mic, bgClass: 'bg-orange-50 dark:bg-gray-800', borderClass: 'border-orange-200 dark:border-gray-700', iconClass: 'text-orange-600 dark:text-gray-400', valueClass: 'text-orange-900 dark:text-white', labelClass: 'text-orange-700 dark:text-gray-400' },
+    { label: 'Study Time', value: studyTimeDisplay, icon: "⏰", bgClass: 'bg-blue-50 dark:bg-gray-800', borderClass: 'border-blue-200 dark:border-gray-700', iconClass: 'text-blue-600 dark:text-gray-400', valueClass: 'text-blue-900 dark:text-white', labelClass: 'text-blue-700 dark:text-gray-400' },
+    { label: 'Lectures', value: totalLectures.toString(), icon: "📄", bgClass: 'bg-purple-50 dark:bg-gray-800', borderClass: 'border-purple-200 dark:border-gray-700', iconClass: 'text-purple-600 dark:text-gray-400', valueClass: 'text-purple-900 dark:text-white', labelClass: 'text-purple-700 dark:text-gray-400' },
+    { label: 'Courses', value: courses.length.toString(), icon: "📚", bgClass: 'bg-green-50 dark:bg-gray-800', borderClass: 'border-green-200 dark:border-gray-700', iconClass: 'text-green-600 dark:text-gray-400', valueClass: 'text-green-900 dark:text-white', labelClass: 'text-green-700 dark:text-gray-400' },
+    { label: 'Completed', value: `${completedPercent}%`, icon: "🎤", bgClass: 'bg-orange-50 dark:bg-gray-800', borderClass: 'border-orange-200 dark:border-gray-700', iconClass: 'text-orange-600 dark:text-gray-400', valueClass: 'text-orange-900 dark:text-white', labelClass: 'text-orange-700 dark:text-gray-400' },
   ]
 
   // Calculate time until midnight for quest reset
@@ -234,7 +217,7 @@ export default function ProfilePage() {
   const dailyQuests = [
     {
       id: 'record_lecture',
-      icon: Mic,
+      icon: "🎤",
       title: 'Record a lecture',
       current: Math.min(lecturesRecordedToday, 1),
       target: 1,
@@ -246,7 +229,7 @@ export default function ProfilePage() {
     },
     {
       id: 'study_10_min',
-      icon: Clock,
+      icon: "⏰",
       title: 'Study for 10 minutes',
       current: Math.min(studyMinutesToday, 10),
       target: 10,
@@ -258,7 +241,7 @@ export default function ProfilePage() {
     },
     {
       id: 'maintain_streak',
-      icon: Flame,
+      icon: "🔥",
       title: 'Maintain your streak',
       current: streak > 0 ? 1 : 0,
       target: 1,
@@ -288,7 +271,7 @@ export default function ProfilePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/dashboard" className="flex items-center space-x-2 w-20">
-              <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-[#94A3B8]" />
+              <span className="text-lg">◀</span>
               <span className="text-gray-700 dark:text-[#F1F5F9] font-medium">Back</span>
             </Link>
             <span className="text-lg font-semibold text-gray-900 dark:text-[#F1F5F9]">Profile</span>
@@ -297,7 +280,7 @@ export default function ProfilePage() {
                 href="/settings"
                 className="p-2 hover:bg-gray-100 dark:hover:bg-[#1E293B] rounded-xl transition-colors"
               >
-                <Settings className="w-5 h-5 text-gray-600 dark:text-[#94A3B8]" />
+                <span className="text-lg">⚙️</span>
               </Link>
             </div>
           </div>
@@ -337,13 +320,13 @@ export default function ProfilePage() {
                       disabled={isSavingName || !newName.trim()}
                       className="p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg disabled:opacity-50 transition-colors"
                     >
-                      {isSavingName ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                      {isSavingName ? <span className="text-lg">⏳</span> : <span className="text-lg">✅</span>}
                     </button>
                     <button
                       onClick={handleCancelEdit}
                       className="p-2 bg-gray-200 dark:bg-[#1E293B] hover:bg-gray-300 dark:hover:bg-[#334155] text-gray-600 dark:text-[#94A3B8] rounded-lg transition-colors"
                     >
-                      <X className="w-4 h-4" />
+                      <span className="text-lg">❌</span>
                     </button>
                   </div>
                 ) : (
@@ -356,7 +339,7 @@ export default function ProfilePage() {
                       className="p-1.5 hover:bg-gray-100 dark:hover:bg-[#1E293B] rounded-lg transition-colors"
                       title="Edit name"
                     >
-                      <Pencil className="w-4 h-4 text-gray-400 dark:text-[#94A3B8]" />
+                      <span className="text-lg">✏️</span>
                     </button>
                   </div>
                 )}
@@ -387,7 +370,7 @@ export default function ProfilePage() {
                   href="/settings"
                   className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-all"
                 >
-                  <Settings className="w-5 h-5" />
+                  <span className="text-lg">⚙️</span>
                   <span>Settings</span>
                 </Link>
               </div>
@@ -402,7 +385,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between p-5">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-[#F1F5F9]">Daily Quests</h3>
                 <div className="flex items-center gap-1.5 text-amber-500">
-                  <Timer className="w-4 h-4" />
+                  <span className="text-lg">⏱️</span>
                   <span className="text-sm font-semibold">{hoursUntilReset}H {minutesUntilReset}M</span>
                 </div>
               </div>
@@ -451,9 +434,9 @@ export default function ProfilePage() {
                         {/* Reward Icon */}
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${quest.completed ? 'bg-green-100 dark:bg-green-500/20' : 'bg-gray-200 dark:bg-[#0B1220]'}`}>
                           {quest.completed ? (
-                            <Check className="w-5 h-5 text-green-500" />
+                            <span className="text-lg">✅</span>
                           ) : (
-                            <Gift className="w-5 h-5 text-gray-400" />
+                            <span className="text-lg">🎁</span>
                           )}
                         </div>
                       </div>
@@ -468,14 +451,14 @@ export default function ProfilePage() {
                     <div className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] border-l-4 border-l-gray-300 dark:border-l-gray-600 rounded-xl p-4 opacity-60">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200 dark:bg-[#0B1220]">
-                          <HelpCircle className="w-5 h-5 text-gray-400" />
+                          <span className="text-lg">❓</span>
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-500 dark:text-[#94A3B8]">Revealed tomorrow</h4>
                           <div className="h-5 bg-gray-200 dark:bg-[#0B1220] rounded-full mt-2" />
                         </div>
                         <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-200 dark:bg-[#0B1220]">
-                          <Lock className="w-5 h-5 text-gray-400" />
+                          <span className="text-lg">🔒</span>
                         </div>
                       </div>
                     </div>

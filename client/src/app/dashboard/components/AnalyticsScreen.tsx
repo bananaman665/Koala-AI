@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Mic } from 'lucide-react'
 import { hapticButton } from '@/lib/haptics'
 import type { Database } from '@/lib/supabase'
 
@@ -104,7 +103,7 @@ export function AnalyticsScreen({
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Study Streak</h3>
             <div className="flex items-center space-x-2 mb-3">
               <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                <TrendingUp className="text-orange-600 dark:text-orange-400 text-2xl" />
+                <span className="text-lg">📈</span>
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Layers } from 'lucide-react'
 
 export interface FlashcardConfig {
   numberOfCards: number
@@ -40,7 +39,7 @@ export function FlashcardConfigModal({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                <Layers className="text-2xl" />
+                <span className="text-lg">📑</span>
               </div>
               <div>
                 <h2 className="text-xl font-bold">Flashcards</h2>
@@ -52,7 +51,7 @@ export function FlashcardConfigModal({
               disabled={isGenerating}
               className="p-2 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
             >
-              <X className="w-5 h-5" />
+              <span className="text-lg">❌</span>
             </button>
           </div>
         </div>
@@ -107,7 +106,7 @@ export function FlashcardConfigModal({
               </>
             ) : (
               <>
-                <Layers className="w-6 h-6" />
+                <span className="text-lg">📑</span>
                 Generate {numberOfCards} Cards
               </>
             )}

@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { BookOpen, Loader, Clock, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import AppIcon from '@/components/AppIcon'
 import { useAuth } from '@/contexts/AuthContext'
@@ -289,7 +288,7 @@ export default function CoursesPage() {
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <span className="text-lg">🔍</span>
               <input
                 type="text"
                 value={searchQuery}
@@ -318,7 +317,7 @@ export default function CoursesPage() {
               onClick={() => setShowAddModal(true)}
               className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-shadow whitespace-nowrap flex items-center space-x-2"
             >
-              <Plus />
+              "➕"
               <span>Add Course</span>
             </button>
           </div>
@@ -333,7 +332,7 @@ export default function CoursesPage() {
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Total Courses</div>
               </div>
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-blue-600" />
+                <span className="text-lg">📚</span>
               </div>
             </div>
           </div>
@@ -347,7 +346,7 @@ export default function CoursesPage() {
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Total Lectures</div>
               </div>
               <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                <Star className="w-6 h-6 text-purple-600" />
+                <span className="text-lg">⭐</span>
               </div>
             </div>
           </div>
@@ -361,7 +360,7 @@ export default function CoursesPage() {
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Study Time</div>
               </div>
               <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-green-600" />
+                <span className="text-lg">⏰</span>
               </div>
             </div>
           </div>
@@ -375,7 +374,7 @@ export default function CoursesPage() {
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Active Courses</div>
               </div>
               <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-orange-600" />
+                <span className="text-lg">📈</span>
               </div>
             </div>
           </div>
@@ -639,7 +638,7 @@ export default function CoursesPage() {
                 className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
               >
                 {isDeleting ? (
-                  <Loader className="animate-spin text-lg" />
+                  <span className="text-lg">⏳</span>
                 ) : (
                   'Delete'
                 )}

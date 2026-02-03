@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Mail, ArrowLeft, Play, Lock } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { hapticButton, hapticSelection, hapticSuccess } from '@/lib/haptics'
@@ -95,7 +94,7 @@ export default function SettingsPage() {
               onClick={handleBack}
               className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <span className="text-lg">←</span>
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Settings</h1>
           </div>
@@ -123,7 +122,7 @@ export default function SettingsPage() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">View profile</p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400" />
+            <span className="text-lg">▶</span>
           </Link>
 
           <button
@@ -132,11 +131,11 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <Lock className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <span className="text-lg">🔒</span>
               </div>
               <span className="font-medium text-gray-900 dark:text-white">Change Password</span>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400" />
+            <span className="text-lg">▶</span>
           </button>
         </div>
 
@@ -269,11 +268,11 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <HelpCircle className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <span className="text-lg">❓</span>
               </div>
               <span className="font-medium text-gray-900 dark:text-white">Help & FAQ</span>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400" />
+            <span className="text-lg">▶</span>
           </Link>
 
           <Link
@@ -283,11 +282,11 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <Mail className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <span className="text-lg">📧</span>
               </div>
               <span className="font-medium text-gray-900 dark:text-white">Contact Support</span>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400" />
+            <span className="text-lg">▶</span>
           </Link>
 
           <button
@@ -300,14 +299,14 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                <Play className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span className="text-lg">▶️</span>
               </div>
               <div className="text-left">
                 <p className="font-medium text-gray-900 dark:text-white">Replay Tutorial</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">View the app introduction again</p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400" />
+            <span className="text-lg">▶</span>
           </button>
 
           <button
@@ -319,14 +318,14 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                <Play className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <span className="text-lg">▶️</span>
               </div>
               <div className="text-left">
                 <p className="font-medium text-gray-900 dark:text-white">Replay Daily Greeting</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">View the morning/afternoon/evening greeting</p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400" />
+            <span className="text-lg">▶</span>
           </button>
         </div>
 

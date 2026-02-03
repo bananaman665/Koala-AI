@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef } from 'react'
-import { Clock } from 'lucide-react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import type { Database } from '@/lib/supabase'
 import { hapticSelection } from '@/lib/haptics'
@@ -116,7 +115,7 @@ export function VirtualizedLectureList({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-4">
                     <span className="flex items-center">
-                      <Clock className="mr-1" />
+                      <span className="text-lg">⏰</span>
                       {formattedDuration}
                     </span>
                     <span>{dateDisplay}</span>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Sparkles } from 'lucide-react'
 
 interface GeneratingScreenProps {
   isVisible: boolean

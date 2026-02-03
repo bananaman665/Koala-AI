@@ -1,16 +1,15 @@
-import { Calculator, Beaker, Atom, TestTube, Microscope, Dna, Zap, BookOpen } from 'lucide-react'
 
 // Subject icon mapping
 export const subjectIcons: Record<string, any> = {
-  math: Calculator,
-  science: Beaker,
-  chemistry: TestTube,
-  biology: Microscope,
-  physics: Atom,
-  genetics: Dna,
-  engineering: Zap,
-  literature: BookOpen,
-  default: BookOpen,
+  math: "🧮",
+  science: "🧪",
+  chemistry: "🧬",
+  biology: "🔬",
+  physics: "⚛️",
+  genetics: "🧬",
+  engineering: "⚡",
+  literature: "📚",
+  default: "📚",
 }
 
 // Subject color mapping

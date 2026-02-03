@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { Mic } from 'lucide-react'
 
 interface SidebarProps {
   activeScreen: 'dashboard' | 'library' | 'analytics' | 'feed'
@@ -35,10 +34,10 @@ export function Sidebar({
   const isDisabled = isRecording || isStoppingRecording || isGeneratingNotes || isTranscribing
 
   const navItems = [
-    { id: 'dashboard', label: 'Home', icon: Home },
-    { id: 'library', label: 'Library', icon: Folder },
-    { id: 'analytics', label: 'Analytics', icon: BarChart2 },
-    { id: 'feed', label: 'Classes', icon: Users },
+    { id: 'dashboard', label: 'Home', icon: "🏠" },
+    { id: 'library', label: 'Library', icon: "📁" },
+    { id: 'analytics', label: 'Analytics', icon: "📊" },
+    { id: 'feed', label: 'Classes', icon: "👥" },
   ]
 
   return (
@@ -76,7 +75,7 @@ export function Sidebar({
           disabled={isDisabled}
           className="w-full mt-6 flex items-center justify-center gap-2 px-4 py-4 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
         >
-          <Mic className="w-5 h-5" />
+          <span className="text-lg">🎤</span>
           <span>Record Lecture</span>
         </button> */}
       </nav>
@@ -113,7 +112,7 @@ export function Sidebar({
             href="/settings"
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           >
-            <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <span className="text-lg">⚙️</span>
           </Link>
           <Link
             href="/profile"

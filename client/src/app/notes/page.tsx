@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Share2, Download, Edit2, BookOpenmark, Play, Clock } from 'lucide-react'
 
 export default function NotesPage() {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -16,21 +15,21 @@ export default function NotesPage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard" className="flex items-center space-x-2 text-blue-600 hover:text-blue-700">
-                <ArrowLeft />
+                "←"
                 <span>Back to Dashboard</span>
               </Link>
             </div>
             <div className="flex items-center space-x-3">
               <button className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center space-x-2">
-                <Share2 />
+                "📤"
                 <span>Share</span>
               </button>
               <button className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center space-x-2">
-                <Download />
+                "⬇️"
                 <span>Export</span>
               </button>
               <button className="px-4 py-2 text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:shadow-lg flex items-center space-x-2">
-                <Edit2 />
+                "✏️"
                 <span>Edit</span>
               </button>
             </div>
@@ -51,7 +50,7 @@ export default function NotesPage() {
                   </h1>
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <span className="flex items-center space-x-1">
-                      <Bookmark className="text-blue-600" />
+                      <span className="text-lg">🔖</span>
                       <span>CS101 - Data Structures</span>
                     </span>
                     <span>•</span>
@@ -75,9 +74,9 @@ export default function NotesPage() {
                     className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center hover:shadow-lg transition-shadow"
                   >
                     {isPlaying ? (
-                      <Pause className="text-white text-xl" />
+                      <span className="text-lg">⏸</span>
                     ) : (
-                      <Play className="text-white text-xl ml-1" />
+                      <span className="text-lg">▶️</span>
                     )}
                   </button>
                   <div className="flex-1">
@@ -128,7 +127,7 @@ export default function NotesPage() {
                 ].map((item, i) => (
                   <div key={i} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
                     <div className="flex-shrink-0 w-20 text-xs text-blue-600 font-medium mt-1">
-                      <Clock className="inline mr-1" />
+                      <span className="text-lg">⏰</span>
                       {item.time}
                     </div>
                     <p className="text-gray-700 flex-1">{item.point}</p>

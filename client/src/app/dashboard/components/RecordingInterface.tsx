@@ -1,6 +1,5 @@
 'use client'
 
-import { Play, Mic } from 'lucide-react'
 import { formatDuration } from '@/hooks/useHybridRecording'
 
 interface RecordingInterfaceProps {
@@ -38,7 +37,7 @@ export function RecordingInterface({
               !isPaused && 'recording-indicator'
             }`}
           >
-            <Mic className="text-white text-5xl" />
+            <span className="text-lg">🎤</span>
           </div>
           
           {/* Duration */}
@@ -64,12 +63,12 @@ export function RecordingInterface({
           >
             {isPaused ? (
               <>
-                <Play className="inline mr-2" />
+                <span className="text-lg">▶️</span>
                 Resume
               </>
             ) : (
               <>
-                <Pause className="inline mr-2" />
+                <span className="text-lg">⏸</span>
                 Pause
               </>
             )}

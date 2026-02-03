@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Users } from 'lucide-react'
 import { hapticButton, hapticSelection, hapticSuccess } from '@/lib/haptics'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 

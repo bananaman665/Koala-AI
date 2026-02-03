@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { BookOpen, Mail, ArrowLeft, Zap, MessageCircle, Mic, FileText, Settings, HelpCircle, Search, ChevronDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { hapticButton, hapticSelection } from '@/lib/haptics'
 
@@ -22,21 +21,21 @@ export default function HelpPage() {
 
   const quickLinks = [
     {
-      icon: Mail,
+      icon: "📧",
       title: 'Contact Support',
       description: 'Get help from our team',
       color: 'blue',
       href: 'mailto:support@koala.ai'
     },
     {
-      icon: MessageCircle,
+      icon: "💬",
       title: 'Community',
       description: 'Connect with students',
       color: 'purple',
       href: '/help/community'
     },
     {
-      icon: BookOpen,
+      icon: "📚",
       title: 'Tutorials',
       description: 'Watch video guides',
       color: 'green',
@@ -46,7 +45,7 @@ export default function HelpPage() {
 
   const categories = [
     {
-      icon: Zap,
+      icon: "⚡",
       title: 'Getting Started',
       color: 'orange',
       articles: [
@@ -57,7 +56,7 @@ export default function HelpPage() {
       ]
     },
     {
-      icon: Mic,
+      icon: "🎤",
       title: 'Recording',
       color: 'red',
       articles: [
@@ -68,7 +67,7 @@ export default function HelpPage() {
       ]
     },
     {
-      icon: FileText,
+      icon: "📄",
       title: 'Notes & Transcripts',
       color: 'blue',
       articles: [
@@ -79,7 +78,7 @@ export default function HelpPage() {
       ]
     },
     {
-      icon: Settings,
+      icon: "⚙️",
       title: 'Account & Settings',
       color: 'gray',
       articles: [
@@ -150,7 +149,7 @@ export default function HelpPage() {
               onClick={handleBack}
               className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <span className="text-lg">←</span>
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Help & FAQ</h1>
           </div>
@@ -161,7 +160,7 @@ export default function HelpPage() {
         {/* Icon Header */}
         <div className="flex flex-col items-center py-4">
           <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4">
-            <HelpCircle className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+            <span className="text-lg">❓</span>
           </div>
           <p className="text-gray-500 dark:text-gray-400 text-center">
             Find answers and get support
@@ -171,7 +170,7 @@ export default function HelpPage() {
         {/* Search */}
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Search className="text-gray-400 dark:text-gray-500 w-5 h-5" />
+            <span className="text-lg">🔍</span>
           </div>
           <input
             type="text"
@@ -204,7 +203,7 @@ export default function HelpPage() {
                     <p className="font-medium text-gray-900 dark:text-white">{link.title}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{link.description}</p>
                   </div>
-                  <ArrowLeft className="w-5 h-5 text-gray-400 rotate-180" />
+                  <span className="text-lg">←</span>
                 </a>
               )
             })}
@@ -233,7 +232,7 @@ export default function HelpPage() {
                         className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                       >
                         <span className="text-gray-700 dark:text-gray-300">{article}</span>
-                        <ArrowLeft className="w-4 h-4 text-gray-400 rotate-180 flex-shrink-0" />
+                        <span className="text-lg">←</span>
                       </button>
                     ))}
                   </div>
@@ -260,7 +259,7 @@ export default function HelpPage() {
                     {expandedFaq === i ? (
                       <ChevronUp className="w-5 h-5 text-gray-400 flex-shrink-0" />
                     ) : (
-                      <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                      <span className="text-lg">▼</span>
                     )}
                   </button>
                   {expandedFaq === i && (
@@ -278,7 +277,7 @@ export default function HelpPage() {
         {searchQuery && filteredFaqs.length === 0 && filteredCategories.length === 0 && (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-gray-400" />
+              <span className="text-lg">🔍</span>
             </div>
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No results found</h3>
             <p className="text-gray-500 dark:text-gray-400">Try searching with different keywords</p>
@@ -288,7 +287,7 @@ export default function HelpPage() {
         {/* Contact Support */}
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 text-center border border-blue-100 dark:border-blue-900/30">
           <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-            <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <span className="text-lg">📧</span>
           </div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Still need help?</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Our support team is here to assist you</p>

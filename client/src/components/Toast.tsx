@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
-import { Check, X, AlertCircle, Info } from 'lucide-react'
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -31,10 +30,10 @@ export function useToast() {
 }
 
 const toastIcons = {
-  success: Check,
-  error: X,
-  warning: AlertCircle,
-  info: Info,
+  success: "✅",
+  error: "❌",
+  warning: "⚠️",
+  info: "ℹ️",
 }
 
 const toastStyles = {

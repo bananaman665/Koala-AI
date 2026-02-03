@@ -1,6 +1,5 @@
 'use client'
 
-import { Lock, Trophy, Rocket, Mic, Clock, Flame, Brain, BookOpen, Star, Sparkles, X } from 'lucide-react'
 import { ACHIEVEMENTS, AchievementId } from '@/hooks/useAchievements'
 
 interface AchievementCardProps {
@@ -102,14 +101,14 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
 
   // Group achievements by category
   const categories = [
-    { id: 'getting_started', name: 'Getting Started', icon: Rocket },
-    { id: 'recording', name: 'Recording', icon: Mic },
-    { id: 'time', name: 'Time', icon: Clock },
-    { id: 'streak', name: 'Streaks', icon: Flame },
-    { id: 'quiz', name: 'Quizzes', icon: Brain },
-    { id: 'courses', name: 'Courses', icon: BookOpen },
-    { id: 'level', name: 'Levels', icon: Star },
-    { id: 'special', name: 'Special', icon: Sparkles },
+    { id: 'getting_started', name: 'Getting Started', icon: "🚀" },
+    { id: 'recording', name: 'Recording', icon: "🎤" },
+    { id: 'time', name: 'Time', icon: "⏰" },
+    { id: 'streak', name: 'Streaks', icon: "🔥" },
+    { id: 'quiz', name: 'Quizzes', icon: "🧠" },
+    { id: 'courses', name: 'Courses', icon: "📚" },
+    { id: 'level', name: 'Levels', icon: "⭐" },
+    { id: 'special', name: 'Special', icon: "✨" },
   ]
 
   return (
@@ -120,7 +119,7 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center">
-                <Trophy className="w-6 h-6 text-white" />
+                <span className="text-lg">🏆</span>
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Achievements</h2>
@@ -134,7 +133,7 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             >
               <span className="sr-only">Close</span>
-              <X className="w-5 h-5 text-gray-500" />
+              <span className="text-lg">❌</span>
             </button>
           </div>
           
@@ -226,7 +225,7 @@ export function AchievementUnlockedModal({ isOpen, onClose, achievement }: Achie
           
           <div className="relative">
             <div className="w-16 h-16 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center">
-              <Trophy className="w-8 h-8 text-white" />
+              <span className="text-lg">🏆</span>
             </div>
             <h2 className="text-lg font-bold mb-1 opacity-90">Achievement Unlocked!</h2>
             <div className="w-20 h-20 mx-auto my-4 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">

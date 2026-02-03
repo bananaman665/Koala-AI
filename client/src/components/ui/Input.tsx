@@ -1,5 +1,4 @@
 import { forwardRef, useState } from 'react'
-import { Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {

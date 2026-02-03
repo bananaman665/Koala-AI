@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, Folder, BarChart2, Users, Settings, User } from 'lucide-react'
 import { hapticSelection } from '@/lib/haptics'
 import type { Database } from '@/lib/supabase'
 
@@ -27,10 +26,10 @@ export function LeftSidebar({
   onToggleFavorite,
 }: LeftSidebarProps) {
   const navItems = [
-    { id: 'dashboard', label: 'Home', icon: Home },
-    { id: 'library', label: 'Library', icon: Folder },
-    { id: 'analytics', label: 'Analytics', icon: BarChart2 },
-    { id: 'feed', label: 'Classes', icon: Users },
+    { id: 'dashboard', label: 'Home', icon: "🏠" },
+    { id: 'library', label: 'Library', icon: "📁" },
+    { id: 'analytics', label: 'Analytics', icon: "📊" },
+    { id: 'feed', label: 'Classes', icon: "👥" },
   ]
 
   return (
@@ -75,7 +74,7 @@ export function LeftSidebar({
             href="/settings"
             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-200"
           >
-            <Settings className="w-4 h-4" />
+            <span className="text-lg">⚙️</span>
             <span>Settings</span>
           </Link>
 
@@ -83,7 +82,7 @@ export function LeftSidebar({
             href="/profile"
             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-200"
           >
-            <User className="w-4 h-4" />
+            <span className="text-lg">👤</span>
             <span>Profile</span>
           </Link>
         </div>

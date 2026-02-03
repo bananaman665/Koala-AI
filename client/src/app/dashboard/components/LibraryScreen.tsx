@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useEffect } from 'react'
 import { hapticSelection, hapticButton } from '@/lib/haptics'
-import { Loader, Star } from 'lucide-react'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 import { AudioPlayer } from '@/components/AudioPlayer'
 import { LearnMode } from './LearnMode'
@@ -421,8 +420,8 @@ export function LibraryScreen({
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {[
             { id: 'all', label: 'All', icon: Headphones },
-            { id: 'favorites', label: 'Favorites', icon: Star },
-            { id: 'recent', label: 'This Week', icon: Clock },
+            { id: 'favorites', label: 'Favorites', icon: "⭐" },
+            { id: 'recent', label: 'This Week', icon: "⏰" },
           ].map((filter) => (
             <button
               key={filter.id}

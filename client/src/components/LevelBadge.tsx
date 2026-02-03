@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Zap, ChevronRight } from 'lucide-react'
 import { LevelInfo, LEVELS } from '@/hooks/useLevel'
 
 interface LevelBadgeProps {

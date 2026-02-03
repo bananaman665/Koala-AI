@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react'
 import { hapticSelection, hapticButton } from '@/lib/haptics'
-import { Mic, Flame, Target, Timer, Clock, Gift, Check, Lock, HelpCircle, BookOpen, Loader } from 'lucide-react'
 import { XP_REWARDS } from '@/hooks/useLevel'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 import { getSubjectIcon, getSubjectColor } from '@/lib/subject-utils'
@@ -118,7 +117,7 @@ export function DashboardHomeScreen({
   const dailyQuests = [
     {
       id: 'record_lecture',
-      icon: Mic,
+      icon: "🎤",
       title: 'Record a lecture',
       current: Math.min(todayStats.lecturesRecorded, 1),
       target: 1,
@@ -131,7 +130,7 @@ export function DashboardHomeScreen({
     },
     {
       id: 'study_10_min',
-      icon: Clock,
+      icon: "⏰",
       title: 'Study for 10 minutes',
       current: Math.min(todayStats.minutesStudied, 10),
       target: 10,
@@ -144,7 +143,7 @@ export function DashboardHomeScreen({
     },
     {
       id: 'maintain_streak',
-      icon: Flame,
+      icon: "🔥",
       title: 'Maintain your streak',
       current: streak > 0 ? 1 : 0,
       target: 1,
@@ -170,7 +169,7 @@ export function DashboardHomeScreen({
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <Target className="w-5 h-5 text-blue-500" />
+                    <span className="text-lg">🎯</span>
                     <span className="font-semibold text-gray-900 dark:text-white">Today's Goal</span>
                   </div>
                   {isDailyGoalComplete && (
@@ -202,7 +201,7 @@ export function DashboardHomeScreen({
                 }}
                 className="w-full bg-blue-500 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-600 active:scale-[0.98] transition-all shadow-lg"
               >
-                <Mic className="w-5 h-5" />
+                <span className="text-lg">🎤</span>
                 Start Recording
               </button>
             </div>
@@ -226,7 +225,7 @@ export function DashboardHomeScreen({
               <div className="flex items-center gap-3">
                 {/* Play Button */}
                 <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600 transition-colors">
-                  <Play className="w-5 h-5 text-white ml-0.5" />
+                  <span className="text-lg">▶️</span>
                 </div>
 
                 {/* Content */}
@@ -240,7 +239,7 @@ export function DashboardHomeScreen({
                 </div>
 
                 {/* Arrow */}
-                <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-600 group-hover:text-blue-500 transition-colors" />
+                <span className="text-lg">▶</span>
               </div>
             </button>
           </div>
@@ -254,20 +253,20 @@ export function DashboardHomeScreen({
               onClick={onCreateCourse}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-full transition-colors"
             >
-              <Plus className="text-sm" />
+              <span className="text-lg">➕</span>
               Add
             </button>
           </div>
 
           {isLoadingCourses ? (
             <div className="text-center py-12">
-              <Loader className="text-gray-600 dark:text-gray-400 text-3xl mx-auto animate-spin mb-3" />
+              <span className="text-lg">⏳</span>
               <p className="text-gray-500 dark:text-gray-400 text-sm">Loading courses...</p>
             </div>
           ) : courses.length === 0 ? (
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-8 text-center">
               <div className="w-14 h-14 mx-auto mb-4 bg-blue-50 dark:bg-blue-500/10 rounded-2xl flex items-center justify-center">
-                <BookOpen className="text-blue-500 dark:text-blue-400 text-2xl" />
+                <span className="text-lg">📚</span>
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 No courses yet
@@ -335,7 +334,7 @@ export function DashboardHomeScreen({
                               }`}
                             />
                           </button>
-                          <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-600" />
+                          <span className="text-lg">▶</span>
                         </div>
                       </div>
                     </div>
@@ -361,7 +360,7 @@ export function DashboardHomeScreen({
           <div className="flex items-center justify-between p-5 pb-3">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">Daily Quests</h3>
             <div className="flex items-center gap-1.5 text-amber-500">
-              <Timer className="w-4 h-4" />
+              <span className="text-lg">⏱️</span>
               <span className="text-sm font-semibold">{hoursUntilReset}H {minutesUntilReset}M</span>
             </div>
           </div>
@@ -403,9 +402,9 @@ export function DashboardHomeScreen({
                     {/* Reward Icon */}
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${quest.completed ? 'bg-green-100 dark:bg-green-500/20' : 'bg-gray-200 dark:bg-gray-800'}`}>
                       {quest.completed ? (
-                        <Check className="w-5 h-5 text-green-500" />
+                        <span className="text-lg">✅</span>
                       ) : (
-                        <Gift className="w-5 h-5 text-gray-400" />
+                        <span className="text-lg">🎁</span>
                       )}
                     </div>
                   </div>
@@ -419,14 +418,14 @@ export function DashboardHomeScreen({
               <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] border-l-4 border-l-gray-300 dark:border-l-gray-600 rounded-xl p-4 opacity-60">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200 dark:bg-gray-800">
-                    <HelpCircle className="w-5 h-5 text-gray-400" />
+                    <span className="text-lg">❓</span>
                   </div>
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-500 dark:text-gray-400">Revealed tomorrow</h4>
                     <div className="h-5 bg-gray-200 dark:bg-gray-800 rounded-full mt-2" />
                   </div>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-200 dark:bg-gray-800">
-                    <Lock className="w-5 h-5 text-gray-400" />
+                    <span className="text-lg">🔒</span>
                   </div>
                 </div>
               </div>
