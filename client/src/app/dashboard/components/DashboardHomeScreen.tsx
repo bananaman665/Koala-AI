@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react'
 import { hapticSelection, hapticButton } from '@/lib/haptics'
 import { XP_REWARDS } from '@/hooks/useLevel'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
-import { getSubjectIcon, getSubjectColor } from '@/lib/subject-utils'
+import { SubjectIcon } from '@/components/SubjectIcon'
+import { getSubjectColor } from '@/lib/subject-utils'
 import type { Database } from '@/lib/supabase'
 
 type Course = Database['public']['Tables']['courses']['Row']
@@ -284,7 +285,6 @@ export function DashboardHomeScreen({
           ) : (
             <div className="space-y-3">
               {activeCourses.map((course) => {
-                const SubjectIcon = getSubjectIcon((course as any).subject)
                 const colors = getSubjectColor((course as any).subject)
 
                 return (
@@ -299,7 +299,7 @@ export function DashboardHomeScreen({
                     >
                       <div className="flex items-center gap-4">
                         <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                          <SubjectIcon className={`text-xl ${colors.text}`} />
+                          <SubjectIcon subject={(course as any).subject} size={24} className={colors.text} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 dark:text-white truncate">

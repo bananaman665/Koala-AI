@@ -6,7 +6,8 @@ import { SwipeToDelete } from '@/components/SwipeToDelete'
 import { AudioPlayer } from '@/components/AudioPlayer'
 import { LearnMode } from './LearnMode'
 import { FlashcardMode } from './FlashcardMode'
-import { getSubjectIcon, getSubjectColor } from '@/lib/subject-utils'
+import { SubjectIcon } from '@/components/SubjectIcon'
+import { getSubjectColor } from '@/lib/subject-utils'
 import type { Database } from '@/lib/supabase'
 
 type Lecture = Database['public']['Tables']['lectures']['Row'] & {
@@ -500,7 +501,6 @@ export function LibraryScreen({
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {recentLectures.map((lecture) => {
-                    const SubjectIcon = getSubjectIcon((lecture.courses as any)?.subject)
                     const colors = getSubjectColor((lecture.courses as any)?.subject)
                     const isFavorited = favoritedLectures.has(lecture.id)
 
@@ -512,7 +512,7 @@ export function LibraryScreen({
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                            <SubjectIcon className={`${colors.text} text-xl`} />
+                            <SubjectIcon subject={(lecture.courses as any)?.subject} size={24} className={colors.text} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="font-semibold text-gray-900 dark:text-white truncate text-sm">
@@ -550,14 +550,13 @@ export function LibraryScreen({
                 const filteredGroupLectures = group.lectures.filter(l => getFilteredLectures.includes(l))
                 if (filteredGroupLectures.length === 0) return null
 
-                const SubjectIcon = getSubjectIcon(group.subject)
                 const colors = getSubjectColor(group.subject)
 
                 return (
                   <section key={courseId}>
                     <div className="flex items-center gap-3 mb-3">
                       <div className={`w-8 h-8 ${colors.bg} rounded-lg flex items-center justify-center`}>
-                        <SubjectIcon className={`${colors.text} text-sm`} />
+                        <SubjectIcon subject={group.subject} size={18} className={colors.text} />
                       </div>
                       <h2 className="text-lg font-bold text-gray-900 dark:text-white">
                         {group.courseName}
@@ -570,7 +569,6 @@ export function LibraryScreen({
                     <div className="space-y-2">
                       {filteredGroupLectures.map((lecture) => {
                         const isFavorited = favoritedLectures.has(lecture.id)
-                        const SubjectIcon = getSubjectIcon((lecture.courses as any)?.subject)
                         const colors = getSubjectColor((lecture.courses as any)?.subject)
 
                         return (
@@ -585,7 +583,7 @@ export function LibraryScreen({
                             >
                               <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                                  <SubjectIcon className={`${colors.text} text-lg`} />
+                                  <SubjectIcon subject={(lecture.courses as any)?.subject} size={20} className={colors.text} />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <h3 className="font-semibold text-gray-900 dark:text-white truncate">
