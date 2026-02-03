@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem, Calculator, Beaker, TestTube, Microscope, Atom, Dna, Zap, BookOpen, Loader, Flame } from 'lucide-react'
+import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem, Calculator, Beaker, TestTube, Microscope, Atom, Dna, Zap, BookOpen, Loader, Flame, Settings } from 'lucide-react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
