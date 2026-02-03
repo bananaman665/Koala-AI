@@ -97,7 +97,7 @@ export function StreakDisplay({
       >
         {/* Animated flame icon */}
         <div className={`relative ${isAnimating ? 'animate-bounce' : ''}`}>
-          <Fire
+          <Flame
             size={config.icon}
             weight={streak > 0 ? 'fill' : 'regular'}
             className={`${getFlameColor()} ${getGlowEffect()} transition-all duration-300
@@ -168,7 +168,7 @@ export function StreakDisplay({
                       }
                     `}
                   >
-                    <Fire
+                    <Flame
                       size={16}
                       weight={isActive ? 'fill' : 'regular'}
                       className={isActive ? 'text-orange-500' : 'text-gray-300 dark:text-gray-600'}

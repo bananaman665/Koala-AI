@@ -101,7 +101,7 @@ export function Sidebar({
           onClick={onShowStreakModal}
           className="flex items-center gap-2 hover:bg-orange-100 dark:hover:bg-orange-500/20 px-2 py-1 rounded-lg w-full transition-colors"
         >
-          <Fire size={18} className="text-orange-500 flex-shrink-0" />
+          <Flame size={18} className="text-orange-500 flex-shrink-0" />
           <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
             {streak} day{streak !== 1 ? 's' : ''}
           </span>

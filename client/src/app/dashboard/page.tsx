@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem, Calculator, Beaker, TestTube, Microscope, Atom, Dna, Zap, BookOpen, Loader } from 'lucide-react'
+import { Lightbulb, Mic, Lock, Sprout, Star, Award, Trophy, Crown, Gem, Calculator, Beaker, TestTube, Microscope, Atom, Dna, Zap, BookOpen, Loader, Flame } from 'lucide-react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
@@ -1855,7 +1855,7 @@ function DashboardContent() {
                 onClick={() => { hapticButton(); setShowStreakModal(true) }}
                 className="flex items-center gap-1 hover:bg-purple-100 dark:hover:bg-purple-500/20 px-1 rounded-full transition-colors"
               >
-                <Fire size={16} className="text-orange-500 flex-shrink-0" />
+                <Flame size={16} className="text-orange-500 flex-shrink-0" />
                 <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{streak} day{streak !== 1 ? 's' : ''}</span>
               </button>
             </div>
@@ -4231,7 +4231,7 @@ function DashboardContent() {
                           : 'bg-gray-200 dark:bg-gray-600'
                       }`}>
                         {isActive ? (
-                          <Fire size={20} className="text-white" />
+                          <Flame size={20} className="text-white" />
                         ) : (
                           <span className={`text-sm ${isToday ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-gray-400'}`}>
                             {isToday ? '?' : ''}
