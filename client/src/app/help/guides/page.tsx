@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { hapticButton } from '@/lib/haptics'
+import { emojiIcons } from '@/lib/emoji-icons'
 
 export default function GuidesPage() {
   const router = useRouter()
@@ -13,19 +14,19 @@ export default function GuidesPage() {
 
   const guideCategories = [
     {
-      emoji: '⚡',
+      emoji: emojiIcons.Zap,
       title: 'Quick Start Guide',
       description: 'Get up and running in minutes',
       color: 'orange'
     },
     {
-      emoji: '🎥',
+      emoji: emojiIcons.Video,
       title: 'Video Tutorials',
       description: 'Step-by-step walkthroughs',
       color: 'red'
     },
     {
-      emoji: '📄',
+      emoji: emojiIcons.FileText,
       title: 'Best Practices',
       description: 'Tips for better transcriptions',
       color: 'blue'
@@ -62,7 +63,7 @@ export default function GuidesPage() {
         {/* Icon Header */}
         <div className="flex flex-col items-center py-4">
           <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-4 text-5xl">
-            📚
+            {emojiIcons.BookOpen}
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Learn How to Use Koala.ai</h2>
           <p className="text-gray-500 dark:text-gray-400 text-center">
@@ -111,19 +112,19 @@ export default function GuidesPage() {
           </div>
           <div className="p-4 space-y-3 text-sm text-gray-700 dark:text-gray-300">
             <div className="flex items-start space-x-2">
-              <span className="text-lg flex-shrink-0">🎤</span>
+              <span className="text-lg flex-shrink-0">{emojiIcons.Mic}</span>
               <p>Record in a quiet environment for best transcription accuracy</p>
             </div>
             <div className="flex items-start space-x-2">
-              <span className="text-lg flex-shrink-0">📍</span>
+              <span className="text-lg flex-shrink-0">{emojiIcons.Target}</span>
               <p>Keep your device close to the speaker for clearer audio</p>
             </div>
             <div className="flex items-start space-x-2">
-              <span className="text-lg flex-shrink-0">✏️</span>
+              <span className="text-lg flex-shrink-0">{emojiIcons.Pencil}</span>
               <p>Review and edit AI-generated notes for accuracy</p>
             </div>
             <div className="flex items-start space-x-2">
-              <span className="text-lg flex-shrink-0">👥</span>
+              <span className="text-lg flex-shrink-0">{emojiIcons.Users}</span>
               <p>Use shared classes to collaborate with classmates</p>
             </div>
           </div>
@@ -131,7 +132,7 @@ export default function GuidesPage() {
 
         {/* Contact */}
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 text-center border border-blue-100 dark:border-blue-900/30">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">❓ Need Help Now?</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{emojiIcons.HelpCircle} Need Help Now?</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Contact our support team at{' '}
             <a href="mailto:support@koala.ai" className="text-blue-600 dark:text-blue-400 hover:underline">

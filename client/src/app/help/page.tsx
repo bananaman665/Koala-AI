@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { hapticButton, hapticSelection } from '@/lib/haptics'
+import { emojiIcons } from '@/lib/emoji-icons'
 
 export default function HelpPage() {
   const router = useRouter()
@@ -21,21 +22,21 @@ export default function HelpPage() {
 
   const quickLinks = [
     {
-      icon: "📧",
+      icon: emojiIcons.Mail,
       title: 'Contact Support',
       description: 'Get help from our team',
       color: 'blue',
       href: 'mailto:support@koala.ai'
     },
     {
-      icon: "💬",
+      icon: emojiIcons.MessageCircle,
       title: 'Community',
       description: 'Connect with students',
       color: 'purple',
       href: '/help/community'
     },
     {
-      icon: "📚",
+      icon: emojiIcons.BookOpen,
       title: 'Tutorials',
       description: 'Watch video guides',
       color: 'green',
@@ -45,7 +46,7 @@ export default function HelpPage() {
 
   const categories = [
     {
-      icon: "⚡",
+      icon: emojiIcons.Zap,
       title: 'Getting Started',
       color: 'orange',
       articles: [
@@ -56,7 +57,7 @@ export default function HelpPage() {
       ]
     },
     {
-      icon: "🎤",
+      icon: emojiIcons.Mic,
       title: 'Recording',
       color: 'red',
       articles: [
@@ -67,7 +68,7 @@ export default function HelpPage() {
       ]
     },
     {
-      icon: "📄",
+      icon: emojiIcons.FileText,
       title: 'Notes & Transcripts',
       color: 'blue',
       articles: [
@@ -78,7 +79,7 @@ export default function HelpPage() {
       ]
     },
     {
-      icon: "⚙️",
+      icon: emojiIcons.Settings,
       title: 'Account & Settings',
       color: 'gray',
       articles: [
@@ -160,7 +161,7 @@ export default function HelpPage() {
         {/* Icon Header */}
         <div className="flex flex-col items-center py-4">
           <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4">
-            <span className="text-lg">❓</span>
+            <span className="text-lg">{emojiIcons.HelpCircle}</span>
           </div>
           <p className="text-gray-500 dark:text-gray-400 text-center">
             Find answers and get support
@@ -170,7 +171,7 @@ export default function HelpPage() {
         {/* Search */}
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <span className="text-lg">🔍</span>
+            <span className="text-lg">{emojiIcons.Search}</span>
           </div>
           <input
             type="text"
@@ -277,7 +278,7 @@ export default function HelpPage() {
         {searchQuery && filteredFaqs.length === 0 && filteredCategories.length === 0 && (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-lg">🔍</span>
+              <span className="text-lg">{emojiIcons.Search}</span>
             </div>
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No results found</h3>
             <p className="text-gray-500 dark:text-gray-400">Try searching with different keywords</p>
@@ -287,7 +288,7 @@ export default function HelpPage() {
         {/* Contact Support */}
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 text-center border border-blue-100 dark:border-blue-900/30">
           <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-            <span className="text-lg">📧</span>
+            <span className="text-lg">{emojiIcons.Mail}</span>
           </div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Still need help?</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Our support team is here to assist you</p>
