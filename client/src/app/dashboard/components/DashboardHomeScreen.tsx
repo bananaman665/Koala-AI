@@ -299,7 +299,7 @@ export function DashboardHomeScreen({
                     >
                       <div className="flex items-center gap-4">
                         <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                          <span className={`text-xl ${colors.text}`}>{SubjectIcon}</span>
+                          <SubjectIcon className={`text-xl ${colors.text}`} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 dark:text-white truncate">
