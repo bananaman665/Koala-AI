@@ -375,7 +375,7 @@ export function LibraryScreen({
               }}
               className="w-full flex items-center justify-center gap-2 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 active:scale-[0.98] transition-all"
             >
-              <Trash size={18} />
+              <span className="text-lg">🗑️</span>
               Delete Lecture
             </button>
           </div>

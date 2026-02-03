@@ -80,7 +80,7 @@ export function RecordingInterface({
             className="flex-1 bg-red-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-red-600 transition-colors disabled:opacity-50 active:scale-[0.98]"
             aria-label="Stop recording and generate notes"
           >
-            <Square className="inline mr-2" />
+            <span className="text-lg">⬜</span>
             {isGeneratingNotes ? 'Generating...' : 'Stop & Generate'}
           </button>
         </div>

@@ -2124,7 +2124,7 @@ function DashboardContent() {
                       disabled={isGeneratingNotes}
                       className="flex-1 bg-red-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-red-600 transition-colors disabled:opacity-50"
                     >
-                      <Square className="inline mr-2" />
+                      <span className="text-lg">⬜</span>
                       {isGeneratingNotes ? 'Generating...' : 'Stop & Generate'}
                     </button>
                   </div>
@@ -2605,7 +2605,7 @@ function DashboardContent() {
                           }}
                           className="w-full flex items-center justify-center gap-2 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 active:scale-[0.98] transition-all"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <span className="text-lg">🗑️</span>
                           Delete Course
                         </button>
                       </div>
@@ -2677,7 +2677,7 @@ function DashboardContent() {
                         }}
                         className="w-full flex items-center justify-center gap-2 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 active:scale-[0.98] transition-all"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <span className="text-lg">🗑️</span>
                         Delete Course
                       </button>
                     </div>
@@ -3755,7 +3755,7 @@ function DashboardContent() {
                   disabled={isStoppingRecording || isGeneratingNotes}
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition-all disabled:opacity-50"
                 >
-                  <Square className="w-5 h-5" />
+                  <span className="text-lg">⬜</span>
                   {isStoppingRecording || isGeneratingNotes ? 'Processing...' : 'Stop'}
                 </button>
               </div>
@@ -3845,7 +3845,7 @@ function DashboardContent() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
             <div className="text-center space-y-2">
-              <Trash2 className="w-12 h-12 mx-auto text-red-600" strokeWidth={1.5} />
+              <span className="text-lg">🗑️</span>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Lecture?</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">This action cannot be undone. All notes and data will be permanently removed.</p>
             </div>
@@ -3888,7 +3888,7 @@ function DashboardContent() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
             <div className="text-center space-y-2">
-              <Trash2 className="w-12 h-12 mx-auto text-red-600" strokeWidth={1.5} />
+              <span className="text-lg">🗑️</span>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Course?</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">This will delete the course and all its lectures. This action cannot be undone.</p>
             </div>

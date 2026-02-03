@@ -257,7 +257,7 @@ export default function HelpPage() {
                   >
                     <span className="font-medium text-gray-900 dark:text-white pr-4">{faq.question}</span>
                     {expandedFaq === i ? (
-                      <ChevronUp className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                      <span className="text-lg">▲</span>
                     ) : (
                       <span className="text-lg">▼</span>
                     )}

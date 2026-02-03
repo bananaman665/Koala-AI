@@ -404,7 +404,7 @@ export default function CoursesPage() {
                 }`}
                 title={course.name === 'My Course' && course.code === '100' ? 'Cannot delete your default course' : 'Delete course'}
               >
-                <Trash2 className="w-4 h-4" />
+                <span className="text-lg">🗑️</span>
               </button>
 
               <Link href={`/courses/${course.id}`} className="block">
@@ -482,9 +482,9 @@ export default function CoursesPage() {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Course</h2>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
               >
-                <X size={24} />
+                ❌
               </button>
             </div>
 
@@ -613,7 +613,7 @@ export default function CoursesPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
             <div className="text-center space-y-2">
-              <Trash2 className="w-12 h-12 mx-auto text-red-600" strokeWidth={1.5} />
+              <span className="text-lg">🗑️</span>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Course?</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 Are you sure you want to delete <strong>{courseToDelete.name}</strong>? This will also delete all associated lectures and notes.

@@ -118,7 +118,7 @@ export default function ChangePasswordPage() {
             {/* Icon Header */}
             <div className="flex flex-col items-center py-6">
               <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4">
-                <Shield className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                <span className="text-lg">🛡️</span>
               </div>
               <p className="text-gray-500 dark:text-gray-400 text-center">
                 Create a strong password to keep your account secure

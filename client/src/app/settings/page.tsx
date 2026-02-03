@@ -150,9 +150,9 @@ export default function SettingsPage() {
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
                 {isDark ? (
-                  <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  <span className="text-lg">🌙</span>
                 ) : (
-                  <Sun className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  <span className="text-lg">☀️</span>
                 )}
               </div>
               <div>
@@ -180,7 +180,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <span className="text-lg">🔔</span>
               </div>
               <div>
                 <p className="font-medium text-gray-900 dark:text-white">Notifications</p>
@@ -233,7 +233,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <Shield className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <span className="text-lg">🛡️</span>
               </div>
               <div>
                 <p className="font-medium text-gray-900 dark:text-white">Auto-Save</p>
@@ -341,7 +341,7 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                <LogOut className="w-5 h-5 text-red-600 dark:text-red-400" />
+                <span className="text-lg">🚪</span>
               </div>
               <span className="font-medium text-red-600 dark:text-red-400">Sign Out</span>
             </div>
