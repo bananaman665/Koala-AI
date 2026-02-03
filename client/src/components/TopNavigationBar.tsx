@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Settings, Flame } from 'lucide-react'
 
 interface TopNavigationBarProps {
   onStartRecording: () => void
@@ -65,7 +66,7 @@ export function TopNavigationBar({
             onClick={onShowStreakModal}
             className="flex items-center gap-2 hover:bg-orange-100 dark:hover:bg-orange-500/20 px-3 py-1.5 rounded-lg transition-colors"
           >
-            <span className="text-lg">🔥</span>
+            <Flame size={20} className="text-orange-600 dark:text-orange-400" />
             <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
               {streak}
             </span>
@@ -86,7 +87,7 @@ export function TopNavigationBar({
             href="/settings"
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           >
-            <span className="text-lg">⚙️</span>
+            <Settings size={20} className="text-gray-700 dark:text-gray-300" />
           </Link>
 
           {/* Profile Avatar */}

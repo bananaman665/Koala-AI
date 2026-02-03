@@ -197,7 +197,7 @@ export default function HelpPage() {
                   className="flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <div className={`w-10 h-10 ${colors.bg} rounded-full flex items-center justify-center`}>
-                    <link.icon className={`w-5 h-5 ${colors.icon}`} />
+                    <span className="text-lg">{link.icon}</span>
                   </div>
                   <div className="ml-3 flex-1">
                     <p className="font-medium text-gray-900 dark:text-white">{link.title}</p>
@@ -220,7 +220,7 @@ export default function HelpPage() {
                 <div key={i} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center space-x-3">
                     <div className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center`}>
-                      <category.icon className={`w-5 h-5 ${colors.icon}`} />
+                      <span className="text-lg">{category.icon}</span>
                     </div>
                     <h3 className="font-semibold text-gray-900 dark:text-white">{category.title}</h3>
                   </div>

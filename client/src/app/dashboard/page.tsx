@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Home, BookOpen, Mic, Loader, BarChart2, Users } from 'lucide-react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
@@ -3532,7 +3533,7 @@ function DashboardContent() {
               activeScreen === 'dashboard' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
           >
-            <span className="text-lg">🏠</span>
+            <Home size={20} />
             <span className="text-[10px] font-medium dark:opacity-60">Home</span>
           </button>
 
@@ -3548,7 +3549,7 @@ function DashboardContent() {
               activeScreen === 'library' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
           >
-            <span className="text-lg">📚</span>
+            <BookOpen size={20} />
             <span className="text-[10px] font-medium dark:opacity-60">Library</span>
           </button>
 
@@ -3604,9 +3605,9 @@ function DashboardContent() {
             }`}
           >
             {isStoppingRecording || isGeneratingNotes || isTranscribing ? (
-              <span className="text-lg">⏳</span>
+              <Loader size={24} className="animate-spin text-white" />
             ) : (
-              <span className="text-lg">🎤</span>
+              <Mic size={24} className="text-white" />
             )}
             </button>
           </div>
@@ -3623,7 +3624,7 @@ function DashboardContent() {
               activeScreen === 'analytics' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
           >
-            <span className="text-lg">📊</span>
+            <BarChart2 size={20} />
             <span className="text-[10px] font-medium dark:opacity-60">Analytics</span>
           </button>
 
@@ -3639,7 +3640,7 @@ function DashboardContent() {
               activeScreen === 'feed' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
           >
-            <span className="text-lg">👥</span>
+            <Users size={20} />
             <span className="text-[10px] font-medium dark:opacity-60">Classes</span>
           </button>
         </div>
