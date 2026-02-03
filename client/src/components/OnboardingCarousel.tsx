@@ -17,25 +17,25 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    icon: <GraduationCap size={80} />,
+    icon: <span className="text-6xl">🎓</span>,
     title: 'Welcome to Koala.ai',
     description: 'Your AI-powered study companion for recording, transcribing, and mastering your lectures.',
     color: 'bg-blue-500',
   },
   {
-    icon: <Mic size={80} />,
+    icon: <span className="text-6xl">🎤</span>,
     title: 'One-Tap Recording',
     description: 'Record lectures with a single tap. We\'ll transcribe everything automatically using AI.',
     color: 'bg-green-500',
   },
   {
-    icon: <Sparkles size={80} />,
+    icon: <span className="text-6xl">✨</span>,
     title: 'AI-Powered Notes',
     description: 'Get intelligent, structured notes with summaries, key points, and action items.',
     color: 'bg-amber-500',
   },
   {
-    icon: <BookOpen size={80} />,
+    icon: <span className="text-6xl">📚</span>,
     title: 'Study Your Way',
     description: 'Review with interactive flashcards, learn mode quizzes, or browse your organized notes.',
     color: 'bg-pink-500',
@@ -43,8 +43,8 @@ const slides: Slide[] = [
   {
     icon: (
       <div className="flex items-center gap-2">
-        <span className="text-lg">🔥</span>
-        <Trophy size={70} />
+        <span className="text-6xl">🔥</span>
+        <span className="text-5xl">🏆</span>
       </div>
     ),
     title: 'Track Your Progress',
