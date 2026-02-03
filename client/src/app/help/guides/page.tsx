@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Book, ArrowLeft, Zap, Video, FileText } from 'lucide-react'
+import { BookOpen, ArrowLeft, Zap, Video, FileText } from 'lucide-react'
 import { hapticButton } from '@/lib/haptics'
 
 export default function GuidesPage() {
@@ -63,7 +63,7 @@ export default function GuidesPage() {
         {/* Icon Header */}
         <div className="flex flex-col items-center py-4">
           <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-4">
-            <Book className="w-10 h-10 text-green-600 dark:text-green-400" />
+            <BookOpen className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Learn How to Use Koala.ai</h2>
           <p className="text-gray-500 dark:text-gray-400 text-center">

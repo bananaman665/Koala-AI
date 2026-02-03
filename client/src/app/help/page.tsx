@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Book, Mail, ArrowLeft, Zap, MessageCircle, Mic, FileText, Settings, HelpCircle, Search, ChevronDown } from 'lucide-react'
+import { BookOpen, Mail, ArrowLeft, Zap, MessageCircle, Mic, FileText, Settings, HelpCircle, Search, ChevronDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { hapticButton, hapticSelection } from '@/lib/haptics'
 
@@ -36,7 +36,7 @@ export default function HelpPage() {
       href: '/help/community'
     },
     {
-      icon: Book,
+      icon: BookOpen,
       title: 'Tutorials',
       description: 'Watch video guides',
       color: 'green',

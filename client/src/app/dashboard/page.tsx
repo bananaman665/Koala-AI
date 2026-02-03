@@ -2055,7 +2055,7 @@ function DashboardContent() {
                     genetics: Dna,
                     engineering: Zap,
                     literature: BookOpen,
-                    other: Book,
+                    other: BookOpen,
                   }
                   const subjectColors: Record<string, { bg: string; text: string }> = {
                     math: { bg: 'bg-blue-100 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400' },
@@ -2069,7 +2069,7 @@ function DashboardContent() {
                     other: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-600 dark:text-gray-400' },
                   }
                   const subject = (course as any).subject?.toLowerCase() || 'other'
-                  const SubjectIcon = subjectIcons[subject] || Book
+                  const SubjectIcon = subjectIcons[subject] || BookOpen
                   const colors = subjectColors[subject] || subjectColors.other
                   return (
                     <div className={`w-14 h-14 ${colors.bg} rounded-2xl flex items-center justify-center flex-shrink-0`}>
@@ -2895,9 +2895,9 @@ function DashboardContent() {
                               genetics: Dna,
                               engineering: Zap,
                               literature: BookOpen,
-                              other: Book,
+                              other: BookOpen,
                             }
-                            const SubjectIcon = subjectIcons[newCourseData.subject] || Book
+                            const SubjectIcon = subjectIcons[newCourseData.subject] || BookOpen
                             return <SubjectIcon className="w-4 h-4" />
                           })()}
                           <span className="capitalize">{newCourseData.subject}</span>
@@ -2920,7 +2920,7 @@ function DashboardContent() {
                         { value: 'genetics', label: 'Genetics', icon: Dna },
                         { value: 'engineering', label: 'Engineering', icon: Zap },
                         { value: 'literature', label: 'Literature', icon: BookOpen },
-                        { value: 'other', label: 'Other', icon: Book },
+                        { value: 'other', label: 'Other', icon: BookOpen },
                       ].map((subject) => (
                         <button
                           key={subject.value}
@@ -3549,7 +3549,7 @@ function DashboardContent() {
               activeScreen === 'library' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
             }`}
           >
-            <Book className="text-xl" />
+            <BookOpen className="text-xl" />
             <span className="text-[10px] font-medium dark:opacity-60">Library</span>
           </button>
 

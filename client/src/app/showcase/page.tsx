@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Book, Clock, Play, Layers, CheckSquare } from 'lucide-react'
+import { BookOpen, Clock, Play, Layers, CheckSquare } from 'lucide-react'
 
 export default function ShowcasePage() {
   const [activeTab, setActiveTab] = useState<'notes' | 'flashcards' | 'quiz'>('notes')
@@ -101,7 +101,7 @@ export default function ShowcasePage() {
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
-            <Book />
+            <BookOpen />
             <span>Notes</span>
           </button>
           <button

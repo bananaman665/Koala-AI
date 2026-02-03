@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Share2, Download, Edit2, Bookmark, Play, Clock } from 'lucide-react'
+import { ArrowLeft, Share2, Download, Edit2, BookOpenmark, Play, Clock } from 'lucide-react'
 
 export default function NotesPage() {
   const [isPlaying, setIsPlaying] = useState(false)

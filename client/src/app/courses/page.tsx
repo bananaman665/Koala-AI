@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Book, Loader, Clock, X } from 'lucide-react'
+import { BookOpen, Loader, Clock, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import AppIcon from '@/components/AppIcon'
 import { useAuth } from '@/contexts/AuthContext'
@@ -333,7 +333,7 @@ export default function CoursesPage() {
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Total Courses</div>
               </div>
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <Book className="w-6 h-6 text-blue-600" />
+                <BookOpen className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>

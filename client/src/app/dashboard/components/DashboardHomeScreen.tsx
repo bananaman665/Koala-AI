@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { hapticSelection, hapticButton } from '@/lib/haptics'
-import { Mic, Flame, Target, Timer, Clock, Gift, Check, Lock, HelpCircle, Book, Loader } from 'lucide-react'
+import { Mic, Flame, Target, Timer, Clock, Gift, Check, Lock, HelpCircle, BookOpen, Loader } from 'lucide-react'
 import { XP_REWARDS } from '@/hooks/useLevel'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 import { getSubjectIcon, getSubjectColor } from '@/lib/subject-utils'
@@ -267,7 +267,7 @@ export function DashboardHomeScreen({
           ) : courses.length === 0 ? (
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-8 text-center">
               <div className="w-14 h-14 mx-auto mb-4 bg-blue-50 dark:bg-blue-500/10 rounded-2xl flex items-center justify-center">
-                <Book className="text-blue-500 dark:text-blue-400 text-2xl" />
+                <BookOpen className="text-blue-500 dark:text-blue-400 text-2xl" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 No courses yet

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CheckCircle, HelpCircle, Target, Zap, TrendingUp, AlertCircle, Edit3, Book, X } from 'lucide-react'
+import { CheckCircle, HelpCircle, Target, Zap, TrendingUp, AlertCircle, Edit3, BookOpen, X } from 'lucide-react'
 import { QuestionType, DifficultyLevel } from '@/lib/claude'
 
 export interface LearnModeConfig {
@@ -36,7 +36,7 @@ const questionTypeOptions: { type: QuestionType; label: string; icon: React.Reac
   {
     type: 'fill_in_blank',
     label: 'Fill in Blank',
-    icon: <Book className="w-6 h-6" />,
+    icon: <BookOpen className="w-6 h-6" />,
   },
 ]
 
