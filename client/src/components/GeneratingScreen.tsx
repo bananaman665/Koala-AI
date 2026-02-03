@@ -67,7 +67,7 @@ export function GeneratingScreen({ isVisible, type }: GeneratingScreenProps) {
           <div className="mb-6 relative">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full blur-2xl opacity-50 animate-pulse" />
             <div className="relative w-20 h-20 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center">
-              <Sparkles className="w-10 h-10 text-white animate-spin" style={{ animationDuration: '2s' }} />
+              <span className="text-4xl text-white animate-spin">✨</span>
             </div>
           </div>
 

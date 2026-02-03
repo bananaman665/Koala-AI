@@ -1955,7 +1955,7 @@ function DashboardContent() {
             animation: isRecording ? 'none' : 'pulse-slow 2s ease-in-out infinite'
           }}
         >
-          <Mic className="w-7 h-7" strokeWidth={2} />
+          <span className="text-lg">🎤</span>
         </button>
       )}
 
@@ -3606,7 +3606,7 @@ function DashboardContent() {
             {isStoppingRecording || isGeneratingNotes || isTranscribing ? (
               <span className="text-lg">⏳</span>
             ) : (
-              <Mic className="w-5 h-5 text-white" strokeWidth={1.5} />
+              <span className="text-lg">🎤</span>
             )}
             </button>
           </div>
@@ -3769,7 +3769,7 @@ function DashboardContent() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
             <div className="text-center space-y-2">
-              <Mic className="w-12 h-12 mx-auto text-blue-600" strokeWidth={1.5} />
+              <span className="text-6xl">🎤</span>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Ready to Record?</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Your lecture will be saved with transcript and AI notes</p>
             </div>

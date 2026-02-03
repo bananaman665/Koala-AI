@@ -211,7 +211,7 @@ export function AnalyticsScreen({
                       className="flex items-center space-x-3 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${iconBgClass}`}>
-                        <Mic className={`text-lg ${iconTextClass}`} />
+                        <span className={`text-lg ${iconTextClass}`}>🎤</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 dark:text-white">{statusText}</p>

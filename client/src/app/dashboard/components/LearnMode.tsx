@@ -106,7 +106,7 @@ export function LearnMode({
               : 'bg-blue-500 shadow-blue-500/25'
           }`}>
             {percentage >= 70 ? (
-              <Trophy size={48} className="text-white" />
+              <span className="text-5xl">🏆</span>
             ) : (
               <Target size={48} className="text-white" />
             )}

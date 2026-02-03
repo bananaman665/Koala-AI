@@ -134,7 +134,7 @@ export function StreakDisplay({
         <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-50 animate-bounce">
           <div className="bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg whitespace-nowrap">
             <div className="flex items-center gap-2">
-              <Trophy size={20} className="text-yellow-300" />
+              <span className="text-lg text-yellow-300">🏆</span>
               <span className="font-bold text-sm">{getMilestoneMessage()}</span>
             </div>
           </div>

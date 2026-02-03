@@ -213,7 +213,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
             {isLastSlide ? (
               <>
                 Get Started
-                <Sparkles size={20} />
+                <span className="text-lg">✨</span>
               </>
             ) : (
               <>
