@@ -28,13 +28,13 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    icon: <GraduationCap size={80} weight="duotone" />,
+    icon: <GraduationCap size={80} />,
     title: 'Welcome to Koala.ai',
     description: 'Your AI-powered study companion for recording, transcribing, and mastering your lectures.',
     color: 'bg-blue-500',
   },
   {
-    icon: <Mic size={80} weight="duotone" />,
+    icon: <Mic size={80} />,
     title: 'One-Tap Recording',
     description: 'Record lectures with a single tap. We\'ll transcribe everything automatically using AI.',
     color: 'bg-green-500',
@@ -138,7 +138,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
           className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors z-10"
           aria-label="Skip onboarding"
         >
-          <X size={24} weight="bold" />
+          <X size={24}  />
         </button>
 
         {/* Content */}
@@ -212,7 +212,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
-            <ArrowLeft size={20} weight="bold" />
+            <ArrowLeft size={20}  />
             Back
           </button>
 
@@ -229,7 +229,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
             ) : (
               <>
                 Next
-                <ArrowRight size={20} weight="bold" />
+                <ArrowRight size={20}  />
               </>
             )}
           </button>

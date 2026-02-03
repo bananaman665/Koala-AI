@@ -221,7 +221,7 @@ export function LibraryScreen({
               onClick={onExitLecture}
               className="flex items-center gap-1 text-blue-500 hover:text-blue-600 active:scale-95 transition-all font-medium flex-shrink-0"
             >
-              <ChevronLeft size={18} weight="bold" />
+              <ChevronLeft size={18} />
               <span>Back</span>
             </button>
           </div>
@@ -495,7 +495,7 @@ export function LibraryScreen({
               <section>
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Play size={20} className="text-blue-500" weight="fill" />
+                    <Play size={20} className="text-blue-500" />
                     Continue Listening
                   </h2>
                 </div>

@@ -98,7 +98,7 @@ export function FeedScreen({
             className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98] text-left group"
           >
             <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center mb-3">
-              <Plus size={20} className="text-blue-600 dark:text-blue-400" weight="bold" />
+              <Plus size={20} className="text-blue-600 dark:text-blue-400" />
             </div>
             <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Create Class</h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Start a new class</p>
@@ -278,7 +278,7 @@ export function FeedScreen({
                   }}
                   className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center gap-2"
                 >
-                  <Plus size={20} weight="bold" />
+                  <Plus size={20} />
                   Create Your First Class
                 </button>
               </>
@@ -291,7 +291,7 @@ export function FeedScreen({
           <div className="mt-6 bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06]">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-amber-100 dark:bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Sparkle size={16} className="text-amber-600 dark:text-amber-400" weight="fill" />
+                <Sparkle size={16} className="text-amber-600 dark:text-amber-400" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900 dark:text-white">Pro Tip</p>

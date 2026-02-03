@@ -81,7 +81,7 @@ export function DailyGreeting({
         onClick={onDismiss}
         className="absolute top-6 right-6 z-50 w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95"
       >
-        <X size={24} className="text-gray-700 dark:text-gray-300" weight="bold" />
+        <X size={24} className="text-gray-700 dark:text-gray-300" />
       </button>
 
       {/* Content */}
@@ -104,7 +104,7 @@ export function DailyGreeting({
           {/* Streak */}
           <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
             <div className="flex justify-center mb-3 sm:mb-4">
-              <Fire size={40} weight="fill" className="text-orange-500" />
+              <Fire size={40} className="text-orange-500" />
             </div>
             <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{streak}</div>
             <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Day Streak</div>
@@ -113,7 +113,7 @@ export function DailyGreeting({
           {/* XP */}
           <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
             <div className="flex justify-center mb-3 sm:mb-4">
-              <Star size={40} weight="fill" className="text-yellow-500" />
+              <Star size={40} className="text-yellow-500" />
             </div>
             <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{(totalXP / 1000).toFixed(1)}k</div>
             <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Total XP</div>
@@ -122,7 +122,7 @@ export function DailyGreeting({
           {/* Today's Lectures */}
           <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
             <div className="flex justify-center mb-3 sm:mb-4">
-              <CheckCircle size={40} weight="fill" className="text-green-500" />
+              <CheckCircle size={40} className="text-green-500" />
             </div>
             <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{lecturesCompletedToday}</div>
             <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Today's Lectures</div>
@@ -142,7 +142,7 @@ export function DailyGreeting({
           className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-5 sm:py-6 px-8 rounded-2xl hover:shadow-2xl transition-all duration-300 text-xl sm:text-2xl flex items-center justify-center gap-3 active:scale-[0.98] shadow-xl"
         >
           Let's Go!
-          <Rocket size={28} weight="fill" />
+          <Rocket size={28} />
         </button>
       </div>
     </div>

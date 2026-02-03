@@ -109,7 +109,7 @@ export function StreakDisplay({
             <div className="absolute -top-1 -right-1">
               <Star
                 size={12}
-                weight="fill"
+               
                 className="text-yellow-400 animate-ping"
               />
             </div>
@@ -134,7 +134,7 @@ export function StreakDisplay({
         <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-50 animate-bounce">
           <div className="bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg whitespace-nowrap">
             <div className="flex items-center gap-2">
-              <Trophy size={20} weight="fill" className="text-yellow-300" />
+              <Trophy size={20} className="text-yellow-300" />
               <span className="font-bold text-sm">{getMilestoneMessage()}</span>
             </div>
           </div>
@@ -149,7 +149,7 @@ export function StreakDisplay({
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-semibold text-gray-900 dark:text-white">Study Streak</h4>
             <div className="flex items-center gap-1 text-orange-500">
-              <Lightning size={16} weight="fill" />
+              <Lightning size={16} />
               <span className="text-sm font-medium">{streak} days</span>
             </div>
           </div>
