@@ -150,8 +150,76 @@ export interface Database {
           content?: string
         }
       }
+      quizzes: {
+        Row: {
+          id: string
+          lecture_id: string
+          user_id: string
+          questions: QuizQuestion[]
+          config: QuizConfig
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          lecture_id: string
+          user_id: string
+          questions: QuizQuestion[]
+          config: QuizConfig
+        }
+        Update: {
+          questions?: QuizQuestion[]
+          config?: QuizConfig
+        }
+      }
+      flashcard_decks: {
+        Row: {
+          id: string
+          lecture_id: string
+          user_id: string
+          cards: Flashcard[]
+          config: FlashcardConfig
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          lecture_id: string
+          user_id: string
+          cards: Flashcard[]
+          config: FlashcardConfig
+        }
+        Update: {
+          cards?: Flashcard[]
+          config?: FlashcardConfig
+        }
+      }
     }
   }
+}
+
+// Quiz and Flashcard types
+export interface QuizQuestion {
+  question: string
+  type: 'multiple_choice' | 'true_false' | 'written' | 'fill_in_blank'
+  correctAnswer: string
+  options: string[]
+  explanation: string
+  keywords?: string[]
+  acceptableAnswers?: string[]
+}
+
+export interface QuizConfig {
+  numberOfQuestions: number
+  questionTypes: string[]
+  difficulty: 'easy' | 'medium' | 'hard'
+}
+
+export interface Flashcard {
+  question: string
+  answer: string
+}
+
+export interface FlashcardConfig {
+  numberOfCards: number
 }
 
 // Supabase client for auth, database, and storage

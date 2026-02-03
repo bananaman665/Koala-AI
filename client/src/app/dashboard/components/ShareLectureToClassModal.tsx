@@ -1,8 +1,8 @@
 'use client'
 
+import { Users } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
-import { FiUsers } from 'react-icons/fi'
 
 const courseColorClasses: Record<string, { bg: string; text: string }> = {
   blue: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400' },
@@ -86,7 +86,7 @@ export function ShareLectureToClassModal({
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 ${colorClass.bg} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                      <FiUsers className={`text-lg ${colorClass.text}`} />
+                      <Users className={`text-lg ${colorClass.text}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-semibold text-gray-900 dark:text-white truncate">
@@ -104,7 +104,7 @@ export function ShareLectureToClassModal({
           ) : (
             <div className="text-center py-6">
               <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700/50 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <FiUsers className="w-6 h-6 text-gray-300 dark:text-gray-500" />
+                <Users className="w-6 h-6 text-gray-300 dark:text-gray-500" />
               </div>
               <p className="text-base font-semibold text-gray-900 dark:text-white mb-1">No classes available</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">

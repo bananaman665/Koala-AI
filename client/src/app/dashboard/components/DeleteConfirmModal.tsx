@@ -2,7 +2,6 @@
 
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
-import { FiAlertCircle } from 'react-icons/fi'
 
 interface DeleteConfirmModalProps {
   isOpen: boolean
@@ -31,7 +30,7 @@ export function DeleteConfirmModal({
       <div className="text-center">
         {/* Warning Icon */}
         <div className="w-16 h-16 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <FiAlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+          <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
         </div>
 
         {/* Title */}

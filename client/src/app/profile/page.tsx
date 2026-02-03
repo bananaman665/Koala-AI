@@ -7,11 +7,9 @@ import {
   Settings,
   BookOpen,
   Clock,
-  TrendingUp,
   Loader2,
   Flame,
   Mic,
-  GraduationCap,
   ChevronLeft,
   Pencil,
   Check,
@@ -24,7 +22,6 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { KoalaIllustration } from '@/components/illustrations/Koala'
 
 export const dynamic = 'force-dynamic'
 import { useStreak } from '@/components/StreakDisplay'
@@ -221,29 +218,6 @@ export default function ProfilePage() {
     { label: 'Completed', value: `${completedPercent}%`, icon: Mic, bgClass: 'bg-orange-50 dark:bg-gray-800', borderClass: 'border-orange-200 dark:border-gray-700', iconClass: 'text-orange-600 dark:text-gray-400', valueClass: 'text-orange-900 dark:text-white', labelClass: 'text-orange-700 dark:text-gray-400' },
   ]
 
-  // Get recent activity from real lectures
-  const recentActivity = lectures.slice(0, 4).map(lecture => {
-    const createdDate = new Date(lecture.created_at)
-    const now = new Date()
-    const diffHours = Math.floor((now.getTime() - createdDate.getTime()) / (1000 * 60 * 60))
-    const dateDisplay = diffHours < 24
-      ? 'Today'
-      : diffHours < 48
-      ? 'Yesterday'
-      : `${Math.floor(diffHours / 24)} days ago`
-    const durationMinutes = Math.floor(lecture.duration / 60)
-    const formattedDuration = durationMinutes >= 60
-      ? `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`
-      : `${durationMinutes}m`
-
-    return {
-      course: lecture.courses?.name || 'No course',
-      lecture: lecture.title,
-      date: dateDisplay,
-      duration: formattedDuration
-    }
-  })
-
   // Calculate time until midnight for quest reset
   const now = new Date()
   const midnight = new Date(now)
@@ -310,7 +284,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0B1220]">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#0B1220] border-b border-gray-200 dark:border-white/[0.06] pt-12 sm:pt-0">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#1a2235] border-b border-gray-200 dark:border-white/[0.08] pt-12 sm:pt-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/dashboard" className="flex items-center space-x-2 w-20">
@@ -337,8 +311,10 @@ export default function ProfilePage() {
             {/* Profile Card */}
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6">
               <div className="text-center">
-                <div className="w-32 h-32 mx-auto mb-6">
-                  <KoalaIllustration />
+                <div className="w-32 h-32 mx-auto mb-6 bg-purple-600 rounded-full flex items-center justify-center">
+                  <span className="text-5xl font-bold text-white">
+                    {user.email?.substring(0, 2).toUpperCase() || 'AN'}
+                  </span>
                 </div>
 
                 {/* Name with edit feature */}
@@ -506,42 +482,6 @@ export default function ProfilePage() {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Recent Activity */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6">
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-[#F1F5F9]">Recent Activity</h3>
-                <Link
-                  href="/dashboard"
-                  className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium"
-                >
-                  View All
-                </Link>
-              </div>
-              {recentActivity.length > 0 ? (
-                <div className="space-y-3">
-                  {recentActivity.map((activity, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between p-4 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 transition-colors cursor-pointer"
-                    >
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900 dark:text-[#F1F5F9] mb-1">{activity.lecture}</h4>
-                        <p className="text-sm text-gray-500 dark:text-[#94A3B8]">{activity.course}</p>
-                      </div>
-                      <div className="text-right ml-4">
-                        <div className="text-sm font-medium text-gray-900 dark:text-[#F1F5F9]">{activity.duration}</div>
-                        <div className="text-xs text-gray-500 dark:text-[#94A3B8]">{activity.date}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-gray-500 dark:text-[#94A3B8] py-8">
-                  No lectures recorded yet. Start recording to see your activity!
-                </p>
-              )}
             </div>
 
             {/* Study Progress */}

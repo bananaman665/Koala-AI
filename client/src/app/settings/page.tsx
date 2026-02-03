@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FiArrowLeft, FiLock, FiBell, FiMoon, FiSun, FiVolume2, FiHelpCircle, FiLogOut, FiChevronRight, FiMail, FiShield, FiPlay } from 'react-icons/fi'
+import { Mail, ArrowLeft, Play, Lock } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { hapticButton, hapticSelection, hapticSuccess } from '@/lib/haptics'
@@ -95,7 +95,7 @@ export default function SettingsPage() {
               onClick={handleBack}
               className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <FiArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Settings</h1>
           </div>
@@ -123,7 +123,7 @@ export default function SettingsPage() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">View profile</p>
               </div>
             </div>
-            <FiChevronRight className="w-5 h-5 text-gray-400" />
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </Link>
 
           <button
@@ -132,11 +132,11 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <FiLock className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <Lock className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </div>
               <span className="font-medium text-gray-900 dark:text-white">Change Password</span>
             </div>
-            <FiChevronRight className="w-5 h-5 text-gray-400" />
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
@@ -151,9 +151,9 @@ export default function SettingsPage() {
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
                 {isDark ? (
-                  <FiMoon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                 ) : (
-                  <FiSun className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  <Sun className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                 )}
               </div>
               <div>
@@ -181,7 +181,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <FiBell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </div>
               <div>
                 <p className="font-medium text-gray-900 dark:text-white">Notifications</p>
@@ -206,7 +206,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <FiVolume2 className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <Volume2 className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </div>
               <div>
                 <p className="font-medium text-gray-900 dark:text-white">Haptic Feedback</p>
@@ -234,7 +234,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <FiShield className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <Shield className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </div>
               <div>
                 <p className="font-medium text-gray-900 dark:text-white">Auto-Save</p>
@@ -269,11 +269,11 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <FiHelpCircle className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <HelpCircle className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </div>
               <span className="font-medium text-gray-900 dark:text-white">Help & FAQ</span>
             </div>
-            <FiChevronRight className="w-5 h-5 text-gray-400" />
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </Link>
 
           <Link
@@ -283,11 +283,11 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <FiMail className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <Mail className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </div>
               <span className="font-medium text-gray-900 dark:text-white">Contact Support</span>
             </div>
-            <FiChevronRight className="w-5 h-5 text-gray-400" />
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </Link>
 
           <button
@@ -300,14 +300,14 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                <FiPlay className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <Play className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="text-left">
                 <p className="font-medium text-gray-900 dark:text-white">Replay Tutorial</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">View the app introduction again</p>
               </div>
             </div>
-            <FiChevronRight className="w-5 h-5 text-gray-400" />
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
 
           <button
@@ -319,14 +319,14 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                <FiPlay className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <Play className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               </div>
               <div className="text-left">
                 <p className="font-medium text-gray-900 dark:text-white">Replay Daily Greeting</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">View the morning/afternoon/evening greeting</p>
               </div>
             </div>
-            <FiChevronRight className="w-5 h-5 text-gray-400" />
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
@@ -342,7 +342,7 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                <FiLogOut className="w-5 h-5 text-red-600 dark:text-red-400" />
+                <LogOut className="w-5 h-5 text-red-600 dark:text-red-400" />
               </div>
               <span className="font-medium text-red-600 dark:text-red-400">Sign Out</span>
             </div>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, ReactNode } from 'react'
-import { FiX } from 'react-icons/fi'
 import { cn } from '@/lib/utils'
 
 interface ModalProps {

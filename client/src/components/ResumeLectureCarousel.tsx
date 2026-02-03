@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FiChevronRight, FiPlay, FiStar } from 'react-icons/fi'
 import { hapticSelection } from '@/lib/haptics'
 import type { Database } from '@/lib/supabase'
 
@@ -27,36 +26,12 @@ export function ResumeLectureCarousel({
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
 
-  if (!lectures || lectures.length === 0) {
-    return (
-      <div className="mb-6">
-        <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20">
-          <div className="flex items-center gap-3">
-            {/* Microphone Icon */}
-            <div className="w-11 h-11 bg-gray-100 dark:bg-gray-700/50 rounded-xl flex items-center justify-center flex-shrink-0">
-              <FiPlay className="text-gray-400 dark:text-gray-500 text-lg" />
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">
-                Get Started
-              </p>
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                Create lectures to boost your studying
-              </h3>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  const currentLecture = lectures[currentIndex]
+  const hasLectures = lectures && lectures.length > 0
+  const currentLecture = hasLectures ? lectures[currentIndex] : null
 
   // Auto-advance every 5 seconds
   useEffect(() => {
-    if (lectures.length <= 1 || isAnimating || isPaused) return
+    if (!hasLectures || lectures.length <= 1 || isAnimating || isPaused) return
 
     const timer = setTimeout(() => {
       if (currentIndex < lectures.length - 1) {
@@ -67,10 +42,12 @@ export function ResumeLectureCarousel({
     }, 5000)
 
     return () => clearTimeout(timer)
-  }, [currentIndex, lectures.length, isAnimating, isPaused])
+  }, [currentIndex, lectures?.length, isAnimating, isPaused, hasLectures])
 
   // Keyboard navigation
   useEffect(() => {
+    if (!hasLectures) return
+    
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') goToPrevSlide()
       if (e.key === 'ArrowRight') goToNextSlide()
@@ -78,7 +55,7 @@ export function ResumeLectureCarousel({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentIndex, isAnimating, lectures.length])
+  }, [hasLectures])
 
   const goToSlide = (index: number) => {
     if (isAnimating || index === currentIndex) return
@@ -138,6 +115,32 @@ export function ResumeLectureCarousel({
     }
   }
 
+  // Empty state - shown when no lectures
+  if (!hasLectures || !currentLecture) {
+    return (
+      <div className="mb-6">
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20">
+          <div className="flex items-center gap-3">
+            {/* Microphone Icon */}
+            <div className="w-11 h-11 bg-gray-100 dark:bg-gray-700/50 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Play className="text-gray-400 dark:text-gray-500 text-lg" />
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">
+                Get Started
+              </p>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                Create lectures to boost your studying
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="mb-6">
       {/* Carousel Card */}
@@ -168,7 +171,7 @@ export function ResumeLectureCarousel({
           >
             {/* Green Play Icon */}
             <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
-              <FiPlay className="text-green-600 dark:text-green-400 text-lg" />
+              <Play className="text-green-600 dark:text-green-400 text-lg" />
             </div>
 
             {/* Content */}
@@ -190,7 +193,7 @@ export function ResumeLectureCarousel({
               }}
               className="p-1 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200 ml-1"
             >
-              <FiStar
+              <Star
                 className={`w-5 h-5 transition-all duration-200 ${
                   currentLecture.is_favorite
                     ? 'fill-yellow-400 text-yellow-400'
@@ -200,7 +203,7 @@ export function ResumeLectureCarousel({
             </button>
 
             {/* Chevron */}
-            <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0 group-hover:text-gray-400 dark:group-hover:text-white/50 group-hover:translate-x-1 transition-all duration-200" />
+            <ChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0 group-hover:text-gray-400 dark:group-hover:text-white/50 group-hover:translate-x-1 transition-all duration-200" />
           </div>
         </div>
       </div>

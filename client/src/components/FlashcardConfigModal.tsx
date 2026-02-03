@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { FiX, FiLayers } from 'react-icons/fi'
 
 export interface FlashcardConfig {
   numberOfCards: number
@@ -40,7 +39,7 @@ export function FlashcardConfigModal({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                <FiLayers className="text-2xl" />
+                <Layers className="text-2xl" />
               </div>
               <div>
                 <h2 className="text-xl font-bold">Flashcards</h2>
@@ -107,7 +106,7 @@ export function FlashcardConfigModal({
               </>
             ) : (
               <>
-                <FiLayers className="w-6 h-6" />
+                <Layers className="w-6 h-6" />
                 Generate {numberOfCards} Cards
               </>
             )}

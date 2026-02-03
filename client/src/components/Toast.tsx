@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
-import { FiCheck, FiX, FiAlertCircle, FiInfo } from 'react-icons/fi'
+import { Check, X, AlertCircle, Info } from 'lucide-react'
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -31,10 +31,10 @@ export function useToast() {
 }
 
 const toastIcons = {
-  success: FiCheck,
-  error: FiX,
-  warning: FiAlertCircle,
-  info: FiInfo,
+  success: Check,
+  error: X,
+  warning: AlertCircle,
+  info: Info,
 }
 
 const toastStyles = {

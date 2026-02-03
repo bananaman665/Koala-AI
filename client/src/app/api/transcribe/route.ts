@@ -88,12 +88,20 @@ export async function POST(request: NextRequest) {
 
     // Save transcript to database if userId and courseId provided
     if (userId && courseId) {
+      // Get count of existing lectures for this user to determine the next number
+      const { count: lectureCount } = await supabase
+        .from('lectures')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+
+      const nextLectureNumber = (lectureCount || 0) + 1
+
       const { data: lecture, error: lectureError } = await supabase
         .from('lectures')
         .insert({
           user_id: userId,
           course_id: courseId,
-          title: `Lecture ${new Date().toLocaleDateString()}`,
+          title: `Lecture ${nextLectureNumber}`,
           duration: Math.floor((audioFile.size / 16000) / 60), // Rough estimate
           transcription_status: 'completed',
           audio_url: '',

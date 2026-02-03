@@ -17,6 +17,7 @@
     "cap:run:android": "cap run android"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
     "@capacitor-community/native-audio": "^7.0.1",
     "@capacitor-community/speech-recognition": "^7.0.1",
     "@capacitor/android": "^7.4.4",
@@ -31,9 +32,12 @@
     "@capacitor/status-bar": "^7.0.3",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
+    "@google/generative-ai": "^0.24.1",
+    "@mistralai/mistralai": "^1.13.0",
     "@phosphor-icons/react": "^2.1.10",
     "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/supabase-js": "^2.86.0",
+    "@tailwindcss/typography": "^0.5.19",
     "@tanstack/react-query": "^5.90.12",
     "@tanstack/react-virtual": "^3.13.13",
     "axios": "^1.7.0",

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FiBook, FiLayers, FiCheckSquare, FiClock, FiPlay, FiPause, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { Book, Clock, Play, Layers, CheckSquare } from 'lucide-react'
 
 export default function ShowcasePage() {
   const [activeTab, setActiveTab] = useState<'notes' | 'flashcards' | 'quiz'>('notes')
@@ -70,9 +70,9 @@ export default function ShowcasePage() {
                 className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center hover:shadow-lg transition-shadow"
               >
                 {isPlaying ? (
-                  <FiPause className="text-white text-xl" />
+                  <Pause className="text-white text-xl" />
                 ) : (
-                  <FiPlay className="text-white text-xl ml-1" />
+                  <Play className="text-white text-xl ml-1" />
                 )}
               </button>
               <div className="flex-1">
@@ -101,7 +101,7 @@ export default function ShowcasePage() {
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
-            <FiBook />
+            <Book />
             <span>Notes</span>
           </button>
           <button
@@ -112,7 +112,7 @@ export default function ShowcasePage() {
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
-            <FiLayers />
+            <Layers />
             <span>Flashcards</span>
           </button>
           <button
@@ -123,7 +123,7 @@ export default function ShowcasePage() {
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
-            <FiCheckSquare />
+            <CheckSquare />
             <span>Quiz</span>
           </button>
         </div>
@@ -155,7 +155,7 @@ export default function ShowcasePage() {
                   ].map((item, i) => (
                     <div key={i} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer">
                       <div className="flex-shrink-0 w-20 text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">
-                        <FiClock className="inline mr-1" />
+                        <Clock className="inline mr-1" />
                         {item.time}
                       </div>
                       <p className="text-gray-700 dark:text-gray-300 flex-1">{item.point}</p>
@@ -248,7 +248,7 @@ export default function ShowcasePage() {
                   disabled={currentFlashcard === 0}
                   className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
-                  <FiChevronLeft className="text-xl text-gray-700 dark:text-gray-300" />
+                  <ChevronLeft className="text-xl text-gray-700 dark:text-gray-300" />
                 </button>
 
                 <div className="text-center">
@@ -265,7 +265,7 @@ export default function ShowcasePage() {
                   disabled={currentFlashcard === flashcards.length - 1}
                   className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
-                  <FiChevronRight className="text-xl text-gray-700 dark:text-gray-300" />
+                  <ChevronRight className="text-xl text-gray-700 dark:text-gray-300" />
                 </button>
               </div>
             </div>

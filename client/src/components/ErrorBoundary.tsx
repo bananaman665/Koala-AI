@@ -1,7 +1,6 @@
 'use client'
 
 import { Component, ReactNode } from 'react'
-import { FiAlertCircle, FiRefreshCw } from 'react-icons/fi'
 
 interface Props {
   children: ReactNode
@@ -57,7 +56,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 <div className="w-12 h-12 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center">
-                  <FiAlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                  <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
                 </div>
               </div>
               
@@ -88,7 +87,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   onClick={this.handleReset}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                 >
-                  <FiRefreshCw className="w-4 h-4" />
+                  <RotateCw className="w-4 h-4" />
                   Try Again
                 </button>
               </div>

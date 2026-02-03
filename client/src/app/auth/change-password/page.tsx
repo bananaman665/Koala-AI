@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { FiLock, FiArrowLeft, FiCheckCircle, FiEye, FiEyeOff, FiShield, FiCheck, FiX } from 'react-icons/fi'
+import { ArrowLeft, Check, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError } from '@/lib/haptics'
 
@@ -81,7 +81,7 @@ export default function ChangePasswordPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
         <div className="text-center">
           <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FiLock className="w-8 h-8 text-gray-400" />
+            <Lock className="w-8 h-8 text-gray-400" />
           </div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Sign In Required</h1>
           <p className="text-gray-500 dark:text-gray-400 mb-6">You need to be signed in to change your password.</p>
@@ -106,7 +106,7 @@ export default function ChangePasswordPage() {
               onClick={handleBack}
               className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <FiArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Change Password</h1>
           </div>
@@ -119,7 +119,7 @@ export default function ChangePasswordPage() {
             {/* Icon Header */}
             <div className="flex flex-col items-center py-6">
               <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4">
-                <FiShield className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                <Shield className="w-10 h-10 text-blue-600 dark:text-blue-400" />
               </div>
               <p className="text-gray-500 dark:text-gray-400 text-center">
                 Create a strong password to keep your account secure
@@ -144,7 +144,7 @@ export default function ChangePasswordPage() {
                 <div className="p-4">
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FiLock className="text-gray-400 dark:text-gray-500" />
+                      <Lock className="text-gray-400 dark:text-gray-500" />
                     </div>
                     <input
                       type={showNewPassword ? 'text' : 'password'}
@@ -161,9 +161,9 @@ export default function ChangePasswordPage() {
                       className="absolute inset-y-0 right-0 pr-4 flex items-center"
                     >
                       {showNewPassword ? (
-                        <FiEyeOff className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 w-5 h-5" />
+                        <EyeOff className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 w-5 h-5" />
                       ) : (
-                        <FiEye className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 w-5 h-5" />
+                        <Eye className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 w-5 h-5" />
                       )}
                     </button>
                   </div>
@@ -179,7 +179,7 @@ export default function ChangePasswordPage() {
                               : 'bg-gray-100 dark:bg-gray-700'
                           }`}>
                             {req.met ? (
-                              <FiCheck className="w-3 h-3 text-green-600 dark:text-green-400" />
+                              <Check className="w-3 h-3 text-green-600 dark:text-green-400" />
                             ) : (
                               <FiX className="w-3 h-3 text-gray-400" />
                             )}
@@ -207,7 +207,7 @@ export default function ChangePasswordPage() {
                 <div className="p-4">
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FiLock className="text-gray-400 dark:text-gray-500" />
+                      <Lock className="text-gray-400 dark:text-gray-500" />
                     </div>
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
@@ -228,9 +228,9 @@ export default function ChangePasswordPage() {
                       className="absolute inset-y-0 right-0 pr-4 flex items-center"
                     >
                       {showConfirmPassword ? (
-                        <FiEyeOff className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 w-5 h-5" />
+                        <EyeOff className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 w-5 h-5" />
                       ) : (
-                        <FiEye className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 w-5 h-5" />
+                        <Eye className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 w-5 h-5" />
                       )}
                     </button>
                   </div>
@@ -243,7 +243,7 @@ export default function ChangePasswordPage() {
                           : 'bg-red-100 dark:bg-red-900/30'
                       }`}>
                         {passwordsMatch ? (
-                          <FiCheck className="w-3 h-3 text-green-600 dark:text-green-400" />
+                          <Check className="w-3 h-3 text-green-600 dark:text-green-400" />
                         ) : (
                           <FiX className="w-3 h-3 text-red-600 dark:text-red-400" />
                         )}
@@ -281,7 +281,7 @@ export default function ChangePasswordPage() {
           /* Success State */
           <div className="flex flex-col items-center py-12">
             <div className="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6 animate-fade-in">
-              <FiCheckCircle className="w-12 h-12 text-green-600 dark:text-green-400" />
+              <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Password Updated!</h2>
             <p className="text-gray-500 dark:text-gray-400 text-center mb-8">

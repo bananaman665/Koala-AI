@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FiClock, FiFileText, FiBook, FiMic, FiTrendingUp } from 'react-icons/fi'
+import { Mic } from 'lucide-react'
 import { hapticButton } from '@/lib/haptics'
 import type { Database } from '@/lib/supabase'
 
@@ -58,40 +58,45 @@ export function AnalyticsScreen({
     <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
       <div className="max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-32 sm:pt-36 lg:pt-8">
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
+          {/* Hero Unit - Title + Filter */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6 shadow-lg shadow-black/5 dark:shadow-black/20">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
 
-          {/* Time Period Selector */}
-          <div className="flex space-x-2 overflow-x-auto pb-2">
-            <button
-              onClick={() => setTimeFilter('week')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                timeFilter === 'week'
-                  ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner border-b-2 border-[#0052CC]'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              This Week
-            </button>
-            <button
-              onClick={() => setTimeFilter('month')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                timeFilter === 'month'
-                  ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              This Month
-            </button>
-            <button
-              onClick={() => setTimeFilter('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                timeFilter === 'all'
-                  ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              All Time
-            </button>
+              {/* Time Period Selector */}
+              <div className="flex space-x-2 overflow-x-auto">
+                <button
+                  onClick={() => setTimeFilter('week')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                    timeFilter === 'week'
+                      ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner border-b-2 border-[#0052CC]'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  This Week
+                </button>
+                <button
+                  onClick={() => setTimeFilter('month')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                    timeFilter === 'month'
+                      ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  This Month
+                </button>
+                <button
+                  onClick={() => setTimeFilter('all')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                    timeFilter === 'all'
+                      ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  All Time
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Study Streak */}
@@ -99,7 +104,7 @@ export function AnalyticsScreen({
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Study Streak</h3>
             <div className="flex items-center space-x-2 mb-3">
               <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                <FiTrendingUp className="text-orange-600 dark:text-orange-400 text-2xl" />
+                <TrendingUp className="text-orange-600 dark:text-orange-400 text-2xl" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -207,7 +212,7 @@ export function AnalyticsScreen({
                       className="flex items-center space-x-3 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${iconBgClass}`}>
-                        <FiMic className={`text-lg ${iconTextClass}`} />
+                        <Mic className={`text-lg ${iconTextClass}`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 dark:text-white">{statusText}</p>

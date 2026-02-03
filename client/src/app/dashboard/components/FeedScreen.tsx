@@ -1,17 +1,18 @@
 'use client'
+
 import { useState } from 'react'
-import { FiPlus, FiUsers, FiChevronRight, FiStar } from 'react-icons/fi'
-import { hapticButton, hapticSelection } from '@/lib/haptics'
+import { Users } from 'lucide-react'
+import { hapticButton, hapticSelection, hapticSuccess } from '@/lib/haptics'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 
-// Color classes for course icons
-const courseColorClasses: Record<string, { bg: string; text: string; bar: string; glow: string }> = {
-  blue: { bg: 'bg-blue-100 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400', bar: 'bg-[#0066FF]', glow: 'shadow-blue-500/20' },
-  purple: { bg: 'bg-purple-100 dark:bg-purple-500/20', text: 'text-purple-600 dark:text-purple-400', bar: 'bg-[#6366F1]', glow: 'shadow-purple-500/20' },
-  green: { bg: 'bg-green-100 dark:bg-green-500/20', text: 'text-green-600 dark:text-green-400', bar: 'bg-[#10B981]', glow: 'shadow-green-500/20' },
-  orange: { bg: 'bg-orange-100 dark:bg-orange-500/20', text: 'text-orange-600 dark:text-orange-400', bar: 'bg-[#F59E0B]', glow: 'shadow-orange-500/20' },
-  pink: { bg: 'bg-pink-100 dark:bg-pink-500/20', text: 'text-pink-600 dark:text-pink-400', bar: 'bg-[#EC4899]', glow: 'shadow-pink-500/20' },
-  yellow: { bg: 'bg-yellow-100 dark:bg-yellow-500/20', text: 'text-yellow-600 dark:text-yellow-400', bar: 'bg-[#FBBF24]', glow: 'shadow-yellow-500/20' },
+// Color classes for class icons
+const classColorClasses: Record<string, { bg: string; text: string; border: string }> = {
+  blue: { bg: 'bg-blue-100 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-200 dark:border-blue-500/30' },
+  purple: { bg: 'bg-purple-100 dark:bg-purple-500/20', text: 'text-purple-600 dark:text-purple-400', border: 'border-purple-200 dark:border-purple-500/30' },
+  green: { bg: 'bg-green-100 dark:bg-green-500/20', text: 'text-green-600 dark:text-green-400', border: 'border-green-200 dark:border-green-500/30' },
+  orange: { bg: 'bg-orange-100 dark:bg-orange-500/20', text: 'text-orange-600 dark:text-orange-400', border: 'border-orange-200 dark:border-orange-500/30' },
+  pink: { bg: 'bg-pink-100 dark:bg-pink-500/20', text: 'text-pink-600 dark:text-pink-400', border: 'border-pink-200 dark:border-pink-500/30' },
+  yellow: { bg: 'bg-yellow-100 dark:bg-yellow-500/20', text: 'text-yellow-600 dark:text-yellow-400', border: 'border-yellow-200 dark:border-yellow-500/30' },
 }
 
 interface FeedScreenProps {
@@ -36,161 +37,272 @@ export function FeedScreen({
   onDeleteClass,
 }: FeedScreenProps) {
   const [favoritedClasses, setFavoritedClasses] = useState<Set<string>>(new Set())
+  const [filter, setFilter] = useState<'all' | 'favorites'>('all')
+  const [copiedCode, setCopiedCode] = useState<string | null>(null)
+
+  const toggleFavorite = (classId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    hapticSelection()
+    setFavoritedClasses((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(classId)) {
+        newSet.delete(classId)
+      } else {
+        newSet.add(classId)
+      }
+      return newSet
+    })
+  }
+
+  const copyCode = (code: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    navigator.clipboard.writeText(code)
+    setCopiedCode(code)
+    hapticSuccess()
+    setTimeout(() => setCopiedCode(null), 2000)
+  }
+
+  const filteredClasses = filter === 'favorites'
+    ? userClasses.filter(cls => favoritedClasses.has(cls.id))
+    : userClasses
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
-      {/* Main Content */}
-      <div className="px-4 sm:px-6 lg:px-8 xl:px-12 pt-32 sm:pt-36 lg:pt-8 pb-32 lg:pb-8">
-          {/* Vertical Stack Layout */}
-          <div className="flex flex-col gap-6">
-            {/* Class Management */}
-            <div>
-              <div className="space-y-6">
-                {/* Join a Class */}
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Join a Class</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Class Code
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g., ABC123"
-                        value={joinClassCode}
-                        onChange={(e) => onJoinClassCodeChange(e.target.value.toUpperCase())}
-                        className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <button
-                      onClick={() => {
-                        if (joinClassCode.trim() && !isJoiningClass) {
-                          onJoinClass()
-                        }
-                      }}
-                      className="w-full px-4 py-2.5 bg-[#0066FF] text-white rounded-lg font-semibold hover:bg-[#0052CC] active:bg-[#0747A6] transition-all duration-200 shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] active:shadow-inner text-sm relative border-b-2 border-[#0052CC]"
-                    >
-                      {isJoiningClass ? 'Joining...' : 'Join Class'}
-                    </button>
-                  </div>
-                </div>
+    <div className="h-full overflow-y-auto bg-gray-50 dark:bg-gray-900">
+      <div className="px-4 sm:px-6 py-6 pt-36 lg:pt-6 pb-32 lg:pb-8">
 
-                {/* Create New Class */}
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Class</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    Start a new class and share the code with your classmates.
-                  </p>
-                  <button
-                    onClick={() => {
-                      hapticButton()
-                      onCreateNewClass()
-                    }}
-                    className="w-full px-4 py-2.5 bg-[#0066FF] text-white rounded-lg font-semibold hover:bg-[#0052CC] active:bg-[#0747A6] transition-all duration-200 shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] active:shadow-inner text-sm flex items-center justify-center gap-2 relative border-b-2 border-[#0052CC]"
-                  >
-                    <FiPlus />
-                    <span>New Class</span>
-                  </button>
-                </div>
-              </div>
+        {/* Quick Actions - Google Classroom inspired */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {/* Join Class Card */}
+          <button
+            onClick={() => {
+              hapticButton()
+              // Focus the join input or show modal
+              const input = document.getElementById('join-class-input')
+              input?.focus()
+            }}
+            className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98] text-left group"
+          >
+            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center mb-3">
+              <Users size={20} className="text-blue-600 dark:text-blue-400" />
             </div>
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Join Class</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Enter a class code</p>
+          </button>
 
-            {/* Your Classes */}
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Your Classes</h2>
-              {userClasses && userClasses.length > 0 ? (
-                <div className="space-y-2">
-                  {userClasses.map((cls: any) => {
-                    const memberCount = cls.class_memberships?.length || 0
-                    const colorKey = cls.color || 'blue'
-                    const colorClasses = courseColorClasses[colorKey] || courseColorClasses.blue
-                    return (
-                    <SwipeToDelete
-                      key={cls.id}
-                      onDelete={() => onDeleteClass(cls.id)}
-                      itemName={`"${cls.name}"`}
-                    >
-                      <div
-                        onClick={() => {
-                          hapticButton()
-                          onViewClass(cls.id)
-                        }}
-                        className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-white/[0.06] p-4 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 hover:scale-[1.02] transition-all duration-200 cursor-pointer group hover:border-blue-300 dark:hover:border-blue-500/30"
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div
-                              className={`w-10 h-10 ${colorClasses.bg} rounded-xl flex items-center justify-center flex-shrink-0`}
-                            >
-                              <FiUsers
-                                className={`text-base ${colorClasses.text}`}
-                              />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Class</p>
-                              <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{cls.name}</h4>
-                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">
-                                {cls.code && `${cls.code} • `}
-                                {memberCount} member{memberCount !== 1 ? 's' : ''}
-                              </p>
-                            </div>
-                          </div>
-                          {/* Star Button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              hapticSelection()
-                              setFavoritedClasses((prev) => {
-                                const newSet = new Set(prev)
-                                if (newSet.has(cls.id)) {
-                                  newSet.delete(cls.id)
-                                } else {
-                                  newSet.add(cls.id)
-                                }
-                                return newSet
-                              })
-                            }}
-                            className="p-2 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
-                          >
-                            <FiStar
-                              className={`w-5 h-5 transition-all duration-200 ${
-                                favoritedClasses.has(cls.id)
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
-                              }`}
-                            />
-                          </button>
-                        </div>
-                      </div>
-                    </SwipeToDelete>
-                  )
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700/50 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <FiUsers className="w-6 h-6 text-gray-300 dark:text-gray-500" />
-                  </div>
-                  <p className="text-base font-semibold text-gray-900 dark:text-white mb-1">No classes yet</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Create or join a class to get started
-                  </p>
-                </div>
-              )}
+          {/* Create Class Card */}
+          <button
+            onClick={() => {
+              hapticButton()
+              onCreateNewClass()
+            }}
+            className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98] text-left group"
+          >
+            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center mb-3">
+              <Plus size={20} className="text-blue-600 dark:text-blue-400" weight="bold" />
             </div>
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Create Class</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Start a new class</p>
+          </button>
+        </div>
+
+        {/* Join Class Input - Clean inline design */}
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] mb-6">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Join with Code
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="join-class-input"
+              type="text"
+              placeholder="Enter class code (e.g., ABC123)"
+              value={joinClassCode}
+              onChange={(e) => onJoinClassCodeChange(e.target.value.toUpperCase())}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && joinClassCode.trim() && !isJoiningClass) {
+                  onJoinClass()
+                }
+              }}
+              className="flex-1 px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <button
+              onClick={() => {
+                if (joinClassCode.trim() && !isJoiningClass) {
+                  hapticButton()
+                  onJoinClass()
+                }
+              }}
+              disabled={!joinClassCode.trim() || isJoiningClass}
+              className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isJoiningClass ? 'Joining...' : 'Join'}
+            </button>
           </div>
         </div>
 
-      {/* Mobile: Create Class Button */}
-      <button
-        onClick={() => {
-          hapticButton()
-          onCreateNewClass()
-        }}
-        className="lg:hidden fixed bottom-24 right-4 w-14 h-14 bg-[#0066FF] text-white rounded-full font-semibold hover:bg-[#0052CC] active:bg-[#0747A6] transition-all duration-200 flex items-center justify-center shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-[1.05] active:scale-[0.95] active:shadow-inner border-b-2 border-[#0052CC]"
-      >
-        <FiPlus className="text-xl" />
-      </button>
+        {/* Filter Tabs */}
+        {userClasses.length > 0 && (
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => {
+                hapticSelection()
+                setFilter('all')
+              }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                filter === 'all'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white dark:bg-[#1E293B] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/[0.06]'
+              }`}
+            >
+              <Users size={16} weight={filter === 'all' ? 'fill' : 'regular'} />
+              All Classes
+            </button>
+            <button
+              onClick={() => {
+                hapticSelection()
+                setFilter('favorites')
+              }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                filter === 'favorites'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white dark:bg-[#1E293B] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/[0.06]'
+              }`}
+            >
+              <Star size={16} weight={filter === 'favorites' ? 'fill' : 'regular'} />
+              Favorites
+            </button>
+          </div>
+        )}
+
+        {/* Classes List */}
+        {filteredClasses.length > 0 ? (
+          <div className="space-y-3">
+            {filteredClasses.map((cls: any) => {
+              const memberCount = cls.class_memberships?.length || 0
+              const colorKey = cls.color || 'blue'
+              const colorClasses = classColorClasses[colorKey] || classColorClasses.blue
+              const isFavorited = favoritedClasses.has(cls.id)
+
+              return (
+                <SwipeToDelete
+                  key={cls.id}
+                  onDelete={() => onDeleteClass(cls.id)}
+                  itemName={`"${cls.name}"`}
+                >
+                  <div
+                    onClick={() => {
+                      hapticButton()
+                      onViewClass(cls.id)
+                    }}
+                    className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
+                  >
+                    <div className="flex items-center gap-4">
+                      {/* Class Icon */}
+                      <div className={`w-12 h-12 ${colorClasses.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                        <Users size={24} className={colorClasses.text} />
+                      </div>
+
+                      {/* Class Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                          {cls.name}
+                        </h3>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                            {memberCount} {memberCount === 1 ? 'member' : 'members'}
+                          </span>
+                          {cls.code && (
+                            <button
+                              onClick={(e) => copyCode(cls.code, e)}
+                              className="flex items-center gap-1 text-sm text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                            >
+                              {copiedCode === cls.code ? (
+                                <>
+                                  <Check size={14} className="text-green-500" />
+                                  <span className="text-green-500">Copied!</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy size={14} />
+                                  <span>{cls.code}</span>
+                                </>
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <button
+                        onClick={(e) => toggleFavorite(cls.id, e)}
+                        className="p-2 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors"
+                      >
+                        <Star
+                          size={20}
+                          weight={isFavorited ? 'fill' : 'regular'}
+                          className={isFavorited ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-400'}
+                        />
+                      </button>
+                      <ChevronRight size={20} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors" />
+                    </div>
+                  </div>
+                </SwipeToDelete>
+              )
+            })}
+          </div>
+        ) : (
+          /* Empty State */
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            {filter === 'favorites' ? (
+              <>
+                <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-4">
+                  <Star size={32} className="text-yellow-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-xs">
+                  Star your favorite classes for quick access
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4">
+                  <Users size={32} className="text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No classes yet</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-xs mb-6">
+                  Join an existing class with a code or create your own to start collaborating
+                </p>
+                <button
+                  onClick={() => {
+                    hapticButton()
+                    onCreateNewClass()
+                  }}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center gap-2"
+                >
+                  <Plus size={20} weight="bold" />
+                  Create Your First Class
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Tip Card */}
+        {userClasses.length > 0 && (
+          <div className="mt-6 bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06]">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-amber-100 dark:bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Sparkle size={16} className="text-amber-600 dark:text-amber-400" weight="fill" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Pro Tip</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                  Share your class code with classmates so everyone can access shared lectures and notes!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

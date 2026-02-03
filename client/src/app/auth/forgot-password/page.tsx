@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { FiMail, FiArrowLeft, FiCheckCircle } from 'react-icons/fi'
+import { Mail, ArrowLeft } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import AppIcon from '@/components/AppIcon'
 
@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiMail className="text-gray-400" />
+                      <Mail className="text-gray-400" />
                     </div>
                     <input
                       type="email"
@@ -96,7 +96,7 @@ export default function ForgotPasswordPage() {
                 href="/auth/login"
                 className="flex items-center justify-center space-x-2 text-sm text-blue-600 hover:text-blue-700 mt-6"
               >
-                <FiArrowLeft />
+                <ArrowLeft />
                 <span>Back to login</span>
               </Link>
             </>
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
               {/* Success State */}
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                  <FiCheckCircle className="w-8 h-8 text-green-600" />
+                  <CheckCircle className="w-8 h-8 text-green-600" />
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Check Your Email</h1>
                 <p className="text-gray-600 mb-6">
@@ -125,7 +125,7 @@ export default function ForgotPasswordPage() {
                   href="/auth/login"
                   className="inline-flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-700"
                 >
-                  <FiArrowLeft />
+                  <ArrowLeft />
                   <span>Back to login</span>
                 </Link>
               </div>

@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { FiLoader } from 'react-icons/fi'
 import { cn } from '@/lib/utils'
+import { Loader } from 'lucide-react'
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center gap-2 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]',
@@ -68,7 +68,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading ? (
           <>
-            <FiLoader className="w-4 h-4 animate-spin" />
+            <Loader className="w-4 h-4 animate-spin" />
             {children}
           </>
         ) : (

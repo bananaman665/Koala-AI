@@ -3,15 +3,15 @@
 import { useState, useEffect } from 'react'
 import {
   GraduationCap,
-  Microphone,
-  Sparkle,
-  Books,
-  Fire,
+  Mic,
+  Sparkles,
+  BookOpen,
+  Flame,
   Trophy,
   ArrowRight,
   ArrowLeft,
   X
-} from '@phosphor-icons/react'
+} from 'lucide-react'
 import { hapticSelection, hapticSuccess } from '@/lib/haptics'
 
 interface OnboardingCarouselProps {
@@ -34,19 +34,19 @@ const slides: Slide[] = [
     color: 'bg-blue-500',
   },
   {
-    icon: <Microphone size={80} weight="duotone" />,
+    icon: <Mic size={80} weight="duotone" />,
     title: 'One-Tap Recording',
     description: 'Record lectures with a single tap. We\'ll transcribe everything automatically using AI.',
     color: 'bg-green-500',
   },
   {
-    icon: <Sparkle size={80} weight="duotone" />,
+    icon: <Sparkles size={80} />,
     title: 'AI-Powered Notes',
     description: 'Get intelligent, structured notes with summaries, key points, and action items.',
     color: 'bg-amber-500',
   },
   {
-    icon: <Books size={80} weight="duotone" />,
+    icon: <BookOpen size={80} />,
     title: 'Study Your Way',
     description: 'Review with interactive flashcards, learn mode quizzes, or browse your organized notes.',
     color: 'bg-pink-500',
@@ -54,8 +54,8 @@ const slides: Slide[] = [
   {
     icon: (
       <div className="flex items-center gap-2">
-        <Fire size={70} weight="duotone" />
-        <Trophy size={70} weight="duotone" />
+        <Flame size={70} />
+        <Trophy size={70} />
       </div>
     ),
     title: 'Track Your Progress',
@@ -224,7 +224,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
             {isLastSlide ? (
               <>
                 Get Started
-                <Sparkle size={20} weight="fill" />
+                <Sparkles size={20} />
               </>
             ) : (
               <>

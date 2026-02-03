@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Sun, Moon, Cloud, CheckCircle, Fire, Star, Rocket } from '@phosphor-icons/react'
 
 interface DailyGreetingProps {
   userName?: string
@@ -40,7 +39,7 @@ export function DailyGreeting({
           icon: Sun,
           color: 'from-amber-400 to-orange-500',
           message: 'Ready to ace your studies today?',
-          bgGradient: 'from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20',
+          bgGradient: 'from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950',
           textGradient: 'from-amber-600 to-orange-600 dark:from-amber-300 dark:to-orange-300',
         }
       case 'afternoon':
@@ -50,7 +49,7 @@ export function DailyGreeting({
           icon: Cloud,
           color: 'from-blue-400 to-cyan-500',
           message: 'Keep up the momentum!',
-          bgGradient: 'from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20',
+          bgGradient: 'from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950',
           textGradient: 'from-blue-600 to-cyan-600 dark:from-blue-300 dark:to-cyan-300',
         }
       case 'evening':
@@ -60,14 +59,13 @@ export function DailyGreeting({
           icon: Moon,
           color: 'from-indigo-400 to-purple-500',
           message: 'Time to wrap up the day strong!',
-          bgGradient: 'from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20',
+          bgGradient: 'from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950',
           textGradient: 'from-indigo-600 to-purple-600 dark:from-indigo-300 dark:to-purple-300',
         }
     }
   }
 
   const content = getGreetingContent()
-  const IconComponent = content.icon
 
   const getMotivation = () => {
     if (streak >= 7) return "You're on fire with that streak! 🔥"
@@ -77,72 +75,74 @@ export function DailyGreeting({
   }
 
   return (
-    <div className={`fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 flex flex-col items-center justify-center z-[100] p-4 backdrop-blur-sm`}>
-      {/* Animated background elements */}
-      <div className="absolute top-10 right-10 opacity-10 animate-float">
-        <IconComponent size={120} weight="fill" />
-      </div>
-      <div className="absolute bottom-10 left-10 opacity-10 animate-pulse">
-        <Star size={100} weight="fill" />
-      </div>
+    <div className={`fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-gradient-to-br ${content.bgGradient} z-[100] flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto`}>
+      {/* Close Button */}
+      <button
+        onClick={onDismiss}
+        className="absolute top-6 right-6 z-50 w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95"
+      >
+        <X size={24} className="text-gray-700 dark:text-gray-300" weight="bold" />
+      </button>
 
-      {/* Content Card */}
-      <div className="relative z-10 text-center space-y-6 max-w-md bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-2xl">
-        {/* Greeting */}
-        <div className="space-y-3">
-          <div className="text-6xl animate-bounce">{content.emoji}</div>
-          <h1 className={`text-5xl font-bold bg-gradient-to-r ${content.textGradient} bg-clip-text text-transparent`}>
-            {content.greeting}
-          </h1>
-          <p className="text-lg text-gray-700 dark:text-gray-300">
-            {content.message}
-          </p>
+      {/* Content */}
+      <div className="relative z-10 w-full max-w-2xl text-center space-y-8 sm:space-y-10">
+        {/* Main Greeting */}
+        <div className="space-y-4 sm:space-y-6">
+          <div className="text-8xl sm:text-9xl animate-bounce">{content.emoji}</div>
+          <div>
+            <h1 className={`text-6xl sm:text-7xl lg:text-8xl font-black bg-gradient-to-r ${content.textGradient} bg-clip-text text-transparent leading-tight`}>
+              {content.greeting}
+            </h1>
+            <p className="text-xl sm:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 mt-4 font-medium">
+              {content.message}
+            </p>
+          </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-3 mt-8">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-4 sm:gap-6 mt-10 sm:mt-12">
           {/* Streak */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex justify-center mb-2">
-              <Fire size={24} weight="fill" className="text-orange-500" />
+          <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <Fire size={40} weight="fill" className="text-orange-500" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">{streak}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Day Streak</div>
+            <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{streak}</div>
+            <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Day Streak</div>
           </div>
 
           {/* XP */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex justify-center mb-2">
-              <Star size={24} weight="fill" className="text-yellow-500" />
+          <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <Star size={40} weight="fill" className="text-yellow-500" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">{totalXP.toLocaleString()}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Total XP</div>
+            <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{(totalXP / 1000).toFixed(1)}k</div>
+            <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Total XP</div>
           </div>
 
           {/* Today's Lectures */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex justify-center mb-2">
-              <CheckCircle size={24} weight="fill" className="text-green-500" />
+          <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <CheckCircle size={40} weight="fill" className="text-green-500" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">{lecturesCompletedToday}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Today's Lectures</div>
+            <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{lecturesCompletedToday}</div>
+            <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Today's Lectures</div>
           </div>
         </div>
 
-        {/* Motivation */}
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 shadow-lg border-2 border-gray-200 dark:border-gray-700">
-          <p className="text-gray-700 dark:text-gray-300 font-medium">
+        {/* Motivation Box */}
+        <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl border border-white/40 dark:border-gray-700/40">
+          <p className="text-lg sm:text-xl lg:text-2xl text-gray-700 dark:text-gray-200 font-bold">
             {getMotivation()}
           </p>
         </div>
 
-        {/* Dismiss Button */}
+        {/* CTA Button */}
         <button
           onClick={onDismiss}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-full hover:shadow-lg transition-all duration-300 text-lg mt-8 flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-5 sm:py-6 px-8 rounded-2xl hover:shadow-2xl transition-all duration-300 text-xl sm:text-2xl flex items-center justify-center gap-3 active:scale-[0.98] shadow-xl"
         >
           Let's Go!
-          <Rocket size={20} weight="fill" />
+          <Rocket size={28} weight="fill" />
         </button>
       </div>
     </div>

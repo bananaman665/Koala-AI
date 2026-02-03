@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, ReactNode } from 'react'
-import { FiTrash2 } from 'react-icons/fi'
 import { hapticImpact, hapticButton } from '@/lib/haptics'
 
 interface SwipeToDeleteProps {
@@ -118,7 +117,7 @@ export function SwipeToDelete({
               opacity: deleteProgress,
             }}
           >
-            <FiTrash2 className="w-5 h-5" />
+            <Trash2 className="w-5 h-5" />
             <span className="font-medium text-sm">Delete</span>
           </div>
         </div>
@@ -149,7 +148,7 @@ export function SwipeToDelete({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-center w-12 h-12 bg-red-100 dark:bg-red-500/20 rounded-full mx-auto mb-4">
-              <FiTrash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
+              <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
               Delete {itemName}?

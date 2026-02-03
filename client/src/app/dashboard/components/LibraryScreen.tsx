@@ -1,57 +1,42 @@
 'use client'
 
 import { useMemo, useState, useEffect } from 'react'
-import { FiSearch, FiClock, FiLoader, FiChevronLeft, FiEdit2, FiBook, FiTrash2, FiShare2, FiPlay, FiChevronRight, FiStar } from 'react-icons/fi'
-import { hapticSelection } from '@/lib/haptics'
+import { hapticSelection, hapticButton } from '@/lib/haptics'
+import { Loader, Star } from 'lucide-react'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 import { AudioPlayer } from '@/components/AudioPlayer'
 import { LearnMode } from './LearnMode'
 import { FlashcardMode } from './FlashcardMode'
-import { TabButtons } from '@/components/TabButtons'
-import { hapticButton } from '@/lib/haptics'
+import { getSubjectIcon, getSubjectColor } from '@/lib/subject-utils'
 import type { Database } from '@/lib/supabase'
 
-
 type Lecture = Database['public']['Tables']['lectures']['Row'] & {
-  courses?: { name: string } | null
+  courses?: { name: string; subject?: string } | null
 }
 
 interface LibraryScreenProps {
-  // Data
   lectures: Lecture[]
   selectedLecture: string | null
   selectedLectureData: Lecture | null
   selectedLectureNotes: string | null
   flashcards: Array<{ question: string; answer: string }>
   learnModeQuestions: any[]
-
-  // Loading states
   isLoadingLectures: boolean
   isLoadingLectureNotes: boolean
   isGeneratingFlashcards: boolean
   isGeneratingLearnMode: boolean
   isSavingNotes: boolean
-
-  // Filter/search states
   librarySearchQuery: string
   libraryFilter: 'all' | 'week'
-
-  // Mode states
   isLearnModeActive: boolean
   isFlashcardModeActive: boolean
   isEditingNotes: boolean
   isExitingLecture: boolean
-
-  // Edit states
   editedNotesContent: string
   notesWasEdited: boolean
-
-  // Learn mode states
   currentQuestionIndex: number
   selectedAnswer: string | null
   showExplanation: boolean
-
-  // Handlers
   onLibrarySearchQueryChange: (query: string) => void
   onLibraryFilterChange: (filter: 'all' | 'week') => void
   onSelectLecture: (id: string) => void
@@ -64,12 +49,9 @@ interface LibraryScreenProps {
   onShowLearnModeConfig: () => void
   onShowFlashcardConfig: () => void
   onShowDeleteModal: () => void
-  onShowShareModal: (lectureId: string) => void
-  isLectureShared: (lectureId: string) => boolean
   onSetIsFlashcardModeActive: (active: boolean) => void
   onSetCurrentFlashcardIndex: (index: number) => void
-
-  // Learn mode handlers
+  onSetIsLearnModeActive: (active: boolean) => void
   onAnswerSelect: (answer: string) => void
   onSubmitAnswer: () => void
   onNextQuestion: () => void
@@ -85,23 +67,17 @@ export function LibraryScreen({
   flashcards,
   learnModeQuestions,
   isLoadingLectures,
-  isLoadingLectureNotes,
-  isGeneratingFlashcards,
-  isGeneratingLearnMode,
   isSavingNotes,
   librarySearchQuery,
-  libraryFilter,
   isLearnModeActive,
   isFlashcardModeActive,
   isEditingNotes,
   isExitingLecture,
   editedNotesContent,
-  notesWasEdited,
   currentQuestionIndex,
   selectedAnswer,
   showExplanation,
   onLibrarySearchQueryChange,
-  onLibraryFilterChange,
   onSelectLecture,
   onDeleteLecture,
   onExitLecture,
@@ -112,10 +88,9 @@ export function LibraryScreen({
   onShowLearnModeConfig,
   onShowFlashcardConfig,
   onShowDeleteModal,
-  onShowShareModal,
-  isLectureShared,
   onSetIsFlashcardModeActive,
   onSetCurrentFlashcardIndex,
+  onSetIsLearnModeActive,
   onAnswerSelect,
   onSubmitAnswer,
   onNextQuestion,
@@ -123,650 +98,570 @@ export function LibraryScreen({
   onShowViewNotesModal,
 }: LibraryScreenProps) {
   const [favoritedLectures, setFavoritedLectures] = useState<Set<string>>(new Set())
-
-  // Tab state for notes/quiz/flashcards
-  const [activeTab, setActiveTab] = useState<'notes' | 'quiz' | 'flashcards'>('notes')
-  const [hasGeneratedNotes, setHasGeneratedNotes] = useState(false)
   const [hasGeneratedQuiz, setHasGeneratedQuiz] = useState(false)
   const [hasGeneratedFlashcards, setHasGeneratedFlashcards] = useState(false)
-  const [isGeneratingNotes, setIsGeneratingNotes] = useState(false)
+  const [statusFilter, setStatusFilter] = useState<'all' | 'favorites' | 'recent'>('all')
 
-  // Reset tab state when lecture changes
   useEffect(() => {
-    setHasGeneratedNotes(!!selectedLectureNotes)
     setHasGeneratedQuiz(learnModeQuestions.length > 0)
     setHasGeneratedFlashcards(flashcards.length > 0)
-    setActiveTab('notes')
-  }, [selectedLecture])
+  }, [selectedLecture, learnModeQuestions.length, flashcards.length])
 
-  // Get filtered lectures for both list and detail view
+  // Group lectures by course
+  const groupedLectures = useMemo(() => {
+    const groups: Record<string, { courseName: string; subject?: string; lectures: Lecture[] }> = {}
+
+    lectures.forEach((lecture) => {
+      const courseId = lecture.course_id || 'uncategorized'
+      const courseName = lecture.courses?.name || 'Uncategorized'
+      const subject = lecture.courses?.subject
+
+      if (!groups[courseId]) {
+        groups[courseId] = { courseName, subject, lectures: [] }
+      }
+      groups[courseId].lectures.push(lecture)
+    })
+
+    return groups
+  }, [lectures])
+
+  // Get filtered lectures
   const getFilteredLectures = useMemo(() => {
-    return lectures.filter((lecture) => {
+    let filtered = lectures.filter((lecture) => {
       const query = librarySearchQuery.toLowerCase()
-      const matchesSearch = (
+      return (
         lecture.title.toLowerCase().includes(query) ||
         lecture.courses?.name?.toLowerCase().includes(query)
       )
-
-      if (libraryFilter === 'week') {
-        const oneWeekAgo = new Date()
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-        const lectureDate = new Date(lecture.created_at)
-        return matchesSearch && lectureDate >= oneWeekAgo
-      }
-
-      return matchesSearch
     })
-  }, [lectures, librarySearchQuery, libraryFilter])
 
-  // Library list view - Two column layout on desktop
-  if (!selectedLecture) {
-    return (
-      <div className="bg-gray-50 dark:bg-gray-900 min-h-full lg:h-full lg:min-h-0 lg:overflow-hidden lg:flex lg:flex-row">
-        {/* Mobile: Full width on mobile, Desktop: Left panel (320px) */}
-        <div className="lg:w-[320px] lg:h-full lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto lg:flex lg:flex-col">
-          <div className="px-3 sm:px-6 lg:px-2 py-4 sm:py-8 lg:py-4 pt-32 sm:pt-36 lg:pt-8 pb-4">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between lg:flex-col lg:items-start lg:gap-3">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Library</h2>
-                {librarySearchQuery && (
-                  <button
-                    onClick={() => onLibrarySearchQueryChange('')}
-                    className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 dark:text-white"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
+    if (statusFilter === 'favorites') {
+      filtered = filtered.filter(l => favoritedLectures.has(l.id))
+    } else if (statusFilter === 'recent') {
+      const oneWeekAgo = new Date()
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+      filtered = filtered.filter(l => new Date(l.created_at) >= oneWeekAgo)
+    }
 
-              {/* Search Bar */}
-              <div className="relative hidden lg:block">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={librarySearchQuery}
-                  onChange={(e) => onLibrarySearchQueryChange(e.target.value)}
-                  className="w-full px-3 py-2 pl-9 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-                />
-                <FiSearch className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
-              </div>
+    return filtered
+  }, [lectures, librarySearchQuery, statusFilter, favoritedLectures])
 
-              {/* Mobile Search Bar */}
-              <div className="relative lg:hidden">
-                <input
-                  type="text"
-                  placeholder="Search lectures..."
-                  value={librarySearchQuery}
-                  onChange={(e) => onLibrarySearchQueryChange(e.target.value)}
-                  className="w-full px-4 py-3 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-                />
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              </div>
+  // Recent lectures (last 3 played)
+  const recentLectures = useMemo(() => {
+    return [...lectures]
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 3)
+  }, [lectures])
 
-              {/* Filter Tabs */}
-              <div className="flex space-x-2 overflow-x-auto pb-2">
-                <button
-                  onClick={() => onLibraryFilterChange('all')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
-                    libraryFilter === 'all'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  All
-                </button>
-                <button
-                  onClick={() => onLibraryFilterChange('week')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
-                    libraryFilter === 'week'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  This Week
-                </button>
-              </div>
+  const toggleFavorite = (lectureId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    hapticSelection()
+    setFavoritedLectures((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(lectureId)) {
+        newSet.delete(lectureId)
+      } else {
+        newSet.add(lectureId)
+      }
+      return newSet
+    })
+  }
 
-              {/* Lecture List - Mobile Grid or Desktop Vertical List */}
-              <div key={libraryFilter} className="lg:space-y-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 animate-fade-in">
-                {(() => {
-                  if (isLoadingLectures) {
-                    return (
-                      <div className="text-center py-12 col-span-full lg:col-span-1">
-                        <FiLoader className="text-gray-400 text-4xl mx-auto animate-spin mb-4" />
-                        <p className="text-gray-500 dark:text-gray-400">Loading...</p>
-                      </div>
-                    )
-                  }
+  const formatDuration = (duration: number) => {
+    const minutes = Math.floor(duration / 60)
+    const hours = Math.floor(minutes / 60)
+    const mins = minutes % 60
+    return hours > 0 ? `${hours}h ${mins}m` : `${minutes}m`
+  }
 
-                  if (getFilteredLectures.length === 0) {
-                    return (
-                      <div className="text-center py-12 col-span-full lg:col-span-1">
-                        <FiSearch className="text-gray-300 text-5xl mx-auto mb-3" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-1 dark:text-white">No lectures found</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {librarySearchQuery ? `No results for "${librarySearchQuery}"` : 'Your library is empty'}
-                        </p>
-                      </div>
-                    )
-                  }
-
-                  return getFilteredLectures.map((lecture, index) => {
-                    const durationMinutes = Math.floor(lecture.duration / 60)
-                    const hours = Math.floor(durationMinutes / 60)
-                    const mins = durationMinutes % 60
-                    const createdDate = new Date(lecture.created_at)
-                    const formattedDate = createdDate.toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric'
-                    })
-                    const isFavorited = favoritedLectures.has(lecture.id)
-
-                    return (
-                      <SwipeToDelete
-                        key={lecture.id}
-                        onDelete={() => onDeleteLecture(lecture.id)}
-                        itemName={`"${lecture.title}"`}
-                        className={`animate-list-item stagger-${Math.min(index + 1, 10)}`}
-                      >
-                        <div
-                          onClick={() => onSelectLecture(lecture.id)}
-                          className="bg-white dark:bg-[#1E293B] rounded-2xl lg:rounded-xl border border-gray-100 dark:border-white/[0.06] p-5 lg:p-4 shadow-lg shadow-black/5 dark:shadow-black/25 hover:shadow-2xl hover:shadow-black/15 dark:hover:shadow-black/40 hover:scale-[1.01] hover:border-gray-200 dark:hover:border-white/[0.1] transition-all cursor-pointer group touch-manipulation active:scale-[0.98]"
-                        >
-                          <div className="flex items-center gap-3">
-                            {/* Green Play Icon */}
-                            <div className="w-11 h-11 lg:w-10 lg:h-10 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
-                              <FiPlay className="text-green-600 dark:text-green-400 text-lg lg:text-base" />
-                            </div>
-
-                            {/* Content */}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold mb-0.5">
-                                Lecture
-                              </p>
-                              <h3 className="text-base lg:text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                {lecture.title}
-                              </h3>
-                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                                {hours > 0 ? `${hours}h ${mins}m` : `${durationMinutes}m`} • {formattedDate}
-                              </p>
-                            </div>
-
-                            {/* Star Favorite Button */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                hapticSelection()
-                                setFavoritedLectures((prev) => {
-                                  const newSet = new Set(prev)
-                                  if (newSet.has(lecture.id)) {
-                                    newSet.delete(lecture.id)
-                                  } else {
-                                    newSet.add(lecture.id)
-                                  }
-                                  return newSet
-                                })
-                              }}
-                              className="p-1 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200 ml-1"
-                            >
-                              <FiStar
-                                className={`w-5 h-5 transition-all duration-200 ${
-                                  isFavorited
-                                    ? 'fill-yellow-400 text-yellow-400'
-                                    : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
-                                }`}
-                              />
-                            </button>
-
-                            {/* Chevron */}
-                            <FiChevronRight className="text-gray-300 dark:text-white/30 flex-shrink-0 group-hover:text-gray-400 dark:group-hover:text-white/50 group-hover:translate-x-1 transition-all duration-200" />
-                          </div>
-                        </div>
-                      </SwipeToDelete>
-                    )
-                  })
-                })()}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop: Right panel with empty state */}
-        <div className="hidden lg:flex flex-1 items-center justify-center pb-8 bg-white dark:bg-gray-800/30">
-          <div className="text-center">
-            <FiBook className="text-gray-300 dark:text-gray-600 text-6xl mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Select a lecture</h3>
-            <p className="text-gray-600 dark:text-gray-400">Choose from the list to view notes and details</p>
-          </div>
-        </div>
-      </div>
-    )
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    })
   }
 
   // Learn Mode view
   if (isLearnModeActive && learnModeQuestions.length > 0) {
     return (
-      <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
-        <div className={`max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-16 sm:pt-20 lg:pt-8`}>
-          <LearnMode
-            questions={learnModeQuestions}
-            currentIndex={currentQuestionIndex}
-            onAnswerSelect={onAnswerSelect}
-            onSubmitAnswer={onSubmitAnswer}
-            onNextQuestion={onNextQuestion}
-            onExit={onExitLearnMode}
-            selectedAnswer={selectedAnswer}
-            showExplanation={showExplanation}
-          />
-        </div>
-      </div>
+      <LearnMode
+        questions={learnModeQuestions}
+        currentIndex={currentQuestionIndex}
+        onAnswerSelect={onAnswerSelect}
+        onSubmitAnswer={onSubmitAnswer}
+        onNextQuestion={onNextQuestion}
+        onExit={onExitLearnMode}
+        selectedAnswer={selectedAnswer}
+        showExplanation={showExplanation}
+      />
     )
   }
 
   // Flashcard Mode view
   if (isFlashcardModeActive && flashcards.length > 0) {
     return (
-      <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
-        <div className={`max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-16 sm:pt-20 lg:pt-8`}>
-          <FlashcardMode
-            flashcards={flashcards}
-            onExit={() => {
-              onSetIsFlashcardModeActive(false)
-              onSetCurrentFlashcardIndex(0)
-            }}
-          />
-        </div>
-      </div>
+      <FlashcardMode
+        flashcards={flashcards}
+        onExit={() => {
+          onSetIsFlashcardModeActive(false)
+          onSetCurrentFlashcardIndex(0)
+        }}
+      />
     )
   }
 
-  // Lecture Detail view - Two column layout on desktop
-  return (
-    <div className="bg-gray-50 dark:bg-gray-900 min-h-full lg:h-full lg:min-h-0 lg:overflow-hidden lg:flex lg:flex-row">
-      {/* Mobile: Full width on mobile, Desktop: Left panel with lecture list */}
-      <div className="flex-1 lg:w-[320px] lg:h-full lg:border-r lg:border-gray-200 dark:lg:border-gray-700 lg:overflow-y-auto hidden lg:flex lg:flex-col">
-        <div className="px-2 py-4 space-y-4 pb-32">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Library</h2>
-            </div>
-
-            {/* Desktop Search Bar */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search..."
-                value={librarySearchQuery}
-                onChange={(e) => onLibrarySearchQueryChange(e.target.value)}
-                className="w-full px-3 py-2 pl-9 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-              />
-              <FiSearch className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
-            </div>
-
-            {/* Filter Tabs */}
-            <div className="flex space-x-2">
-              <button
-                onClick={() => onLibraryFilterChange('all')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
-                  libraryFilter === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => onLibraryFilterChange('week')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
-                  libraryFilter === 'week'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                }`}
-              >
-                This Week
-              </button>
-            </div>
-
-            {/* Lecture List */}
-            <div className="space-y-2 overflow-y-auto flex-1">
-              {getFilteredLectures.map((lecture) => {
-                const durationMinutes = Math.floor(lecture.duration / 60)
-                const hours = Math.floor(durationMinutes / 60)
-                const mins = durationMinutes % 60
-                const isCurrentLecture = lecture.id === selectedLecture
-                const isFavorited = favoritedLectures.has(lecture.id)
-
-                return (
-                  <div
-                    key={lecture.id}
-                    onClick={() => onSelectLecture(lecture.id)}
-                    className={`p-3 rounded-lg border transition-all cursor-pointer group ${
-                      isCurrentLecture
-                        ? 'bg-green-50 dark:bg-green-500/15 border-green-300 dark:border-green-500/30'
-                        : 'bg-white dark:bg-[#1E293B] border-gray-100 dark:border-white/[0.06] hover:border-green-300 dark:hover:border-green-500/30'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      {/* Green Play Icon */}
-                      <div className="w-8 h-8 bg-green-100 dark:bg-green-500/15 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <FiPlay className="text-green-600 dark:text-green-400 text-sm" />
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                          {lecture.title}
-                        </h4>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                          {hours > 0 ? `${hours}h ${mins}m` : `${durationMinutes}m`}
-                        </p>
-                      </div>
-
-                      {/* Star Favorite Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          hapticSelection()
-                          setFavoritedLectures((prev) => {
-                            const newSet = new Set(prev)
-                            if (newSet.has(lecture.id)) {
-                              newSet.delete(lecture.id)
-                            } else {
-                              newSet.add(lecture.id)
-                            }
-                            return newSet
-                          })
-                        }}
-                        className="p-1 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
-                      >
-                        <FiStar
-                          className={`w-4 h-4 transition-all duration-200 ${
-                            isFavorited
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Desktop: Right panel with expanded detail view, Mobile: Full screen */}
-      <div className="flex-1 min-h-full lg:overflow-y-auto">
-        <div className="px-3 sm:px-6 lg:px-6 py-4 sm:py-8 pb-40 lg:pb-24 pt-32 sm:pt-36 lg:pt-8">
-          <div className={`space-y-4 pb-32 lg:pb-20 ${isExitingLecture ? 'animate-zoom-out' : 'animate-zoom-in'}`}>
-            {/* Back Button - Mobile only */}
+  // Lecture Detail View
+  if (selectedLecture && selectedLectureData) {
+    return (
+      <div className="h-full overflow-y-auto bg-gray-50 dark:bg-gray-900">
+        <div className={`px-4 sm:px-6 py-6 pt-36 sm:pt-40 lg:pt-6 pb-32 lg:pb-8 ${isExitingLecture ? 'animate-zoom-out' : 'animate-zoom-in'}`}>
+          {/* Inline Header */}
+          <div className="flex items-center justify-between mb-6">
             <button
               onClick={onExitLecture}
-              className="lg:hidden flex items-center space-x-2 px-4 py-2.5 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors shadow-sm"
+              className="flex items-center gap-1 text-blue-500 hover:text-blue-600 active:scale-95 transition-all font-medium flex-shrink-0"
             >
-              <FiChevronLeft className="text-lg" />
-              <span>Back to Library</span>
+              <ChevronLeft size={18} weight="bold" />
+              <span>Back</span>
             </button>
+          </div>
 
-            {/* Lecture Header */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {selectedLectureData?.title || 'Lecture'}
-              </h1>
-              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                <span className="flex items-center">
-                  <FiClock className="mr-1" />
-                  {selectedLectureData ? (() => {
-                    const minutes = Math.floor(selectedLectureData.duration / 60)
-                    const hours = Math.floor(minutes / 60)
-                    return hours > 0 ? `${hours}h ${minutes % 60}m` : `${minutes}m`
-                  })() : '0m'}
-                </span>
-                <span>
-                  {selectedLectureData ? new Date(selectedLectureData.created_at).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit'
-                  }) : 'N/A'}
-                </span>
-              </div>
-            </div>
+          {/* Audio Player Card */}
+          <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-white/[0.06] mb-6">
+            <AudioPlayer
+              audioUrl={selectedLectureData.audio_url || null}
+              duration={selectedLectureData.duration || 0}
+            />
+          </div>
 
-            {/* Audio Player */}
-            <div className="bg-gray-100 dark:bg-[#1E293B] rounded-xl p-4">
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
-                  Recording
-                </h4>
-                <AudioPlayer
-                  audioUrl={selectedLectureData?.audio_url || null}
-                  duration={selectedLectureData?.duration || 0}
-                />
-              </div>
-            </div>
-
-            {/* Notes */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3 relative">
-              {isEditingNotes && (
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                    Edit Notes
-                  </h3>
-                </div>
-              )}
-              {!isEditingNotes && selectedLectureNotes && (
-                <div className="absolute top-3 right-3 flex items-center gap-2">
-                  {notesWasEdited && (
-                    <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-medium rounded-full">
-                      Edited
-                    </span>
-                  )}
-                  <button
-                    onClick={() => {
-                      hapticButton()
-                      onStartEditNotes()
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    <FiEdit2 className="text-sm" />
-                    Edit
-                  </button>
-                </div>
-              )}
-              {isLoadingLectureNotes ? (
-                <div className="flex items-center justify-center py-8">
-                  <FiLoader className="text-gray-400 text-4xl animate-spin" />
-                </div>
-              ) : isEditingNotes ? (
-                <div className="space-y-4">
-                  <textarea
-                    value={editedNotesContent}
-                    onChange={(e) => onEditNotesChange(e.target.value)}
-                    className="w-full h-80 p-4 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-mono text-sm"
-                    placeholder="Edit your notes here..."
-                  />
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => {
-                        hapticButton()
-                        onCancelEditNotes()
-                      }}
-                      disabled={isSavingNotes}
-                      className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={onSaveNotes}
-                      disabled={isSavingNotes || editedNotesContent === selectedLectureNotes}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isSavingNotes ? (
-                        <>
-                          <FiLoader className="animate-spin" />
-                          Saving...
-                        </>
-                      ) : (
-                        'Save'
-                      )}
-                    </button>
-                  </div>
-                </div>
-              ) : selectedLectureNotes ? (
-                <div className="flex flex-col items-center justify-center h-full gap-4">
-                  <p className="text-gray-600 dark:text-gray-300">Notes generated</p>
-                  <button
-                    onClick={() => onShowViewNotesModal?.()}
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-                  >
-                    View Notes
-                  </button>
-                </div>
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400 text-sm">No notes available for this lecture.</p>
-              )}
-            </div>
-
-            {/* Tab Buttons */}
-            <div className="space-y-4">
-              <TabButtons
-                tabs={[
-                  { id: 'notes', label: 'Notes Gen', active: activeTab === 'notes' },
-                  { id: 'quiz', label: 'Quiz', active: activeTab === 'quiz' },
-                  { id: 'flashcards', label: 'Flashcards', active: activeTab === 'flashcards' },
-                ]}
-                onTabClick={(id) => setActiveTab(id as 'notes' | 'quiz' | 'flashcards')}
-              />
-
-              {/* Tab Content */}
-              {activeTab === 'notes' && (
-                <div className="flex flex-col items-center justify-center min-h-[120px] pt-12">
-                  {hasGeneratedNotes ? (
-                    <div className="flex flex-col items-center justify-center gap-4 w-full">
-                      <p className="text-gray-600 dark:text-gray-300">Notes generated</p>
-                      <button
-                        onClick={() => onShowViewNotesModal?.()}
-                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-                      >
-                        View Notes
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center gap-4 w-full">
-                      <button
-                        onClick={async () => {
-                          setIsGeneratingNotes(true)
-                          try {
-                            // Notes are generated through parent component
-                            // This button triggers the generation via parent state
-                          } catch (error) {
-                            console.error('Error generating notes:', error)
-                          } finally {
-                            setIsGeneratingNotes(false)
-                          }
-                        }}
-                        disabled={isGeneratingNotes}
-                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
-                      >
-                        {isGeneratingNotes ? 'Generating...' : 'Generate Notes'}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'quiz' && (
-                <div className="flex flex-col items-center justify-center min-h-[120px] pt-12">
-                  {hasGeneratedQuiz ? (
-                    <div className="flex flex-col items-center justify-center gap-4 w-full">
-                      <p className="text-gray-600 dark:text-gray-300">Quiz generated</p>
-                      <button
-                        onClick={() => {
-                          hapticButton()
-                        }}
-                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-                      >
-                        View Quiz
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center gap-4 w-full">
-                      <button
-                        onClick={() => {
-                          if (selectedLectureNotes) {
-                            onShowLearnModeConfig()
-                          } else {
-                            alert('No notes available for this lecture')
-                          }
-                        }}
-                        disabled={isGeneratingLearnMode}
-                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
-                      >
-                        {isGeneratingLearnMode ? 'Generating...' : 'Create Quiz'}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'flashcards' && (
-                <div className="flex flex-col items-center justify-center min-h-[120px] pt-12">
-                  {hasGeneratedFlashcards ? (
-                    <div className="flex flex-col items-center justify-center gap-4 w-full">
-                      <p className="text-gray-600 dark:text-gray-300">Flashcards generated</p>
-                      <button
-                        onClick={() => {
-                          hapticButton()
-                          onSetCurrentFlashcardIndex(0)
-                          onSetIsFlashcardModeActive(true)
-                        }}
-                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-                      >
-                        View Flashcards
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center gap-4 w-full">
-                      <button
-                        onClick={() => onShowFlashcardConfig()}
-                        disabled={isGeneratingFlashcards}
-                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
-                      >
-                        {isGeneratingFlashcards ? 'Generating...' : 'Create Flashcards'}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Share to Class Button */}
+          {/* Study Tools */}
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Study Tools</h2>
+          <div className="space-y-3 mb-6">
+            {/* Notes Row */}
             <button
               onClick={() => {
                 hapticButton()
-                onShowShareModal(selectedLecture)
+                if (selectedLectureNotes) {
+                  onShowViewNotesModal?.()
+                } else {
+                  onStartEditNotes()
+                }
               }}
-              className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-4 rounded-xl hover:bg-blue-700 font-medium transition-colors"
+              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-blue-300 dark:hover:border-blue-500/50 active:scale-[0.98] transition-all border border-gray-100 dark:border-white/[0.06] group"
             >
-              <FiShare2 className="text-lg" />
-              <span>{isLectureShared(selectedLecture) ? 'Manage Class Sharing' : 'Share to Class'}</span>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                  <Notebook size={24} className="text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                    {selectedLectureNotes ? 'View Notes' : 'Add Notes'}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {selectedLectureNotes ? 'Read your study notes' : 'Write your own notes'}
+                  </p>
+                </div>
+                <ChevronRight size={20} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors flex-shrink-0" />
+              </div>
             </button>
 
-            {/* Delete Lecture Button */}
+            {/* Quiz Row */}
+            <button
+              onClick={() => {
+                hapticButton()
+                if (hasGeneratedQuiz) {
+                  onSetIsLearnModeActive(true)
+                } else if (selectedLectureNotes) {
+                  onShowLearnModeConfig()
+                }
+              }}
+              disabled={!selectedLectureNotes && !hasGeneratedQuiz}
+              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-purple-300 dark:hover:border-purple-500/50 active:scale-[0.98] transition-all border border-gray-100 dark:border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                  <Brain size={24} className="text-purple-600 dark:text-purple-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                    {hasGeneratedQuiz ? `Quiz (${learnModeQuestions.length})` : 'Create Quiz'}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {hasGeneratedQuiz ? 'Test your knowledge' : 'Generate from notes'}
+                  </p>
+                </div>
+                <ChevronRight size={20} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors flex-shrink-0" />
+              </div>
+            </button>
+
+            {/* Flashcards Row */}
+            <button
+              onClick={() => {
+                hapticButton()
+                if (hasGeneratedFlashcards) {
+                  onSetCurrentFlashcardIndex(0)
+                  onSetIsFlashcardModeActive(true)
+                } else if (selectedLectureNotes) {
+                  onShowFlashcardConfig()
+                }
+              }}
+              disabled={!selectedLectureNotes && !hasGeneratedFlashcards}
+              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-emerald-300 dark:hover:border-emerald-500/50 active:scale-[0.98] transition-all border border-gray-100 dark:border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                  <Cards size={24} className="text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                    {hasGeneratedFlashcards ? `Cards (${flashcards.length})` : 'Create Cards'}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {hasGeneratedFlashcards ? 'Spaced repetition' : 'Generate from notes'}
+                  </p>
+                </div>
+                <ChevronRight size={20} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors flex-shrink-0" />
+              </div>
+            </button>
+          </div>
+
+          {/* Edit Notes Section (shown when editing) */}
+          {isEditingNotes && (
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-white/[0.06]">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                Edit Notes
+              </h3>
+              <textarea
+                value={editedNotesContent}
+                onChange={(e) => onEditNotesChange(e.target.value)}
+                className="w-full h-64 p-4 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm mb-4"
+                placeholder="Write your notes here..."
+              />
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    hapticButton()
+                    onCancelEditNotes()
+                  }}
+                  disabled={isSavingNotes}
+                  className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 active:scale-[0.98]"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={onSaveNotes}
+                  disabled={isSavingNotes || editedNotesContent === selectedLectureNotes}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                >
+                  {isSavingNotes ? (
+                    <>
+                      <Loader className="animate-spin" size={20} />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save Notes'
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Danger Zone */}
+          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Danger Zone</h3>
             <button
               onClick={() => {
                 hapticButton()
                 onShowDeleteModal()
               }}
-              className="w-full flex items-center justify-center space-x-2 bg-red-500 text-white px-4 py-4 rounded-xl hover:bg-red-600 font-medium transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 active:scale-[0.98] transition-all"
             >
-              <FiTrash2 className="text-lg" />
-              <span>Delete Lecture</span>
+              <Trash size={18} />
+              Delete Lecture
             </button>
           </div>
         </div>
+      </div>
+    )
+  }
+
+  // Library List View
+  return (
+    <div className="h-full overflow-y-auto bg-gray-50 dark:bg-gray-900">
+      <div className="px-4 sm:px-6 py-6 pt-36 sm:pt-40 lg:pt-6 pb-32 lg:pb-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Library</h1>
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            {lectures.length} lectures
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative mb-4">
+          <input
+            type="text"
+            placeholder="Search lectures..."
+            value={librarySearchQuery}
+            onChange={(e) => onLibrarySearchQueryChange(e.target.value)}
+            className="w-full px-4 py-3 pl-11 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-white/[0.06] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white"
+          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+          {librarySearchQuery && (
+            <button
+              onClick={() => onLibrarySearchQueryChange('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {/* Filter Tabs - Spotify/Audible inspired */}
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          {[
+            { id: 'all', label: 'All', icon: Headphones },
+            { id: 'favorites', label: 'Favorites', icon: Star },
+            { id: 'recent', label: 'This Week', icon: Clock },
+          ].map((filter) => (
+            <button
+              key={filter.id}
+              onClick={() => {
+                hapticSelection()
+                setStatusFilter(filter.id as 'all' | 'favorites' | 'recent')
+              }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                statusFilter === filter.id
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white dark:bg-[#1E293B] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/[0.06]'
+              }`}
+            >
+              <filter.icon size={16} weight={statusFilter === filter.id ? 'fill' : 'regular'} />
+              {filter.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Loading State */}
+        {isLoadingLectures && (
+          <div className="flex flex-col items-center justify-center py-16">
+            <Loader className="text-blue-500 animate-spin mb-4" size={40} />
+            <p className="text-gray-500 dark:text-gray-400">Loading your library...</p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoadingLectures && getFilteredLectures.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            {statusFilter === 'favorites' ? (
+              <>
+                <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-4">
+                  <Star size={32} className="text-yellow-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-xs">
+                  Star your favorite lectures for quick access
+                </p>
+              </>
+            ) : librarySearchQuery ? (
+              <>
+                <div className="w-16 h-16 bg-white dark:bg-[#1E293B] rounded-2xl flex items-center justify-center mb-4">
+                  <Search size={32} className="text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No results</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-xs">
+                  No lectures match "{librarySearchQuery}"
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4">
+                  <Books size={32} className="text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Your library is empty</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-xs">
+                  Record your first lecture to start building your library
+                </p>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Content - Grouped by Course (Notion/Apple Podcasts inspired) */}
+        {!isLoadingLectures && getFilteredLectures.length > 0 && (
+          <div className="space-y-6">
+            {/* Recent Lectures Section - YouTube/Spotify inspired */}
+            {statusFilter === 'all' && recentLectures.length > 0 && !librarySearchQuery && (
+              <section>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <Play size={20} className="text-blue-500" weight="fill" />
+                    Continue Listening
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {recentLectures.map((lecture) => {
+                    const SubjectIcon = getSubjectIcon((lecture.courses as any)?.subject)
+                    const colors = getSubjectColor((lecture.courses as any)?.subject)
+                    const isFavorited = favoritedLectures.has(lecture.id)
+
+                    return (
+                      <div
+                        key={lecture.id}
+                        onClick={() => onSelectLecture(lecture.id)}
+                        className="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                            <SubjectIcon className={`${colors.text} text-xl`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-900 dark:text-white truncate text-sm">
+                              {lecture.title}
+                            </h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {lecture.courses?.name || 'Uncategorized'}
+                            </p>
+                          </div>
+                          <button
+                            onClick={(e) => toggleFavorite(lecture.id, e)}
+                            className="p-1.5 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors"
+                          >
+                            <Star
+                              size={18}
+                              weight={isFavorited ? 'fill' : 'regular'}
+                              className={isFavorited ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-400'}
+                            />
+                          </button>
+                        </div>
+                        {/* Progress bar placeholder */}
+                        <div className="mt-3 h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                          <div className="h-full bg-blue-500 rounded-full" style={{ width: '35%' }} />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* Grouped Lectures by Course */}
+            {Object.entries(groupedLectures)
+              .filter(([_, group]) => {
+                // Filter groups based on search/filters
+                return group.lectures.some(l => getFilteredLectures.includes(l))
+              })
+              .map(([courseId, group]) => {
+                const filteredGroupLectures = group.lectures.filter(l => getFilteredLectures.includes(l))
+                if (filteredGroupLectures.length === 0) return null
+
+                const SubjectIcon = getSubjectIcon(group.subject)
+                const colors = getSubjectColor(group.subject)
+
+                return (
+                  <section key={courseId}>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-8 h-8 ${colors.bg} rounded-lg flex items-center justify-center`}>
+                        <SubjectIcon className={`${colors.text} text-sm`} />
+                      </div>
+                      <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                        {group.courseName}
+                      </h2>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {filteredGroupLectures.length} lectures
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {filteredGroupLectures.map((lecture) => {
+                        const isFavorited = favoritedLectures.has(lecture.id)
+                        const SubjectIcon = getSubjectIcon((lecture.courses as any)?.subject)
+                        const colors = getSubjectColor((lecture.courses as any)?.subject)
+
+                        return (
+                          <SwipeToDelete
+                            key={lecture.id}
+                            onDelete={() => onDeleteLecture(lecture.id)}
+                            itemName={`"${lecture.title}"`}
+                          >
+                            <div
+                              onClick={() => onSelectLecture(lecture.id)}
+                              className="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                                  <SubjectIcon className={`${colors.text} text-lg`} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                                    {lecture.title}
+                                  </h3>
+                                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    {formatDuration(lecture.duration)} • {formatDate(lecture.created_at)}
+                                  </p>
+                                </div>
+                                <button
+                                  onClick={(e) => toggleFavorite(lecture.id, e)}
+                                  className="p-2 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors"
+                                >
+                                  <Star
+                                    size={20}
+                                    weight={isFavorited ? 'fill' : 'regular'}
+                                    className={isFavorited ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-400'}
+                                  />
+                                </button>
+                                <ChevronRight size={20} className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors" />
+                              </div>
+                            </div>
+                          </SwipeToDelete>
+                        )
+                      })}
+                    </div>
+                  </section>
+                )
+              })}
+          </div>
+        )}
+
+        {/* Continue/Start Study Tools Section */}
+        {selectedLecture && selectedLectureData && (
+          <div className="mt-8 grid grid-cols-2 gap-3">
+            {/* Flashcards */}
+            <button
+              onClick={() => {
+                hapticButton()
+                if (hasGeneratedFlashcards) {
+                  onSetCurrentFlashcardIndex(0)
+                  onSetIsFlashcardModeActive(true)
+                } else if (selectedLectureNotes) {
+                  onShowFlashcardConfig()
+                }
+              }}
+              disabled={!selectedLectureNotes && !hasGeneratedFlashcards}
+              className="bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl p-4 text-center font-semibold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="text-2xl mb-1">🎴</div>
+              {hasGeneratedFlashcards ? 'Continue Flashcards?' : 'Start Flashcards?'}
+            </button>
+
+            {/* Quiz */}
+            <button
+              onClick={() => {
+                hapticButton()
+                if (hasGeneratedQuiz) {
+                  onSetIsLearnModeActive(true)
+                } else if (selectedLectureNotes) {
+                  onShowLearnModeConfig()
+                }
+              }}
+              disabled={!selectedLectureNotes && !hasGeneratedQuiz}
+              className="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl p-4 text-center font-semibold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="text-2xl mb-1">🧠</div>
+              {hasGeneratedQuiz ? 'Continue Quiz?' : 'Start Quiz?'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

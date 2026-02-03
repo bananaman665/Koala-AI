@@ -1,5 +1,4 @@
 import { forwardRef, useState } from 'react'
-import { FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi'
 import { cn } from '@/lib/utils'
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -80,7 +79,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
-              {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              {showPassword ? <EyeOff size={20} /> : <FiEye size={20} />}
             </button>
           )}
 
@@ -92,7 +91,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
           {error && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
-              <FiAlertCircle size={20} />
+              <AlertCircle size={20} />
             </div>
           )}
         </div>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Fire, FireSimple, Trophy, Star, Lightning } from '@phosphor-icons/react'
 import { hapticSuccess } from '@/lib/haptics'
 
 interface StreakDisplayProps {

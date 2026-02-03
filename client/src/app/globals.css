@@ -719,3 +719,16 @@ body.dark {
 .animate-shake {
   animation: shake 0.3s ease-in-out;
 }
+
+/* Hide scrollbar on mobile */
+@media (max-width: 1024px) {
+  .hide-scrollbar-mobile {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar-mobile::-webkit-scrollbar {
+    display: none;
+    width: 0;
+  }
+}

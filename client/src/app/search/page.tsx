@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { FiSearch, FiFilter, FiClock, FiBook, FiCalendar } from 'react-icons/fi'
+import { Search, Calendar, Clock } from 'lucide-react'
 import AppIcon from '@/components/AppIcon'
 
 export default function SearchPage() {
@@ -75,7 +75,7 @@ export default function SearchPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 value={query}
@@ -148,12 +148,12 @@ export default function SearchPage() {
 
               <div className="flex items-center space-x-4 text-sm text-gray-500">
                 <div className="flex items-center space-x-1">
-                  <FiCalendar className="w-4 h-4" />
+                  <Calendar className="w-4 h-4" />
                   <span>{result.date}</span>
                 </div>
                 {result.duration && (
                   <div className="flex items-center space-x-1">
-                    <FiClock className="w-4 h-4" />
+                    <Clock className="w-4 h-4" />
                     <span>{result.duration}</span>
                   </div>
                 )}

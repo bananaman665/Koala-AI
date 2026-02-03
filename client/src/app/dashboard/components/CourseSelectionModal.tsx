@@ -2,7 +2,6 @@
 
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
-import { FiFolder, FiPlus } from 'react-icons/fi'
 import type { Database } from '@/lib/supabase'
 
 type Course = Database['public']['Tables']['courses']['Row']
@@ -87,7 +86,7 @@ export function CourseSelectionModal({
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 ${colorClass.bg} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                      <FiFolder className={`text-lg ${colorClass.text}`} />
+                      <Folder className={`text-lg ${colorClass.text}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-semibold text-gray-900 dark:text-white truncate">
@@ -108,7 +107,7 @@ export function CourseSelectionModal({
             onClick={onCreateCourse}
             className="w-full mt-3 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition-all flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400"
           >
-            <FiPlus className="text-xl" />
+            <Plus className="text-xl" />
             <span className="font-medium">Create New Course</span>
           </button>
         </div>

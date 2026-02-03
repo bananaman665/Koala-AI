@@ -1,6 +1,6 @@
 'use client'
 
-import { FiMic, FiPause, FiPlay, FiSquare } from 'react-icons/fi'
+import { Play, Mic } from 'lucide-react'
 import { formatDuration } from '@/hooks/useHybridRecording'
 
 interface RecordingInterfaceProps {
@@ -38,7 +38,7 @@ export function RecordingInterface({
               !isPaused && 'recording-indicator'
             }`}
           >
-            <FiMic className="text-white text-5xl" />
+            <Mic className="text-white text-5xl" />
           </div>
           
           {/* Duration */}
@@ -64,12 +64,12 @@ export function RecordingInterface({
           >
             {isPaused ? (
               <>
-                <FiPlay className="inline mr-2" />
+                <Play className="inline mr-2" />
                 Resume
               </>
             ) : (
               <>
-                <FiPause className="inline mr-2" />
+                <Pause className="inline mr-2" />
                 Pause
               </>
             )}
@@ -81,7 +81,7 @@ export function RecordingInterface({
             className="flex-1 bg-red-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-red-600 transition-colors disabled:opacity-50 active:scale-[0.98]"
             aria-label="Stop recording and generate notes"
           >
-            <FiSquare className="inline mr-2" />
+            <Square className="inline mr-2" />
             {isGeneratingNotes ? 'Generating...' : 'Stop & Generate'}
           </button>
         </div>

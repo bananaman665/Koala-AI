@@ -1,8 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { FiSettings, FiPlus } from 'react-icons/fi'
-import { Fire } from '@phosphor-icons/react'
 
 interface TopNavigationBarProps {
   onStartRecording: () => void
@@ -79,7 +77,7 @@ export function TopNavigationBar({
             disabled={isDisabled}
             className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
           >
-            <FiPlus className="text-lg" />
+            <Plus className="text-lg" />
             <span className="hidden xl:inline text-sm">Record</span>
           </button>
 
@@ -88,7 +86,7 @@ export function TopNavigationBar({
             href="/settings"
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           >
-            <FiSettings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </Link>
 
           {/* Profile Avatar */}

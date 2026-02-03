@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi'
+import { Mail, User, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import AppIcon from '@/components/AppIcon'
 
@@ -149,7 +149,7 @@ export default function SignupPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiUser className="text-gray-400 dark:text-gray-500" />
+                  <User className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <input
                   type="text"
@@ -170,7 +170,7 @@ export default function SignupPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiMail className="text-gray-400 dark:text-gray-500" />
+                  <Mail className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <input
                   type="email"
@@ -209,7 +209,7 @@ export default function SignupPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiLock className="text-gray-400 dark:text-gray-500" />
+                  <Lock className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -226,7 +226,7 @@ export default function SignupPage() {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                   disabled={loading}
                 >
-                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                  {showPassword ? <EyeOff /> : <Eye />}
                 </button>
               </div>
 
@@ -268,7 +268,7 @@ export default function SignupPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiLock className="text-gray-400 dark:text-gray-500" />
+                  <Lock className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <input
                   type="password"

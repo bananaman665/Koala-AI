@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { FiHome, FiFolder, FiBarChart2, FiUsers, FiSettings, FiUser } from 'react-icons/fi'
 import { hapticSelection } from '@/lib/haptics'
 import type { Database } from '@/lib/supabase'
 
@@ -27,14 +26,14 @@ export function LeftSidebar({
   onToggleFavorite,
 }: LeftSidebarProps) {
   const navItems = [
-    { id: 'dashboard', label: 'Home', icon: FiHome },
-    { id: 'library', label: 'Library', icon: FiFolder },
-    { id: 'analytics', label: 'Analytics', icon: FiBarChart2 },
-    { id: 'feed', label: 'Classes', icon: FiUsers },
+    { id: 'dashboard', label: 'Home', icon: Home },
+    { id: 'library', label: 'Library', icon: Folder },
+    { id: 'analytics', label: 'Analytics', icon: BarChart2 },
+    { id: 'feed', label: 'Classes', icon: Users },
   ]
 
   return (
-    <div className="hidden lg:fixed lg:left-0 lg:top-16 lg:w-64 lg:h-[calc(100vh-64px)] lg:flex lg:flex-col lg:bg-white dark:bg-[#1a2235] lg:border-r lg:border-gray-200 dark:border-white/[0.08] lg:overflow-y-auto lg:pt-6 lg:z-40">
+    <div className="hidden lg:fixed lg:left-0 lg:top-16 lg:w-64 lg:h-[calc(100vh-64px)] lg:flex lg:flex-col lg:bg-white dark:bg-[#1a2235] lg:border-r lg:border-gray-200 dark:border-white/[0.08] lg:overflow-y-auto lg:pt-6 lg:pb-6 lg:z-40">
       {/* Main Navigation */}
       <div className="px-4 mb-8">
         <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-3">
@@ -75,7 +74,7 @@ export function LeftSidebar({
             href="/settings"
             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-200"
           >
-            <FiSettings className="w-4 h-4" />
+            <Settings className="w-4 h-4" />
             <span>Settings</span>
           </Link>
 
@@ -83,7 +82,7 @@ export function LeftSidebar({
             href="/profile"
             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-200"
           >
-            <FiUser className="w-4 h-4" />
+            <User className="w-4 h-4" />
             <span>Profile</span>
           </Link>
         </div>

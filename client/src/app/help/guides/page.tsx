@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { FiArrowLeft, FiBook, FiVideo, FiFileText, FiZap } from 'react-icons/fi'
+import { Book, ArrowLeft, Zap, Video, FileText } from 'lucide-react'
 import { hapticButton } from '@/lib/haptics'
 
 export default function GuidesPage() {
@@ -14,19 +14,19 @@ export default function GuidesPage() {
 
   const guideCategories = [
     {
-      icon: FiZap,
+      icon: Zap,
       title: 'Quick Start Guide',
       description: 'Get up and running in minutes',
       color: 'orange'
     },
     {
-      icon: FiVideo,
+      icon: Video,
       title: 'Video Tutorials',
       description: 'Step-by-step walkthroughs',
       color: 'red'
     },
     {
-      icon: FiFileText,
+      icon: FileText,
       title: 'Best Practices',
       description: 'Tips for better transcriptions',
       color: 'blue'
@@ -52,7 +52,7 @@ export default function GuidesPage() {
               onClick={handleBack}
               className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <FiArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Guides & Tutorials</h1>
           </div>
@@ -63,7 +63,7 @@ export default function GuidesPage() {
         {/* Icon Header */}
         <div className="flex flex-col items-center py-4">
           <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-4">
-            <FiBook className="w-10 h-10 text-green-600 dark:text-green-400" />
+            <Book className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Learn How to Use Koala.ai</h2>
           <p className="text-gray-500 dark:text-gray-400 text-center">

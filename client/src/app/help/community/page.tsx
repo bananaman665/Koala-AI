@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { FiArrowLeft, FiMessageCircle, FiUsers, FiHeart, FiShare2 } from 'react-icons/fi'
+import { ArrowLeft, MessageCircle, Users, Share2, Heart } from 'lucide-react'
 import { hapticButton } from '@/lib/haptics'
 
 export default function CommunityPage() {
@@ -22,7 +22,7 @@ export default function CommunityPage() {
               onClick={handleBack}
               className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <FiArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Community</h1>
           </div>
@@ -33,7 +33,7 @@ export default function CommunityPage() {
         {/* Icon Header */}
         <div className="flex flex-col items-center py-4">
           <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mb-4">
-            <FiMessageCircle className="w-10 h-10 text-purple-600 dark:text-purple-400" />
+            <MessageCircle className="w-10 h-10 text-purple-600 dark:text-purple-400" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Join the Koala.ai Community</h2>
           <p className="text-gray-500 dark:text-gray-400 text-center">
@@ -60,7 +60,7 @@ export default function CommunityPage() {
           <div className="divide-y divide-gray-100 dark:divide-gray-700">
             <div className="flex items-center p-4">
               <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                <FiUsers className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="ml-3 flex-1">
                 <p className="font-medium text-gray-900 dark:text-white">Discussion Forums</p>
@@ -69,7 +69,7 @@ export default function CommunityPage() {
             </div>
             <div className="flex items-center p-4">
               <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                <FiShare2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                <Share2 className="w-5 h-5 text-green-600 dark:text-green-400" />
               </div>
               <div className="ml-3 flex-1">
                 <p className="font-medium text-gray-900 dark:text-white">Share Study Materials</p>
@@ -78,7 +78,7 @@ export default function CommunityPage() {
             </div>
             <div className="flex items-center p-4">
               <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                <FiHeart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <Heart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               </div>
               <div className="ml-3 flex-1">
                 <p className="font-medium text-gray-900 dark:text-white">Study Groups</p>

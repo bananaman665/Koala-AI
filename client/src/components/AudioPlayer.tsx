@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { FiPlay, FiPause, FiVolume2, FiVolumeX, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 import { useNativeAudioPlayer } from '@/hooks/useNativeAudioPlayer'
 
 interface TranscriptSegment {
@@ -286,7 +285,7 @@ export function AudioPlayer({
 
   if (!audioUrl) {
     return (
-      <div className={`bg-gray-100 dark:bg-gray-800 rounded-xl p-4 ${className}`}>
+      <div className={`bg-gray-200 dark:bg-gray-700 rounded-xl p-4 ${className}`}>
         <p className="text-gray-500 dark:text-gray-400 text-center text-sm">No audio available for this lecture</p>
       </div>
     )
@@ -299,7 +298,7 @@ export function AudioPlayer({
 
       {/* Error message */}
       {playerError && (
-        <div className="text-red-400 text-sm mb-2 text-center">{playerError}</div>
+        <div className="text-red-500 dark:text-red-400 text-sm mb-3 text-center">{playerError}</div>
       )}
 
       {/* Waveform/Progress Bar */}
@@ -325,7 +324,7 @@ export function AudioPlayer({
               <div
                 key={i}
                 className={`w-1 rounded-full transition-colors ${
-                  isActive ? 'bg-white' : 'bg-gray-400'
+                  isActive ? 'bg-white' : 'bg-gray-400 dark:bg-gray-500'
                 }`}
                 style={{ height: `${height}%` }}
               />
@@ -340,75 +339,69 @@ export function AudioPlayer({
       </div>
 
       {/* Controls */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* Top row: Time, Playback controls, Speed */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center space-x-4">
           {/* Left: Time display */}
-          <div className="text-gray-700 dark:text-white/80 text-sm font-mono min-w-[100px]">
+          <div className="text-gray-700 dark:text-gray-300 text-sm font-mono">
             {formatTime(playerCurrentTime)} / {formatTime(playerDuration)}
           </div>
 
-          {/* Center: Playback controls + Speed */}
-          <div className="flex items-center space-x-3">
-            {/* Skip back 10s */}
-            <button
-              onClick={() => skip(-10)}
-              className="p-2 text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors"
-              title="Skip back 10 seconds"
-            >
-              <FiSkipBack className="w-5 h-5" />
-            </button>
+          {/* Skip back 10s */}
+          <button
+            onClick={() => skip(-10)}
+            className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors active:scale-95"
+            title="Skip back 10 seconds"
+          >
+            <SkipBack className="w-5 h-5" />
+          </button>
 
-            {/* Play/Pause */}
-            <button
-              onClick={togglePlay}
-              disabled={playerIsLoading}
-              className="p-3 bg-white rounded-full text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-50"
-              title={playerIsPlaying ? 'Pause' : 'Play'}
-            >
-              {playerIsLoading ? (
-                <div className="w-6 h-6 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-              ) : playerIsPlaying ? (
-                <FiPause className="w-6 h-6" />
-              ) : (
-                <FiPlay className="w-6 h-6 ml-0.5" />
-              )}
-            </button>
+          {/* Play/Pause */}
+          <button
+            onClick={togglePlay}
+            disabled={playerIsLoading}
+            className="p-3 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition-all disabled:opacity-50 active:scale-95 shadow-md"
+            title={playerIsPlaying ? 'Pause' : 'Play'}
+          >
+            {playerIsLoading ? (
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : playerIsPlaying ? (
+              <Pause className="w-6 h-6" />
+            ) : (
+              <Play className="w-6 h-6 ml-0.5" />
+            )}
+          </button>
 
-            {/* Skip forward 10s */}
-            <button
-              onClick={() => skip(10)}
-              className="p-2 text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors"
-              title="Skip forward 10 seconds"
-            >
-              <FiSkipForward className="w-5 h-5" />
-            </button>
+          {/* Skip forward 10s */}
+          <button
+            onClick={() => skip(10)}
+            className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors active:scale-95"
+            title="Skip forward 10 seconds"
+          >
+            <SkipForward className="w-5 h-5" />
+          </button>
 
-            {/* Playback speed */}
-            <button
-              onClick={changePlaybackRate}
-              className="px-4 py-1.5 text-sm font-medium text-gray-700 dark:text-white/70 hover:text-gray-900 dark:hover:text-white bg-gray-200 dark:bg-white/10 rounded transition-colors min-w-[70px]"
-              title="Change playback speed"
-            >
-              {playerPlaybackRate}x
-            </button>
-          </div>
-
-          {/* Right spacer for balance */}
-          <div className="min-w-[100px]" />
+          {/* Playback speed */}
+          <button
+            onClick={changePlaybackRate}
+            className="px-3 py-1.5 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg transition-colors min-w-[60px] active:scale-95"
+            title="Change playback speed"
+          >
+            {playerPlaybackRate}x
+          </button>
         </div>
 
         {/* Bottom row: Volume bar (full width) */}
         <div className="flex items-center space-x-3">
           <button
             onClick={toggleMute}
-            className="p-1 text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors flex-shrink-0"
+            className="p-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex-shrink-0"
             title={playerIsMuted ? 'Unmute' : 'Mute'}
           >
             {playerIsMuted ? (
-              <FiVolumeX className="w-5 h-5" />
+              <VolumeX className="w-5 h-5" />
             ) : (
-              <FiVolume2 className="w-5 h-5" />
+              <Volume2 className="w-5 h-5" />
             )}
           </button>
           <input
@@ -418,7 +411,7 @@ export function AudioPlayer({
             step="0.1"
             value={playerIsMuted ? 0 : playerVolume}
             onChange={handleVolumeChange}
-            className="flex-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-gray-700 dark:[&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+            className="flex-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:rounded-full"
           />
         </div>
       </div>
