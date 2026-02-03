@@ -2648,7 +2648,7 @@ function DashboardContent() {
                                 const colorClass = lectureColorClasses[color] || lectureColorClasses.blue
                                 return (
                                   <div className={`w-12 h-12 ${colorClass.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                                    <Play className={`text-lg ${colorClass.text}`} />
+                                    <span className="text-lg">▶️</span>
                                   </div>
                                 )
                               })()}

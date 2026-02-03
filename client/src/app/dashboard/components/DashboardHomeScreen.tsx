@@ -326,13 +326,13 @@ export function DashboardHomeScreen({
                             }}
                             className="p-2 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors"
                           >
-                            <Star
-                              className={`w-5 h-5 transition-colors ${
+                            <span className={`text-lg transition-colors ${
                                 favoritedCourses.has(course.id)
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'text-gray-600 dark:text-gray-600'
-                              }`}
-                            />
+                                  ? 'text-yellow-400'
+                                  : 'text-gray-400 dark:text-gray-600'
+                              }`}>
+                              {favoritedCourses.has(course.id) ? '⭐' : '☆'}
+                            </span>
                           </button>
                           <span className="text-lg">▶</span>
                         </div>

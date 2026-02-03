@@ -193,13 +193,7 @@ export function ResumeLectureCarousel({
               }}
               className="p-1 flex-shrink-0 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200 ml-1"
             >
-              <Star
-                className={`w-5 h-5 transition-all duration-200 ${
-                  currentLecture.is_favorite
-                    ? 'fill-yellow-400 text-yellow-400'
-                    : 'text-gray-300 dark:text-white/30 group-hover:text-yellow-400'
-                }`}
-              />
+              <span className="text-lg">⭐</span>
             </button>
 
             {/* Chevron */}

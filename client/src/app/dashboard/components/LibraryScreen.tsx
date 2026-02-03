@@ -405,7 +405,7 @@ export function LibraryScreen({
             onChange={(e) => onLibrarySearchQueryChange(e.target.value)}
             className="w-full px-4 py-3 pl-11 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-white/[0.06] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white"
           />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+          <span className="text-lg">🔍</span>
           {librarySearchQuery && (
             <button
               onClick={() => onLibrarySearchQueryChange('')}
@@ -455,7 +455,7 @@ export function LibraryScreen({
             {statusFilter === 'favorites' ? (
               <>
                 <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-4">
-                  <Star size={32} className="text-yellow-500" />
+                  <span className="text-lg">⭐</span>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-xs">
@@ -465,7 +465,7 @@ export function LibraryScreen({
             ) : librarySearchQuery ? (
               <>
                 <div className="w-16 h-16 bg-white dark:bg-[#1E293B] rounded-2xl flex items-center justify-center mb-4">
-                  <Search size={32} className="text-gray-400" />
+                  <span className="text-lg">🔍</span>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No results</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-xs">
@@ -494,7 +494,7 @@ export function LibraryScreen({
               <section>
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Play size={20} className="text-blue-500" />
+                    <span className="text-lg">▶️</span>
                     Continue Listening
                   </h2>
                 </div>
@@ -526,11 +526,7 @@ export function LibraryScreen({
                             onClick={(e) => toggleFavorite(lecture.id, e)}
                             className="p-1.5 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors"
                           >
-                            <Star
-                              size={18}
-                              weight={isFavorited ? 'fill' : 'regular'}
-                              className={isFavorited ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-400'}
-                            />
+                            <span className="text-lg">⭐</span>
                           </button>
                         </div>
                         {/* Progress bar placeholder */}
@@ -603,11 +599,7 @@ export function LibraryScreen({
                                   onClick={(e) => toggleFavorite(lecture.id, e)}
                                   className="p-2 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors"
                                 >
-                                  <Star
-                                    size={20}
-                                    weight={isFavorited ? 'fill' : 'regular'}
-                                    className={isFavorited ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-400'}
-                                  />
+                                  <span className="text-lg">⭐</span>
                                 </button>
                                 <span className="text-lg">▶</span>
                               </div>

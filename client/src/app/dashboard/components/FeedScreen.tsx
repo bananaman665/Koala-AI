@@ -166,7 +166,7 @@ export function FeedScreen({
                   : 'bg-white dark:bg-[#1E293B] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/[0.06]'
               }`}
             >
-              <Star size={16} weight={filter === 'favorites' ? 'fill' : 'regular'} />
+              <span className="text-lg">⭐</span>
               Favorites
             </button>
           </div>
@@ -235,11 +235,7 @@ export function FeedScreen({
                         onClick={(e) => toggleFavorite(cls.id, e)}
                         className="p-2 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors"
                       >
-                        <Star
-                          size={20}
-                          weight={isFavorited ? 'fill' : 'regular'}
-                          className={isFavorited ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-400'}
-                        />
+                        <span className="text-lg">⭐</span>
                       </button>
                       <span className="text-lg">▶</span>
                     </div>
@@ -254,7 +250,7 @@ export function FeedScreen({
             {filter === 'favorites' ? (
               <>
                 <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-4">
-                  <Star size={32} className="text-yellow-500" />
+                  <span className="text-lg">⭐</span>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-xs">

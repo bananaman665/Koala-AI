@@ -113,7 +113,7 @@ export function DailyGreeting({
           {/* XP */}
           <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
             <div className="flex justify-center mb-3 sm:mb-4">
-              <Star size={40} className="text-yellow-500" />
+              <span className="text-lg">⭐</span>
             </div>
             <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{(totalXP / 1000).toFixed(1)}k</div>
             <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Total XP</div>

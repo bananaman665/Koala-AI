@@ -107,11 +107,7 @@ export function StreakDisplay({
           {/* Sparkle effect for high streaks */}
           {streak >= 7 && (
             <div className="absolute -top-1 -right-1">
-              <Star
-                size={12}
-               
-                className="text-yellow-400 animate-ping"
-              />
+              <span className="text-lg">⭐</span>
             </div>
           )}
         </div>
