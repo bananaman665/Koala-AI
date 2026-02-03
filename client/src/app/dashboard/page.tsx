@@ -2068,7 +2068,7 @@ function DashboardContent() {
                     other: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-600 dark:text-gray-400' },
                   }
                   const subject = (course as any).subject?.toLowerCase() || 'other'
-                  const SubjectIcon = subjectIcons[subject] || BookOpen
+                  const SubjectIcon = subjectIcons[subject] || "📚"
                   const colors = subjectColors[subject] || subjectColors.other
                   return (
                     <div className={`w-14 h-14 ${colors.bg} rounded-2xl flex items-center justify-center flex-shrink-0`}>
@@ -2896,7 +2896,7 @@ function DashboardContent() {
                               literature: "📚",
                               other: "📚",
                             }
-                            const SubjectIcon = subjectIcons[newCourseData.subject] || BookOpen
+                            const SubjectIcon = subjectIcons[newCourseData.subject] || "📚"
                             return <SubjectIcon className="w-4 h-4" />
                           })()}
                           <span className="capitalize">{newCourseData.subject}</span>
@@ -2905,7 +2905,7 @@ function DashboardContent() {
                         <span className="text-gray-500 dark:text-gray-400">Select a subject</span>
                       )}
                     </span>
-                    <ChevronDown className={`w-5 h-5 transition-transform ${showSubjectDropdown ? 'rotate-180' : ''}`} />
+                    <span className={`text-lg transition-transform inline-block ${showSubjectDropdown ? 'rotate-180' : ''}`}>▼</span>
                   </button>
 
                   {showSubjectDropdown && (
@@ -2932,7 +2932,7 @@ function DashboardContent() {
                             newCourseData.subject === subject.value ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                           }`}
                         >
-                          <subject.icon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                          <span className="text-lg">{subject.icon}</span>
                           <span className="text-gray-900 dark:text-white">{subject.label}</span>
                           {newCourseData.subject === subject.value && (
                             <span className="text-lg">✅</span>
