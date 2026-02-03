@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CheckCircle, HelpCircle, Target, Zap, TrendingUp, AlertCircle, Edit3, Book } from 'lucide-react'
+import { CheckCircle, HelpCircle, Target, Zap, TrendingUp, AlertCircle, Edit3, Book, X } from 'lucide-react'
 import { QuestionType, DifficultyLevel } from '@/lib/claude'
 
 export interface LearnModeConfig {
@@ -142,7 +142,7 @@ export function LearnModeConfigModal({
                 disabled={isGenerating}
                 className="p-2 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
               >
-                <FiX className="w-5 h-5 text-white" />
+                <X className="w-5 h-5 text-white" />
               </button>
             </div>
           </div>

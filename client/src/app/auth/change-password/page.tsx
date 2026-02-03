@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Check, Lock, Eye, EyeOff } from 'lucide-react'
+import { ArrowLeft, Check, Lock, Eye, EyeOff, X } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError } from '@/lib/haptics'
 
@@ -181,7 +181,7 @@ export default function ChangePasswordPage() {
                             {req.met ? (
                               <Check className="w-3 h-3 text-green-600 dark:text-green-400" />
                             ) : (
-                              <FiX className="w-3 h-3 text-gray-400" />
+                              <X className="w-3 h-3 text-gray-400" />
                             )}
                           </div>
                           <span className={`text-sm ${
@@ -245,7 +245,7 @@ export default function ChangePasswordPage() {
                         {passwordsMatch ? (
                           <Check className="w-3 h-3 text-green-600 dark:text-green-400" />
                         ) : (
-                          <FiX className="w-3 h-3 text-red-600 dark:text-red-400" />
+                          <X className="w-3 h-3 text-red-600 dark:text-red-400" />
                         )}
                       </div>
                       <span className={`text-sm ${

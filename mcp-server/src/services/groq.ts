@@ -249,6 +249,25 @@ Format the notes as a JSON object with this structure:
       throw new Error(`Completion failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
+
+  /**
+   * Gets file extension from MIME type
+   * @param mimeType - MIME type (e.g., 'audio/mp3', 'audio/wav')
+   * @returns File extension without dot (e.g., 'mp3', 'wav')
+   */
+  private getFileExtension(mimeType: string): string {
+    const mimeToExt: { [key: string]: string } = {
+      'audio/mpeg': 'mp3',
+      'audio/mp3': 'mp3',
+      'audio/wav': 'wav',
+      'audio/webm': 'webm',
+      'audio/ogg': 'ogg',
+      'audio/flac': 'flac',
+      'audio/aac': 'aac',
+      'audio/m4a': 'm4a',
+    };
+    return mimeToExt[mimeType] || 'wav';
+  }
 }
 
 export const groqService = new GroqService();

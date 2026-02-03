@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Book, Loader, Clock } from 'lucide-react'
+import { Book, Loader, Clock, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import AppIcon from '@/components/AppIcon'
 import { useAuth } from '@/contexts/AuthContext'
@@ -485,7 +485,7 @@ export default function CoursesPage() {
                 onClick={() => setShowAddModal(false)}
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
-                <FiX size={24} />
+                <X size={24} />
               </button>
             </div>
 
