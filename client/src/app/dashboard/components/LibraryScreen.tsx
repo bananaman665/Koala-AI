@@ -512,7 +512,7 @@ export function LibraryScreen({
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                            <SubjectIcon className={`${colors.text} text-xl`} />
+                            <span className={`${colors.text} text-xl`}>{SubjectIcon}</span>
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="font-semibold text-gray-900 dark:text-white truncate text-sm">
@@ -557,7 +557,7 @@ export function LibraryScreen({
                   <section key={courseId}>
                     <div className="flex items-center gap-3 mb-3">
                       <div className={`w-8 h-8 ${colors.bg} rounded-lg flex items-center justify-center`}>
-                        <SubjectIcon className={`${colors.text} text-sm`} />
+                        <span className={`${colors.text} text-sm`}>{SubjectIcon}</span>
                       </div>
                       <h2 className="text-lg font-bold text-gray-900 dark:text-white">
                         {group.courseName}
@@ -585,7 +585,7 @@ export function LibraryScreen({
                             >
                               <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                                  <SubjectIcon className={`${colors.text} text-lg`} />
+                                  <span className={`${colors.text} text-lg`}>{SubjectIcon}</span>
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <h3 className="font-semibold text-gray-900 dark:text-white truncate">
