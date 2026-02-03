@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Home, Folder, BarChart2, Users, Settings, User } from 'lucide-react'
 import { hapticSelection } from '@/lib/haptics'
 import type { Database } from '@/lib/supabase'
 
