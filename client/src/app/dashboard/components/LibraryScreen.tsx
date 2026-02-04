@@ -9,7 +9,7 @@ import { FlashcardMode } from './FlashcardMode'
 import { SubjectIcon } from '@/components/SubjectIcon'
 import { getSubjectColor } from '@/lib/subject-utils'
 import type { Database } from '@/lib/supabase'
-import { Play, ChevronRight, Star, Clock, Brain, Headphones, Loader, BookOpen } from 'lucide-react'
+import { Play, ChevronRight, Star, Clock, Brain, Headphones, Loader, BookOpen, Search } from 'lucide-react'
 
 type Lecture = Database['public']['Tables']['lectures']['Row'] & {
   courses?: { name: string; subject?: string } | null
@@ -407,7 +407,7 @@ export function LibraryScreen({
             onChange={(e) => onLibrarySearchQueryChange(e.target.value)}
             className="w-full px-4 py-3 pl-11 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-white/[0.06] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white"
           />
-          <span className="text-lg">🔍</span>
+          <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           {librarySearchQuery && (
             <button
               onClick={() => onLibrarySearchQueryChange('')}
@@ -467,7 +467,7 @@ export function LibraryScreen({
             ) : librarySearchQuery ? (
               <>
                 <div className="w-16 h-16 bg-white dark:bg-[#1E293B] rounded-2xl flex items-center justify-center mb-4">
-                  <span className="text-lg">🔍</span>
+                  <Search size={32} className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No results</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-xs">
