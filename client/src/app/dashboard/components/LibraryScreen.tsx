@@ -9,7 +9,7 @@ import { FlashcardMode } from './FlashcardMode'
 import { SubjectIcon } from '@/components/SubjectIcon'
 import { getSubjectColor } from '@/lib/subject-utils'
 import type { Database } from '@/lib/supabase'
-import { Play, ChevronRight, Star, Clock, Brain, Headphones, Loader } from 'lucide-react'
+import { Play, ChevronRight, Star, Clock, Brain, Headphones, Loader, BookOpen } from 'lucide-react'
 
 type Lecture = Database['public']['Tables']['lectures']['Row'] & {
   courses?: { name: string; subject?: string } | null
@@ -477,7 +477,7 @@ export function LibraryScreen({
             ) : (
               <>
                 <div className="w-16 h-16 bg-blue-100 dark:bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4">
-                  <Books size={32} className="text-blue-500" />
+                  <BookOpen size={32} className="text-blue-500" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Your library is empty</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-xs">
