@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Settings } from 'lucide-react'
+import { Settings, Plus } from 'lucide-react'
 import { StreakDisplay } from './StreakDisplay'
 
 interface TopNavigationBarProps {
@@ -76,7 +76,7 @@ export function TopNavigationBar({
             disabled={isDisabled}
             className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
           >
-            <span className="text-lg">➕</span>
+            <Plus size={20} />
             <span className="hidden xl:inline text-sm">Record</span>
           </button>
 
