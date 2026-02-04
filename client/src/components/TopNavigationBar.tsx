@@ -61,13 +61,19 @@ export function TopNavigationBar({
             </span>
           </button>
 
-          {/* Streak */}
+          {/* Streak - Duolingo Style */}
           <button
             onClick={onShowStreakModal}
-            className="flex items-center gap-2 hover:bg-orange-100 dark:hover:bg-orange-500/20 px-3 py-1.5 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 hover:bg-orange-100 dark:hover:bg-orange-500/20 px-3 py-1.5 rounded-lg transition-colors group"
           >
-            <Flame size={20} className="text-orange-600 dark:text-orange-400" />
-            <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+            <div className="relative">
+              <Flame
+                size={24}
+                className="text-orange-500 drop-shadow-lg group-hover:scale-110 transition-transform duration-200 animate-pulse fill-orange-400"
+                fill="currentColor"
+              />
+            </div>
+            <span className="text-sm font-bold text-orange-600 dark:text-orange-400">
               {streak}
             </span>
           </button>
