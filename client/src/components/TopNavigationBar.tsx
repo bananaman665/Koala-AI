@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Settings, Flame } from 'lucide-react'
+import { Settings } from 'lucide-react'
+import { StreakDisplay } from './StreakDisplay'
 
 interface TopNavigationBarProps {
   onStartRecording: () => void
@@ -64,18 +65,9 @@ export function TopNavigationBar({
           {/* Streak - Duolingo Style */}
           <button
             onClick={onShowStreakModal}
-            className="flex items-center gap-1.5 hover:bg-orange-100 dark:hover:bg-orange-500/20 px-3 py-1.5 rounded-lg transition-colors group"
+            className="hover:bg-orange-100 dark:hover:bg-orange-500/20 rounded-lg transition-colors"
           >
-            <div className="relative">
-              <Flame
-                size={24}
-                className="text-orange-500 drop-shadow-lg group-hover:scale-110 transition-transform duration-200 animate-pulse fill-orange-400"
-                fill="currentColor"
-              />
-            </div>
-            <span className="text-sm font-bold text-orange-600 dark:text-orange-400">
-              {streak}
-            </span>
+            <StreakDisplay streak={streak} size="sm" />
           </button>
 
           {/* Record Button */}

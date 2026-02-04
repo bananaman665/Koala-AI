@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Flame, Lightning } from 'lucide-react'
 import { hapticSuccess } from '@/lib/haptics'
 
 interface StreakDisplayProps {
