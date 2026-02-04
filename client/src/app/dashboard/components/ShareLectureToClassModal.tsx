@@ -1,5 +1,6 @@
 'use client'
 
+import { Users } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 
@@ -103,7 +104,7 @@ export function ShareLectureToClassModal({
           ) : (
             <div className="text-center py-6">
               <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700/50 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <span className="text-lg">👥</span>
+                <Users size={24} className="text-gray-600 dark:text-gray-400" />
               </div>
               <p className="text-base font-semibold text-gray-900 dark:text-white mb-1">No classes available</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Users, Plus, Check, Copy, Star, ChevronRight, Sparkles } from 'lucide-react'
 import { hapticButton, hapticSelection, hapticSuccess } from '@/lib/haptics'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 
@@ -166,7 +167,7 @@ export function FeedScreen({
                   : 'bg-white dark:bg-[#1E293B] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/[0.06]'
               }`}
             >
-              <span className="text-lg">⭐</span>
+              <Star size={16} className={filter === 'favorites' ? 'fill-white' : 'fill-yellow-400'} />
               Favorites
             </button>
           </div>
@@ -235,9 +236,9 @@ export function FeedScreen({
                         onClick={(e) => toggleFavorite(cls.id, e)}
                         className="p-2 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors"
                       >
-                        <span className="text-lg">⭐</span>
+                        <Star size={20} className={isFavorited ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'} />
                       </button>
-                      <span className="text-lg">▶</span>
+                      <ChevronRight size={20} className="text-gray-400" />
                     </div>
                   </div>
                 </SwipeToDelete>
@@ -250,7 +251,7 @@ export function FeedScreen({
             {filter === 'favorites' ? (
               <>
                 <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-4">
-                  <span className="text-lg">⭐</span>
+                  <Star size={32} className="fill-yellow-400 text-yellow-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-xs">
@@ -286,7 +287,7 @@ export function FeedScreen({
           <div className="mt-6 bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06]">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-amber-100 dark:bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-lg">✨</span>
+                <Sparkles size={18} className="text-amber-600 dark:text-amber-400" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900 dark:text-white">Pro Tip</p>

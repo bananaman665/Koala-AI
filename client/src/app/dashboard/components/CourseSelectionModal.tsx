@@ -1,5 +1,6 @@
 'use client'
 
+import { Plus, Folder } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import type { Database } from '@/lib/supabase'
@@ -107,7 +108,7 @@ export function CourseSelectionModal({
             onClick={onCreateCourse}
             className="w-full mt-3 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition-all flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400"
           >
-            <span className="text-lg">➕</span>
+            <Plus size={20} />
             <span className="font-medium">Create New Course</span>
           </button>
         </div>

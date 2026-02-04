@@ -1,5 +1,6 @@
 'use client'
 
+import { Mic, Play, Pause } from 'lucide-react'
 import { formatDuration } from '@/hooks/useHybridRecording'
 
 interface RecordingInterfaceProps {
@@ -37,7 +38,7 @@ export function RecordingInterface({
               !isPaused && 'recording-indicator'
             }`}
           >
-            <span className="text-lg">🎤</span>
+            <Mic size={48} className="text-white" />
           </div>
           
           {/* Duration */}
@@ -58,17 +59,17 @@ export function RecordingInterface({
         <div className="flex gap-4 max-w-md mx-auto mb-6">
           <button
             onClick={isPaused ? onResume : onPause}
-            className="flex-1 bg-yellow-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-yellow-600 transition-colors active:scale-[0.98]"
+            className="flex-1 bg-yellow-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-yellow-600 transition-colors active:scale-[0.98] flex items-center justify-center gap-2"
             aria-label={isPaused ? 'Resume recording' : 'Pause recording'}
           >
             {isPaused ? (
               <>
-                <span className="text-lg">▶️</span>
+                <Play size={20} className="fill-white" />
                 Resume
               </>
             ) : (
               <>
-                <span className="text-lg">⏸</span>
+                <Pause size={20} className="fill-white" />
                 Pause
               </>
             )}
@@ -77,10 +78,10 @@ export function RecordingInterface({
           <button
             onClick={onStop}
             disabled={isGeneratingNotes}
-            className="flex-1 bg-red-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-red-600 transition-colors disabled:opacity-50 active:scale-[0.98]"
+            className="flex-1 bg-red-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-red-600 transition-colors disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-2"
             aria-label="Stop recording and generate notes"
           >
-            <span className="text-lg">⬜</span>
+            <div className="w-5 h-5 bg-white rounded-sm" />
             {isGeneratingNotes ? 'Generating...' : 'Stop & Generate'}
           </button>
         </div>

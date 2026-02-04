@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Home, BookOpen, Mic, Loader, BarChart2, Users } from 'lucide-react'
+import { Home, BookOpen, Mic, Loader, BarChart2, Users, Flame, Play, Pause, CheckCircle, Trophy, Lock, Star, ChevronRight, AlertTriangle, Calculator, Microscope, Dna, Eye, Lightbulb, Zap, AlertTriangle as WarningIcon } from 'lucide-react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
@@ -1793,7 +1793,7 @@ function DashboardContent() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <span className="text-lg">⏳</span>
+          <Loader size={32} className="text-gray-400 animate-spin mx-auto mb-3" />
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
       </div>
@@ -1806,7 +1806,7 @@ function DashboardContent() {
   }
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><span className="text-lg">⏳</span><p className="text-gray-600 dark:text-gray-400">Loading...</p></div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><Loader size={32} className="text-gray-400 animate-spin mx-auto mb-3" /><p className="text-gray-600 dark:text-gray-400">Loading...</p></div></div>}>
       <div className="h-screen-safe bg-gray-50 dark:bg-gray-900 flex flex-col">
         {/* Onboarding Carousel for first-time users */}
         {showOnboarding && (
@@ -1855,7 +1855,7 @@ function DashboardContent() {
                 onClick={() => { hapticButton(); setShowStreakModal(true) }}
                 className="flex items-center gap-1 hover:bg-purple-100 dark:hover:bg-purple-500/20 px-1 rounded-full transition-colors"
               >
-                <span className="text-lg">🔥</span>
+                <Flame size={20} className="text-orange-600 dark:text-orange-400" />
                 <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{streak} day{streak !== 1 ? 's' : ''}</span>
               </button>
             </div>
@@ -1956,7 +1956,7 @@ function DashboardContent() {
             animation: isRecording ? 'none' : 'pulse-slow 2s ease-in-out infinite'
           }}
         >
-          <span className="text-lg">🎤</span>
+          <Mic size={24} className="text-white" />
         </button>
       )}
 
@@ -2046,16 +2046,18 @@ function DashboardContent() {
               <div className="flex items-center gap-4">
                 {/* Subject Icon */}
                 {(() => {
-                  const subjectIcons: Record<string, any> = {
-                    math: "🧮",
-                    science: "🧪",
-                    chemistry: "🧬",
-                    biology: "🔬",
-                    physics: "⚛️",
-                    genetics: "🧬",
-                    engineering: "⚡",
-                    literature: "📚",
-                    other: "📚",
+                  const getSubjectIcon = (subject: string) => {
+                    switch(subject?.toLowerCase()) {
+                      case 'math': return <Calculator size={28} />
+                      case 'science': return <Microscope size={28} />
+                      case 'chemistry': return <Dna size={28} />
+                      case 'biology': return <Microscope size={28} />
+                      case 'physics': return <Lightbulb size={28} />
+                      case 'genetics': return <Dna size={28} />
+                      case 'engineering': return <Zap size={28} />
+                      case 'literature': return <BookOpen size={28} />
+                      default: return <BookOpen size={28} />
+                    }
                   }
                   const subjectColors: Record<string, { bg: string; text: string }> = {
                     math: { bg: 'bg-blue-100 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400' },
@@ -2069,11 +2071,12 @@ function DashboardContent() {
                     other: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-600 dark:text-gray-400' },
                   }
                   const subject = (course as any).subject?.toLowerCase() || 'other'
-                  const SubjectIcon = subjectIcons[subject] || "📚"
                   const colors = subjectColors[subject] || subjectColors.other
                   return (
                     <div className={`w-14 h-14 ${colors.bg} rounded-2xl flex items-center justify-center flex-shrink-0`}>
-                      <SubjectIcon className={`w-7 h-7 ${colors.text}`} />
+                      <span className={colors.text}>
+                        {getSubjectIcon(subject)}
+                      </span>
                     </div>
                   )
                 })()}
@@ -2100,7 +2103,7 @@ function DashboardContent() {
                 <div className="text-center">
                   <div className="mb-6">
                     <div className={`w-32 h-32 mx-auto bg-red-500 rounded-full flex items-center justify-center mb-4 ${!isPaused && 'recording-indicator'}`}>
-                      <span className="text-lg">🎤</span>
+                      <Mic size={48} className="text-white" />
                     </div>
                     <div className="text-4xl font-bold text-gray-900 mb-2 font-mono">
                       {formatDuration(duration)}
@@ -2118,7 +2121,17 @@ function DashboardContent() {
                       onClick={isPaused ? resumeRecording : pauseRecording}
                       className="flex-1 bg-yellow-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-yellow-600 transition-colors"
                     >
-                      {isPaused ? <><span className="text-lg">▶️</span>Resume</> : <><span className="text-lg">⏸</span>Pause</>}
+                      {isPaused ? (
+                        <>
+                          <Play size={20} className="inline mr-2 text-white" />
+                          Resume
+                        </>
+                      ) : (
+                        <>
+                          <Pause size={20} className="inline mr-2 text-white" />
+                          Pause
+                        </>
+                      )}
                     </button>
                     <button
                       onClick={() => stopAndGenerateNotes()}
@@ -2580,7 +2593,7 @@ function DashboardContent() {
                       {/* Empty State */}
                       <div className="flex flex-col items-center justify-center py-12 text-center">
                         <div className="w-16 h-16 bg-blue-100 dark:bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4">
-                          <span className="text-lg">🎤</span>
+                          <Mic size={24} className="text-blue-600 dark:text-blue-400" />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No lectures yet</h3>
                         <p className="text-gray-500 dark:text-gray-400 max-w-xs mb-6">
@@ -2591,7 +2604,7 @@ function DashboardContent() {
                           disabled={isRecording || isStoppingRecording || isGeneratingNotes || isTranscribing}
                           className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 active:scale-[0.98]"
                         >
-                          <span className="text-lg">🎤</span>
+                          <Mic size={20} className="text-white" />
                           Record First Lecture
                         </button>
                       </div>
@@ -2622,7 +2635,7 @@ function DashboardContent() {
                       disabled={isRecording || isStoppingRecording || isGeneratingNotes || isTranscribing}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl p-4 mb-6 flex items-center justify-center gap-2 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
                     >
-                      <span className="text-lg">🎤</span>
+                      <Mic size={20} className="text-white" />
                       Record New Lecture
                     </button>
 
@@ -2649,7 +2662,7 @@ function DashboardContent() {
                                 const colorClass = lectureColorClasses[color] || lectureColorClasses.blue
                                 return (
                                   <div className={`w-12 h-12 ${colorClass.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                                    <span className="text-lg">▶️</span>
+                                    <Play size={20} className={colorClass.text} />
                                   </div>
                                 )
                               })()}
@@ -2661,7 +2674,7 @@ function DashboardContent() {
                                   {durationMinutes > 0 ? `${durationMinutes} min` : 'Just now'}
                                 </p>
                               </div>
-                              <span className="text-lg">▶</span>
+                              <ChevronRight size={20} className="text-gray-400" />
                             </div>
                           </button>
                         )
@@ -2936,7 +2949,7 @@ function DashboardContent() {
                           <span className="text-lg">{subject.icon}</span>
                           <span className="text-gray-900 dark:text-white">{subject.label}</span>
                           {newCourseData.subject === subject.value && (
-                            <span className="text-lg">✅</span>
+                            <CheckCircle size={20} className="text-green-600 dark:text-green-400 ml-auto" />
                           )}
                         </button>
                       ))}
@@ -3430,7 +3443,7 @@ function DashboardContent() {
                       </p>
                     </div>
                     {audioQuality === quality && (
-                      <span className="text-lg">✅</span>
+                      <CheckCircle size={20} className="text-green-600 dark:text-green-400" />
                     )}
                   </div>
                 </button>
@@ -3475,7 +3488,7 @@ function DashboardContent() {
                       </p>
                     </div>
                     {notesDetailLevel === level && (
-                      <span className="text-lg">✅</span>
+                      <CheckCircle size={20} className="text-green-600 dark:text-green-400" />
                     )}
                   </div>
                 </button>
@@ -3662,7 +3675,7 @@ function DashboardContent() {
             <div className="px-8 pt-6 pb-6">
               {/* Recording Icon with gradient background */}
               <div className={`mx-auto w-32 h-32 rounded-full bg-red-500 flex items-center justify-center text-white mb-4 ${!isPaused && 'recording-indicator'}`}>
-                <span className="text-lg">🎤</span>
+                <Mic size={48} className="text-white" />
               </div>
 
               {/* Waveform Visualization */}
@@ -3714,7 +3727,15 @@ function DashboardContent() {
                   onClick={() => { hapticSelection(); isPaused ? resumeRecording() : pauseRecording() }}
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-500 hover:bg-slate-600 text-white rounded-xl font-semibold transition-colors"
                 >
-                  {isPaused ? <><span className="text-lg">▶️</span> Resume</> : <><span className="text-lg">⏸</span> Pause</>}
+                  {isPaused ? (
+                    <>
+                      <Play size={20} className="text-white" /> Resume
+                    </>
+                  ) : (
+                    <>
+                      <Pause size={20} className="text-white" /> Pause
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={async () => {
@@ -3770,7 +3791,9 @@ function DashboardContent() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
             <div className="text-center space-y-2">
-              <span className="text-6xl">🎤</span>
+              <div className="flex justify-center">
+                <Mic size={56} className="text-purple-600 dark:text-purple-400" />
+              </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Ready to Record?</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Your lecture will be saved with transcript and AI notes</p>
             </div>
@@ -3809,7 +3832,7 @@ function DashboardContent() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
             <div className="text-center space-y-2">
               <div className="w-16 h-16 mx-auto bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                <span className="text-lg">🎤</span>
+                <Mic size={32} className="text-orange-600 dark:text-orange-400" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Microphone Access Required</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -4231,7 +4254,7 @@ function DashboardContent() {
                           : 'bg-gray-200 dark:bg-gray-600'
                       }`}>
                         {isActive ? (
-                          <span className="text-lg">🔥</span>
+                          <Flame size={20} className="text-white" />
                         ) : (
                           <span className={`text-sm ${isToday ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-gray-400'}`}>
                             {isToday ? '?' : ''}
@@ -4250,9 +4273,9 @@ function DashboardContent() {
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {[
                   { days: 3, label: '3 days', icon: <span className="text-lg">🌱</span> },
-                  { days: 7, label: '1 week', icon: <span className="text-lg">⭐</span> },
+                  { days: 7, label: '1 week', icon: <Star size={20} className="text-yellow-500" /> },
                   { days: 14, label: '2 weeks', icon: <span className="text-lg">🎖️</span> },
-                  { days: 30, label: '1 month', icon: <span className="text-lg">🏆</span> },
+                  { days: 30, label: '1 month', icon: <Trophy size={20} className="text-yellow-600" /> },
                   { days: 60, label: '2 months', icon: <span className="text-lg">💎</span> },
                   { days: 100, label: '100 days', icon: <span className="text-lg">👑</span> },
                 ].map(({ days, label, icon }) => (
@@ -4267,7 +4290,7 @@ function DashboardContent() {
                     {streak >= days ? (
                       <div className="text-orange-600 dark:text-orange-400">{icon}</div>
                     ) : (
-                      <span className="text-lg">🔒</span>
+                      <Lock size={20} className="text-gray-500 dark:text-gray-400 mx-auto" />
                     )}
                     <p className={`text-xs mt-1 font-medium ${streak >= days ? 'text-orange-700 dark:text-orange-400' : 'text-gray-500 dark:text-gray-400'}`}>
                       {label}

@@ -9,6 +9,7 @@ import { FlashcardMode } from './FlashcardMode'
 import { SubjectIcon } from '@/components/SubjectIcon'
 import { getSubjectColor } from '@/lib/subject-utils'
 import type { Database } from '@/lib/supabase'
+import { Play, ChevronRight, Star, Clock, Brain, Headphones, Loader } from 'lucide-react'
 
 type Lecture = Database['public']['Tables']['lectures']['Row'] & {
   courses?: { name: string; subject?: string } | null
@@ -261,7 +262,7 @@ export function LibraryScreen({
                     {selectedLectureNotes ? 'Read your study notes' : 'Write your own notes'}
                   </p>
                 </div>
-                <span className="text-lg">▶</span>
+                <ChevronRight size={20} className="text-gray-400" />
               </div>
             </button>
 
@@ -290,7 +291,7 @@ export function LibraryScreen({
                     {hasGeneratedQuiz ? 'Test your knowledge' : 'Generate from notes'}
                   </p>
                 </div>
-                <span className="text-lg">▶</span>
+                <ChevronRight size={20} className="text-gray-400" />
               </div>
             </button>
 
@@ -320,7 +321,7 @@ export function LibraryScreen({
                     {hasGeneratedFlashcards ? 'Spaced repetition' : 'Generate from notes'}
                   </p>
                 </div>
-                <span className="text-lg">▶</span>
+                <ChevronRight size={20} className="text-gray-400" />
               </div>
             </button>
           </div>
@@ -421,8 +422,8 @@ export function LibraryScreen({
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {[
             { id: 'all', label: 'All', icon: Headphones },
-            { id: 'favorites', label: 'Favorites', icon: "⭐" },
-            { id: 'recent', label: 'This Week', icon: "⏰" },
+            { id: 'favorites', label: 'Favorites', icon: Star },
+            { id: 'recent', label: 'This Week', icon: Clock },
           ].map((filter) => (
             <button
               key={filter.id}
@@ -436,7 +437,7 @@ export function LibraryScreen({
                   : 'bg-white dark:bg-[#1E293B] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/[0.06]'
               }`}
             >
-              <filter.icon size={16} weight={statusFilter === filter.id ? 'fill' : 'regular'} />
+              <filter.icon size={16} />
               {filter.label}
             </button>
           ))}
@@ -456,7 +457,7 @@ export function LibraryScreen({
             {statusFilter === 'favorites' ? (
               <>
                 <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-4">
-                  <span className="text-lg">⭐</span>
+                  <Star size={32} className="text-yellow-600 dark:text-yellow-400 fill-yellow-600 dark:fill-yellow-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-xs">
@@ -495,7 +496,7 @@ export function LibraryScreen({
               <section>
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <span className="text-lg">▶️</span>
+                    <Play size={20} className="text-blue-600 dark:text-blue-400" />
                     Continue Listening
                   </h2>
                 </div>
@@ -526,7 +527,14 @@ export function LibraryScreen({
                             onClick={(e) => toggleFavorite(lecture.id, e)}
                             className="p-1.5 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors"
                           >
-                            <span className="text-lg">⭐</span>
+                            <Star
+                              size={20}
+                              className={`transition-colors ${
+                                isFavorited
+                                  ? 'text-yellow-400 fill-yellow-400'
+                                  : 'text-gray-400 dark:text-gray-600'
+                              }`}
+                            />
                           </button>
                         </div>
                         {/* Progress bar placeholder */}
@@ -597,9 +605,16 @@ export function LibraryScreen({
                                   onClick={(e) => toggleFavorite(lecture.id, e)}
                                   className="p-2 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors"
                                 >
-                                  <span className="text-lg">⭐</span>
+                                  <Star
+                                    size={20}
+                                    className={`transition-colors ${
+                                      favoritedLectures.has(lecture.id)
+                                        ? 'text-yellow-400 fill-yellow-400'
+                                        : 'text-gray-400 dark:text-gray-600'
+                                    }`}
+                                  />
                                 </button>
-                                <span className="text-lg">▶</span>
+                                <ChevronRight size={20} className="text-gray-400" />
                               </div>
                             </div>
                           </SwipeToDelete>

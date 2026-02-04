@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { X, Target, Trophy, CheckCircle, XCircle, Sparkles, Zap } from 'lucide-react'
 import { hapticSelection, hapticSuccess, hapticError, hapticButton } from '@/lib/haptics'
 import { soundSuccess, soundError } from '@/lib/sounds'
 import type { QuestionType } from '@/lib/claude'
@@ -101,12 +102,12 @@ export function LearnMode({
         {/* Content */}
         <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center px-6 py-12 pt-[calc(env(safe-area-inset-top)+3.5rem)]">
           <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-lg ${
-            percentage >= 70 
-              ? 'bg-amber-500 shadow-amber-500/25' 
+            percentage >= 70
+              ? 'bg-amber-500 shadow-amber-500/25'
               : 'bg-blue-500 shadow-blue-500/25'
           }`}>
             {percentage >= 70 ? (
-              <span className="text-5xl">🏆</span>
+              <Trophy size={48} className="text-white" />
             ) : (
               <Target size={48} className="text-white" />
             )}
@@ -144,7 +145,7 @@ export function LearnMode({
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-green-50 dark:bg-green-500/10 rounded-xl p-4 text-center">
                 <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center mx-auto mb-2">
-                  <span className="text-lg">✅</span>
+                  <CheckCircle size={20} className="text-green-600 dark:text-green-400" />
                 </div>
                 <p className="text-2xl font-bold text-green-700 dark:text-green-400">{correctAnswers}</p>
                 <p className="text-xs text-green-600 dark:text-green-500">Correct</p>
@@ -169,12 +170,10 @@ export function LearnMode({
                 // Reset to first question - this should trigger parent to reset
                 onExit()
               }}
-              className="w-full py-3.5 rounded-xl bg-purple-500 text-white font-semibold hover:bg-purple-600 active:scale-[0.98] transition-all shadow-lg shadow-purple-500/25"
+              className="w-full py-3.5 rounded-xl bg-purple-500 text-white font-semibold hover:bg-purple-600 active:scale-[0.98] transition-all shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2"
             >
-              <span className="flex items-center justify-center gap-2">
-                <span className="text-lg">🔄</span>
-                Try Again
-              </span>
+              <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
+              Try Again
             </button>
             <button
               onClick={onExit}
@@ -223,7 +222,7 @@ export function LearnMode({
         <div className="flex items-center justify-center gap-6 mb-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
-              <span className="text-lg">✅</span>
+              <CheckCircle size={18} className="text-green-600 dark:text-green-400" />
             </div>
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400">Correct</p>
@@ -233,7 +232,7 @@ export function LearnMode({
           <div className="h-8 w-px bg-gray-200 dark:bg-gray-700" />
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center">
-              <Lightning size={18} className="text-purple-600 dark:text-purple-400" />
+              <Zap size={18} className="text-purple-600 dark:text-purple-400" />
             </div>
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400">Remaining</p>
@@ -318,7 +317,7 @@ export function LearnMode({
                           : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                       }`}>
                         {showCorrect ? (
-                          <span className="text-lg">✅</span>
+                          <CheckCircle size={18} className="text-white" />
                         ) : showIncorrect ? (
                           <XCircle size={18} />
                         ) : (
@@ -344,9 +343,9 @@ export function LearnMode({
                     isCorrect ? 'bg-green-100 dark:bg-green-500/20' : 'bg-red-100 dark:bg-red-500/20'
                   }`}>
                     {isCorrect ? (
-                      <span className="text-lg">✨</span>
+                      <Sparkles size={18} className="text-green-600 dark:text-green-400" />
                     ) : (
-                      <Lightning size={18} className="text-red-600 dark:text-red-400" />
+                      <Zap size={18} className="text-red-600 dark:text-red-400" />
                     )}
                   </div>
                   <div>

@@ -1,5 +1,6 @@
 'use client'
 
+import { AlertTriangle } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 
@@ -30,7 +31,7 @@ export function DeleteConfirmModal({
       <div className="text-center">
         {/* Warning Icon */}
         <div className="w-16 h-16 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-lg">⚠️</span>
+          <AlertTriangle size={32} className="text-red-600 dark:text-red-400" />
         </div>
 
         {/* Title */}

@@ -1,6 +1,7 @@
 'use client'
 
 import { ACHIEVEMENTS, AchievementId } from '@/hooks/useAchievements'
+import { Lock, Rocket, Mic, Clock, Flame, Brain, BookOpen, Star, Sparkles, Trophy, X } from 'lucide-react'
 
 interface AchievementCardProps {
   achievement: typeof ACHIEVEMENTS[number] & { isUnlocked: boolean }
@@ -99,16 +100,28 @@ interface AchievementsModalProps {
 export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount, totalCount }: AchievementsModalProps) {
   if (!isOpen) return null
 
+  // Category icon components
+  const categoryIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    'getting_started': Rocket,
+    'recording': Mic,
+    'time': Clock,
+    'streak': Flame,
+    'quiz': Brain,
+    'courses': BookOpen,
+    'level': Star,
+    'special': Sparkles,
+  }
+
   // Group achievements by category
   const categories = [
-    { id: 'getting_started', name: 'Getting Started', icon: "🚀" },
-    { id: 'recording', name: 'Recording', icon: "🎤" },
-    { id: 'time', name: 'Time', icon: "⏰" },
-    { id: 'streak', name: 'Streaks', icon: "🔥" },
-    { id: 'quiz', name: 'Quizzes', icon: "🧠" },
-    { id: 'courses', name: 'Courses', icon: "📚" },
-    { id: 'level', name: 'Levels', icon: "⭐" },
-    { id: 'special', name: 'Special', icon: "✨" },
+    { id: 'getting_started', name: 'Getting Started', icon: 'getting_started' },
+    { id: 'recording', name: 'Recording', icon: 'recording' },
+    { id: 'time', name: 'Time', icon: 'time' },
+    { id: 'streak', name: 'Streaks', icon: 'streak' },
+    { id: 'quiz', name: 'Quizzes', icon: 'quiz' },
+    { id: 'courses', name: 'Courses', icon: 'courses' },
+    { id: 'level', name: 'Levels', icon: 'level' },
+    { id: 'special', name: 'Special', icon: 'special' },
   ]
 
   return (
@@ -119,7 +132,7 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center">
-                <span className="text-lg">🏆</span>
+                <Trophy size={24} className="text-white" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Achievements</h2>
@@ -133,7 +146,7 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             >
               <span className="sr-only">Close</span>
-              <span className="text-lg">❌</span>
+              <X size={20} className="text-gray-700 dark:text-gray-300" />
             </button>
           </div>
           
@@ -155,11 +168,11 @@ export function AchievementsModal({ isOpen, onClose, achievements, unlockedCount
               const categoryAchievements = achievements.filter(a => a.category === category.id)
               if (categoryAchievements.length === 0) return null
 
-              const CategoryIcon = category.icon
+              const CategoryIconComponent = categoryIconMap[category.icon]
               return (
                 <div key={category.id}>
                   <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
-                    <CategoryIcon className="w-4 h-4" />
+                    {CategoryIconComponent && <CategoryIconComponent className="w-4 h-4" />}
                     {category.name}
                   </h3>
                   <div className="grid grid-cols-1 gap-3">
@@ -225,7 +238,7 @@ export function AchievementUnlockedModal({ isOpen, onClose, achievement }: Achie
           
           <div className="relative">
             <div className="w-16 h-16 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center">
-              <span className="text-lg">🏆</span>
+              <Trophy size={32} className="text-white" />
             </div>
             <h2 className="text-lg font-bold mb-1 opacity-90">Achievement Unlocked!</h2>
             <div className="w-20 h-20 mx-auto my-4 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">

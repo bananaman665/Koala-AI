@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Sun, Cloud, Moon, X, Rocket, Flame, Star, CheckCircle } from 'lucide-react'
 
 interface DailyGreetingProps {
   userName?: string
@@ -35,7 +36,6 @@ export function DailyGreeting({
       case 'morning':
         return {
           greeting: 'Good Morning',
-          emoji: '🌅',
           icon: Sun,
           color: 'from-amber-400 to-orange-500',
           message: 'Ready to ace your studies today?',
@@ -45,7 +45,6 @@ export function DailyGreeting({
       case 'afternoon':
         return {
           greeting: 'Good Afternoon',
-          emoji: '☀️',
           icon: Cloud,
           color: 'from-blue-400 to-cyan-500',
           message: 'Keep up the momentum!',
@@ -55,7 +54,6 @@ export function DailyGreeting({
       case 'evening':
         return {
           greeting: 'Good Evening',
-          emoji: '🌙',
           icon: Moon,
           color: 'from-indigo-400 to-purple-500',
           message: 'Time to wrap up the day strong!',
@@ -68,7 +66,7 @@ export function DailyGreeting({
   const content = getGreetingContent()
 
   const getMotivation = () => {
-    if (streak >= 7) return "You're on fire with that streak! 🔥"
+    if (streak >= 7) return "You're on fire with that streak!"
     if (lecturesCompletedToday > 0) return "Great work today! Keep it going!"
     if (totalXP > 5000) return "You're a power learner! Let's keep climbing!"
     return "Every day is a chance to learn something new!"
@@ -88,7 +86,9 @@ export function DailyGreeting({
       <div className="relative z-10 w-full max-w-2xl text-center space-y-8 sm:space-y-10">
         {/* Main Greeting */}
         <div className="space-y-4 sm:space-y-6">
-          <div className="text-8xl sm:text-9xl animate-bounce">{content.emoji}</div>
+          <div className="flex justify-center">
+            <content.icon size={120} className="text-amber-500 animate-bounce" />
+          </div>
           <div>
             <h1 className={`text-6xl sm:text-7xl lg:text-8xl font-black bg-gradient-to-r ${content.textGradient} bg-clip-text text-transparent leading-tight`}>
               {content.greeting}
@@ -104,7 +104,7 @@ export function DailyGreeting({
           {/* Streak */}
           <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
             <div className="flex justify-center mb-3 sm:mb-4">
-              <span className="text-lg">🔥</span>
+              <Flame size={32} className="text-orange-500" />
             </div>
             <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{streak}</div>
             <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Day Streak</div>
@@ -113,7 +113,7 @@ export function DailyGreeting({
           {/* XP */}
           <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
             <div className="flex justify-center mb-3 sm:mb-4">
-              <span className="text-lg">⭐</span>
+              <Star size={32} className="text-yellow-500 fill-yellow-500" />
             </div>
             <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{(totalXP / 1000).toFixed(1)}k</div>
             <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Total XP</div>
@@ -122,7 +122,7 @@ export function DailyGreeting({
           {/* Today's Lectures */}
           <div className="bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-200 border border-white/40 dark:border-gray-700/40">
             <div className="flex justify-center mb-3 sm:mb-4">
-              <span className="text-lg">✅</span>
+              <CheckCircle size={32} className="text-green-500" />
             </div>
             <div className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">{lecturesCompletedToday}</div>
             <div className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold mt-2">Today's Lectures</div>
