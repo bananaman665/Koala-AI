@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { GraduationCap, Mic, Sparkles, BookOpen, Flame, Trophy } from 'lucide-react'
 import { hapticSelection, hapticSuccess } from '@/lib/haptics'
 
 interface OnboardingCarouselProps {
@@ -17,34 +18,34 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    icon: <span className="text-6xl">🎓</span>,
+    icon: <GraduationCap size={80} className="text-white" />,
     title: 'Welcome to Koala.ai',
     description: 'Your AI-powered study companion for recording, transcribing, and mastering your lectures.',
     color: 'bg-blue-500',
   },
   {
-    icon: <span className="text-6xl">🎤</span>,
+    icon: <Mic size={80} className="text-white" />,
     title: 'One-Tap Recording',
     description: 'Record lectures with a single tap. We\'ll transcribe everything automatically using AI.',
     color: 'bg-green-500',
   },
   {
-    icon: <span className="text-6xl">✨</span>,
+    icon: <Sparkles size={80} className="text-white" />,
     title: 'AI-Powered Notes',
     description: 'Get intelligent, structured notes with summaries, key points, and action items.',
     color: 'bg-amber-500',
   },
   {
-    icon: <span className="text-6xl">📚</span>,
+    icon: <BookOpen size={80} className="text-white" />,
     title: 'Study Your Way',
     description: 'Review with interactive flashcards, learn mode quizzes, or browse your organized notes.',
     color: 'bg-pink-500',
   },
   {
     icon: (
-      <div className="flex items-center gap-2">
-        <span className="text-6xl">🔥</span>
-        <span className="text-5xl">🏆</span>
+      <div className="flex items-center gap-4">
+        <Flame size={70} className="text-white" />
+        <Trophy size={70} className="text-white" />
       </div>
     ),
     title: 'Track Your Progress',
