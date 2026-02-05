@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Flame, Lightning } from 'lucide-react'
+import { Flame, Zap, Star, Trophy } from 'lucide-react'
 import { hapticSuccess } from '@/lib/haptics'
 
 interface StreakDisplayProps {
@@ -108,7 +108,7 @@ export function StreakDisplay({
           {/* Sparkle effect for high streaks */}
           {streak >= 7 && (
             <div className="absolute -top-1 -right-1">
-              <span className="text-lg">⭐</span>
+              <Star size={16} className="text-yellow-400 fill-yellow-400" />
             </div>
           )}
         </div>
@@ -131,7 +131,7 @@ export function StreakDisplay({
         <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-50 animate-bounce">
           <div className="bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg whitespace-nowrap">
             <div className="flex items-center gap-2">
-              <span className="text-lg text-yellow-300">🏆</span>
+              <Trophy size={18} className="text-yellow-300" />
               <span className="font-bold text-sm">{getMilestoneMessage()}</span>
             </div>
           </div>
@@ -146,7 +146,7 @@ export function StreakDisplay({
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-semibold text-gray-900 dark:text-white">Study Streak</h4>
             <div className="flex items-center gap-1 text-orange-500">
-              <Lightning size={16} />
+              <Zap size={16} />
               <span className="text-sm font-medium">{streak} days</span>
             </div>
           </div>

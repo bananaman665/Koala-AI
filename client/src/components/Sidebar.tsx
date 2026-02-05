@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Home, Library, BarChart3, Users, Flame, Settings } from 'lucide-react'
 
 interface SidebarProps {
   activeScreen: 'dashboard' | 'library' | 'analytics' | 'feed'
@@ -34,11 +35,18 @@ export function Sidebar({
   const isDisabled = isRecording || isStoppingRecording || isGeneratingNotes || isTranscribing
 
   const navItems = [
-    { id: 'dashboard', label: 'Home', icon: "🏠" },
-    { id: 'library', label: 'Library', icon: "📁" },
-    { id: 'analytics', label: 'Analytics', icon: "📊" },
-    { id: 'feed', label: 'Classes', icon: "👥" },
+    { id: 'dashboard', label: 'Home' },
+    { id: 'library', label: 'Library' },
+    { id: 'analytics', label: 'Analytics' },
+    { id: 'feed', label: 'Classes' },
   ]
+
+  const iconMap = {
+    dashboard: Home,
+    library: Library,
+    analytics: BarChart3,
+    feed: Users,
+  } as const
 
   return (
     <aside className="hidden lg:flex lg:flex-col lg:w-[280px] lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:bg-white dark:lg:bg-[#1a2235] lg:border-r lg:border-gray-200 dark:lg:border-white/[0.08] lg:z-40">
@@ -50,7 +58,7 @@ export function Sidebar({
       {/* Navigation Items */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-2">
         {navItems.map((item) => {
-          const Icon = item.icon
+          const Icon = iconMap[item.id as keyof typeof iconMap]
           const isActive = activeScreen === item.id
 
           return (
@@ -63,7 +71,7 @@ export function Sidebar({
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
               }`}
             >
-              <Icon className="text-xl" />
+              <Icon size={20} />
               <span>{item.label}</span>
             </button>
           )
@@ -100,7 +108,7 @@ export function Sidebar({
           onClick={onShowStreakModal}
           className="flex items-center gap-2 hover:bg-orange-100 dark:hover:bg-orange-500/20 px-2 py-1 rounded-lg w-full transition-colors"
         >
-          <span className="text-lg">🔥</span>
+          <Flame size={20} className="text-orange-600 dark:text-orange-400" />
           <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
             {streak} day{streak !== 1 ? 's' : ''}
           </span>
@@ -112,7 +120,7 @@ export function Sidebar({
             href="/settings"
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           >
-            <span className="text-lg">⚙️</span>
+            <Settings size={20} className="text-gray-700 dark:text-gray-300" />
           </Link>
           <Link
             href="/profile"

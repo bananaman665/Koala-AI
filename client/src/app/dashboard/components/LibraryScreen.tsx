@@ -9,7 +9,7 @@ import { FlashcardMode } from './FlashcardMode'
 import { SubjectIcon } from '@/components/SubjectIcon'
 import { getSubjectColor } from '@/lib/subject-utils'
 import type { Database } from '@/lib/supabase'
-import { Play, ChevronRight, Star, Clock, Brain, Headphones, Loader, BookOpen, Search } from 'lucide-react'
+import { Play, ChevronRight, Star, Clock, Brain, Headphones, Loader, BookOpen, Search, Trash2, Layers } from 'lucide-react'
 
 type Lecture = Database['public']['Tables']['lectures']['Row'] & {
   courses?: { name: string; subject?: string } | null
@@ -377,7 +377,7 @@ export function LibraryScreen({
               }}
               className="w-full flex items-center justify-center gap-2 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 active:scale-[0.98] transition-all"
             >
-              <span className="text-lg">🗑️</span>
+              <Trash2 size={20} />
               Delete Lecture
             </button>
           </div>
@@ -644,7 +644,9 @@ export function LibraryScreen({
               disabled={!selectedLectureNotes && !hasGeneratedFlashcards}
               className="bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl p-4 text-center font-semibold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <div className="text-2xl mb-1">🎴</div>
+              <div className="flex justify-center mb-1">
+                <Layers size={24} />
+              </div>
               {hasGeneratedFlashcards ? 'Continue Flashcards?' : 'Start Flashcards?'}
             </button>
 
@@ -661,7 +663,9 @@ export function LibraryScreen({
               disabled={!selectedLectureNotes && !hasGeneratedQuiz}
               className="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl p-4 text-center font-semibold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <div className="text-2xl mb-1">🧠</div>
+              <div className="flex justify-center mb-1">
+                <Brain size={24} />
+              </div>
               {hasGeneratedQuiz ? 'Continue Quiz?' : 'Start Quiz?'}
             </button>
           </div>

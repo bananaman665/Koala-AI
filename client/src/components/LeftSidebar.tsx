@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { hapticSelection } from '@/lib/haptics'
+import { Home, Library, BarChart3, Users, Settings, User } from 'lucide-react'
 import type { Database } from '@/lib/supabase'
 
 type Lecture = Database['public']['Tables']['lectures']['Row']
@@ -26,11 +27,18 @@ export function LeftSidebar({
   onToggleFavorite,
 }: LeftSidebarProps) {
   const navItems = [
-    { id: 'dashboard', label: 'Home', icon: "🏠" },
-    { id: 'library', label: 'Library', icon: "📁" },
-    { id: 'analytics', label: 'Analytics', icon: "📊" },
-    { id: 'feed', label: 'Classes', icon: "👥" },
+    { id: 'dashboard', label: 'Home' },
+    { id: 'library', label: 'Library' },
+    { id: 'analytics', label: 'Analytics' },
+    { id: 'feed', label: 'Classes' },
   ]
+
+  const iconMap = {
+    dashboard: Home,
+    library: Library,
+    analytics: BarChart3,
+    feed: Users,
+  } as const
 
   return (
     <div className="hidden lg:fixed lg:left-0 lg:top-16 lg:w-64 lg:h-[calc(100vh-64px)] lg:flex lg:flex-col lg:bg-white dark:bg-[#1a2235] lg:border-r lg:border-gray-200 dark:border-white/[0.08] lg:overflow-y-auto lg:pt-6 lg:pb-6 lg:z-40">
@@ -42,7 +50,7 @@ export function LeftSidebar({
 
         <div className="space-y-1">
           {navItems.map((item) => {
-            const Icon = item.icon
+            const Icon = iconMap[item.id as keyof typeof iconMap]
             const isActive = activeScreen === item.id
 
             return (
@@ -55,7 +63,7 @@ export function LeftSidebar({
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon size={16} />
                 <span>{item.label}</span>
               </button>
             )
@@ -74,7 +82,7 @@ export function LeftSidebar({
             href="/settings"
             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-200"
           >
-            <span className="text-lg">⚙️</span>
+            <Settings size={16} />
             <span>Settings</span>
           </Link>
 
@@ -82,7 +90,7 @@ export function LeftSidebar({
             href="/profile"
             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-200"
           >
-            <span className="text-lg">👤</span>
+            <User size={16} />
             <span>Profile</span>
           </Link>
         </div>
