@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { Mail, Copy } from 'lucide-react'
 
 export default function NotesPage() {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -307,11 +308,13 @@ export default function NotesPage() {
                 <button className="w-full text-left px-4 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-900">
                   📝 Export as Markdown
                 </button>
-                <button className="w-full text-left px-4 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-900">
-                  📋 Copy to Notion
+                <button className="w-full text-left px-4 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-900 flex items-center gap-2">
+                  <Copy size={18} />
+                  Copy to Notion
                 </button>
-                <button className="w-full text-left px-4 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-900">
-                  📧 Email Notes
+                <button className="w-full text-left px-4 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-900 flex items-center gap-2">
+                  <Mail size={18} />
+                  Email Notes
                 </button>
               </div>
             </div>

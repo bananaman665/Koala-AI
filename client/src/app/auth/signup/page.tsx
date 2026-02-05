@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Mail } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import AppIcon from '@/components/AppIcon'
 
@@ -169,7 +170,7 @@ export default function SignupPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-lg">📧</span>
+                  <Mail className="w-5 h-5 text-gray-400" />
                 </div>
                 <input
                   type="email"

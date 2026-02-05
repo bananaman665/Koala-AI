@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { HelpCircle, Lock } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 
@@ -451,14 +452,14 @@ export default function ProfilePage() {
                     <div className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] border-l-4 border-l-gray-300 dark:border-l-gray-600 rounded-xl p-4 opacity-60">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200 dark:bg-[#0B1220]">
-                          <span className="text-lg">❓</span>
+                          <HelpCircle className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-500 dark:text-[#94A3B8]">Revealed tomorrow</h4>
                           <div className="h-5 bg-gray-200 dark:bg-[#0B1220] rounded-full mt-2" />
                         </div>
                         <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-200 dark:bg-[#0B1220]">
-                          <span className="text-lg">🔒</span>
+                          <Lock className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                         </div>
                       </div>
                     </div>
