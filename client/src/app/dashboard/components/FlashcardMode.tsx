@@ -147,7 +147,7 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg">✅</span>
+                  <CheckCircle size={24} className="text-white" />
                 </div>
               </div>
             </div>

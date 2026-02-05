@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { CheckCircle2, HelpCircle, PenTool, BookOpen, Target, TrendingUp, AlertCircle, X } from 'lucide-react'
 import { QuestionType, DifficultyLevel } from '@/lib/claude'
 
 export interface LearnModeConfig {
@@ -20,29 +21,29 @@ const questionTypeOptions: { type: QuestionType; label: string; icon: React.Reac
   {
     type: 'multiple_choice',
     label: 'Multiple Choice',
-    icon: <span className="text-lg">✅</span>,
+    icon: <CheckCircle2 size={20} />,
   },
   {
     type: 'true_false',
     label: 'True / False',
-    icon: <span className="text-lg">❓</span>,
+    icon: <HelpCircle size={20} />,
   },
   {
     type: 'written',
     label: 'Written',
-    icon: <span className="text-lg">✏️</span>,
+    icon: <PenTool size={20} />,
   },
   {
     type: 'fill_in_blank',
     label: 'Fill in Blank',
-    icon: <span className="text-lg">📚</span>,
+    icon: <BookOpen size={20} />,
   },
 ]
 
 const difficultyOptions: { level: DifficultyLevel; label: string; icon: React.ReactNode }[] = [
-  { level: 'easy', label: 'Easy', icon: <span className="text-lg">🎯</span> },
-  { level: 'medium', label: 'Medium', icon: <span className="text-lg">📈</span> },
-  { level: 'hard', label: 'Hard', icon: <span className="text-lg">⚠️</span> },
+  { level: 'easy', label: 'Easy', icon: <Target size={20} /> },
+  { level: 'medium', label: 'Medium', icon: <TrendingUp size={20} /> },
+  { level: 'hard', label: 'Hard', icon: <AlertCircle size={20} /> },
 ]
 
 const questionCountOptions = [5, 10, 15, 20]
@@ -129,7 +130,7 @@ export function LearnModeConfigModal({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <span className="text-lg">🎯</span>
+                  <Target size={24} className="text-white" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-white">Quiz Configuration</h2>
@@ -141,7 +142,7 @@ export function LearnModeConfigModal({
                 disabled={isGenerating}
                 className="p-2 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
               >
-                <span className="text-lg">❌</span>
+                <X size={20} className="text-white" />
               </button>
             </div>
           </div>

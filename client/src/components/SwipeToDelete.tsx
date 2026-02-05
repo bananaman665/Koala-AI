@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, ReactNode } from 'react'
+import { Trash2 } from 'lucide-react'
 import { hapticImpact, hapticButton } from '@/lib/haptics'
 
 interface SwipeToDeleteProps {
@@ -117,7 +118,7 @@ export function SwipeToDelete({
               opacity: deleteProgress,
             }}
           >
-            <span className="text-lg">🗑️</span>
+            <Trash2 size={20} />
             <span className="font-medium text-sm">Delete</span>
           </div>
         </div>
@@ -148,7 +149,7 @@ export function SwipeToDelete({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-center w-12 h-12 bg-red-100 dark:bg-red-500/20 rounded-full mx-auto mb-4">
-              <span className="text-lg">🗑️</span>
+              <Trash2 size={20} />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
               Delete {itemName}?

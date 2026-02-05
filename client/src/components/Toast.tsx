@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import { CheckCircle2, XCircle, AlertTriangle, Info } from 'lucide-react'
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -29,11 +30,11 @@ export function useToast() {
   return context
 }
 
-const toastIcons = {
-  success: "✅",
-  error: "❌",
-  warning: "⚠️",
-  info: "ℹ️",
+const toastIconMap = {
+  success: CheckCircle2,
+  error: XCircle,
+  warning: AlertTriangle,
+  info: Info,
 }
 
 const toastStyles = {
@@ -78,7 +79,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div className="fixed top-0 left-0 right-0 z-[100] flex flex-col items-center pt-safe pointer-events-none">
         <div className="w-full max-w-sm px-4 space-y-2 pt-2">
           {toasts.map((toast) => {
-            const Icon = toastIcons[toast.type]
+            const Icon = toastIconMap[toast.type]
             return (
               <div
                 key={toast.id}
@@ -90,8 +91,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 `}
                 onClick={() => removeToast(toast.id)}
               >
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                  <Icon className="w-4 h-4" />
+                <div className="flex-shrink-0">
+                  <Icon size={20} />
                 </div>
                 <p className="flex-1 text-sm font-medium">{toast.message}</p>
               </div>
