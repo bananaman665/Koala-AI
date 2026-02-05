@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-lg">📧</span>
+                      <span className="text-lg">Mail</span>
                     </div>
                     <input
                       type="email"
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
               {/* Success State */}
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                  <span className="text-lg">✅</span>
+                  <span className="text-lg">CheckCircle2</span>
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Check Your Email</h1>
                 <p className="text-gray-600 mb-6">

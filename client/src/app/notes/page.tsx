@@ -50,7 +50,7 @@ export default function NotesPage() {
                   </h1>
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <span className="flex items-center space-x-1">
-                      <span className="text-lg">🔖</span>
+                      <span className="text-lg">Bookmark</span>
                       <span>CS101 - Data Structures</span>
                     </span>
                     <span>•</span>
@@ -74,9 +74,9 @@ export default function NotesPage() {
                     className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center hover:shadow-lg transition-shadow"
                   >
                     {isPlaying ? (
-                      <span className="text-lg">⏸</span>
+                      <span className="text-lg">Pause</span>
                     ) : (
-                      <span className="text-lg">▶️</span>
+                      <span className="text-lg">Play</span>
                     )}
                   </button>
                   <div className="flex-1">
@@ -98,7 +98,7 @@ export default function NotesPage() {
             {/* AI Summary */}
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-3 flex items-center">
-                <span className="mr-2">🤖</span>
+                <span className="mr-2">Bot</span>
                 AI Summary
               </h2>
               <p className="text-gray-700 leading-relaxed">
@@ -127,7 +127,7 @@ export default function NotesPage() {
                 ].map((item, i) => (
                   <div key={i} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
                     <div className="flex-shrink-0 w-20 text-xs text-blue-600 font-medium mt-1">
-                      <span className="text-lg">⏰</span>
+                      <span className="text-lg">Clock</span>
                       {item.time}
                     </div>
                     <p className="text-gray-700 flex-1">{item.point}</p>

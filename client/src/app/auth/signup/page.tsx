@@ -67,7 +67,7 @@ export default function SignupPage() {
       await signUp(formData.email, formData.password, formData.name)
 
       // Show success message
-      alert('✅ Account created! If email confirmation is enabled, please check your inbox.')
+      alert('CheckCircle2 Account created! If email confirmation is enabled, please check your inbox.')
 
       router.push('/dashboard')
     } catch (err: any) {

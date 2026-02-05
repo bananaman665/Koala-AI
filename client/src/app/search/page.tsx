@@ -74,7 +74,7 @@ export default function SearchPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <span className="text-lg">🔍</span>
+              <span className="text-lg">Search</span>
               <input
                 type="text"
                 value={query}
@@ -147,7 +147,7 @@ export default function SearchPage() {
 
               <div className="flex items-center space-x-4 text-sm text-gray-500">
                 <div className="flex items-center space-x-1">
-                  <span className="text-lg">📅</span>
+                  <span className="text-lg">Calendar</span>
                   <span>{result.date}</span>
                 </div>
                 {result.duration && (
@@ -167,7 +167,7 @@ export default function SearchPage() {
         {/* Empty State */}
         {query && results.length === 0 && (
           <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="text-6xl mb-4">🔍</div>
+            <div className="text-6xl mb-4">Search</div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No results found</h3>
             <p className="text-gray-600 mb-6">Try different keywords or filters</p>
           </div>

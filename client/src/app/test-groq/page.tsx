@@ -48,7 +48,7 @@ including in-order, pre-order, and post-order traversal.`
               disabled={generatingNotes || !transcript}
               className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
             >
-              {generatingNotes ? '🔄 Generating Notes...' : '📝 Generate Notes'}
+              {generatingNotes ? 'RefreshCw Generating Notes...' : 'FileText Generate Notes'}
             </button>
 
             <button
@@ -56,21 +56,21 @@ including in-order, pre-order, and post-order traversal.`
               disabled={generatingSummary || !transcript}
               className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
             >
-              {generatingSummary ? '🔄 Generating Summary...' : '📄 Generate Summary'}
+              {generatingSummary ? 'RefreshCw Generating Summary...' : 'File Generate Summary'}
             </button>
           </div>
 
           {/* Errors */}
           {notesError && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-800 font-medium">❌ Notes Error</p>
+              <p className="text-red-800 font-medium">X Notes Error</p>
               <p className="text-red-600 text-sm mt-1">{notesError}</p>
             </div>
           )}
 
           {summaryError && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-800 font-medium">❌ Summary Error</p>
+              <p className="text-red-800 font-medium">X Summary Error</p>
               <p className="text-red-600 text-sm mt-1">{summaryError}</p>
             </div>
           )}
@@ -80,7 +80,7 @@ including in-order, pre-order, and post-order traversal.`
             {/* Generated Notes */}
             <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                📝 Generated Notes
+                FileText Generated Notes
               </h3>
               {notes ? (
                 <div className="prose prose-sm max-w-none">
@@ -98,7 +98,7 @@ including in-order, pre-order, and post-order traversal.`
             {/* Generated Summary */}
             <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                📄 Generated Summary
+                File Generated Summary
               </h3>
               {summary ? (
                 <p className="text-gray-700 text-sm">{summary}</p>
@@ -114,7 +114,7 @@ including in-order, pre-order, and post-order traversal.`
         {/* Setup Instructions */}
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-yellow-900 mb-2">
-            ⚠️ Setup Required
+            AlertTriangle Setup Required
           </h3>
           <p className="text-yellow-800 text-sm mb-3">
             If you see errors, make sure you've set up your Groq API key:

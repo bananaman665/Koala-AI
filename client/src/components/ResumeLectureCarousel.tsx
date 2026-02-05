@@ -123,7 +123,7 @@ export function ResumeLectureCarousel({
           <div className="flex items-center gap-3">
             {/* Microphone Icon */}
             <div className="w-11 h-11 bg-gray-100 dark:bg-gray-700/50 rounded-xl flex items-center justify-center flex-shrink-0">
-              <span className="text-lg">▶️</span>
+              <span className="text-lg">Play</span>
             </div>
 
             {/* Content */}
@@ -171,7 +171,7 @@ export function ResumeLectureCarousel({
           >
             {/* Green Play Icon */}
             <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
-              <span className="text-lg">▶️</span>
+              <span className="text-lg">Play</span>
             </div>
 
             {/* Content */}
@@ -197,7 +197,7 @@ export function ResumeLectureCarousel({
             </button>
 
             {/* Chevron */}
-            <span className="text-lg">▶</span>
+            <span className="text-lg">Play</span>
           </div>
         </div>
       </div>

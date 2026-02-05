@@ -69,9 +69,9 @@ export default function ShowcasePage() {
                 className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center hover:shadow-lg transition-shadow"
               >
                 {isPlaying ? (
-                  <span className="text-lg">⏸</span>
+                  <span className="text-lg">Pause</span>
                 ) : (
-                  <span className="text-lg">▶️</span>
+                  <span className="text-lg">Play</span>
                 )}
               </button>
               <div className="flex-1">
@@ -100,7 +100,7 @@ export default function ShowcasePage() {
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
-            "📚"
+            "BookOpen"
             <span>Notes</span>
           </button>
           <button
@@ -111,7 +111,7 @@ export default function ShowcasePage() {
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
-            "📑"
+            "FileText"
             <span>Flashcards</span>
           </button>
           <button
@@ -122,7 +122,7 @@ export default function ShowcasePage() {
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
-            "✅"
+            "CheckCircle2"
             <span>Quiz</span>
           </button>
         </div>
@@ -134,7 +134,7 @@ export default function ShowcasePage() {
               {/* AI Summary */}
               <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl border border-blue-200 dark:border-blue-800 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-                  <span className="mr-2">🤖</span>
+                  <span className="mr-2">Bot</span>
                   AI Summary
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -154,7 +154,7 @@ export default function ShowcasePage() {
                   ].map((item, i) => (
                     <div key={i} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer">
                       <div className="flex-shrink-0 w-20 text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">
-                        <span className="text-lg">⏰</span>
+                        <span className="text-lg">Clock</span>
                         {item.time}
                       </div>
                       <p className="text-gray-700 dark:text-gray-300 flex-1">{item.point}</p>
