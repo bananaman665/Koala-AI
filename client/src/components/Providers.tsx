@@ -7,6 +7,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ToastProvider } from '@/components/Toast'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { PushNotificationProvider } from '@/components/PushNotificationProvider'
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -15,7 +16,9 @@ export function Providers({ children }: { children: ReactNode }) {
         <ThemeProvider>
           <AuthProvider>
             <ToastProvider>
-              {children}
+              <PushNotificationProvider>
+                {children}
+              </PushNotificationProvider>
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
