@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect, useCallback } from 'react'
-import { PushNotifications } from '@capacitor/push-notifications'
-import { App } from '@capacitor/app'
 
 interface NotificationPayload {
   title: string
@@ -11,81 +9,108 @@ interface NotificationPayload {
 }
 
 export function usePushNotifications() {
-  // Initialize push notifications
+  // Initialize OneSignal
   useEffect(() => {
-    const initializePushNotifications = async () => {
+    const initializeOneSignal = async () => {
       try {
-        // Request notification permissions
-        const result = await PushNotifications.requestPermissions()
-
-        if (result.receive === 'granted') {
-          // Register for push notifications
-          await PushNotifications.register()
-          console.log('Push notifications registered successfully')
-        } else {
-          console.log('Push notification permissions denied')
+        if (!process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID) {
+          console.warn('NEXT_PUBLIC_ONESIGNAL_APP_ID not configured')
+          return
         }
+
+        // Dynamically import OneSignal SDK (only on client side)
+        const OneSignal = (await import('react-onesignal')).default
+
+        // Initialize OneSignal
+        OneSignal.init({
+          appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID,
+          allowLocalhostAsSecureOrigin: true,
+        })
+
+        // Request notification permissions
+        await OneSignal.Slidedown.promptPush()
+
+        // Get subscription ID
+        const subscription = await OneSignal.User.pushSubscription.id
+        console.log('OneSignal subscription ID:', subscription)
+
+        // Store subscription ID in window for later use
+        if (typeof window !== 'undefined') {
+          ;(window as any).__onesignalSubscriptionId = subscription
+        }
+
+        console.log('OneSignal initialized successfully')
       } catch (error) {
-        console.error('Failed to initialize push notifications:', error)
+        console.error('Failed to initialize OneSignal:', error)
       }
     }
 
-    initializePushNotifications()
+    if (typeof window !== 'undefined') {
+      initializeOneSignal()
+    }
   }, [])
 
   // Handle incoming notifications
   useEffect(() => {
-    const handlePushNotification = PushNotifications.addListener(
-      'pushNotificationReceived',
-      (notification) => {
-        console.log('Push notification received:', notification)
+    if (typeof window === 'undefined') return
 
-        const { title, body, data } = notification
+    const setupListeners = async () => {
+      try {
+        const OneSignal = (await import('react-onesignal')).default
 
-        // Show in-app notification
-        if (window.__toastNotification) {
-          window.__toastNotification({
-            title: title || 'Notification',
-            body: body || '',
-            data,
-          })
-        }
+        // Handle notification clicks
+        OneSignal.User.PushSubscription.addEventListener('click', (event) => {
+          console.log('Notification clicked:', event)
+
+          const notification = event.notification
+          const data = notification.data || {}
+
+          // Handle notification actions based on data
+          if (data.action) {
+            handleNotificationAction_impl(data.action, data)
+          }
+
+          // Show in-app notification
+          if (window.__toastNotification) {
+            window.__toastNotification({
+              title: notification.title || 'Notification',
+              body: notification.body || '',
+              data,
+            })
+          }
+        })
+
+        // Handle foreground notifications
+        OneSignal.Notifications.addEventListener('foreground', (event) => {
+          console.log('Foreground notification received:', event)
+
+          const notification = event.notification
+
+          // Show in-app notification for foreground messages
+          if (window.__toastNotification) {
+            window.__toastNotification({
+              title: notification.title || 'Notification',
+              body: notification.body || '',
+              data: notification.data || {},
+            })
+          }
+        })
+      } catch (error) {
+        console.error('Failed to set up notification listeners:', error)
       }
-    )
-
-    return () => {
-      handlePushNotification.remove()
     }
+
+    setupListeners()
   }, [])
 
-  // Handle notification action taps
-  useEffect(() => {
-    const handleNotificationAction = PushNotifications.addListener(
-      'pushNotificationActionPerformed',
-      (notification) => {
-        console.log('Push notification action performed:', notification)
-
-        const { notification: notifData } = notification
-
-        // Handle notification actions based on data
-        if (notifData.data?.action) {
-          handleNotificationAction_impl(notifData.data.action, notifData.data)
-        }
-      }
-    )
-
-    return () => {
-      handleNotificationAction.remove()
-    }
-  }, [])
-
-  // Get notification token for backend
+  // Get OneSignal subscription ID
   const getNotificationToken = useCallback(async () => {
     try {
-      const result = await PushNotifications.getDeliveryId()
-      return result.id
+      const OneSignal = (await import('react-onesignal')).default
+      const subscription = await OneSignal.User.pushSubscription.id
+      return subscription
     } catch (error) {
-      console.error('Failed to get delivery ID:', error)
+      console.error('Failed to get OneSignal subscription ID:', error)
       return null
     }
   }, [])
@@ -93,17 +118,28 @@ export function usePushNotifications() {
   // Send a test notification (for development)
   const sendTestNotification = useCallback(async (payload: NotificationPayload) => {
     try {
-      console.log('Sending test notification:', payload)
-      // This is primarily for testing local notifications
-      // Production notifications come from your backend
+      console.log('Test notification would be sent via OneSignal dashboard')
+      // Notifications are sent through OneSignal dashboard or API
+      // Not directly from the app
     } catch (error) {
-      console.error('Failed to send test notification:', error)
+      console.error('Error with test notification:', error)
+    }
+  }, [])
+
+  // Set user properties (optional - for segmentation)
+  const setUserProperty = useCallback(async (key: string, value: string) => {
+    try {
+      const OneSignal = (await import('react-onesignal')).default
+      OneSignal.User.addTag(key, value)
+    } catch (error) {
+      console.error('Failed to set user property:', error)
     }
   }, [])
 
   return {
     getNotificationToken,
     sendTestNotification,
+    setUserProperty,
   }
 }
 
@@ -131,31 +167,14 @@ function handleNotificationAction_impl(action: string, data: Record<string, any>
   }
 }
 
-// Export function to send notifications from app (call from backend)
-export async function sendPushNotification(
-  userId: string,
-  payload: NotificationPayload
-) {
+// Export function to log events (for analytics)
+export async function logOneSignalEvent(eventName: string, properties?: Record<string, any>) {
   try {
-    const response = await fetch('/api/notifications/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        ...payload,
-      }),
-    })
-
-    if (!response.ok) {
-      throw new Error('Failed to send push notification')
-    }
-
-    return await response.json()
+    const OneSignal = (await import('react-onesignal')).default
+    OneSignal.User.addTag('last_event', eventName)
+    console.log('Event logged:', eventName, properties)
   } catch (error) {
-    console.error('Error sending push notification:', error)
-    throw error
+    console.error('Error logging event:', error)
   }
 }
 
@@ -167,5 +186,6 @@ declare global {
       body: string
       data?: Record<string, any>
     }) => void
+    __onesignalSubscriptionId?: string
   }
 }
