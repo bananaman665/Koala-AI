@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Home, BookOpen, Mic, Loader, BarChart2, Users, Flame, Play, Pause, CheckCircle, Trophy, Lock, Star, ChevronRight, AlertTriangle, Calculator, Microscope, Dna, Eye, Lightbulb, Zap, AlertTriangle as WarningIcon } from 'lucide-react'
@@ -1867,7 +1868,13 @@ function DashboardContent() {
                 href="/settings"
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
               >
-                <span className="text-lg">⚙️</span>
+                <Image
+                  src="/icon-192.png"
+                  alt="Settings"
+                  width={24}
+                  height={24}
+                  className="rounded"
+                />
               </Link>
 
               {/* Avatar */}
