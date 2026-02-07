@@ -8,6 +8,7 @@ export const subjectIcons: Record<string, string> = {
   physics: 'Zap',
   genetics: 'Dna',
   engineering: 'Wrench',
+  computer_science: 'Code',
   literature: 'BookOpen',
   default: 'BookOpen',
 }
@@ -21,6 +22,7 @@ export const subjectColors: Record<string, { text: string; bg: string }> = {
   physics: { text: 'text-pink-600 dark:text-pink-400', bg: 'bg-pink-100 dark:bg-pink-900/30' },
   genetics: { text: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-100 dark:bg-indigo-900/30' },
   engineering: { text: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-100 dark:bg-yellow-900/30' },
+  computer_science: { text: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-100 dark:bg-cyan-900/30' },
   literature: { text: 'text-red-600 dark:text-red-400', bg: 'bg-red-100 dark:bg-red-900/30' },
   default: { text: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-100 dark:bg-gray-700' },
 }

@@ -8,6 +8,7 @@ import {
   Zap,
   Dna,
   Wrench,
+  Code,
   BookOpen,
   type LucideIcon,
 } from 'lucide-react'
@@ -28,6 +29,7 @@ const iconMap: Record<string, LucideIcon> = {
   Zap,
   Dna,
   Wrench,
+  Code,
   BookOpen,
 }
 
