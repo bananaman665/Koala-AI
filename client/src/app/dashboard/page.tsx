@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Home, BookOpen, Mic, Loader, BarChart2, Users, Flame, Play, Pause, CheckCircle, Trophy, Lock, Star, ChevronRight, AlertTriangle, Calculator, Microscope, Dna, Eye, Lightbulb, Zap, AlertTriangle as WarningIcon, Settings } from 'lucide-react'
+import { Home, BookOpen, Mic, Loader, BarChart2, Users, Flame, Play, Pause, CheckCircle, Trophy, Lock, Star, ChevronRight, AlertTriangle, Calculator, Microscope, Dna, Eye, Lightbulb, Zap, AlertTriangle as WarningIcon, Settings, Code, Atom, Beaker, Wrench } from 'lucide-react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
@@ -2899,19 +2899,21 @@ function DashboardContent() {
                       {newCourseData.subject ? (
                         <>
                           {(() => {
-                            const subjectIcons: Record<string, any> = {
-                              math: "🧮",
-                              science: "🧪",
-                              chemistry: "🧬",
-                              biology: "🔬",
-                              physics: "⚛️",
-                              genetics: "🧬",
-                              engineering: "⚡",
-                              literature: "📚",
-                              other: "📚",
+                            const getIcon = (subject: string) => {
+                              switch(subject?.toLowerCase()) {
+                                case 'math': return <Calculator size={18} />
+                                case 'science': return <Beaker size={18} />
+                                case 'chemistry': return <Atom size={18} />
+                                case 'biology': return <Microscope size={18} />
+                                case 'physics': return <Zap size={18} />
+                                case 'genetics': return <Dna size={18} />
+                                case 'engineering': return <Wrench size={18} />
+                                case 'computer_science': return <Code size={18} />
+                                case 'literature': return <BookOpen size={18} />
+                                default: return <BookOpen size={18} />
+                              }
                             }
-                            const SubjectIcon = subjectIcons[newCourseData.subject] || "📚"
-                            return <SubjectIcon className="w-4 h-4" />
+                            return getIcon(newCourseData.subject)
                           })()}
                           <span className="capitalize">{newCourseData.subject}</span>
                         </>
@@ -2925,15 +2927,16 @@ function DashboardContent() {
                   {showSubjectDropdown && (
                     <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
                       {[
-                        { value: 'math', label: 'Math', icon: "🧮" },
-                        { value: 'science', label: 'Science', icon: "🧪" },
-                        { value: 'chemistry', label: 'Chemistry', icon: "🧬" },
-                        { value: 'biology', label: 'Biology', icon: "🔬" },
-                        { value: 'physics', label: 'Physics', icon: "⚛️" },
-                        { value: 'genetics', label: 'Genetics', icon: "🧬" },
-                        { value: 'engineering', label: 'Engineering', icon: "⚡" },
-                        { value: 'literature', label: 'Literature', icon: "📚" },
-                        { value: 'other', label: 'Other', icon: "📚" },
+                        { value: 'math', label: 'Math', icon: Calculator },
+                        { value: 'science', label: 'Science', icon: Beaker },
+                        { value: 'chemistry', label: 'Chemistry', icon: Atom },
+                        { value: 'biology', label: 'Biology', icon: Microscope },
+                        { value: 'physics', label: 'Physics', icon: Zap },
+                        { value: 'genetics', label: 'Genetics', icon: Dna },
+                        { value: 'engineering', label: 'Engineering', icon: Wrench },
+                        { value: 'computer_science', label: 'Computer Science', icon: Code },
+                        { value: 'literature', label: 'Literature', icon: BookOpen },
+                        { value: 'other', label: 'Other', icon: BookOpen },
                       ].map((subject) => (
                         <button
                           key={subject.value}
@@ -2946,7 +2949,7 @@ function DashboardContent() {
                             newCourseData.subject === subject.value ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                           }`}
                         >
-                          <span className="text-lg">{subject.icon}</span>
+                          <subject.icon size={20} className="text-gray-600 dark:text-gray-400" />
                           <span className="text-gray-900 dark:text-white">{subject.label}</span>
                           {newCourseData.subject === subject.value && (
                             <CheckCircle size={20} className="text-green-600 dark:text-green-400 ml-auto" />
