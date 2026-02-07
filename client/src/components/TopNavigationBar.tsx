@@ -1,7 +1,8 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
-import { Settings, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { StreakDisplay } from './StreakDisplay'
 
 interface TopNavigationBarProps {
@@ -85,7 +86,13 @@ export function TopNavigationBar({
             href="/settings"
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           >
-            <Settings size={20} className="text-gray-700 dark:text-gray-300" />
+            <Image
+              src="/icon-192.png"
+              alt="Settings"
+              width={20}
+              height={20}
+              className="rounded"
+            />
           </Link>
 
           {/* Profile Avatar */}
