@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
-import { HelpCircle, Lock } from 'lucide-react'
+import { HelpCircle, Lock, Settings } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 
@@ -282,13 +281,7 @@ export default function ProfilePage() {
                 href="/settings"
                 className="p-2 hover:bg-gray-100 dark:hover:bg-[#1E293B] rounded-xl transition-colors"
               >
-                <Image
-                  src="/icon-192.png"
-                  alt="Settings"
-                  width={24}
-                  height={24}
-                  className="rounded"
-                />
+                <Settings size={24} className="text-gray-700 dark:text-gray-300" />
               </Link>
             </div>
           </div>
@@ -378,13 +371,7 @@ export default function ProfilePage() {
                   href="/settings"
                   className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-all"
                 >
-                  <Image
-                    src="/icon-192.png"
-                    alt="Settings"
-                    width={24}
-                    height={24}
-                    className="rounded brightness-0 invert"
-                  />
+                  <Settings size={24} />
                   <span>Settings</span>
                 </Link>
               </div>

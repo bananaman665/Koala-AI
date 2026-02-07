@@ -1,10 +1,9 @@
 'use client'
 
 import { Suspense, useState, useEffect, useRef } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Home, BookOpen, Mic, Loader, BarChart2, Users, Flame, Play, Pause, CheckCircle, Trophy, Lock, Star, ChevronRight, AlertTriangle, Calculator, Microscope, Dna, Eye, Lightbulb, Zap, AlertTriangle as WarningIcon } from 'lucide-react'
+import { Home, BookOpen, Mic, Loader, BarChart2, Users, Flame, Play, Pause, CheckCircle, Trophy, Lock, Star, ChevronRight, AlertTriangle, Calculator, Microscope, Dna, Eye, Lightbulb, Zap, AlertTriangle as WarningIcon, Settings } from 'lucide-react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
@@ -1868,13 +1867,7 @@ function DashboardContent() {
                 href="/settings"
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
               >
-                <Image
-                  src="/icon-192.png"
-                  alt="Settings"
-                  width={24}
-                  height={24}
-                  className="rounded"
-                />
+                <Settings size={24} className="text-gray-700 dark:text-gray-300" />
               </Link>
 
               {/* Avatar */}
