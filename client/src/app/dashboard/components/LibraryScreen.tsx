@@ -9,7 +9,7 @@ import { FlashcardMode } from './FlashcardMode'
 import { SubjectIcon } from '@/components/SubjectIcon'
 import { getSubjectColor } from '@/lib/subject-utils'
 import type { Database } from '@/lib/supabase'
-import { Play, ChevronRight, Star, Clock, Brain, Headphones, Loader, BookOpen, Search, Trash2, Layers } from 'lucide-react'
+import { Play, ChevronRight, Star, Clock, Brain, Headphones, Loader, BookOpen, Search, Trash2, Layers, Notebook, LayoutGrid } from 'lucide-react'
 
 type Lecture = Database['public']['Tables']['lectures']['Row'] & {
   courses?: { name: string; subject?: string } | null
@@ -311,7 +311,7 @@ export function LibraryScreen({
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                  <Cards size={24} className="text-emerald-600 dark:text-emerald-400" />
+                  <LayoutGrid size={24} className="text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-gray-900 dark:text-white">

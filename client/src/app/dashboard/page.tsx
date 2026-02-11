@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Home, BookOpen, Mic, Loader, BarChart2, Users, Flame, Play, Pause, CheckCircle, Trophy, Lock, Star, ChevronRight, AlertTriangle, Calculator, Microscope, Dna, Eye, Lightbulb, Zap, AlertTriangle as WarningIcon, Settings, Code, Atom, Beaker, Wrench } from 'lucide-react'
+import { Home, BookOpen, Mic, Loader, BarChart2, Users, Flame, Play, Pause, CheckCircle, Trophy, Lock, Star, ChevronRight, AlertTriangle, Calculator, Microscope, Dna, Eye, Lightbulb, Zap, AlertTriangle as WarningIcon, Settings, Code, Atom, Beaker, Wrench, Trash2, ChevronLeft } from 'lucide-react'
 import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
@@ -2023,7 +2023,7 @@ function DashboardContent() {
           if (!course) return null
 
           return (
-          <div key={course.id} className={`${isExitingCourse ? 'animate-zoom-out' : 'animate-zoom-in'}`}>
+          <div key={course.id} className={`${isExitingCourse ? 'animate-zoom-out' : 'animate-zoom-in'} pt-8`}>
             {/* Back Button */}
             <div className="flex items-center justify-between mb-6">
               <button
@@ -2036,7 +2036,7 @@ function DashboardContent() {
                 }}
                 className="flex items-center gap-1 text-blue-500 hover:text-blue-600 active:scale-95 transition-all font-medium"
               >
-                <span className="text-lg">◀</span>
+                <ChevronLeft size={20} />
                 <span>Back</span>
               </button>
             </div>
@@ -2619,7 +2619,7 @@ function DashboardContent() {
                           }}
                           className="w-full flex items-center justify-center gap-2 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 active:scale-[0.98] transition-all"
                         >
-                          <span className="text-lg">🗑️</span>
+                          <Trash2 size={20} />
                           Delete Course
                         </button>
                       </div>
@@ -2691,7 +2691,7 @@ function DashboardContent() {
                         }}
                         className="w-full flex items-center justify-center gap-2 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 active:scale-[0.98] transition-all"
                       >
-                        <span className="text-lg">🗑️</span>
+                        <Trash2 size={20} />
                         Delete Course
                       </button>
                     </div>
@@ -3872,7 +3872,9 @@ function DashboardContent() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
             <div className="text-center space-y-2">
-              <span className="text-lg">🗑️</span>
+              <div className="flex justify-center">
+                <Trash2 size={32} className="text-red-600 dark:text-red-400" />
+              </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Lecture?</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">This action cannot be undone. All notes and data will be permanently removed.</p>
             </div>
@@ -3915,7 +3917,9 @@ function DashboardContent() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
             <div className="text-center space-y-2">
-              <span className="text-lg">🗑️</span>
+              <div className="flex justify-center">
+                <Trash2 size={32} className="text-red-600 dark:text-red-400" />
+              </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Course?</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">This will delete the course and all its lectures. This action cannot be undone.</p>
             </div>

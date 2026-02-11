@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { ChevronLeft, ChevronDown, ChevronUp, Search, HelpCircle, Mail, MessageCircle, BookOpen, Zap, Mic, FileText, Settings } from 'lucide-react'
 import { hapticButton, hapticSelection } from '@/lib/haptics'
-import { emojiIcons } from '@/lib/emoji-icons'
 
 export default function HelpPage() {
   const router = useRouter()
@@ -22,21 +22,21 @@ export default function HelpPage() {
 
   const quickLinks = [
     {
-      icon: emojiIcons.Mail,
+      icon: 'mail',
       title: 'Contact Support',
       description: 'Get help from our team',
       color: 'blue',
       href: 'mailto:support@koala.ai'
     },
     {
-      icon: emojiIcons.MessageCircle,
+      icon: 'message',
       title: 'Community',
       description: 'Connect with students',
       color: 'purple',
       href: '/help/community'
     },
     {
-      icon: emojiIcons.BookOpen,
+      icon: 'book',
       title: 'Tutorials',
       description: 'Watch video guides',
       color: 'green',
@@ -46,7 +46,7 @@ export default function HelpPage() {
 
   const categories = [
     {
-      icon: emojiIcons.Zap,
+      icon: 'zap',
       title: 'Getting Started',
       color: 'orange',
       articles: [
@@ -57,7 +57,7 @@ export default function HelpPage() {
       ]
     },
     {
-      icon: emojiIcons.Mic,
+      icon: 'mic',
       title: 'Recording',
       color: 'red',
       articles: [
@@ -68,7 +68,7 @@ export default function HelpPage() {
       ]
     },
     {
-      icon: emojiIcons.FileText,
+      icon: 'filetext',
       title: 'Notes & Transcripts',
       color: 'blue',
       articles: [
@@ -79,7 +79,7 @@ export default function HelpPage() {
       ]
     },
     {
-      icon: emojiIcons.Settings,
+      icon: 'settings',
       title: 'Account & Settings',
       color: 'gray',
       articles: [
@@ -126,6 +126,20 @@ export default function HelpPage() {
     return colors[color] || colors.blue
   }
 
+  const getIcon = (iconName: string, size: number = 20) => {
+    const iconProps = { size, 'aria-hidden': true }
+    switch (iconName) {
+      case 'mail': return <Mail {...iconProps} />
+      case 'message': return <MessageCircle {...iconProps} />
+      case 'book': return <BookOpen {...iconProps} />
+      case 'zap': return <Zap {...iconProps} />
+      case 'mic': return <Mic {...iconProps} />
+      case 'filetext': return <FileText {...iconProps} />
+      case 'settings': return <Settings {...iconProps} />
+      default: return null
+    }
+  }
+
   // Filter content based on search
   const filteredFaqs = faqs.filter(faq =>
     searchQuery === '' ||
@@ -150,7 +164,7 @@ export default function HelpPage() {
               onClick={handleBack}
               className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <span className="text-lg">←</span>
+              <ChevronLeft size={24} className="text-gray-700 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Help & FAQ</h1>
           </div>
@@ -161,7 +175,7 @@ export default function HelpPage() {
         {/* Icon Header */}
         <div className="flex flex-col items-center py-4">
           <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4">
-            <span className="text-lg">{emojiIcons.HelpCircle}</span>
+            <HelpCircle size={32} className="text-blue-600 dark:text-blue-400" />
           </div>
           <p className="text-gray-500 dark:text-gray-400 text-center">
             Find answers and get support
@@ -171,7 +185,7 @@ export default function HelpPage() {
         {/* Search */}
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <span className="text-lg">{emojiIcons.Search}</span>
+            <Search size={20} className="text-gray-600 dark:text-gray-400" />
           </div>
           <input
             type="text"
@@ -198,13 +212,13 @@ export default function HelpPage() {
                   className="flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <div className={`w-10 h-10 ${colors.bg} rounded-full flex items-center justify-center`}>
-                    <span className="text-lg">{link.icon}</span>
+                    <div className={colors.icon}>{getIcon(link.icon)}</div>
                   </div>
                   <div className="ml-3 flex-1">
                     <p className="font-medium text-gray-900 dark:text-white">{link.title}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{link.description}</p>
                   </div>
-                  <span className="text-lg">←</span>
+                  <ChevronLeft size={20} className="text-gray-400 dark:text-gray-500" />
                 </a>
               )
             })}
@@ -221,7 +235,7 @@ export default function HelpPage() {
                 <div key={i} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center space-x-3">
                     <div className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center`}>
-                      <span className="text-lg">{category.icon}</span>
+                      <div className={colors.icon}>{getIcon(category.icon)}</div>
                     </div>
                     <h3 className="font-semibold text-gray-900 dark:text-white">{category.title}</h3>
                   </div>
@@ -233,7 +247,7 @@ export default function HelpPage() {
                         className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                       >
                         <span className="text-gray-700 dark:text-gray-300">{article}</span>
-                        <span className="text-lg">←</span>
+                        <ChevronLeft size={20} className="text-gray-400 dark:text-gray-500" />
                       </button>
                     ))}
                   </div>
@@ -258,9 +272,9 @@ export default function HelpPage() {
                   >
                     <span className="font-medium text-gray-900 dark:text-white pr-4">{faq.question}</span>
                     {expandedFaq === i ? (
-                      <span className="text-lg">▲</span>
+                      <ChevronUp size={20} className="text-gray-400 dark:text-gray-500" />
                     ) : (
-                      <span className="text-lg">▼</span>
+                      <ChevronDown size={20} className="text-gray-400 dark:text-gray-500" />
                     )}
                   </button>
                   {expandedFaq === i && (
@@ -278,7 +292,7 @@ export default function HelpPage() {
         {searchQuery && filteredFaqs.length === 0 && filteredCategories.length === 0 && (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-lg">{emojiIcons.Search}</span>
+              <Search size={24} className="text-gray-600 dark:text-gray-400" />
             </div>
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No results found</h3>
             <p className="text-gray-500 dark:text-gray-400">Try searching with different keywords</p>
@@ -288,7 +302,7 @@ export default function HelpPage() {
         {/* Contact Support */}
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 text-center border border-blue-100 dark:border-blue-900/30">
           <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-            <span className="text-lg">{emojiIcons.Mail}</span>
+            <Mail size={24} className="text-blue-600 dark:text-blue-400" />
           </div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Still need help?</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Our support team is here to assist you</p>

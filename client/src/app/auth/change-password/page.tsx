@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { Lock, Shield, Eye, EyeOff, CheckCircle, AlertCircle, ChevronLeft } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError } from '@/lib/haptics'
 
@@ -80,7 +81,7 @@ export default function ChangePasswordPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
         <div className="text-center">
           <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-lg">🔒</span>
+            <Lock size={32} className="text-gray-600 dark:text-gray-400" />
           </div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Sign In Required</h1>
           <p className="text-gray-500 dark:text-gray-400 mb-6">You need to be signed in to change your password.</p>
@@ -105,7 +106,7 @@ export default function ChangePasswordPage() {
               onClick={handleBack}
               className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <span className="text-lg">←</span>
+              <ChevronLeft size={24} className="text-gray-700 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Change Password</h1>
           </div>
@@ -118,7 +119,7 @@ export default function ChangePasswordPage() {
             {/* Icon Header */}
             <div className="flex flex-col items-center py-6">
               <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4">
-                <span className="text-lg">🛡️</span>
+                <Shield size={32} className="text-blue-600 dark:text-blue-400" />
               </div>
               <p className="text-gray-500 dark:text-gray-400 text-center">
                 Create a strong password to keep your account secure
@@ -143,7 +144,7 @@ export default function ChangePasswordPage() {
                 <div className="p-4">
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <span className="text-lg">🔒</span>
+                      <Lock size={20} className="text-gray-600 dark:text-gray-400" />
                     </div>
                     <input
                       type={showNewPassword ? 'text' : 'password'}
@@ -160,9 +161,9 @@ export default function ChangePasswordPage() {
                       className="absolute inset-y-0 right-0 pr-4 flex items-center"
                     >
                       {showNewPassword ? (
-                        <span className="text-lg">👁️‍🗨️</span>
+                        <EyeOff size={20} className="text-gray-600 dark:text-gray-400" />
                       ) : (
-                        <span className="text-lg">👁️</span>
+                        <Eye size={20} className="text-gray-600 dark:text-gray-400" />
                       )}
                     </button>
                   </div>
@@ -178,9 +179,9 @@ export default function ChangePasswordPage() {
                               : 'bg-gray-100 dark:bg-gray-700'
                           }`}>
                             {req.met ? (
-                              <span className="text-lg">✅</span>
+                              <CheckCircle size={16} className="text-green-600 dark:text-green-400" />
                             ) : (
-                              <span className="text-lg">❌</span>
+                              <AlertCircle size={16} className="text-gray-600 dark:text-gray-400" />
                             )}
                           </div>
                           <span className={`text-sm ${
@@ -206,7 +207,7 @@ export default function ChangePasswordPage() {
                 <div className="p-4">
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <span className="text-lg">🔒</span>
+                      <Lock size={20} className="text-gray-600 dark:text-gray-400" />
                     </div>
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
@@ -227,9 +228,9 @@ export default function ChangePasswordPage() {
                       className="absolute inset-y-0 right-0 pr-4 flex items-center"
                     >
                       {showConfirmPassword ? (
-                        <span className="text-lg">👁️‍🗨️</span>
+                        <EyeOff size={20} className="text-gray-600 dark:text-gray-400" />
                       ) : (
-                        <span className="text-lg">👁️</span>
+                        <Eye size={20} className="text-gray-600 dark:text-gray-400" />
                       )}
                     </button>
                   </div>
@@ -242,9 +243,9 @@ export default function ChangePasswordPage() {
                           : 'bg-red-100 dark:bg-red-900/30'
                       }`}>
                         {passwordsMatch ? (
-                          <span className="text-lg">✅</span>
+                          <CheckCircle size={16} className="text-green-600 dark:text-green-400" />
                         ) : (
-                          <span className="text-lg">❌</span>
+                          <AlertCircle size={16} className="text-red-600 dark:text-red-400" />
                         )}
                       </div>
                       <span className={`text-sm ${
@@ -280,7 +281,7 @@ export default function ChangePasswordPage() {
           /* Success State */
           <div className="flex flex-col items-center py-12">
             <div className="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6 animate-fade-in">
-              <span className="text-lg">✅</span>
+              <CheckCircle size={48} className="text-green-600 dark:text-green-400" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Password Updated!</h2>
             <p className="text-gray-500 dark:text-gray-400 text-center mb-8">

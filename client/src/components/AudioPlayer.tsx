@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react'
 import { useNativeAudioPlayer } from '@/hooks/useNativeAudioPlayer'
 
 interface TranscriptSegment {

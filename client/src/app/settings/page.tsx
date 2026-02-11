@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Volume2, Moon, Sun, Bell, Shield, HelpCircle, Mail, Play, ChevronRight } from 'lucide-react'
+import { Volume2, Moon, Sun, Bell, Shield, HelpCircle, Mail, Play, ChevronRight, Lock, ChevronLeft, LogOut } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { hapticButton, hapticSelection, hapticSuccess } from '@/lib/haptics'
@@ -95,7 +95,7 @@ export default function SettingsPage() {
               onClick={handleBack}
               className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <span className="text-lg">←</span>
+              <ChevronLeft size={24} className="text-gray-700 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Settings</h1>
           </div>
@@ -123,7 +123,7 @@ export default function SettingsPage() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">View profile</p>
               </div>
             </div>
-            <span className="text-lg">▶</span>
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </Link>
 
           <button
@@ -132,11 +132,11 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <span className="text-lg">🔒</span>
+                <Lock size={20} className="text-gray-600 dark:text-gray-300" />
               </div>
               <span className="font-medium text-gray-900 dark:text-white">Change Password</span>
             </div>
-            <span className="text-lg">▶</span>
+            <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
@@ -342,7 +342,7 @@ export default function SettingsPage() {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                <span className="text-lg">🚪</span>
+                <LogOut size={20} className="text-red-600 dark:text-red-400" />
               </div>
               <span className="font-medium text-red-600 dark:text-red-400">Sign Out</span>
             </div>
