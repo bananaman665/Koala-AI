@@ -15,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
 import { soundSuccess } from '@/lib/sounds'
 import { supabase, uploadAudioFile, reorganizeAudioFile } from '@/lib/supabase'
+import { getFriendlyError, logError } from '@/lib/errorHandler'
 import type { Database } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
 import { SkeletonLectureCard, SkeletonCourseCard, SkeletonStats } from '@/components/Skeleton'
@@ -1582,11 +1583,9 @@ function DashboardContent() {
         setIsFlashcardModeActive(true)
       }
     } catch (err: any) {
-      console.error('[generateFlashcards] Caught error', {
-        message: err.message,
-        stack: err.stack
-      })
-      setFlashcardsError(err.message || 'Failed to generate flashcards')
+      const friendlyError = getFriendlyError(err)
+      logError('generateFlashcards', err)
+      setFlashcardsError(friendlyError.message)
     } finally {
       setIsGeneratingFlashcards(false)
     }
@@ -1693,11 +1692,9 @@ function DashboardContent() {
       setIncorrectQuestions([])
       setRound(1)
     } catch (err: any) {
-      console.error('[generateLearnMode] Caught error', {
-        message: err.message,
-        stack: err.stack
-      })
-      setLearnModeError(err.message || 'Failed to generate learn mode questions')
+      const friendlyError = getFriendlyError(err)
+      logError('generateLearnMode', err)
+      setLearnModeError(friendlyError.message)
     } finally {
       setIsGeneratingLearnMode(false)
     }

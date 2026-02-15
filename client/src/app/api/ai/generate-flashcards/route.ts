@@ -57,12 +57,36 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString()
     })
 
+    // Determine friendly error message based on error type
+    let friendlyMessage = 'Unable to generate flashcards at this moment. Please try again.'
+    let statusCode = 500
+
+    if (error?.message?.includes('Content is required')) {
+      friendlyMessage = 'Please provide content to generate flashcards'
+      statusCode = 400
+    } else if (error?.message?.includes('too short')) {
+      friendlyMessage = 'The content is too short. Please provide more text.'
+      statusCode = 400
+    } else if (error?.message?.includes('parse') || error?.message?.includes('JSON')) {
+      friendlyMessage = 'We had trouble processing the response. Please try again.'
+      statusCode = 500
+    } else if (error?.message?.includes('API') || error?.message?.includes('MISTRAL')) {
+      friendlyMessage = 'The AI service is temporarily unavailable. Please try again shortly.'
+      statusCode = 503
+    } else if (error?.message?.includes('timeout')) {
+      friendlyMessage = 'The request took too long. Please try again.'
+      statusCode = 504
+    } else if (error?.message?.includes('zero flashcards')) {
+      friendlyMessage = 'Could not generate flashcards from this content. Try with different text.'
+      statusCode = 400
+    }
+
     return NextResponse.json(
       {
-        error: 'Failed to generate flashcards',
-        message: error?.message || 'Unknown error',
+        error: friendlyMessage,
+        message: friendlyMessage,
       },
-      { status: 500 }
+      { status: statusCode }
     )
   }
 }
