@@ -81,7 +81,7 @@ export function AnalyticsScreen({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Study Streak */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 sm:p-6 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200 flex flex-col relative overflow-hidden">
-            <div className="absolute top-2 sm:top-0 right-4 w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+            <div className="absolute top-4 sm:top-0 right-4 w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
               <TrendingUp size={28} className="text-orange-600 dark:text-orange-400" />
             </div>
             <h3 className="hidden sm:block text-lg font-bold text-gray-900 dark:text-white mb-6 pt-2">Study Streak</h3>
