@@ -35,6 +35,18 @@ import { LearnMode } from './components/LearnMode'
 import { DashboardHomeScreen } from './components/DashboardHomeScreen'
 import { LibraryScreen } from './components/LibraryScreen'
 import { ShareLectureToClassModal } from './components/ShareLectureToClassModal'
+import { ReadyToRecordModal } from './components/ReadyToRecordModal'
+import { MicPermissionModal } from './components/MicPermissionModal'
+import { DeleteLectureModal } from './components/DeleteLectureModal'
+import { DeleteCourseModal } from './components/DeleteCourseModal'
+import { FullScreenNotesModal } from './components/FullScreenNotesModal'
+import { SaveLectureModal } from './components/SaveLectureModal'
+import { StreakDetailModal } from './components/StreakDetailModal'
+import { MobileTopNav } from './components/MobileTopNav'
+import { MobileBottomNav } from './components/MobileBottomNav'
+import { FloatingRecordingPanel } from './components/FloatingRecordingPanel'
+import { CreateCourseModal } from './components/CreateCourseModal'
+import { CreateClassModal } from './components/CreateClassModal'
 import { DailyGreeting } from '@/components/DailyGreeting'
 import { Sidebar } from '@/components/Sidebar'
 import { TopNavigationBar } from '@/components/TopNavigationBar'
@@ -1788,6 +1800,157 @@ function DashboardContent() {
     setWrittenAnswerFeedback(null)
   }
 
+  const handleStopRecording = async () => {
+    hapticImpact('medium')
+    setIsStoppingRecording(true)
+    try {
+      const result = await stopAndGenerateNotes()
+      console.log('[Dashboard] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length, audioBlob: result.audioBlob?.size } : 'null')
+      if (result?.audioBlob) {
+        capturedAudioBlobRef.current = result.audioBlob
+        console.log('[Dashboard] Captured audioBlob in ref:', result.audioBlob.size, 'bytes')
+      }
+      if (result && result.transcript) {
+        hapticSuccess()
+        setShowCourseSelectionModal(true)
+      } else {
+        if (transcript && transcript.trim().length > 0) {
+          setShowCourseSelectionModal(true)
+        } else {
+          hapticError()
+          alert('No audio was recorded. Please ensure microphone permissions are granted and try again.')
+        }
+      }
+    } catch (error) {
+      console.error('Recording error:', error)
+      hapticError()
+      if (transcript && transcript.trim().length > 0) {
+        setShowCourseSelectionModal(true)
+      } else {
+        alert('Recording failed. Please try again.')
+      }
+    }
+    setIsStoppingRecording(false)
+  }
+
+  const handleSaveLecture = async () => {
+    if (!selectedCourseForRecording) {
+      alert('Please select a course')
+      return
+    }
+    setIsSavingRecording(true)
+    try {
+      let audioUrl: string | null = null
+      let uploadedExtension: string | null = null
+      let tempUploadId: string | null = null
+      const audioBlobToUpload = capturedAudioBlobRef.current
+      console.log('[SaveLecture] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
+
+      if (audioBlobToUpload) {
+        try {
+          console.log('[SaveLecture] Uploading audio to storage with temp ID...')
+          tempUploadId = `temp-${Date.now()}`
+          const uploadResult = await uploadAudioFile(user!.id, tempUploadId, audioBlobToUpload)
+          audioUrl = uploadResult.url
+          uploadedExtension = uploadResult.extension
+          console.log('[SaveLecture] Audio uploaded, URL:', audioUrl)
+        } catch (audioError) {
+          console.error('[SaveLecture] Failed to upload audio:', audioError)
+          toast.error(`Warning: Audio file could not be uploaded. ${(audioError as Error).message}`)
+        }
+      } else {
+        console.log('[SaveLecture] No audioBlob available to upload')
+      }
+
+      const { count: lectureCount } = await (supabase as any)
+        .from('lectures')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user!.id)
+
+      if (lectureCount !== null && lectureCount >= MAX_LECTURES) {
+        hapticError()
+        toast.error(`Storage limit reached! You can only store ${MAX_LECTURES} lectures on the free plan. Please delete some lectures to continue.`)
+        throw new Error('Lecture limit reached')
+      }
+
+      const defaultTitle = lectureCount !== null ? `Lecture ${lectureCount + 1}` : `Lecture ${new Date().toLocaleDateString()}`
+
+      const { data: lecture, error: lectureError } = await (supabase as any)
+        .from('lectures')
+        .insert({
+          user_id: user!.id,
+          course_id: selectedCourseForRecording,
+          title: lectureTitle.trim() || defaultTitle,
+          duration: duration,
+          transcription_status: 'completed',
+          audio_url: audioUrl,
+        })
+        .select()
+        .single()
+
+      if (lectureError) throw lectureError
+
+      if (audioUrl && tempUploadId && uploadedExtension) {
+        try {
+          console.log('[SaveLecture] Reorganizing audio file with lecture ID...')
+          const newAudioUrl = await reorganizeAudioFile(user!.id, tempUploadId, lecture.id, uploadedExtension)
+          console.log('[SaveLecture] New audio URL:', newAudioUrl)
+          const { error: updateError } = await (supabase as any)
+            .from('lectures')
+            .update({ audio_url: newAudioUrl })
+            .eq('id', lecture.id)
+          if (updateError) {
+            console.error('[SaveLecture] Failed to update lecture with new audio URL:', updateError)
+          } else {
+            console.log('[SaveLecture] Lecture updated with reorganized audio URL successfully')
+          }
+        } catch (reorganizeError) {
+          console.error('[SaveLecture] Failed to reorganize audio file:', reorganizeError)
+        }
+      }
+
+      if (transcript) {
+        await (supabase as any).from('transcripts').insert({
+          lecture_id: lecture.id,
+          user_id: user!.id,
+          content: transcript,
+        })
+      }
+
+      if (notes) {
+        await (supabase as any).from('notes').insert({
+          lecture_id: lecture.id,
+          user_id: user!.id,
+          content: notes,
+        })
+      }
+
+      const { data: updatedLectures } = await supabase
+        .from('lectures')
+        .select('*, courses(name, code, color)')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+
+      if (updatedLectures) {
+        setLectures(updatedLectures)
+      }
+
+      recordActivity()
+      hapticSuccess()
+      soundSuccess()
+
+      setShowCourseSelectionModal(false)
+      setSelectedCourseForRecording(null)
+      setLectureTitle('')
+      capturedAudioBlobRef.current = null
+      reset()
+    } catch (error) {
+      alert('Failed to save recording. Please try again.')
+    } finally {
+      setIsSavingRecording(false)
+    }
+  }
+
   // Show loading screen while checking authentication
   if (isCheckingAuth) {
     return (
@@ -1832,55 +1995,13 @@ function DashboardContent() {
 
         {/* Top Navigation - Mobile Only - Hidden in flashcard/quiz mode */}
         {!isFlashcardModeActive && !isLearnModeActive && (
-        <nav className="lg:hidden fixed top-0 left-0 right-0 bg-white dark:bg-[#1a2235] border-b border-gray-200 dark:border-white/[0.08] z-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="px-4 sm:px-6">
-          <div className="flex justify-between items-center h-14 sm:h-16">
-            {/* Left side - Combined Level & Streak */}
-            <div className="flex items-center gap-0">
-              {/* Level button */}
-              <button
-                onClick={() => { hapticButton(); setShowLevelModal(true) }}
-                className="flex items-center gap-2 hover:bg-purple-100 dark:hover:bg-purple-500/20 px-1 rounded-full transition-colors"
-              >
-                <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-xs font-bold">{levelInfo.level}</span>
-                </div>
-                <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">{levelInfo.name}</span>
-              </button>
-
-              <span className="text-gray-300 dark:text-gray-600">·</span>
-
-              {/* Streak button */}
-              <button
-                onClick={() => { hapticButton(); setShowStreakModal(true) }}
-                className="flex items-center gap-1 hover:bg-purple-100 dark:hover:bg-purple-500/20 px-1 rounded-full transition-colors"
-              >
-                <Flame size={20} className="text-orange-600 dark:text-orange-400" />
-                <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{streak} day{streak !== 1 ? 's' : ''}</span>
-              </button>
-            </div>
-
-            {/* Right side - Actions */}
-            <div className="flex items-center gap-4">
-              {/* Settings */}
-              <Link
-                href="/settings"
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-              >
-                <Settings size={24} className="text-gray-700 dark:text-gray-300" />
-              </Link>
-
-              {/* Avatar */}
-              <Link
-                href="/profile"
-                className="w-9 h-9 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium"
-              >
-                {user?.email?.substring(0, 2).toUpperCase() || 'JD'}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+          <MobileTopNav
+            levelInfo={levelInfo}
+            streak={streak}
+            userEmail={user?.email}
+            onShowLevelModal={() => setShowLevelModal(true)}
+            onShowStreakModal={() => setShowStreakModal(true)}
+          />
         )}
 
       {/* Desktop Top Navigation Bar - Hidden in flashcard/quiz mode */}
@@ -2839,268 +2960,29 @@ function DashboardContent() {
         )}
       </div> {/* Close flex-1 container */}
 
-      {/* New Course Modal */}
-      {showNewCourseModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Create New Course</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Course Name
-                </label>
-                <input
-                  type="text"
-                  value={newCourseData.name}
-                  onChange={(e) => setNewCourseData({ ...newCourseData, name: e.target.value })}
-                  placeholder="e.g., Data Structures and Algorithms"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                  disabled={isCreatingCourse}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Course Code
-                </label>
-                <input
-                  type="text"
-                  value={newCourseData.code}
-                  onChange={(e) => setNewCourseData({ ...newCourseData, code: e.target.value })}
-                  placeholder="e.g., CS101"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                  disabled={isCreatingCourse}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Professor
-                </label>
-                <input
-                  type="text"
-                  value={newCourseData.professor}
-                  onChange={(e) => setNewCourseData({ ...newCourseData, professor: e.target.value })}
-                  placeholder="e.g., Dr. Smith"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                  disabled={isCreatingCourse}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Subject *
-                </label>
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setShowSubjectDropdown(!showSubjectDropdown)}
-                    disabled={isCreatingCourse}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700 text-left flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <span className="flex items-center gap-2">
-                      {newCourseData.subject ? (
-                        <>
-                          {(() => {
-                            const getIcon = (subject: string) => {
-                              switch(subject?.toLowerCase()) {
-                                case 'math': return <Calculator size={18} />
-                                case 'science': return <Beaker size={18} />
-                                case 'chemistry': return <Atom size={18} />
-                                case 'biology': return <Microscope size={18} />
-                                case 'physics': return <Zap size={18} />
-                                case 'genetics': return <Dna size={18} />
-                                case 'engineering': return <Wrench size={18} />
-                                case 'computer_science': return <Code size={18} />
-                                case 'literature': return <BookOpen size={18} />
-                                default: return <BookOpen size={18} />
-                              }
-                            }
-                            return getIcon(newCourseData.subject)
-                          })()}
-                          <span className="capitalize">{newCourseData.subject}</span>
-                        </>
-                      ) : (
-                        <span className="text-gray-500 dark:text-gray-400">Select a subject</span>
-                      )}
-                    </span>
-                    <span className={`text-lg transition-transform inline-block ${showSubjectDropdown ? 'rotate-180' : ''}`}>▼</span>
-                  </button>
+      <CreateCourseModal
+        isOpen={showNewCourseModal}
+        newCourseData={newCourseData}
+        isCreatingCourse={isCreatingCourse}
+        onCourseDataChange={setNewCourseData}
+        onCancel={() => {
+          setShowNewCourseModal(false)
+          setNewCourseData({ name: '', code: '', professor: '', subject: '', color: 'blue', category: 'Computer Science' })
+        }}
+        onCreate={handleCreateCourse}
+      />
 
-                  {showSubjectDropdown && (
-                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                      {[
-                        { value: 'math', label: 'Math', icon: Calculator },
-                        { value: 'science', label: 'Science', icon: Beaker },
-                        { value: 'chemistry', label: 'Chemistry', icon: Atom },
-                        { value: 'biology', label: 'Biology', icon: Microscope },
-                        { value: 'physics', label: 'Physics', icon: Zap },
-                        { value: 'genetics', label: 'Genetics', icon: Dna },
-                        { value: 'engineering', label: 'Engineering', icon: Wrench },
-                        { value: 'computer_science', label: 'Computer Science', icon: Code },
-                        { value: 'literature', label: 'Literature', icon: BookOpen },
-                        { value: 'other', label: 'Other', icon: BookOpen },
-                      ].map((subject) => (
-                        <button
-                          key={subject.value}
-                          type="button"
-                          onClick={() => {
-                            setNewCourseData({ ...newCourseData, subject: subject.value })
-                            setShowSubjectDropdown(false)
-                          }}
-                          className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors text-left ${
-                            newCourseData.subject === subject.value ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-                          }`}
-                        >
-                          <subject.icon size={20} className="text-gray-600 dark:text-gray-400" />
-                          <span className="text-gray-900 dark:text-white">{subject.label}</span>
-                          {newCourseData.subject === subject.value && (
-                            <CheckCircle size={20} className="text-green-600 dark:text-green-400 ml-auto" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="flex space-x-3 pt-4">
-                <button
-                  onClick={() => {
-                    setShowNewCourseModal(false)
-                    setShowSubjectDropdown(false)
-                    setNewCourseData({
-                      name: '',
-                      code: '',
-                      professor: '',
-                      subject: '',
-                      color: 'blue',
-                      category: 'Computer Science'
-                    })
-                  }}
-                  disabled={isCreatingCourse}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateCourse}
-                  disabled={isCreatingCourse || !newCourseData.subject}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isCreatingCourse ? 'Creating...' : 'Create Course'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Create Class Screen - Full Screen Modal */}
-      {showCreateClassScreen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Create New Class</h2>
-
-            <div className="space-y-4">
-              {/* Class Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Class Name
-                </label>
-                <input
-                  type="text"
-                  value={newClassData.name}
-                  onChange={(e) => setNewClassData({ ...newClassData, name: e.target.value })}
-                  placeholder="e.g., Introduction to Computer Science"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                  disabled={isCreatingClass}
-                />
-              </div>
-
-              {/* Class Code */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Class Code
-                </label>
-                <input
-                  type="text"
-                  value={newClassData.code}
-                  onChange={(e) => setNewClassData({ ...newClassData, code: e.target.value.toUpperCase() })}
-                  placeholder="e.g., CS101AB"
-                  minLength={6}
-                  maxLength={10}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700 uppercase"
-                  disabled={isCreatingClass}
-                />
-              </div>
-
-              {/* Professor */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Professor
-                </label>
-                <input
-                  type="text"
-                  value={newClassData.professor}
-                  onChange={(e) => setNewClassData({ ...newClassData, professor: e.target.value })}
-                  placeholder="e.g., Dr. Jane Smith"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white bg-white dark:bg-gray-700"
-                  disabled={isCreatingClass}
-                />
-              </div>
-
-              {/* Color Theme */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Color Theme
-                </label>
-                <div className="flex space-x-2">
-                  {['blue', 'purple', 'green', 'orange', 'pink', 'yellow'].map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => {
-                        hapticSelection()
-                        setNewClassData({ ...newClassData, color })
-                      }}
-                      disabled={isCreatingClass}
-                      className={`w-10 h-10 rounded-full transition-all hover:scale-110 ${
-                        courseColorClasses[color]?.bg || courseColorClasses.blue.bg
-                      } ${
-                        newClassData.color === color ? 'ring-4 ring-offset-2 dark:ring-offset-gray-800 ring-gray-800 dark:ring-gray-200' : ''
-                      } ${isCreatingClass ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex space-x-3 pt-4">
-                <button
-                  onClick={() => {
-                    hapticButton()
-                    setShowCreateClassScreen(false)
-                    setNewClassData({
-                      name: '',
-                      code: '',
-                      professor: '',
-                      color: 'blue'
-                    })
-                  }}
-                  disabled={isCreatingClass}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateNewClass}
-                  disabled={isCreatingClass || !newClassData.name.trim() || !newClassData.code.trim() || newClassData.code.length < 6 || !newClassData.professor.trim()}
-                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {isCreatingClass ? 'Creating...' : 'Create Class'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreateClassModal
+        isOpen={showCreateClassScreen}
+        newClassData={newClassData}
+        isCreatingClass={isCreatingClass}
+        onClassDataChange={setNewClassData}
+        onCancel={() => {
+          setShowCreateClassScreen(false)
+          setNewClassData({ name: '', code: '', professor: '', color: 'blue' })
+        }}
+        onCreate={handleCreateNewClass}
+      />
 
       {/* Class Detail View Modal */}
       {selectedClass && selectedClassData && (
@@ -3533,790 +3415,113 @@ function DashboardContent() {
         }
       `}</style>
 
-      {/* Mobile Bottom Navigation with Center Record Button - Hidden in flashcard/quiz mode */}
+      {/* Mobile Bottom Navigation - Hidden in flashcard/quiz mode */}
       {!isFlashcardModeActive && !isLearnModeActive && (
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#1a2235] border-t border-gray-200 dark:border-white/[0.08] z-50 pb-8">
-        <div className="flex items-end justify-evenly h-16 px-4 pt-2">
-          {/* Home */}
-          <button
-            onClick={() => {
-              if (activeScreen !== 'dashboard') {
-                hapticSelection()
-                setActiveScreen('dashboard')
-              }
-            }}
-            className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] ${
-              activeScreen === 'dashboard' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
-            }`}
-          >
-            <Home size={20} />
-            <span className="text-[10px] font-medium dark:opacity-60">Home</span>
-          </button>
-
-          {/* Library */}
-          <button
-            onClick={() => {
-              if ((activeScreen as any) !== 'library') {
-                hapticSelection()
-                setActiveScreen('library')
-              }
-            }}
-            className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] ${
-              activeScreen === 'library' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
-            }`}
-          >
-            <BookOpen size={20} />
-            <span className="text-[10px] font-medium dark:opacity-60">Library</span>
-          </button>
-
-          {/* Center Record Button */}
-          <div className="relative">
-            <button
-              onClick={async () => {
-                hapticImpact('medium')
-                if (!isRecording) {
-                  setShowReadyToRecordModal(true)
-                } else {
-                  setIsStoppingRecording(true)
-                  try {
-                    const result = await stopAndGenerateNotes()
-                    console.log('[Dashboard] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length, audioBlob: result.audioBlob?.size } : 'null')
-
-                    // Always capture audioBlob if available
-                    if (result?.audioBlob) {
-                      capturedAudioBlobRef.current = result.audioBlob
-                      console.log('[Dashboard] Captured audioBlob in ref:', result.audioBlob.size, 'bytes')
-                    }
-
-                    if (result && result.transcript) {
-                      hapticSuccess()
-                      setShowCourseSelectionModal(true)
-                    } else {
-                      hapticError()
-                      // Show modal anyway if we have any transcript from the recording state
-                      if (transcript && transcript.trim().length > 0) {
-                        setShowCourseSelectionModal(true)
-                      } else {
-                        alert('No audio was recorded. Please ensure microphone permissions are granted and try again.')
-                      }
-                    }
-                  } catch (error) {
-                    console.error('Recording error:', error)
-                  hapticError()
-                  // Still show modal if we have transcript
-                  if (transcript && transcript.trim().length > 0) {
-                    setShowCourseSelectionModal(true)
-                  } else {
-                    alert('Recording failed. Please try again.')
-                  }
-                }
-                setIsStoppingRecording(false)
-              }
-            }}
-            disabled={isStoppingRecording || isGeneratingNotes || isTranscribing}
-            className={`relative rounded-full shadow-lg flex items-center justify-center transition-all duration-150 ease-out active:scale-[0.95] active:shadow-md disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 mb-[-8px] ${
-              isRecording
-                ? 'bg-red-500 shadow-red-500/25 animate-recording-pulse'
-                : 'bg-blue-500 shadow-blue-500/30 hover:shadow-blue-500/40 hover:shadow-xl'
-            }`}
-          >
-            {isStoppingRecording || isGeneratingNotes || isTranscribing ? (
-              <Loader size={24} className="animate-spin text-white" />
-            ) : (
-              <Mic size={24} className="text-white" />
-            )}
-            </button>
-          </div>
-
-          {/* Analytics */}
-          <button
-            onClick={() => {
-              if (activeScreen !== 'analytics') {
-                hapticSelection()
-                setActiveScreen('analytics')
-              }
-            }}
-            className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] ${
-              activeScreen === 'analytics' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
-            }`}
-          >
-            <BarChart2 size={20} />
-            <span className="text-[10px] font-medium dark:opacity-60">Analytics</span>
-          </button>
-
-          {/* Classes */}
-          <button
-            onClick={() => {
-              if (activeScreen !== 'feed') {
-                hapticSelection()
-                setActiveScreen('feed')
-              }
-            }}
-            className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] ${
-              activeScreen === 'feed' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
-            }`}
-          >
-            <Users size={20} />
-            <span className="text-[10px] font-medium dark:opacity-60">Classes</span>
-          </button>
-        </div>
-      </nav>
+        <MobileBottomNav
+          activeScreen={activeScreen}
+          isRecording={isRecording}
+          isStoppingRecording={isStoppingRecording}
+          isGeneratingNotes={isGeneratingNotes}
+          isTranscribing={isTranscribing}
+          onNavigate={setActiveScreen}
+          onRecordPress={() => setShowReadyToRecordModal(true)}
+          onStopRecording={handleStopRecording}
+        />
       )}
 
       
-      {/* Floating Recording Panel with Live Transcript */}
-      {isRecording && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50">
-          {/* Modal */}
-          <div className="relative w-full sm:max-w-md bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl shadow-2xl animate-slide-in-up overflow-hidden">
-            {/* Handle bar for mobile */}
-            <div className="sm:hidden flex justify-center pt-3">
-              <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
-            </div>
+      <FloatingRecordingPanel
+        isRecording={isRecording}
+        isPaused={isPaused}
+        duration={duration}
+        transcript={transcript}
+        interimTranscript={interimTranscript}
+        audioLevels={audioLevels}
+        isStoppingRecording={isStoppingRecording}
+        isGeneratingNotes={isGeneratingNotes}
+        onPause={pauseRecording}
+        onResume={resumeRecording}
+        onStop={handleStopRecording}
+      />
 
-            {/* Content */}
-            <div className="px-8 pt-6 pb-6">
-              {/* Recording Icon with gradient background */}
-              <div className={`mx-auto w-32 h-32 rounded-full bg-red-500 flex items-center justify-center text-white mb-4 ${!isPaused && 'recording-indicator'}`}>
-                <Mic size={48} className="text-white" />
-              </div>
+      <ReadyToRecordModal
+        isOpen={showReadyToRecordModal}
+        onClose={() => setShowReadyToRecordModal(false)}
+        onConfirm={startRecording}
+      />
 
-              {/* Waveform Visualization */}
-              <div className="flex items-center justify-center gap-1 h-8 mb-4">
-                {audioLevels.map((level, i) => (
-                  <div
-                    key={i}
-                    className="w-1 bg-red-500 rounded-full transition-all duration-75"
-                    style={{
-                      height: isPaused ? '8px' : `${level}px`,
-                    }}
-                  />
-                ))}
-              </div>
+      <MicPermissionModal
+        isOpen={showMicPermissionModal}
+        onClose={() => setShowMicPermissionModal(false)}
+        onReset={reset}
+      />
 
-              {/* Timer and Status */}
-              <div className="text-center mb-6">
-                <h2 className="text-4xl font-bold text-gray-900 dark:text-white font-mono mb-2">
-                  {formatDuration(duration)}
-                </h2>
-                <p className="text-gray-600 dark:text-gray-300 text-base">
-                  {isPaused ? 'Recording Paused' : 'Recording in Progress...'}
-                </p>
-              </div>
+      <DeleteLectureModal
+        isOpen={showDeleteLectureModal}
+        onClose={() => setShowDeleteLectureModal(false)}
+        onDelete={() => { if (selectedLecture) deleteLecture(selectedLecture) }}
+        isDeleting={isDeletingLecture}
+      />
 
-              {/* Live Transcript */}
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 mb-6 max-h-32 overflow-y-auto">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`w-2 h-2 rounded-full ${!isPaused ? 'bg-red-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Live Transcript</span>
-                </div>
-                {transcript || interimTranscript ? (
-                  <p className="text-sm text-gray-900 dark:text-white leading-relaxed">
-                    {transcript}
-                    {interimTranscript && (
-                      <span className="text-gray-500 dark:text-gray-400 italic"> {interimTranscript}</span>
-                    )}
-                  </p>
-                ) : (
-                  <p className="text-sm text-gray-400 italic">
-                    Start speaking... your words will appear here
-                  </p>
-                )}
-              </div>
+      <DeleteCourseModal
+        isOpen={showDeleteCourseModal}
+        onClose={() => setShowDeleteCourseModal(false)}
+        onDelete={async () => {
+          if (!selectedCourse || !user?.id) return
+          setIsDeletingCourse(true)
+          try {
+            const { error: lecturesError } = await (supabase as any)
+              .from('lectures')
+              .delete()
+              .eq('course_id', selectedCourse)
+              .eq('user_id', user.id)
+            if (lecturesError) throw lecturesError
+            const { error: courseError } = await (supabase as any)
+              .from('courses')
+              .delete()
+              .eq('id', selectedCourse)
+              .eq('user_id', user.id)
+            if (courseError) throw courseError
+            hapticSuccess()
+            toast.success('Course deleted successfully')
+            setShowDeleteCourseModal(false)
+            setSelectedCourse(null)
+            fetchCourses()
+            fetchLectures()
+          } catch (error) {
+            console.error('Error deleting course:', error)
+            hapticError()
+            toast.error('Failed to delete course')
+          } finally {
+            setIsDeletingCourse(false)
+          }
+        }}
+        isDeleting={isDeletingCourse}
+      />
 
-              {/* Recording Controls */}
-              <div className="flex gap-3">
-                <button
-                  onClick={() => { hapticSelection(); isPaused ? resumeRecording() : pauseRecording() }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-500 hover:bg-slate-600 text-white rounded-xl font-semibold transition-colors"
-                >
-                  {isPaused ? (
-                    <>
-                      <Play size={20} className="text-white" /> Resume
-                    </>
-                  ) : (
-                    <>
-                      <Pause size={20} className="text-white" /> Pause
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={async () => {
-                    hapticImpact('medium')
-                    setIsStoppingRecording(true)
-                    try {
-                      const result = await stopAndGenerateNotes()
-                      console.log('[Dashboard Stop Button] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length, audioBlob: result.audioBlob?.size } : 'null')
+      <SaveLectureModal
+        isOpen={showCourseSelectionModal}
+        courses={courses}
+        lectureTitle={lectureTitle}
+        selectedCourseForRecording={selectedCourseForRecording}
+        isSavingRecording={isSavingRecording}
+        onLectureTitleChange={setLectureTitle}
+        onSelectCourse={setSelectedCourseForRecording}
+        onCancel={() => {
+          setShowCourseSelectionModal(false)
+          setSelectedCourseForRecording(null)
+          setLectureTitle('')
+          reset()
+        }}
+        onSave={handleSaveLecture}
+      />
 
-                      // Always capture audioBlob if available
-                      if (result?.audioBlob) {
-                        capturedAudioBlobRef.current = result.audioBlob
-                        console.log('[Dashboard Stop Button] Captured audioBlob in ref:', result.audioBlob.size, 'bytes')
-                      }
-
-                      if (result && result.transcript) {
-                        hapticSuccess()
-                        setShowCourseSelectionModal(true)
-                      } else {
-                        // Show modal anyway if we have any transcript
-                        if (transcript && transcript.trim().length > 0) {
-                          setShowCourseSelectionModal(true)
-                        } else {
-                          hapticError()
-                          alert('No audio was recorded. Please try again.')
-                        }
-                      }
-                    } catch (error) {
-                      console.error('Recording error:', error)
-                      if (transcript && transcript.trim().length > 0) {
-                        setShowCourseSelectionModal(true)
-                      } else {
-                        hapticError()
-                        alert('Recording failed. Please try again.')
-                      }
-                    }
-                    setIsStoppingRecording(false)
-                  }}
-                  disabled={isStoppingRecording || isGeneratingNotes}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition-all disabled:opacity-50"
-                >
-                  <span className="text-lg">⬜</span>
-                  {isStoppingRecording || isGeneratingNotes ? 'Processing...' : 'Stop'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Ready to Record Confirmation Modal */}
-      {showReadyToRecordModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
-            <div className="text-center space-y-2">
-              <div className="flex justify-center">
-                <Mic size={56} className="text-purple-600 dark:text-purple-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Ready to Record?</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Your lecture will be saved with transcript and AI notes</p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  hapticButton()
-                  setShowReadyToRecordModal(false)
-                }}
-                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                No
-              </button>
-              <button
-                onClick={() => {
-                  console.log('[Dashboard] Yes button clicked, calling startRecording...')
-                  hapticImpact('heavy')
-                  startRecording()
-                  console.log('[Dashboard] startRecording() called, closing modal')
-                  setShowReadyToRecordModal(false)
-                }}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg btn-press font-medium hover:bg-blue-700 transition-colors"
-              >
-                Yes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Microphone Permission Modal */}
-      {showMicPermissionModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
-            <div className="text-center space-y-2">
-              <div className="w-16 h-16 mx-auto bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                <Mic size={32} className="text-orange-600 dark:text-orange-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Microphone Access Required</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                To record lectures, please enable microphone access in your device settings.
-              </p>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-left">
-                <p className="text-xs text-gray-600 dark:text-gray-300 font-medium mb-2">How to enable:</p>
-                <ol className="text-xs text-gray-500 dark:text-gray-400 space-y-1 list-decimal list-inside">
-                  <li>Open Settings on your device</li>
-                  <li>Find Koala.ai in your apps</li>
-                  <li>Enable Microphone permission</li>
-                  <li>Return and try recording again</li>
-                </ol>
-              </div>
-            </div>
-
-            {/* Action Button */}
-            <button
-              onClick={() => {
-                hapticButton()
-                setShowMicPermissionModal(false)
-                reset()
-              }}
-              className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg btn-press font-medium hover:bg-blue-700 transition-colors"
-            >
-              Got it
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Lecture Confirmation Modal */}
-      {showDeleteLectureModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
-            <div className="text-center space-y-2">
-              <div className="flex justify-center">
-                <Trash2 size={32} className="text-red-600 dark:text-red-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Lecture?</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">This action cannot be undone. All notes and data will be permanently removed.</p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  hapticButton()
-                  setShowDeleteLectureModal(false)
-                }}
-                disabled={isDeletingLecture}
-                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  hapticImpact('heavy')
-                  if (selectedLecture) {
-                    deleteLecture(selectedLecture)
-                  }
-                }}
-                disabled={isDeletingLecture}
-                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg btn-press font-medium hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
-              >
-                {isDeletingLecture ? (
-                  <span className="text-lg">⏳</span>
-                ) : (
-                  'Delete'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Course Confirmation Modal */}
-      {showDeleteCourseModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
-            <div className="text-center space-y-2">
-              <div className="flex justify-center">
-                <Trash2 size={32} className="text-red-600 dark:text-red-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Course?</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">This will delete the course and all its lectures. This action cannot be undone.</p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  hapticButton()
-                  setShowDeleteCourseModal(false)
-                }}
-                disabled={isDeletingCourse}
-                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={async () => {
-                  if (!selectedCourse || !user?.id) return
-                  hapticImpact('heavy')
-                  setIsDeletingCourse(true)
-                  try {
-                    // Delete all lectures in the course first
-                    const { error: lecturesError } = await (supabase as any)
-                      .from('lectures')
-                      .delete()
-                      .eq('course_id', selectedCourse)
-                      .eq('user_id', user.id)
-
-                    if (lecturesError) throw lecturesError
-
-                    // Delete the course
-                    const { error: courseError } = await (supabase as any)
-                      .from('courses')
-                      .delete()
-                      .eq('id', selectedCourse)
-                      .eq('user_id', user.id)
-
-                    if (courseError) throw courseError
-
-                    hapticSuccess()
-                    toast.success('Course deleted successfully')
-                    setShowDeleteCourseModal(false)
-                    setSelectedCourse(null)
-                    fetchCourses()
-                    fetchLectures()
-                  } catch (error) {
-                    console.error('Error deleting course:', error)
-                    hapticError()
-                    toast.error('Failed to delete course')
-                  } finally {
-                    setIsDeletingCourse(false)
-                  }
-                }}
-                disabled={isDeletingCourse}
-                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg btn-press font-medium hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
-              >
-                {isDeletingCourse ? (
-                  <span className="text-lg">⏳</span>
-                ) : (
-                  'Delete'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Course Selection Modal for Recording */}
-      {showCourseSelectionModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
-          <div className="w-full bg-white dark:bg-gray-800 rounded-t-2xl p-6 pb-8 space-y-4 animate-slide-in-up">
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Save Lecture</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Name your lecture and select a course</p>
-            </div>
-
-            {/* Lecture Title Input */}
-            <div>
-              <input
-                type="text"
-                value={lectureTitle}
-                onChange={(e) => setLectureTitle(e.target.value)}
-                placeholder={`Lecture ${new Date().toLocaleDateString()}`}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
-              />
-            </div>
-
-            {/* Course List */}
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {courses.map((course) => (
-                <button
-                  key={course.id}
-                  onClick={() => {
-                    setSelectedCourseForRecording(course.id)
-                  }}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                    selectedCourseForRecording === course.id
-                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                      : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-4 h-4 rounded-full border-2 mt-1 flex-shrink-0 transition-all"
-                      style={{
-                        borderColor: course.color || '#3b82f6',
-                        backgroundColor:
-                          selectedCourseForRecording === course.id ? course.color || '#3b82f6' : 'transparent',
-                      }}
-                    />
-                    <div>
-                      <p className="font-semibold text-gray-900 dark:text-white">{course.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{course.code}</p>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
-              <button
-                onClick={() => {
-                  setShowCourseSelectionModal(false)
-                  setSelectedCourseForRecording(null)
-                  setLectureTitle('')
-                  reset()
-                }}
-                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={async () => {
-                  if (!selectedCourseForRecording) {
-                    alert('Please select a course')
-                    return
-                  }
-                  setIsSavingRecording(true)
-                  try {
-                    // Get audio URL first (if audio is available) before creating lecture
-                    let audioUrl: string | null = null
-                    let uploadedExtension: string | null = null
-                    let tempUploadId: string | null = null
-                    const audioBlobToUpload = capturedAudioBlobRef.current
-                    console.log('[SaveLecture Modal] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
-
-                    if (audioBlobToUpload) {
-                      try {
-                        console.log('[SaveLecture Modal] Uploading audio to storage with temp ID...')
-                        // Use a temporary ID for initial upload
-                        tempUploadId = `temp-${Date.now()}`
-                        const uploadResult = await uploadAudioFile(user!.id, tempUploadId, audioBlobToUpload)
-                        audioUrl = uploadResult.url
-                        uploadedExtension = uploadResult.extension
-                        console.log('[SaveLecture Modal] Audio uploaded, URL:', audioUrl)
-                      } catch (audioError) {
-                        console.error('[SaveLecture Modal] Failed to upload audio:', audioError)
-                        toast.error(`Warning: Audio file could not be uploaded. ${(audioError as Error).message}`)
-                        // Continue saving even if audio upload fails
-                      }
-                    } else {
-                      console.log('[SaveLecture Modal] No audioBlob available to upload')
-                    }
-
-                    // Check lecture limit before inserting
-                    const { count: lectureCount } = await (supabase as any)
-                      .from('lectures')
-                      .select('*', { count: 'exact', head: true })
-                      .eq('user_id', user!.id)
-
-                    if (lectureCount !== null && lectureCount >= MAX_LECTURES) {
-                      hapticError()
-                      toast.error(`Storage limit reached! You can only store ${MAX_LECTURES} lectures on the free plan. Please delete some lectures to continue.`)
-                      throw new Error('Lecture limit reached')
-                    }
-
-                    // Use sequential naming based on existing lecture count
-                    const defaultTitle = lectureCount !== null ? `Lecture ${lectureCount + 1}` : `Lecture ${new Date().toLocaleDateString()}`
-
-                    const { data: lecture, error: lectureError } = await (supabase as any)
-                      .from('lectures')
-                      .insert({
-                        user_id: user!.id,
-                        course_id: selectedCourseForRecording,
-                        title: lectureTitle.trim() || defaultTitle,
-                        duration: duration,
-                        transcription_status: 'completed',
-                        audio_url: audioUrl,
-                      })
-                      .select()
-                      .single()
-
-                    if (lectureError) {
-                      throw lectureError
-                    }
-
-                    // If we uploaded audio with a temp ID, reorganize the file to use the actual lecture ID
-                    if (audioUrl && tempUploadId && uploadedExtension) {
-                      try {
-                        console.log('[SaveLecture Modal] Reorganizing audio file with lecture ID...')
-                        const newAudioUrl = await reorganizeAudioFile(
-                          user!.id,
-                          tempUploadId,
-                          lecture.id,
-                          uploadedExtension
-                        )
-
-                        console.log('[SaveLecture Modal] New audio URL:', newAudioUrl)
-
-                        // Update lecture with the correct audio URL
-                        const { error: updateError } = await (supabase as any)
-                          .from('lectures')
-                          .update({ audio_url: newAudioUrl })
-                          .eq('id', lecture.id)
-
-                        if (updateError) {
-                          console.error('[SaveLecture Modal] Failed to update lecture with new audio URL:', updateError)
-                        } else {
-                          console.log('[SaveLecture Modal] Lecture updated with reorganized audio URL successfully')
-                        }
-                      } catch (reorganizeError) {
-                        console.error('[SaveLecture Modal] Failed to reorganize audio file:', reorganizeError)
-                        // File is still accessible at the temp URL, so this is non-critical
-                      }
-                    }
-
-                    // Save transcript
-                    if (transcript) {
-                      await (supabase as any).from('transcripts').insert({
-                        lecture_id: lecture.id,
-                        user_id: user!.id,
-                        content: transcript,
-                      })
-                    }
-
-                    // Save notes
-                    if (notes) {
-                      await (supabase as any).from('notes').insert({
-                        lecture_id: lecture.id,
-                        user_id: user!.id,
-                        content: notes,
-                      })
-                    }
-
-                    // Refresh lectures list
-                    const { data: updatedLectures } = await supabase
-                      .from('lectures')
-                      .select('*, courses(name, code, color)')
-                      .eq('user_id', user!.id)
-                      .order('created_at', { ascending: false })
-
-                    if (updatedLectures) {
-                      setLectures(updatedLectures)
-                    }
-
-                    // Record study activity for streak
-                    recordActivity()
-                    hapticSuccess()
-                    soundSuccess()
-
-                    setShowCourseSelectionModal(false)
-                    setSelectedCourseForRecording(null)
-                    setLectureTitle('')
-                    capturedAudioBlobRef.current = null
-                    reset()
-                  } catch (error) {
-                    alert('Failed to save recording. Please try again.')
-                  } finally {
-                    setIsSavingRecording(false)
-                  }
-                }}
-                disabled={!selectedCourseForRecording || isSavingRecording}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg btn-press font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {isSavingRecording ? 'Saving...' : 'Save Lecture'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Streak Detail Modal */}
-      {showStreakModal && (
-        <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center"
-          onClick={() => setShowStreakModal(false)}
-        >
-          <div
-            className="w-full max-w-lg bg-white dark:bg-gray-800 rounded-t-3xl p-6 pb-10 animate-slide-in-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Handle bar */}
-            <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6" />
-
-            {/* Large streak display */}
-            <div className="text-center mb-6">
-              <StreakDisplay streak={streak} size="lg" />
-            </div>
-
-            {/* Title & Description */}
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {streak === 0 ? 'Start Your Streak!' : `${streak} Day Streak!`}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300">
-                {streak === 0
-                  ? 'Record your first lecture today to begin your study streak.'
-                  : streak < 7
-                  ? 'Keep going! Record a lecture every day to build your streak.'
-                  : streak < 30
-                  ? "You're on fire! Keep up the great work."
-                  : "Amazing dedication! You're a study champion!"}
-              </p>
-            </div>
-
-            {/* Weekly calendar */}
-            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-4 mb-6">
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">This Week</h3>
-              <div className="flex justify-between">
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
-                  const today = new Date().getDay()
-                  const adjustedToday = today === 0 ? 6 : today - 1 // Convert to Mon=0 format
-                  const isToday = i === adjustedToday
-                  const isPast = i < adjustedToday
-                  const isActive = (isPast && streak > 0) || (isToday && isActiveToday())
-
-                  return (
-                    <div key={day} className="flex flex-col items-center gap-1">
-                      <span className={`text-xs ${isToday ? 'font-bold text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                        {day}
-                      </span>
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        isActive
-                          ? 'bg-orange-500'
-                          : isToday
-                          ? 'bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-400 dark:border-blue-500'
-                          : 'bg-gray-200 dark:bg-gray-600'
-                      }`}>
-                        {isActive ? (
-                          <Flame size={20} className="text-white" />
-                        ) : (
-                          <span className={`text-sm ${isToday ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-gray-400'}`}>
-                            {isToday ? '?' : ''}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Milestones */}
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3">Milestones</h3>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {[
-                  { days: 3, label: '3 days', icon: <span className="text-lg">🌱</span> },
-                  { days: 7, label: '1 week', icon: <Star size={20} className="text-yellow-500" /> },
-                  { days: 14, label: '2 weeks', icon: <span className="text-lg">🎖️</span> },
-                  { days: 30, label: '1 month', icon: <Trophy size={20} className="text-yellow-600" /> },
-                  { days: 60, label: '2 months', icon: <span className="text-lg">💎</span> },
-                  { days: 100, label: '100 days', icon: <span className="text-lg">👑</span> },
-                ].map(({ days, label, icon }) => (
-                  <div
-                    key={days}
-                    className={`flex-shrink-0 px-4 py-3 rounded-xl text-center ${
-                      streak >= days
-                        ? 'bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800'
-                        : 'bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
-                    }`}
-                  >
-                    {streak >= days ? (
-                      <div className="text-orange-600 dark:text-orange-400">{icon}</div>
-                    ) : (
-                      <Lock size={20} className="text-gray-500 dark:text-gray-400 mx-auto" />
-                    )}
-                    <p className={`text-xs mt-1 font-medium ${streak >= days ? 'text-orange-700 dark:text-orange-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                      {label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Close button */}
-            <button
-              onClick={() => { hapticButton(); setShowStreakModal(false) }}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors"
-            >
-              Keep Studying!
-            </button>
-          </div>
-        </div>
-      )}
+      <StreakDetailModal
+        isOpen={showStreakModal}
+        streak={streak}
+        isActiveToday={isActiveToday}
+        onClose={() => setShowStreakModal(false)}
+      />
 
       {/* Level Progress Modal */}
       <LevelProgressModal
@@ -4372,39 +3577,12 @@ function DashboardContent() {
         type={isGeneratingLearnMode ? 'quiz' : 'flashcards'}
       />
 
-      {/* Full Screen Notes Modal */}
-      {showFullScreenNotes && selectedLectureNotes && (
-        <div className="fixed inset-0 bg-gray-50 dark:bg-gray-900 z-40 overflow-y-auto">
-          {/* Notes content - full screen */}
-          <div className="px-4 sm:px-5 pt-32 lg:pt-6 pb-32 lg:pb-8">
-            {/* Inline back button */}
-            <div className="flex items-center gap-3 mb-6">
-              <button
-                onClick={() => setShowFullScreenNotes(false)}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 active:scale-95 transition-transform shadow-sm"
-              >
-                <span className="text-lg">◀</span>
-              </button>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate">
-                {selectedLectureData?.title || 'Notes'}
-              </h1>
-            </div>
-
-            <div className="prose prose-base sm:prose-lg dark:prose-invert max-w-none
-              prose-h2:text-xl sm:prose-h2:text-2xl prose-h2:font-bold prose-h2:text-gray-900 dark:prose-h2:text-white prose-h2:mb-4 prose-h2:mt-8 prose-h2:pb-2 prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700
-              prose-h3:text-lg sm:prose-h3:text-xl prose-h3:font-semibold prose-h3:text-gray-800 dark:prose-h3:text-gray-100 prose-h3:mb-2 prose-h3:mt-6
-              prose-p:text-base sm:prose-p:text-lg prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-3
-              prose-ul:my-3 prose-ul:ml-0 prose-ul:pl-6
-              prose-li:my-1 prose-li:text-base sm:prose-li:text-lg prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:leading-relaxed prose-li:marker:text-blue-600 dark:prose-li:marker:text-blue-400
-              prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-semibold
-              [&>*:first-child]:mt-0
-              [&_ul]:list-disc [&_ul]:space-y-1
-            ">
-              <ReactMarkdown>{selectedLectureNotes}</ReactMarkdown>
-            </div>
-          </div>
-        </div>
-      )}
+      <FullScreenNotesModal
+        isOpen={showFullScreenNotes}
+        notes={selectedLectureNotes}
+        title={selectedLectureData?.title || 'Notes'}
+        onClose={() => setShowFullScreenNotes(false)}
+      />
 
       </div> {/* Close h-screen-safe */}
     </Suspense>

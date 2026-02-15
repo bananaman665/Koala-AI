@@ -9,7 +9,7 @@ import { FlashcardMode } from './FlashcardMode'
 import { SubjectIcon } from '@/components/SubjectIcon'
 import { getSubjectColor } from '@/lib/subject-utils'
 import type { Database } from '@/lib/supabase'
-import { Play, ChevronRight, Star, Clock, Brain, Headphones, Loader, BookOpen, Search, Trash2, Layers, Notebook, LayoutGrid } from 'lucide-react'
+import { Play, ChevronLeft, ChevronRight, Star, Clock, Brain, Headphones, Loader, BookOpen, Search, Trash2, Layers, Notebook, LayoutGrid } from 'lucide-react'
 
 type Lecture = Database['public']['Tables']['lectures']['Row'] & {
   courses?: { name: string; subject?: string } | null
@@ -222,7 +222,7 @@ export function LibraryScreen({
               onClick={onExitLecture}
               className="flex items-center gap-1 text-blue-500 hover:text-blue-600 active:scale-95 transition-all font-medium flex-shrink-0"
             >
-              <span className="text-lg">◀</span>
+              <ChevronLeft size={20} />
               <span>Back</span>
             </button>
           </div>
@@ -237,7 +237,7 @@ export function LibraryScreen({
 
           {/* Study Tools */}
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Study Tools</h2>
-          <div className="space-y-3 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-6">
             {/* Notes Row */}
             <button
               onClick={() => {
@@ -516,10 +516,10 @@ export function LibraryScreen({
                             <SubjectIcon subject={(lecture.courses as any)?.subject} size={24} className={colors.text} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-900 dark:text-white truncate text-sm">
+                            <h3 className="font-semibold text-gray-900 dark:text-white truncate text-base">
                               {lecture.title}
                             </h3>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                               {lecture.courses?.name || 'Uncategorized'}
                             </p>
                           </div>
@@ -574,7 +574,7 @@ export function LibraryScreen({
                       </span>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                       {filteredGroupLectures.map((lecture) => {
                         const isFavorited = favoritedLectures.has(lecture.id)
                         const colors = getSubjectColor((lecture.courses as any)?.subject)

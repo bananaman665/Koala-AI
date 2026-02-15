@@ -58,64 +58,42 @@ export function AnalyticsScreen({
     <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
       <div className="max-w-7xl lg:max-w-none mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-8 pb-32 lg:pb-8 pt-32 sm:pt-36 lg:pt-8">
         <div className="space-y-6">
-          {/* Hero Unit - Title + Filter */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6 shadow-lg shadow-black/5 dark:shadow-black/20">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
-
-              {/* Time Period Selector */}
-              <div className="flex space-x-2 overflow-x-auto">
+          {/* Title + Filter */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h2>
+            <div className="flex space-x-1 bg-gray-100 dark:bg-white/[0.06] rounded-lg p-1">
+              {(['week', 'month', 'all'] as const).map((period) => (
                 <button
-                  onClick={() => setTimeFilter('week')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                    timeFilter === 'week'
-                      ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner border-b-2 border-[#0052CC]'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  key={period}
+                  onClick={() => setTimeFilter(period)}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-all ${
+                    timeFilter === period
+                      ? 'bg-white dark:bg-white/[0.12] text-gray-900 dark:text-white shadow-sm'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
                 >
-                  This Week
+                  {period === 'week' ? 'Week' : period === 'month' ? 'Month' : 'All'}
                 </button>
-                <button
-                  onClick={() => setTimeFilter('month')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                    timeFilter === 'month'
-                      ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  This Month
-                </button>
-                <button
-                  onClick={() => setTimeFilter('all')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                    timeFilter === 'all'
-                      ? 'bg-[#0066FF] text-white shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/20 active:shadow-inner'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  All Time
-                </button>
-              </div>
+              ))}
             </div>
           </div>
 
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Study Streak */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Study Streak</h3>
-            <div className="flex items-center space-x-2 mb-3">
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                <TrendingUp size={24} className="text-orange-600 dark:text-orange-400" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {streak} {streak === 1 ? 'Day' : 'Days'}
-                </p>
-                <p className="text-xs text-gray-400 dark:text-gray-400">
-                  {streak === 0 ? 'Start your streak!' : streak >= 7 ? 'Amazing progress!' : 'Keep it up!'}
-                </p>
-              </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-6 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200 flex flex-col relative overflow-hidden">
+            <div className="absolute top-4 right-4 w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+              <TrendingUp size={36} className="text-orange-600 dark:text-orange-400" />
             </div>
-            <div className="flex space-x-1">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 pt-2">Study Streak</h3>
+            <div className="mb-6">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {streak} {streak === 1 ? 'Day' : 'Days'}
+              </p>
+              <p className="text-sm text-gray-400 dark:text-gray-400 mt-0.5">
+                {streak === 0 ? 'Start your streak!' : streak >= 7 ? 'Amazing progress!' : 'Keep it up!'}
+              </p>
+            </div>
+            <div className="flex space-x-1.5 mt-auto">
               {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => {
                 // Calculate which days should be active based on streak
                 const today = new Date().getDay()
@@ -126,9 +104,9 @@ export function AnalyticsScreen({
                 return (
                   <div key={i} className="flex-1 text-center">
                     <div
-                      className={`w-full h-8 rounded ${
+                      className={`w-full h-10 rounded-md ${
                         isActive ? 'bg-[#0066FF] shadow-lg shadow-blue-500/40' : 'bg-gray-200 dark:bg-gray-700'
-                      } mb-1 transition-all duration-200`}
+                      } mb-1.5 transition-all duration-200`}
                     ></div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{day}</p>
                   </div>
@@ -139,7 +117,7 @@ export function AnalyticsScreen({
 
           {/* Top Courses */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Top Courses</h3>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 pt-2">Top Courses</h3>
             <div className="space-y-4">
               {courses.length === 0 ? (
                 <p className="text-sm text-gray-300 dark:text-gray-600 text-center py-4">No courses yet</p>
@@ -171,6 +149,7 @@ export function AnalyticsScreen({
                 })
               )}
             </div>
+          </div>
           </div>
 
           {/* Recent Activity */}

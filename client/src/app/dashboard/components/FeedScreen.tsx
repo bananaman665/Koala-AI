@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Users, Plus, Check, Copy, Star, ChevronRight, Sparkles } from 'lucide-react'
+import { Users, Plus, Check, Copy, Star, ChevronRight, Sparkles, BookOpen, Mic } from 'lucide-react'
 import { hapticButton, hapticSelection, hapticSuccess } from '@/lib/haptics'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 
@@ -70,39 +70,33 @@ export function FeedScreen({
     <div className="h-full overflow-y-auto bg-gray-50 dark:bg-gray-900">
       <div className="px-4 sm:px-6 py-6 pt-36 lg:pt-6 pb-32 lg:pb-8">
 
-        {/* Quick Actions - Google Classroom inspired */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          {/* Join Class Card */}
-          <button
-            onClick={() => {
-              hapticButton()
-              // Focus the join input or show modal
-              const input = document.getElementById('join-class-input')
-              input?.focus()
-            }}
-            className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98] text-left group"
-          >
-            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center mb-3">
-              <Users size={20} className="text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Join Class</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Enter a class code</p>
-          </button>
+        {/* Title + Actions */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Classes</h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                hapticButton()
+                const input = document.getElementById('join-class-input')
+                input?.focus()
+              }}
+              className="flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-[#1E293B] rounded-lg border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98]"
+            >
+              <Users size={16} className="text-blue-600 dark:text-blue-400" />
+              <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Join</span>
+            </button>
 
-          {/* Create Class Card */}
-          <button
-            onClick={() => {
-              hapticButton()
-              onCreateNewClass()
-            }}
-            className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98] text-left group"
-          >
-            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center mb-3">
-              <Plus size={20} className="text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Create Class</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Start a new class</p>
-          </button>
+            <button
+              onClick={() => {
+                hapticButton()
+                onCreateNewClass()
+              }}
+              className="flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-[#1E293B] rounded-lg border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98]"
+            >
+              <Plus size={16} className="text-blue-600 dark:text-blue-400" />
+              <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Create</span>
+            </button>
+          </div>
         </div>
 
         {/* Join Class Input - Clean inline design */}
@@ -141,41 +135,29 @@ export function FeedScreen({
 
         {/* Filter Tabs */}
         {userClasses.length > 0 && (
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => {
-                hapticSelection()
-                setFilter('all')
-              }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                filter === 'all'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white dark:bg-[#1E293B] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/[0.06]'
-              }`}
-            >
-              <Users size={16} weight={filter === 'all' ? 'fill' : 'regular'} />
-              All Classes
-            </button>
-            <button
-              onClick={() => {
-                hapticSelection()
-                setFilter('favorites')
-              }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                filter === 'favorites'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white dark:bg-[#1E293B] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/[0.06]'
-              }`}
-            >
-              <Star size={16} className={filter === 'favorites' ? 'fill-white' : 'fill-yellow-400'} />
-              Favorites
-            </button>
+          <div className="flex space-x-1 bg-gray-100 dark:bg-white/[0.06] rounded-lg p-1 w-fit mb-4">
+            {(['all', 'favorites'] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => {
+                  hapticSelection()
+                  setFilter(f)
+                }}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-all ${
+                  filter === f
+                    ? 'bg-white dark:bg-white/[0.12] text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                }`}
+              >
+                {f === 'all' ? 'All Classes' : 'Favorites'}
+              </button>
+            ))}
           </div>
         )}
 
         {/* Classes List */}
         {filteredClasses.length > 0 ? (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredClasses.map((cls: any) => {
               const memberCount = cls.class_memberships?.length || 0
               const colorKey = cls.color || 'blue'
@@ -284,16 +266,59 @@ export function FeedScreen({
 
         {/* Tip Card */}
         {userClasses.length > 0 && (
-          <div className="mt-6 bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06]">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-amber-100 dark:bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Sparkles size={18} className="text-amber-600 dark:text-amber-400" />
+          <div className="mt-6 bg-white dark:bg-[#1E293B] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-amber-100 dark:bg-amber-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Sparkles size={24} className="text-amber-600 dark:text-amber-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">Pro Tip</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                <p className="text-base font-semibold text-gray-900 dark:text-white">Pro Tip</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Share your class code with classmates so everyone can access shared lectures and notes!
                 </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Desktop Class Overview - only shown on lg+ */}
+        {userClasses.length > 0 && (
+          <div className="hidden lg:grid grid-cols-3 gap-4 mt-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center">
+                  <Users size={20} className="text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{userClasses.length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Classes</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-500/20 rounded-xl flex items-center justify-center">
+                  <BookOpen size={20} className="text-purple-600 dark:text-purple-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {userClasses.reduce((sum, cls) => sum + (cls.class_memberships?.length || 0), 0)}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Members</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-500/20 rounded-xl flex items-center justify-center">
+                  <Mic size={20} className="text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {userClasses.reduce((sum, cls) => sum + (cls.lectures?.length || 0), 0)}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Shared Lectures</p>
+                </div>
               </div>
             </div>
           </div>

@@ -81,6 +81,14 @@ export function DashboardHomeScreen({
     return courses.find(c => c.id === mostRecentLecture.course_id)
   }, [mostRecentLecture, courses])
 
+  // Get recent 3 lectures
+  const recentLectures = useMemo(() => {
+    if (!lectures || lectures.length === 0) return []
+    return [...lectures]
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 3)
+  }, [lectures])
+
   // Get top 3 active courses
   const activeCourses = useMemo((): CourseWithLectureCount[] => {
     if (!courses || courses.length === 0) return []
@@ -166,13 +174,12 @@ export function DashboardHomeScreen({
     <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
       <div className="px-4 sm:px-6 lg:px-8 xl:px-12 pt-36 sm:pt-40 lg:pt-8 pb-32">
 
-        {/* Hero Section - Daily Progress */}
+        {/* Hero Section - Daily Progress + Continue Learning */}
         <div className="mb-8">
-          <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-gray-100 dark:border-white/[0.06]">
-
-            <div className="relative z-10">
-              {/* Daily Goal */}
-              <div className="mb-4">
+          <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-5 sm:p-6 relative overflow-hidden border border-gray-100 dark:border-white/[0.06]">
+            <div className="flex flex-col lg:flex-row lg:items-stretch lg:gap-6">
+              {/* Left: Today's Goal */}
+              <div className="flex-1">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Target size={20} className="text-blue-600 dark:text-blue-400" />
@@ -197,59 +204,99 @@ export function DashboardHomeScreen({
                   <span>{dailyGoalCurrent} / {dailyGoalTarget}</span>
                   <span>{Math.round(dailyGoalProgress)}%</span>
                 </div>
+                <button
+                  onClick={() => {
+                    hapticButton()
+                    onStartRecording()
+                  }}
+                  className="w-full bg-blue-500 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-600 active:scale-[0.98] transition-all shadow-lg mt-4"
+                >
+                  <Mic size={20} />
+                  Start Recording
+                </button>
               </div>
 
-              {/* Quick Action Button */}
-              <button
-                onClick={() => {
-                  hapticButton()
-                  onStartRecording()
-                }}
-                className="w-full bg-blue-500 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-600 active:scale-[0.98] transition-all shadow-lg"
-              >
-                <Mic size={20} />
-                Start Recording
-              </button>
+              {/* Divider */}
+              <div className="hidden lg:block w-px self-stretch bg-gray-200 dark:bg-white/[0.08]" />
+              <div className="lg:hidden h-px w-full bg-gray-200 dark:bg-white/[0.08] my-6" />
+
+              {/* Right: Continue Learning */}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <Play size={18} className="text-blue-600 dark:text-blue-400" />
+                  <span className="font-semibold text-gray-900 dark:text-white">Continue Learning</span>
+                </div>
+                {recentLectures.length > 0 ? (
+                  <div className="space-y-1">
+                    {recentLectures.map((lecture) => {
+                      const course = courses.find(c => c.id === lecture.course_id)
+                      const date = new Date(lecture.created_at)
+                      const today = new Date()
+                      const dateStr = today.toDateString() === date.toDateString()
+                        ? `Today at ${date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`
+                        : date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+
+                      return (
+                        <button
+                          key={lecture.id}
+                          onClick={() => {
+                            hapticSelection()
+                            onSelectLecture(lecture.id)
+                            onNavigateToLibrary()
+                          }}
+                          className="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors text-left group"
+                        >
+                          <div className="w-9 h-9 bg-blue-500/10 dark:bg-blue-500/15 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Play size={14} className="text-blue-500 fill-blue-500" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-500 transition-colors">
+                              {lecture.title || 'Untitled Lecture'}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {course?.name || 'Unknown'} · {dateStr}
+                            </p>
+                          </div>
+                          <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
+                            {Math.ceil((lecture.duration || 0) / 60)}m
+                          </span>
+                        </button>
+                      )
+                    })}
+                    {/* Placeholder rows to fill up to 3 */}
+                    {Array.from({ length: 3 - recentLectures.length }).map((_, i) => (
+                      <div
+                        key={`placeholder-${i}`}
+                        className="w-full flex items-center gap-3 py-2 px-3 rounded-xl"
+                      >
+                        <div className="w-9 h-9 bg-gray-100 dark:bg-white/[0.04] rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Play size={14} className="text-gray-300 dark:text-white/10" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="h-4 w-32 bg-gray-100 dark:bg-white/[0.04] rounded" />
+                          <div className="h-3 w-20 bg-gray-100 dark:bg-white/[0.04] rounded mt-1.5" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-8 text-center">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">No recent lectures yet</p>
+                    <button
+                      onClick={() => {
+                        hapticButton()
+                        onStartRecording()
+                      }}
+                      className="text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline"
+                    >
+                      Record your first lecture
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Continue Learning Card */}
-        {mostRecentLecture && (
-          <div className="mb-6">
-            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-              Continue Learning
-            </h2>
-            <button
-              onClick={() => {
-                hapticSelection()
-                onSelectLecture(mostRecentLecture.id)
-                onNavigateToLibrary()
-              }}
-              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all text-left group"
-            >
-              <div className="flex items-center gap-3">
-                {/* Play Button */}
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600 transition-colors">
-                  <Play size={20} className="text-white fill-white" />
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
-                    {mostRecentLecture.title || 'Untitled Lecture'}
-                  </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
-                    {recentLectureCourse?.name || 'Unknown Course'}
-                  </p>
-                </div>
-
-                {/* Arrow */}
-                <ChevronRight size={20} className="text-gray-400" />
-              </div>
-            </button>
-          </div>
-        )}
 
         {/* Courses Section */}
         <div className="mb-8">
@@ -288,7 +335,7 @@ export function DashboardHomeScreen({
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
               {activeCourses.map((course) => {
                 const colors = getSubjectColor((course as any).subject)
 
@@ -372,7 +419,7 @@ export function DashboardHomeScreen({
           </div>
 
           {/* Quest Cards */}
-          <div className="px-5 pb-5 space-y-3">
+          <div className="px-5 pb-5 grid grid-cols-1 lg:grid-cols-2 gap-3">
             {dailyQuests.map((quest, i) => {
               const QuestIcon = questIconMap[quest.id]
               const progressPercent = (quest.current / quest.target) * 100
@@ -420,7 +467,6 @@ export function DashboardHomeScreen({
 
             {/* Upcoming Quest */}
             <div className="pt-2">
-              <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3">Upcoming</h4>
               <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] border-l-4 border-l-gray-300 dark:border-l-gray-600 rounded-xl p-4 opacity-60">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-200 dark:bg-gray-800">

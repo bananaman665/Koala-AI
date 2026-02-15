@@ -38,7 +38,6 @@ export function TopNavigationBar({
       <div className="flex items-center w-full px-6 max-w-[1920px] mx-auto relative">
         {/* Left Section - Logo */}
         <div className="flex items-center gap-8">
-          {/* Logo */}
           <div className="text-xl font-bold text-gray-900 dark:text-white">
             Koala.ai
           </div>

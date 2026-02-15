@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react'
 import { useNativeAudioPlayer } from '@/hooks/useNativeAudioPlayer'
 
 interface TranscriptSegment {
@@ -367,9 +367,9 @@ export function AudioPlayer({
             {playerIsLoading ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : playerIsPlaying ? (
-              <span className="text-lg">⏸</span>
+              <Pause className="w-6 h-6" />
             ) : (
-              <span className="text-lg">▶️</span>
+              <Play className="w-6 h-6" />
             )}
           </button>
 
