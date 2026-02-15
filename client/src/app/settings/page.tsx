@@ -290,6 +290,34 @@ export default function SettingsPage() {
             <ChevronRight className="w-5 h-5 text-gray-400" />
           </Link>
 
+          <Link
+            href="/terms"
+            onClick={() => hapticButton()}
+            className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                <Shield className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </div>
+              <span className="font-medium text-gray-900 dark:text-white">Terms of Service</span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400" />
+          </Link>
+
+          <Link
+            href="/privacy"
+            onClick={() => hapticButton()}
+            className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                <Shield className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </div>
+              <span className="font-medium text-gray-900 dark:text-white">Privacy Policy</span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400" />
+          </Link>
+
           <button
             onClick={() => {
               hapticButton()

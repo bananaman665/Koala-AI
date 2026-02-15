@@ -228,6 +228,19 @@ export default function LoginPage() {
               Sign up for free
             </Link>
           </p>
+
+          {/* Legal Links */}
+          <div className="text-center text-xs text-gray-500 dark:text-gray-500 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-1">
+            <p>
+              <Link href="/terms" className="hover:text-gray-700 dark:hover:text-gray-400 underline">
+                Terms of Service
+              </Link>
+              {' '} • {' '}
+              <Link href="/privacy" className="hover:text-gray-700 dark:hover:text-gray-400 underline">
+                Privacy Policy
+              </Link>
+            </p>
+          </div>
         </div>
         </div>
       </div>
