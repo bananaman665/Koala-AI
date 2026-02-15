@@ -1538,25 +1538,15 @@ function DashboardContent() {
 
       setFlashcards(data.flashcards)
 
-      // Save flashcards to database if we have a selected lecture
-      if (selectedLecture && user?.id) {
-        const flashcardConfig = {
-          numberOfCards: config?.numberOfCards || 10,
-        }
-
-        // Upsert - update if exists, insert if not
-        await (supabase as any)
-          .from('flashcard_decks')
-          .upsert({
-            lecture_id: selectedLecture,
-            user_id: user.id,
-            cards: data.flashcards,
-            config: flashcardConfig,
-            updated_at: new Date().toISOString(),
-          }, {
-            onConflict: 'lecture_id,user_id',
-          })
-      }
+      // TODO: Save flashcards to database once flashcard_decks table exists
+      // if (selectedLecture && user?.id) {
+      //   const flashcardConfig = {
+      //     numberOfCards: config?.numberOfCards || 10,
+      //   }
+      //   await (supabase as any)
+      //     .from('flashcard_decks')
+      //     .upsert({...})
+      // }
 
       // If in library view, activate flashcard mode
       if (activeScreen === 'library' && selectedLecture) {
@@ -1626,26 +1616,11 @@ function DashboardContent() {
       setLearnModeQuestions(data.questions)
 
       // Save quiz to database if we have a selected lecture
-      if (selectedLecture && user?.id) {
-        const quizConfig = {
-          numberOfQuestions: config?.numberOfQuestions || 10,
-          questionTypes: config?.questionTypes || ['multiple_choice', 'true_false'],
-          difficulty: config?.difficulty || 'medium',
-        }
-
-        // Upsert - update if exists, insert if not
-        await (supabase as any)
-          .from('quizzes')
-          .upsert({
-            lecture_id: selectedLecture,
-            user_id: user.id,
-            questions: data.questions,
-            config: quizConfig,
-            updated_at: new Date().toISOString(),
-          }, {
-            onConflict: 'lecture_id,user_id',
-          })
-      }
+      // TODO: Save quizzes to database once quizzes table exists
+      // if (selectedLecture && user?.id) {
+      //   const quizConfig = {...}
+      //   await (supabase as any).from('quizzes').upsert({...})
+      // }
 
       setIsLearnModeActive(true)
       setCurrentQuestionIndex(0)
@@ -2644,23 +2619,69 @@ function DashboardContent() {
 
             {/* Errors */}
             {flashcardsError && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⚠️</span>
-                  <div>
-                    <p className="text-red-800 text-sm font-medium">Flashcard Generation Error:</p>
-                    <p className="text-red-700 text-sm">{flashcardsError}</p>
+              <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1">
+                    <p className="text-red-800 dark:text-red-300 text-sm font-semibold mb-1">
+                      Failed to Generate Flashcards
+                    </p>
+                    <p className="text-red-700 dark:text-red-400 text-sm mb-3">
+                      {flashcardsError}
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setFlashcardsError(null)
+                          // Trigger flashcard generation with current selection
+                          if (selectedLecture) {
+                            generateFlashcards(undefined, { numberOfCards: 10 })
+                          }
+                        }}
+                        className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md transition-colors font-medium"
+                      >
+                        Try Again
+                      </button>
+                      <button
+                        onClick={() => setFlashcardsError(null)}
+                        className="px-3 py-1.5 bg-white dark:bg-gray-800 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700 text-xs rounded-md hover:bg-red-50 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
             {learnModeError && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⚠️</span>
-                  <div>
-                    <p className="text-red-800 text-sm font-medium">Learn Mode Generation Error:</p>
-                    <p className="text-red-700 text-sm">{learnModeError}</p>
+              <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1">
+                    <p className="text-red-800 dark:text-red-300 text-sm font-semibold mb-1">
+                      Failed to Generate Quiz
+                    </p>
+                    <p className="text-red-700 dark:text-red-400 text-sm mb-3">
+                      {learnModeError}
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setLearnModeError(null)
+                          // Trigger learn mode generation with current selection
+                          if (selectedLecture) {
+                            generateLearnMode(undefined, { questionTypes: ['multiple_choice', 'true_false'], difficulty: 'medium' })
+                          }
+                        }}
+                        className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md transition-colors font-medium"
+                      >
+                        Try Again
+                      </button>
+                      <button
+                        onClick={() => setLearnModeError(null)}
+                        className="px-3 py-1.5 bg-white dark:bg-gray-800 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700 text-xs rounded-md hover:bg-red-50 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

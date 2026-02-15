@@ -45,10 +45,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    console.log('[generate-learn-mode] Starting generation', {
+      contentLength: content.length,
+      numberOfQuestions,
+      questionTypes,
+      difficulty,
+      timestamp: new Date().toISOString()
+    })
+
     // Generate learn mode questions using Claude
     const questions = await generateLearnModeQuestions(content, numberOfQuestions, {
       questionTypes: questionTypes as QuestionType[],
       difficulty: difficulty as DifficultyLevel,
+    })
+
+    // Validate we got results
+    if (!questions || questions.length === 0) {
+      console.error('[generate-learn-mode] Empty result:', {
+        contentLength: content.length,
+        numberOfQuestions
+      })
+      throw new Error('AI did not generate any questions')
+    }
+
+    console.log('[generate-learn-mode] Success', {
+      count: questions.length,
+      timestamp: new Date().toISOString()
     })
 
     return NextResponse.json({
@@ -58,6 +80,13 @@ export async function POST(request: NextRequest) {
       generatedAt: new Date().toISOString(),
     })
   } catch (error: any) {
+    // Add detailed error logging
+    console.error('[generate-learn-mode] Error:', {
+      message: error?.message,
+      name: error?.name,
+      stack: error?.stack,
+      timestamp: new Date().toISOString()
+    })
 
     return NextResponse.json(
       {

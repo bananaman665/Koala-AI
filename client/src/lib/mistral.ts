@@ -184,15 +184,45 @@ export async function generateFlashcards(
   const responseText = response.choices?.[0]?.message?.content || ''
   const text = typeof responseText === 'string' ? responseText : ''
 
+  // Log response for debugging
+  console.log('[generateFlashcards] Mistral response:', {
+    length: text.length,
+    preview: text.substring(0, 200),
+    hasCodeBlock: text.includes('```')
+  })
+
   // Try to parse JSON response
   try {
     // Extract JSON from markdown code blocks if present
     const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/)
     const jsonString = jsonMatch ? jsonMatch[1] : text
-    return JSON.parse(jsonString)
-  } catch (error) {
-    // Return empty array if parsing fails
-    return []
+    const flashcards = JSON.parse(jsonString)
+
+    // Validate structure
+    if (!Array.isArray(flashcards)) {
+      throw new Error('Response is not an array')
+    }
+
+    if (flashcards.length === 0) {
+      throw new Error('Generated zero flashcards')
+    }
+
+    // Validate each flashcard has required fields
+    for (let i = 0; i < flashcards.length; i++) {
+      if (!flashcards[i].question || !flashcards[i].answer) {
+        throw new Error(`Flashcard ${i} missing required fields`)
+      }
+    }
+
+    return flashcards
+  } catch (error: any) {
+    // Log the actual response for debugging
+    console.error('[generateFlashcards] Parse error:', {
+      error: error.message,
+      responsePreview: text.substring(0, 500),
+      responseLength: text.length
+    })
+    throw new Error(`Failed to parse Mistral response: ${error.message}`)
   }
 }
 
@@ -299,15 +329,57 @@ ${content}`,
   const responseText = response.choices?.[0]?.message?.content || ''
   const text = typeof responseText === 'string' ? responseText : ''
 
+  // Log response for debugging
+  console.log('[generateLearnModeQuestions] Mistral response:', {
+    length: text.length,
+    preview: text.substring(0, 200),
+    hasCodeBlock: text.includes('```')
+  })
+
   // Try to parse JSON response
   try {
     // Extract JSON from markdown code blocks if present
     const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/)
     const jsonString = jsonMatch ? jsonMatch[1] : text
-    return JSON.parse(jsonString)
-  } catch (error) {
-    // Return empty array if parsing fails
-    return []
+    const questions = JSON.parse(jsonString)
+
+    // Validate structure
+    if (!Array.isArray(questions)) {
+      throw new Error('Response is not an array')
+    }
+
+    if (questions.length === 0) {
+      throw new Error('Generated zero questions')
+    }
+
+    // Validate each question has required fields
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i]
+      if (!q.type || !q.question || !q.correctAnswer) {
+        throw new Error(`Question ${i} missing required fields`)
+      }
+
+      // Validate question-type-specific fields
+      if (q.type === 'multiple_choice') {
+        if (!q.options || q.options.length !== 4) {
+          throw new Error(`Question ${i}: multiple_choice must have exactly 4 options`)
+        }
+      } else if (q.type === 'true_false') {
+        if (!q.options || !q.options.includes('True') || !q.options.includes('False')) {
+          throw new Error(`Question ${i}: true_false must have True and False options`)
+        }
+      }
+    }
+
+    return questions
+  } catch (error: any) {
+    // Log the actual response for debugging
+    console.error('[generateLearnModeQuestions] Parse error:', {
+      error: error.message,
+      responsePreview: text.substring(0, 500),
+      responseLength: text.length
+    })
+    throw new Error(`Failed to parse Mistral response: ${error.message}`)
   }
 }
 
