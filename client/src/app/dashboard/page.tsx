@@ -716,7 +716,7 @@ function DashboardContent() {
     async function fetchUserClasses() {
       setIsLoadingClasses(true)
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes`, {
+        const response = await fetch(`/api/classes`, {
           headers: {
             'x-user-id': user!.id,
           },
@@ -918,7 +918,7 @@ function DashboardContent() {
 
     setIsCreatingCourse(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/classes`, {
+      const response = await fetch(`/api/classes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -3591,7 +3591,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-screen"><span className="text-lg">⏳</span></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-900"><Loader size={32} className="text-gray-400 animate-spin" /></div>}>
       <DashboardContent />
     </Suspense>
   )

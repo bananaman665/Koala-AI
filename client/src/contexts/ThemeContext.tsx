@@ -18,6 +18,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Update theme-color meta tag for iOS status bar
   const updateThemeColor = (dark: boolean) => {
+    if (typeof window === 'undefined') return
     const themeColor = dark ? '#111827' : '#ffffff' // gray-900 for dark, white for light
     let metaThemeColor = document.querySelector('meta[name="theme-color"]')
     if (!metaThemeColor) {
