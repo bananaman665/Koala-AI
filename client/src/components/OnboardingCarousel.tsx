@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { GraduationCap, Mic, Sparkles, BookOpen, Flame, Trophy } from 'lucide-react'
+import { GraduationCap, Mic, Sparkles, BookOpen, Flame, Trophy, X } from 'lucide-react'
 import { hapticSelection, hapticSuccess } from '@/lib/haptics'
 
 interface OnboardingCarouselProps {
