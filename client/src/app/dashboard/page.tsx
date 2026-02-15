@@ -1519,6 +1519,11 @@ function DashboardContent() {
       setFlashcardsError(null)
       setShowFlashcardConfigModal(false)
 
+      console.log('[generateFlashcards] Starting request', {
+        contentLength: notesContent.length,
+        numberOfCards: config?.numberOfCards || 10
+      })
+
       const response = await fetch('/api/ai/generate-flashcards', {
         method: 'POST',
         headers: {
@@ -1530,11 +1535,34 @@ function DashboardContent() {
         }),
       })
 
-      const data = await response.json()
+      console.log('[generateFlashcards] Response received', {
+        status: response.status,
+        ok: response.ok,
+        statusText: response.statusText
+      })
+
+      let data
+      try {
+        data = await response.json()
+      } catch (parseErr: any) {
+        console.error('[generateFlashcards] Failed to parse response as JSON', {
+          error: parseErr.message
+        })
+        throw new Error('Server returned invalid response format')
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate flashcards')
+        console.error('[generateFlashcards] API returned error', {
+          status: response.status,
+          error: data.error,
+          message: data.message
+        })
+        throw new Error(data.message || data.error || 'Failed to generate flashcards')
       }
+
+      console.log('[generateFlashcards] Success', {
+        count: data.flashcards?.length || 0
+      })
 
       setFlashcards(data.flashcards)
 
@@ -1554,6 +1582,10 @@ function DashboardContent() {
         setIsFlashcardModeActive(true)
       }
     } catch (err: any) {
+      console.error('[generateFlashcards] Caught error', {
+        message: err.message,
+        stack: err.stack
+      })
       setFlashcardsError(err.message || 'Failed to generate flashcards')
     } finally {
       setIsGeneratingFlashcards(false)
@@ -1585,6 +1617,13 @@ function DashboardContent() {
       setLearnModeError(null)
       setShowLearnModeConfigModal(false)
 
+      console.log('[generateLearnMode] Starting request', {
+        contentLength: notesContent.length,
+        numberOfQuestions: config?.numberOfQuestions || 10,
+        questionTypes: config?.questionTypes,
+        difficulty: config?.difficulty
+      })
+
       const response = await fetch('/api/ai/generate-learn-mode', {
         method: 'POST',
         headers: {
@@ -1598,10 +1637,29 @@ function DashboardContent() {
         }),
       })
 
-      const data = await response.json()
+      console.log('[generateLearnMode] Response received', {
+        status: response.status,
+        ok: response.ok,
+        statusText: response.statusText
+      })
+
+      let data
+      try {
+        data = await response.json()
+      } catch (parseErr: any) {
+        console.error('[generateLearnMode] Failed to parse response as JSON', {
+          error: parseErr.message
+        })
+        throw new Error('Server returned invalid response format')
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate learn mode questions')
+        console.error('[generateLearnMode] API returned error', {
+          status: response.status,
+          error: data.error,
+          message: data.message
+        })
+        throw new Error(data.message || data.error || 'Failed to generate learn mode questions')
       }
 
       if (!data.questions || !Array.isArray(data.questions)) {
@@ -1612,6 +1670,10 @@ function DashboardContent() {
       if (data.questions.length === 0) {
         throw new Error('API generated zero questions')
       }
+
+      console.log('[generateLearnMode] Success', {
+        count: data.questions.length
+      })
 
       setLearnModeQuestions(data.questions)
 
@@ -1631,6 +1693,10 @@ function DashboardContent() {
       setIncorrectQuestions([])
       setRound(1)
     } catch (err: any) {
+      console.error('[generateLearnMode] Caught error', {
+        message: err.message,
+        stack: err.stack
+      })
       setLearnModeError(err.message || 'Failed to generate learn mode questions')
     } finally {
       setIsGeneratingLearnMode(false)
