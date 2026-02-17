@@ -125,7 +125,7 @@ export function CreateCourseModal({
               </button>
 
               {showSubjectDropdown && (
-                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                <div className="absolute z-10 w-full bottom-full mb-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
                   {SUBJECTS.map((subject) => (
                     <button
                       key={subject.value}

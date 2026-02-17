@@ -49,7 +49,6 @@ import { MobileBottomNav } from './components/MobileBottomNav'
 import { FloatingRecordingPanel } from './components/FloatingRecordingPanel'
 import { CreateCourseModal } from './components/CreateCourseModal'
 import { CreateClassModal } from './components/CreateClassModal'
-import { DailyGreeting } from '@/components/DailyGreeting'
 import { Sidebar } from '@/components/Sidebar'
 import { TopNavigationBar } from '@/components/TopNavigationBar'
 import { LeftSidebar } from '@/components/LeftSidebar'
@@ -107,7 +106,6 @@ function DashboardContent() {
   } = useAchievements()
   const [showLevelModal, setShowLevelModal] = useState(false)
   const [showAchievementsModal, setShowAchievementsModal] = useState(false)
-  const [showDailyGreeting, setShowDailyGreeting] = useState(false)
   const [monthlyGoalRewarded, setMonthlyGoalRewarded] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
@@ -386,21 +384,6 @@ function DashboardContent() {
       const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true'
       if (!hasCompletedOnboarding) {
         setShowOnboarding(true)
-      }
-    }
-  }, [user, isCheckingAuth])
-
-  // Check if user should see daily greeting
-  useEffect(() => {
-    if (user && !isCheckingAuth) {
-      const today = new Date().toDateString()
-      const lastGreetingDate = localStorage.getItem('daily_greeting_date')
-      const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true'
-
-      // Show greeting if they haven't seen it today AND have completed onboarding
-      if (lastGreetingDate !== today && hasCompletedOnboarding) {
-        setShowDailyGreeting(true)
-        localStorage.setItem('daily_greeting_date', today)
       }
     }
   }, [user, isCheckingAuth])
@@ -2084,19 +2067,6 @@ function DashboardContent() {
         )}
 
         {/* Daily Greeting - Shows once per day */}
-        {showDailyGreeting && (
-          <DailyGreeting
-            streak={streak}
-            totalXP={totalXP}
-            lecturesCompletedToday={lectures.filter(l => {
-              const lectureDate = new Date(l.created_at).toDateString()
-              const today = new Date().toDateString()
-              return lectureDate === today
-            }).length}
-            onDismiss={() => setShowDailyGreeting(false)}
-          />
-        )}
-
         {/* Top Navigation - Mobile Only - Hidden in flashcard/quiz mode */}
         {!isFlashcardModeActive && !isLearnModeActive && (
           <MobileTopNav
