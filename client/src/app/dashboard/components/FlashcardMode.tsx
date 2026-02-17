@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { X, CheckCircle, Star, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react'
+import { X, CheckCircle, Star, ChevronLeft, ChevronRight, Sparkles, Settings } from 'lucide-react'
 import { hapticSelection, hapticSuccess, hapticButton } from '@/lib/haptics'
 
 interface Flashcard {
@@ -12,9 +12,10 @@ interface Flashcard {
 interface FlashcardModeProps {
   flashcards: Flashcard[]
   onExit: () => void
+  onReconfigure?: () => void
 }
 
-export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
+export function FlashcardMode({ flashcards, onExit, onReconfigure }: FlashcardModeProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
   const [masteredCards, setMasteredCards] = useState<Set<number>>(new Set())
@@ -194,8 +195,22 @@ export function FlashcardMode({ flashcards, onExit }: FlashcardModeProps) {
             <X size={22} className="text-gray-600 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Flashcards</h1>
-          <div className="text-sm font-medium text-gray-500 dark:text-gray-400 min-w-[40px] text-right">
-            {currentIndex + 1}/{flashcards.length}
+          <div className="flex items-center gap-2">
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              {currentIndex + 1}/{flashcards.length}
+            </div>
+            {onReconfigure && (
+              <button
+                onClick={() => {
+                  hapticButton()
+                  onReconfigure()
+                }}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/10 active:scale-95 transition-all"
+                title="Reconfigure flashcards"
+              >
+                <Settings size={20} className="text-gray-600 dark:text-gray-300" />
+              </button>
+            )}
           </div>
         </div>
 

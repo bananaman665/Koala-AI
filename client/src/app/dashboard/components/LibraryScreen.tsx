@@ -194,6 +194,7 @@ export function LibraryScreen({
         onExit={onExitLearnMode}
         selectedAnswer={selectedAnswer}
         showExplanation={showExplanation}
+        onReconfigure={onShowLearnModeConfig}
       />
     )
   }
@@ -207,6 +208,7 @@ export function LibraryScreen({
           onSetIsFlashcardModeActive(false)
           onSetCurrentFlashcardIndex(0)
         }}
+        onReconfigure={onShowFlashcardConfig}
       />
     )
   }

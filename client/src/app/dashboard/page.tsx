@@ -16,6 +16,7 @@ import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact
 import { soundSuccess } from '@/lib/sounds'
 import { supabase, uploadAudioFile, reorganizeAudioFile } from '@/lib/supabase'
 import { getFriendlyError, logError } from '@/lib/errorHandler'
+import { saveFlashcardDeck, loadFlashcardDeck, saveQuiz, loadQuiz } from '@/lib/quizFlashcardDb'
 import type { Database } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
 import { SkeletonLectureCard, SkeletonCourseCard, SkeletonStats } from '@/components/Skeleton'
@@ -261,6 +262,8 @@ function DashboardContent() {
   const [round, setRound] = useState(1)
   const [showLearnModeConfigModal, setShowLearnModeConfigModal] = useState(false)
   const [showFlashcardConfigModal, setShowFlashcardConfigModal] = useState(false)
+  const [forceRegenerateQuiz, setForceRegenerateQuiz] = useState(false)
+  const [forceRegenerateFlashcards, setForceRegenerateFlashcards] = useState(false)
   const [writtenAnswer, setWrittenAnswer] = useState('')
   const [writtenAnswerFeedback, setWrittenAnswerFeedback] = useState<{ isCorrect: boolean; matchedKeywords: string[] } | null>(null)
 
@@ -1508,7 +1511,7 @@ function DashboardContent() {
     }
   }
 
-  const generateFlashcards = async (contentToUse?: string, config?: FlashcardConfig) => {
+  const generateFlashcards = async (contentToUse?: string, config?: FlashcardConfig, forceRegenerate: boolean = false) => {
     const notesContent = contentToUse || selectedLectureNotes || notes
 
     if (!notesContent) {
@@ -1521,9 +1524,35 @@ function DashboardContent() {
       setFlashcardsError(null)
       setShowFlashcardConfigModal(false)
 
-      console.log('[generateFlashcards] Starting request', {
+      const flashcardConfig = {
+        numberOfCards: config?.numberOfCards || 10,
+      }
+
+      // Check if we have saved flashcards for this lecture (only if not forcing regeneration)
+      if (!forceRegenerate && selectedLecture && user?.id) {
+        console.log('[generateFlashcards] Checking for saved flashcards')
+        const savedDeck = await loadFlashcardDeck(selectedLecture, user.id)
+
+        if (savedDeck && savedDeck.cards.length > 0) {
+          console.log('[generateFlashcards] Loaded saved flashcards', {
+            count: savedDeck.cards.length,
+            config: savedDeck.config
+          })
+          setFlashcards(savedDeck.cards)
+
+          // If in library view, activate flashcard mode
+          if (activeScreen === 'library' && selectedLecture) {
+            setCurrentFlashcardIndex(0)
+            setIsFlashcardModeActive(true)
+          }
+          return
+        }
+      }
+
+      console.log('[generateFlashcards] Generating new flashcards', {
         contentLength: notesContent.length,
-        numberOfCards: config?.numberOfCards || 10
+        numberOfCards: flashcardConfig.numberOfCards,
+        forceRegenerate
       })
 
       const response = await fetch('/api/ai/generate-flashcards', {
@@ -1533,7 +1562,7 @@ function DashboardContent() {
         },
         body: JSON.stringify({
           content: notesContent,
-          numberOfCards: config?.numberOfCards || 10,
+          numberOfCards: flashcardConfig.numberOfCards,
         }),
       })
 
@@ -1568,15 +1597,16 @@ function DashboardContent() {
 
       setFlashcards(data.flashcards)
 
-      // TODO: Save flashcards to database once flashcard_decks table exists
-      // if (selectedLecture && user?.id) {
-      //   const flashcardConfig = {
-      //     numberOfCards: config?.numberOfCards || 10,
-      //   }
-      //   await (supabase as any)
-      //     .from('flashcard_decks')
-      //     .upsert({...})
-      // }
+      // Save flashcards to database
+      if (selectedLecture && user?.id) {
+        try {
+          await saveFlashcardDeck(selectedLecture, user.id, data.flashcards, flashcardConfig)
+          console.log('[generateFlashcards] Saved to database')
+        } catch (saveErr: any) {
+          console.error('[generateFlashcards] Failed to save to database:', saveErr)
+          // Don't fail the whole operation if save fails
+        }
+      }
 
       // If in library view, activate flashcard mode
       if (activeScreen === 'library' && selectedLecture) {
@@ -1604,7 +1634,7 @@ function DashboardContent() {
     })
   }
 
-  const generateLearnMode = async (contentToUse?: string, config?: LearnModeConfig) => {
+  const generateLearnMode = async (contentToUse?: string, config?: LearnModeConfig, forceRegenerate: boolean = false) => {
     const notesContent = contentToUse || selectedLectureNotes || notes
 
     if (!notesContent) {
@@ -1617,11 +1647,42 @@ function DashboardContent() {
       setLearnModeError(null)
       setShowLearnModeConfigModal(false)
 
-      console.log('[generateLearnMode] Starting request', {
-        contentLength: notesContent.length,
+      const quizConfig = {
         numberOfQuestions: config?.numberOfQuestions || 10,
-        questionTypes: config?.questionTypes,
-        difficulty: config?.difficulty
+        questionTypes: config?.questionTypes || ['multiple_choice', 'true_false'],
+        difficulty: config?.difficulty || 'medium',
+      }
+
+      // Check if we have a saved quiz for this lecture (only if not forcing regeneration)
+      if (!forceRegenerate && selectedLecture && user?.id) {
+        console.log('[generateLearnMode] Checking for saved quiz')
+        const savedQuiz = await loadQuiz(selectedLecture, user.id)
+
+        if (savedQuiz && savedQuiz.questions.length > 0) {
+          console.log('[generateLearnMode] Loaded saved quiz', {
+            count: savedQuiz.questions.length,
+            config: savedQuiz.config
+          })
+          setLearnModeQuestions(savedQuiz.questions)
+
+          setIsLearnModeActive(true)
+          setCurrentQuestionIndex(0)
+          setSelectedAnswer(null)
+          setShowExplanation(false)
+          setAnsweredQuestions(new Set())
+          setCorrectAnswers(new Set())
+          setIncorrectQuestions([])
+          setRound(1)
+          return
+        }
+      }
+
+      console.log('[generateLearnMode] Generating new quiz', {
+        contentLength: notesContent.length,
+        numberOfQuestions: quizConfig.numberOfQuestions,
+        questionTypes: quizConfig.questionTypes,
+        difficulty: quizConfig.difficulty,
+        forceRegenerate
       })
 
       const response = await fetch('/api/ai/generate-learn-mode', {
@@ -1631,9 +1692,9 @@ function DashboardContent() {
         },
         body: JSON.stringify({
           content: notesContent,
-          numberOfQuestions: config?.numberOfQuestions || 10,
-          questionTypes: config?.questionTypes || ['multiple_choice', 'true_false'],
-          difficulty: config?.difficulty || 'medium',
+          numberOfQuestions: quizConfig.numberOfQuestions,
+          questionTypes: quizConfig.questionTypes,
+          difficulty: quizConfig.difficulty,
         }),
       })
 
@@ -1677,12 +1738,16 @@ function DashboardContent() {
 
       setLearnModeQuestions(data.questions)
 
-      // Save quiz to database if we have a selected lecture
-      // TODO: Save quizzes to database once quizzes table exists
-      // if (selectedLecture && user?.id) {
-      //   const quizConfig = {...}
-      //   await (supabase as any).from('quizzes').upsert({...})
-      // }
+      // Save quiz to database
+      if (selectedLecture && user?.id) {
+        try {
+          await saveQuiz(selectedLecture, user.id, data.questions, quizConfig)
+          console.log('[generateLearnMode] Saved to database')
+        } catch (saveErr: any) {
+          console.error('[generateLearnMode] Failed to save to database:', saveErr)
+          // Don't fail the whole operation if save fails
+        }
+      }
 
       setIsLearnModeActive(true)
       setCurrentQuestionIndex(0)
@@ -2991,8 +3056,16 @@ function DashboardContent() {
                 setEditedNotesContent(selectedLectureNotes || '')
                 setIsEditingNotes(true)
               }}
-              onShowLearnModeConfig={() => setShowLearnModeConfigModal(true)}
-              onShowFlashcardConfig={() => setShowFlashcardConfigModal(true)}
+              onShowLearnModeConfig={() => {
+                // If already in learn mode, force regeneration when reconfiguring
+                setForceRegenerateQuiz(isLearnModeActive)
+                setShowLearnModeConfigModal(true)
+              }}
+              onShowFlashcardConfig={() => {
+                // If already in flashcard mode, force regeneration when reconfiguring
+                setForceRegenerateFlashcards(isFlashcardModeActive)
+                setShowFlashcardConfigModal(true)
+              }}
               onShowDeleteModal={() => setShowDeleteLectureModal(true)}
               onSetIsFlashcardModeActive={setIsFlashcardModeActive}
               onSetCurrentFlashcardIndex={setCurrentFlashcardIndex}
@@ -3643,16 +3716,28 @@ function DashboardContent() {
       {/* Learn Mode Config Modal */}
       <LearnModeConfigModal
         isOpen={showLearnModeConfigModal}
-        onClose={() => setShowLearnModeConfigModal(false)}
-        onGenerate={(config) => generateLearnMode(undefined, config)}
+        onClose={() => {
+          setShowLearnModeConfigModal(false)
+          setForceRegenerateQuiz(false)
+        }}
+        onGenerate={(config) => {
+          generateLearnMode(undefined, config, forceRegenerateQuiz)
+          setForceRegenerateQuiz(false)
+        }}
         isGenerating={isGeneratingLearnMode}
       />
 
       {/* Flashcard Config Modal */}
       <FlashcardConfigModal
         isOpen={showFlashcardConfigModal}
-        onClose={() => setShowFlashcardConfigModal(false)}
-        onGenerate={(config) => generateFlashcards(undefined, config)}
+        onClose={() => {
+          setShowFlashcardConfigModal(false)
+          setForceRegenerateFlashcards(false)
+        }}
+        onGenerate={(config) => {
+          generateFlashcards(undefined, config, forceRegenerateFlashcards)
+          setForceRegenerateFlashcards(false)
+        }}
         isGenerating={isGeneratingFlashcards}
       />
 

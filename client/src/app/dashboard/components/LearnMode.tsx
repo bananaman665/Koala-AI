@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Target, Trophy, CheckCircle, XCircle, Sparkles, Zap } from 'lucide-react'
+import { X, Target, Trophy, CheckCircle, XCircle, Sparkles, Zap, Settings } from 'lucide-react'
 import { hapticSelection, hapticSuccess, hapticError, hapticButton } from '@/lib/haptics'
 import { soundSuccess, soundError } from '@/lib/sounds'
 import type { QuestionType } from '@/lib/claude'
@@ -25,6 +25,7 @@ interface LearnModeProps {
   onExit: () => void
   selectedAnswer: string | null
   showExplanation: boolean
+  onReconfigure?: () => void
 }
 
 export function LearnMode({
@@ -36,6 +37,7 @@ export function LearnMode({
   onExit,
   selectedAnswer,
   showExplanation,
+  onReconfigure,
 }: LearnModeProps) {
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set())
@@ -202,8 +204,22 @@ export function LearnMode({
             <X size={22} className="text-gray-600 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Quiz</h1>
-          <div className="text-sm font-medium text-gray-500 dark:text-gray-400 min-w-[40px] text-right">
-            {currentIndex + 1}/{questions.length}
+          <div className="flex items-center gap-2">
+            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              {currentIndex + 1}/{questions.length}
+            </div>
+            {onReconfigure && (
+              <button
+                onClick={() => {
+                  hapticButton()
+                  onReconfigure()
+                }}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-white/10 active:scale-95 transition-all"
+                title="Reconfigure quiz"
+              >
+                <Settings size={20} className="text-gray-600 dark:text-gray-300" />
+              </button>
+            )}
           </div>
         </div>
 
