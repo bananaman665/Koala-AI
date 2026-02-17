@@ -392,9 +392,10 @@ function DashboardContent() {
     if (user && !isCheckingAuth) {
       const today = new Date().toDateString()
       const lastGreetingDate = localStorage.getItem('daily_greeting_date')
+      const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true'
 
-      // Show greeting if they haven't seen it today
-      if (lastGreetingDate !== today) {
+      // Show greeting if they haven't seen it today AND have completed onboarding
+      if (lastGreetingDate !== today && hasCompletedOnboarding) {
         setShowDailyGreeting(true)
         localStorage.setItem('daily_greeting_date', today)
       }
