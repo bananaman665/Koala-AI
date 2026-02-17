@@ -12,18 +12,23 @@ module.exports = {
         'larger-phone': '393px', // iPhone 16/17 Pro and larger
       },
       colors: {
-        // Primary accent color (vibrant blue) - use for buttons, active states, highlights
+        // Primary accent color
+        // Light mode: uses deeper blue-600 for better contrast
+        // Dark mode: uses vibrant #0066FF
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
           200: '#bfdbfe',
           300: '#93c5fd',
           400: '#60a5fa',
-          500: '#0066FF',  // Vibrant blue - main CTA color
-          600: '#0052CC',  // Darker vibrant blue
-          700: '#0747A6',  // Deep blue
-          800: '#1e40af',
+          500: '#2563eb',  // blue-600 for light mode (softer than neon)
+          600: '#1d4ed8',  // blue-700
+          700: '#1e40af',  // blue-800
+          800: '#1e3a8a',  // blue-900
           900: '#1e3a8a',
+          // Neon variant for dark mode only
+          'neon': '#0066FF',
+          'neon-dark': '#0052CC',
         },
         // Success/complete state - muted teal-green that works with dark theme
         success: {
