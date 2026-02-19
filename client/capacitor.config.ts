@@ -4,7 +4,8 @@ const config: CapacitorConfig = {
   appId: 'com.koala.ai',
   appName: 'Koala.ai',
   webDir: 'out',
-  // Production - use Vercel deployment
+  // Production: https://koala-ai-client.vercel.app
+  // Development: http://10.200.1.147:3000
   server: {
     url: 'https://koala-ai-client.vercel.app',
   },
@@ -24,6 +25,8 @@ const config: CapacitorConfig = {
   },
   ios: {
     contentInset: 'never',
+    scheme: 'capacitor',
+    allowsLinkPreview: false,
   },
   android: {
     allowMixedContent: true,
