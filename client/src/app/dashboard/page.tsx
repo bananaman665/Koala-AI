@@ -8,13 +8,12 @@ import { useLectureRecordingV2 } from '@/hooks/useLectureRecordingV2'
 import { formatDuration } from '@/hooks/useHybridRecording'
 import { useScreenTransition } from '@/hooks/useScreenTransition'
 import { ScreenTransition } from '@/components/ScreenTransition'
-import { AudioPlayer } from '@/components/AudioPlayer'
 import { StreakDisplay, useStreak } from '@/components/StreakDisplay'
 import { OnboardingCarousel } from '@/components/OnboardingCarousel'
 import { useAuth } from '@/contexts/AuthContext'
 import { hapticButton, hapticSuccess, hapticError, hapticSelection, hapticImpact } from '@/lib/haptics'
 import { soundSuccess } from '@/lib/sounds'
-import { supabase, uploadAudioFile, reorganizeAudioFile } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { getFriendlyError, logError } from '@/lib/errorHandler'
 import { saveFlashcardDeck, loadFlashcardDeck, saveQuiz, loadQuiz } from '@/lib/quizFlashcardDb'
 import type { Database } from '@/lib/supabase'
@@ -118,22 +117,14 @@ function DashboardContent() {
     isTranscribing,
     isGeneratingNotes,
     notes,
-    audioBlob,
     startRecording,
     pauseRecording,
     resumeRecording,
     stopAndGenerateNotes,
-    generateNotes,
     reset,
-    clearAudioBlob,
     recordingError,
-    notesError,
     isSupported,
-    isMobile: isRecordingMobile,
   } = useLectureRecordingV2()
-
-  // Ref to store captured audio blob for saving
-  const capturedAudioBlobRef = useRef<Blob | null>(null)
 
   // Audio visualization state
   const [audioLevels, setAudioLevels] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0, 0])
@@ -365,11 +356,6 @@ function DashboardContent() {
   useEffect(() => {
     setIsMounted(true)
   }, [])
-
-  // Debug: Log audioBlob changes from hook
-  useEffect(() => {
-    console.log('[Dashboard] audioBlob from hook changed:', audioBlob ? `${audioBlob.size} bytes, type: ${audioBlob.type}` : 'null')
-  }, [audioBlob])
 
   // Watch for microphone permission errors
   useEffect(() => {
@@ -1317,31 +1303,6 @@ function DashboardContent() {
     }
 
     try {
-      // Get audio URL first (if audio is available) before creating lecture
-      let audioUrl: string | null = null
-      let uploadedExtension: string | null = null
-      let tempUploadId: string | null = null
-      const audioBlobToUpload = capturedAudioBlobRef.current
-      console.log('[SaveLecture] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
-
-      if (audioBlobToUpload) {
-        try {
-          console.log('[SaveLecture] Uploading audio to storage with temp ID...')
-          // Use a temporary ID for initial upload
-          tempUploadId = `temp-${Date.now()}`
-          const uploadResult = await uploadAudioFile(user.id, tempUploadId, audioBlobToUpload)
-          audioUrl = uploadResult.url
-          uploadedExtension = uploadResult.extension
-          console.log('[SaveLecture] Audio uploaded, URL:', audioUrl)
-        } catch (audioError) {
-          console.error('[SaveLecture] Failed to upload audio:', audioError)
-          toast.error(`Warning: Audio file could not be uploaded. ${(audioError as Error).message}`)
-          // Continue saving even if audio upload fails
-        }
-      } else {
-        console.log('[SaveLecture] No audioBlob available to upload')
-      }
-
       // Count existing lectures for sequential naming
       let defaultTitle = `Lecture ${new Date().toLocaleDateString()}`
       try {
@@ -1357,7 +1318,6 @@ function DashboardContent() {
         console.error('[SaveLecture] Failed to count lectures:', countError)
       }
 
-      // Create a lecture record with the audio URL (now with actual URL or null)
       // @ts-ignore - Supabase typing issue with Database generic
       const { data: lecture, error: lectureError } = await (supabase as any)
         .from('lectures')
@@ -1367,43 +1327,12 @@ function DashboardContent() {
           title: lectureTitle.trim() || defaultTitle,
           duration: duration,
           transcription_status: 'completed',
-          audio_url: audioUrl,
         })
         .select()
         .single()
 
       if (lectureError) {
         throw lectureError
-      }
-
-      // If we uploaded audio with a temp ID, reorganize the file to use the actual lecture ID
-      if (audioUrl && tempUploadId && uploadedExtension) {
-        try {
-          console.log('[SaveLecture] Reorganizing audio file with lecture ID...')
-          const newAudioUrl = await reorganizeAudioFile(
-            user.id,
-            tempUploadId,
-            lecture.id,
-            uploadedExtension
-          )
-
-          console.log('[SaveLecture] New audio URL:', newAudioUrl)
-
-          // Update lecture with the correct audio URL
-          const { error: updateError } = await (supabase as any)
-            .from('lectures')
-            .update({ audio_url: newAudioUrl })
-            .eq('id', lecture.id)
-
-          if (updateError) {
-            console.error('[SaveLecture] Failed to update lecture with new audio URL:', updateError)
-          } else {
-            console.log('[SaveLecture] Lecture updated with reorganized audio URL successfully')
-          }
-        } catch (reorganizeError) {
-          console.error('[SaveLecture] Failed to reorganize audio file:', reorganizeError)
-          // File is still accessible at the temp URL, so this is non-critical
-        }
       }
 
       // Save transcript if available
@@ -1487,7 +1416,6 @@ function DashboardContent() {
 
       // Clear the current recording and audio blob
       setLectureTitle('')
-      capturedAudioBlobRef.current = null
       reset()
     } catch (error: any) {
       alert(`Failed to save lecture: ${error.message}`)
@@ -1892,11 +1820,6 @@ function DashboardContent() {
     setIsStoppingRecording(true)
     try {
       const result = await stopAndGenerateNotes()
-      console.log('[Dashboard] stopAndGenerateNotes result:', result ? { transcript: result.transcript?.length, notes: result.notes?.length, audioBlob: result.audioBlob?.size } : 'null')
-      if (result?.audioBlob) {
-        capturedAudioBlobRef.current = result.audioBlob
-        console.log('[Dashboard] Captured audioBlob in ref:', result.audioBlob.size, 'bytes')
-      }
       if (result && result.transcript) {
         hapticSuccess()
         setShowCourseSelectionModal(true)
@@ -1927,28 +1850,6 @@ function DashboardContent() {
     }
     setIsSavingRecording(true)
     try {
-      let audioUrl: string | null = null
-      let uploadedExtension: string | null = null
-      let tempUploadId: string | null = null
-      const audioBlobToUpload = capturedAudioBlobRef.current
-      console.log('[SaveLecture] audioBlob from ref:', audioBlobToUpload ? `Blob size: ${audioBlobToUpload.size}, type: ${audioBlobToUpload.type}` : 'null')
-
-      if (audioBlobToUpload) {
-        try {
-          console.log('[SaveLecture] Uploading audio to storage with temp ID...')
-          tempUploadId = `temp-${Date.now()}`
-          const uploadResult = await uploadAudioFile(user!.id, tempUploadId, audioBlobToUpload)
-          audioUrl = uploadResult.url
-          uploadedExtension = uploadResult.extension
-          console.log('[SaveLecture] Audio uploaded, URL:', audioUrl)
-        } catch (audioError) {
-          console.error('[SaveLecture] Failed to upload audio:', audioError)
-          toast.error(`Warning: Audio file could not be uploaded. ${(audioError as Error).message}`)
-        }
-      } else {
-        console.log('[SaveLecture] No audioBlob available to upload')
-      }
-
       const { count: lectureCount } = await (supabase as any)
         .from('lectures')
         .select('*', { count: 'exact', head: true })
@@ -1970,31 +1871,11 @@ function DashboardContent() {
           title: lectureTitle.trim() || defaultTitle,
           duration: duration,
           transcription_status: 'completed',
-          audio_url: audioUrl,
         })
         .select()
         .single()
 
       if (lectureError) throw lectureError
-
-      if (audioUrl && tempUploadId && uploadedExtension) {
-        try {
-          console.log('[SaveLecture] Reorganizing audio file with lecture ID...')
-          const newAudioUrl = await reorganizeAudioFile(user!.id, tempUploadId, lecture.id, uploadedExtension)
-          console.log('[SaveLecture] New audio URL:', newAudioUrl)
-          const { error: updateError } = await (supabase as any)
-            .from('lectures')
-            .update({ audio_url: newAudioUrl })
-            .eq('id', lecture.id)
-          if (updateError) {
-            console.error('[SaveLecture] Failed to update lecture with new audio URL:', updateError)
-          } else {
-            console.log('[SaveLecture] Lecture updated with reorganized audio URL successfully')
-          }
-        } catch (reorganizeError) {
-          console.error('[SaveLecture] Failed to reorganize audio file:', reorganizeError)
-        }
-      }
 
       if (transcript) {
         await (supabase as any).from('transcripts').insert({
@@ -2029,7 +1910,6 @@ function DashboardContent() {
       setShowCourseSelectionModal(false)
       setSelectedCourseForRecording(null)
       setLectureTitle('')
-      capturedAudioBlobRef.current = null
       reset()
     } catch (error) {
       alert('Failed to save recording. Please try again.')
@@ -3191,11 +3071,6 @@ function DashboardContent() {
                           {lecture.duration ? `${Math.round(lecture.duration / 60)} min` : 'Duration unknown'}
                         </p>
                       </div>
-                      {lecture.audio_url && (
-                        <span className="px-2 py-1 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 rounded text-xs font-medium">
-                          Has Audio
-                        </span>
-                      )}
                     </div>
                   ))}
                 </div>

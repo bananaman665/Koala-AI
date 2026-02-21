@@ -3,7 +3,6 @@
 import { useMemo, useState, useEffect } from 'react'
 import { hapticSelection, hapticButton } from '@/lib/haptics'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
-import { AudioPlayer } from '@/components/AudioPlayer'
 import { LearnMode } from './LearnMode'
 import { FlashcardMode } from './FlashcardMode'
 import { SubjectIcon } from '@/components/SubjectIcon'
@@ -229,13 +228,6 @@ export function LibraryScreen({
             </button>
           </div>
 
-          {/* Audio Player Card */}
-          <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-white/[0.06] mb-6">
-            <AudioPlayer
-              audioUrl={selectedLectureData.audio_url || null}
-              duration={selectedLectureData.duration || 0}
-            />
-          </div>
 
           {/* Study Tools */}
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Study Tools</h2>
