@@ -126,6 +126,9 @@ function DashboardContent() {
     isSupported,
   } = useLectureRecordingV2()
 
+  // Ref to capture notes from recording result for reliable saving
+  const capturedNotesRef = useRef<string | null>(null)
+
   // Audio visualization state
   const [audioLevels, setAudioLevels] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0, 0])
   const audioContextRef = useRef<AudioContext | null>(null)
@@ -1806,6 +1809,9 @@ function DashboardContent() {
     setIsStoppingRecording(true)
     try {
       const result = await stopAndGenerateNotes()
+      if (result?.notes) {
+        capturedNotesRef.current = result.notes
+      }
       if (result && result.transcript) {
         hapticSuccess()
         setShowCourseSelectionModal(true)
@@ -1864,11 +1870,12 @@ function DashboardContent() {
       if (lectureError) throw lectureError
 
 
-      if (notes) {
+      const notesToSave = capturedNotesRef.current || notes
+      if (notesToSave) {
         await (supabase as any).from('notes').insert({
           lecture_id: lecture.id,
           user_id: user!.id,
-          content: notes,
+          content: notesToSave,
         })
       }
 
@@ -1889,6 +1896,7 @@ function DashboardContent() {
       setShowCourseSelectionModal(false)
       setSelectedCourseForRecording(null)
       setLectureTitle('')
+      capturedNotesRef.current = null
       reset()
     } catch (error) {
       alert('Failed to save recording. Please try again.')
