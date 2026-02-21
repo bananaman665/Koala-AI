@@ -70,6 +70,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
   // Refs
   const webRecognitionRef = useRef<any>(null)
   const transcriptRef = useRef<string>('')
+  const accumulatedTranscriptRef = useRef<string>('') // native: accumulated across restarts
   const isRecordingRef = useRef<boolean>(false)
   const isPausedRef = useRef<boolean>(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -288,13 +289,15 @@ export function useHybridRecording(): UseHybridRecordingResult {
         if (data.matches && data.matches.length > 0) {
           const currentPhrase = data.matches[0]
 
-          // Save the current transcript directly (always keep it updated)
-          transcriptRef.current = currentPhrase
+          // Combine previously accumulated text with the current phrase
+          const fullTranscript = accumulatedTranscriptRef.current
+            ? accumulatedTranscriptRef.current + ' ' + currentPhrase
+            : currentPhrase
+          transcriptRef.current = fullTranscript
 
-          // Show both the accumulated transcript and current phrase
           setState(prev => ({
             ...prev,
-            transcript: currentPhrase,
+            transcript: fullTranscript,
             interimTranscript: currentPhrase,
           }))
         }
@@ -305,6 +308,10 @@ export function useHybridRecording(): UseHybridRecordingResult {
         console.log('[Native Speech] Listening state:', state.status)
 
         if (state.status === 'stopped' && isRecordingRef.current && !isPausedRef.current) {
+          // Save the current phrase into the accumulated buffer before restarting
+          if (transcriptRef.current) {
+            accumulatedTranscriptRef.current = transcriptRef.current
+          }
           // Recognition stopped but we're still "recording" - restart to continue
           console.log('[Native Speech] Restarting recognition...')
           try {
@@ -446,6 +453,7 @@ export function useHybridRecording(): UseHybridRecordingResult {
       isRecordingRef.current = true
       isPausedRef.current = false
       transcriptRef.current = ''
+      accumulatedTranscriptRef.current = ''
 
       setState(prev => ({
         ...prev,
