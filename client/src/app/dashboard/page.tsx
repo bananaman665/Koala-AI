@@ -143,55 +143,61 @@ function DashboardContent() {
 
   // Audio visualization effect
   useEffect(() => {
+    const isNative = typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform?.()
+
     if (isRecording && !isPaused) {
-      // Start audio visualization
-      const startAudioVisualization = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-          mediaStreamRef.current = stream
-          
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-          audioContextRef.current = audioContext
-          
-          const analyser = audioContext.createAnalyser()
-          analyser.fftSize = 32
-          analyserRef.current = analyser
-          
-          const source = audioContext.createMediaStreamSource(stream)
-          source.connect(analyser)
-          
-          const dataArray = new Uint8Array(analyser.frequencyBinCount)
-          
-          const updateLevels = () => {
-            if (!analyserRef.current) return
-            
-            analyserRef.current.getByteFrequencyData(dataArray)
-            
-            // Get 9 evenly spaced frequency bands and normalize to 0-32 range for height
-            const levels: number[] = []
-            const bandCount = 9
-            const step = Math.floor(dataArray.length / bandCount)
-            
-            for (let i = 0; i < bandCount; i++) {
-              const value = dataArray[i * step] || 0
-              // Normalize: input 0-255, output 8-32 pixels
-              const normalized = Math.max(8, (value / 255) * 32)
-              levels.push(normalized)
-            }
-            
-            setAudioLevels(levels)
-            animationFrameRef.current = requestAnimationFrame(updateLevels)
-          }
-          
-          updateLevels()
-        } catch (err) {
-          console.error('Failed to start audio visualization:', err)
+      if (isNative) {
+        // On native iOS/Android, getUserMedia conflicts with the native speech recognition
+        // audio session. Use a randomized animation instead.
+        const animate = () => {
+          const levels = Array.from({ length: 9 }, () => Math.random() * 24 + 8)
+          setAudioLevels(levels)
+          animationFrameRef.current = requestAnimationFrame(animate)
         }
+        animationFrameRef.current = requestAnimationFrame(animate)
+      } else {
+        // Web: use real microphone data for visualization
+        const startAudioVisualization = async () => {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+            mediaStreamRef.current = stream
+
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+            audioContextRef.current = audioContext
+
+            const analyser = audioContext.createAnalyser()
+            analyser.fftSize = 32
+            analyserRef.current = analyser
+
+            const source = audioContext.createMediaStreamSource(stream)
+            source.connect(analyser)
+
+            const dataArray = new Uint8Array(analyser.frequencyBinCount)
+
+            const updateLevels = () => {
+              if (!analyserRef.current) return
+              analyserRef.current.getByteFrequencyData(dataArray)
+              const levels: number[] = []
+              const bandCount = 9
+              const step = Math.floor(dataArray.length / bandCount)
+              for (let i = 0; i < bandCount; i++) {
+                const value = dataArray[i * step] || 0
+                const normalized = Math.max(8, (value / 255) * 32)
+                levels.push(normalized)
+              }
+              setAudioLevels(levels)
+              animationFrameRef.current = requestAnimationFrame(updateLevels)
+            }
+
+            updateLevels()
+          } catch (err) {
+            console.error('Failed to start audio visualization:', err)
+          }
+        }
+        startAudioVisualization()
       }
-      
-      startAudioVisualization()
     } else {
-      // Stop audio visualization
+      // Stop visualization
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)
         animationFrameRef.current = null
@@ -207,8 +213,7 @@ function DashboardContent() {
       analyserRef.current = null
       setAudioLevels([0, 0, 0, 0, 0, 0, 0, 0, 0])
     }
-    
-    // Cleanup on unmount
+
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)
