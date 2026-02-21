@@ -1816,6 +1816,8 @@ function DashboardContent() {
       const result = await stopAndGenerateNotes()
       if (result?.notes) {
         capturedNotesRef.current = result.notes
+      } else if (result?.transcript) {
+        toast.error('Notes generation failed. Check your Mistral API key in Vercel.')
       }
       if (result && result.transcript) {
         hapticSuccess()
