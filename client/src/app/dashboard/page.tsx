@@ -1335,20 +1335,6 @@ function DashboardContent() {
         throw lectureError
       }
 
-      // Save transcript if available
-      if (transcript) {
-        // @ts-ignore - Supabase typing issue with Database generic
-        const { error: transcriptError } = await (supabase as any)
-          .from('transcripts')
-          .insert({
-            lecture_id: lecture.id,
-            user_id: user.id,
-            content: transcript,
-          })
-
-        if (transcriptError) {
-        }
-      }
 
       // Save notes
       // @ts-ignore - Supabase typing issue with Database generic
@@ -1877,13 +1863,6 @@ function DashboardContent() {
 
       if (lectureError) throw lectureError
 
-      if (transcript) {
-        await (supabase as any).from('transcripts').insert({
-          lecture_id: lecture.id,
-          user_id: user!.id,
-          content: transcript,
-        })
-      }
 
       if (notes) {
         await (supabase as any).from('notes').insert({
