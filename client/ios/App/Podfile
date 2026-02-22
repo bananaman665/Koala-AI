@@ -17,6 +17,7 @@ def capacitor_pods
   pod 'CapacitorCamera', :path => '../../../node_modules/@capacitor/camera'
   pod 'CapacitorFilesystem', :path => '../../../node_modules/@capacitor/filesystem'
   pod 'CapacitorHaptics', :path => '../../../node_modules/@capacitor/haptics'
+  pod 'CapacitorPushNotifications', :path => '../../../node_modules/@capacitor/push-notifications'
   pod 'CapacitorSplashScreen', :path => '../../../node_modules/@capacitor/splash-screen'
   pod 'CapacitorStatusBar', :path => '../../../node_modules/@capacitor/status-bar'
   pod 'CapacitorVoiceRecorder', :path => '../../../node_modules/capacitor-voice-recorder'

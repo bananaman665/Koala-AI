@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateFlashcards } from '@/lib/mistral'
+import { generateFlashcards } from '@/lib/gemini'
 
 export const maxDuration = 60
 

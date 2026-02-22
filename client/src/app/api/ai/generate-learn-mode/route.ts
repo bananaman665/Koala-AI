@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateLearnModeQuestions, QuestionType, DifficultyLevel } from '@/lib/mistral'
+import { generateLearnModeQuestions, QuestionType, DifficultyLevel } from '@/lib/gemini'
 
 export const maxDuration = 60
 

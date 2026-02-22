@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateSummary } from '@/lib/mistral'
+import { generateSummary } from '@/lib/gemini'
 
 export async function POST(request: NextRequest) {
   try {

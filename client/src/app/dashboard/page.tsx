@@ -1817,7 +1817,7 @@ function DashboardContent() {
       if (result?.notes) {
         capturedNotesRef.current = result.notes
       } else if (result?.transcript) {
-        toast.error('Notes generation failed. Check your Mistral API key in Vercel.')
+        toast.error('Notes generation failed. Check your XAI_API_KEY in Vercel.')
       }
       if (result && result.transcript) {
         hapticSuccess()
