@@ -198,7 +198,7 @@ export default function ProfilePage() {
   const stats = [
     { label: 'Study Time', value: studyTimeDisplay, icon: "Clock", bgClass: 'bg-blue-50 dark:bg-gray-800', borderClass: 'border-blue-200 dark:border-gray-700', iconClass: 'text-blue-600 dark:text-gray-400', valueClass: 'text-blue-900 dark:text-white', labelClass: 'text-blue-700 dark:text-gray-400' },
     { label: 'Lectures', value: totalLectures.toString(), icon: "FileText", bgClass: 'bg-purple-50 dark:bg-gray-800', borderClass: 'border-purple-200 dark:border-gray-700', iconClass: 'text-purple-600 dark:text-gray-400', valueClass: 'text-purple-900 dark:text-white', labelClass: 'text-purple-700 dark:text-gray-400' },
-    { label: 'Courses', value: courses.length.toString(), icon: "BookOpen", bgClass: 'bg-green-50 dark:bg-gray-800', borderClass: 'border-green-200 dark:border-gray-700', iconClass: 'text-green-600 dark:text-gray-400', valueClass: 'text-green-900 dark:text-white', labelClass: 'text-green-700 dark:text-gray-400' },
+    { label: 'Subjects', value: courses.length.toString(), icon: "BookOpen", bgClass: 'bg-green-50 dark:bg-gray-800', borderClass: 'border-green-200 dark:border-gray-700', iconClass: 'text-green-600 dark:text-gray-400', valueClass: 'text-green-900 dark:text-white', labelClass: 'text-green-700 dark:text-gray-400' },
     { label: 'Completed', value: `${completedPercent}%`, icon: "Mic", bgClass: 'bg-orange-50 dark:bg-gray-800', borderClass: 'border-orange-200 dark:border-gray-700', iconClass: 'text-orange-600 dark:text-gray-400', valueClass: 'text-orange-900 dark:text-white', labelClass: 'text-orange-700 dark:text-gray-400' },
   ]
 

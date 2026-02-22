@@ -8,7 +8,7 @@ export default function PricingPage() {
     'Unlimited recordings',
     'AI-powered transcription with Whisper',
     'Smart note generation with Llama 3.3',
-    'Course and lecture organization',
+    'Subject and lecture organization',
     'Shared classes and collaboration',
     'Gamification (XP, levels, achievements)',
     'Study modes and flashcards',

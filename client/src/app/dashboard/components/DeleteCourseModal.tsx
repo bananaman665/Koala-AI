@@ -18,8 +18,8 @@ export function DeleteCourseModal({ isOpen, onClose, onDelete, isDeleting }: Del
           <div className="flex justify-center">
             <Trash2 size={32} className="text-red-600 dark:text-red-400" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Course?</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">This will delete the course and all its lectures. This action cannot be undone.</p>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Subject?</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300">This will delete the subject and all its lectures. This action cannot be undone.</p>
         </div>
 
         <div className="flex gap-3">

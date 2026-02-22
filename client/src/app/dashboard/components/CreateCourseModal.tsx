@@ -59,11 +59,11 @@ export function CreateCourseModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Create New Course</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Create New Subject</h2>
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Course Name
+              Subject Name
             </label>
             <input
               type="text"
@@ -76,7 +76,7 @@ export function CreateCourseModal({
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Course Code
+              Subject Code
             </label>
             <input
               type="text"
@@ -165,7 +165,7 @@ export function CreateCourseModal({
               disabled={isCreatingCourse || !newCourseData.subject}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg btn-press hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isCreatingCourse ? 'Creating...' : 'Create Course'}
+              {isCreatingCourse ? 'Creating...' : 'Create Subject'}
             </button>
           </div>
         </div>

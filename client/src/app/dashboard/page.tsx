@@ -674,17 +674,17 @@ function DashboardContent() {
 
       if (error) {
         hapticError()
-        toast.error('Failed to delete course')
+        toast.error('Failed to delete subject')
       } else {
         hapticSuccess()
-        toast.success('Course deleted')
+        toast.success('Subject deleted')
         setCourses(prev => prev.filter(c => c.id !== courseId))
         // Also remove lectures from this course from state
         setLectures(prev => prev.filter(l => l.course_id !== courseId))
       }
     } catch (error) {
       hapticError()
-      toast.error('Failed to delete course')
+      toast.error('Failed to delete subject')
     }
   }
 
@@ -807,11 +807,11 @@ function DashboardContent() {
   const handleCreateCourse = async () => {
     // Validation
     if (!newCourseData.name.trim()) {
-      alert('Please enter a course name')
+      alert('Please enter a subject name')
       return
     }
     if (!newCourseData.code.trim()) {
-      alert('Please enter a course code')
+      alert('Please enter a subject code')
       return
     }
     if (!newCourseData.professor.trim()) {
@@ -834,7 +834,7 @@ function DashboardContent() {
 
       if (courseCount !== null && courseCount >= MAX_COURSES) {
         hapticError()
-        toast.error(`Course limit reached! You can only create ${MAX_COURSES} courses on the free plan. Please delete some courses to continue.`)
+        toast.error(`Subject limit reached! You can only create ${MAX_COURSES} subjects on the free plan. Please delete some subjects to continue.`)
         setIsCreatingCourse(false)
         return
       }
@@ -877,7 +877,7 @@ function DashboardContent() {
       })
       setShowNewCourseModal(false)
     } catch (error: any) {
-      alert(`Failed to create course: ${error.message}`)
+      alert(`Failed to create subject: ${error.message}`)
     } finally {
       setIsCreatingCourse(false)
     }
@@ -1155,7 +1155,7 @@ function DashboardContent() {
   // Share a course's lectures to a class
   const handleShareCourse = async () => {
     if (!selectedClass || !selectedCourseToShare) {
-      toast.error('Please select a course to share')
+      toast.error('Please select a subject to share')
       return
     }
 
@@ -1166,7 +1166,7 @@ function DashboardContent() {
       const lecturesInCourse = lectures.filter(l => l.course_id === courseId)
 
       if (lecturesInCourse.length === 0) {
-        toast.error('This course has no lectures to share')
+        toast.error('This subject has no lectures to share')
         setIsSharingCourse(false)
         return
       }
@@ -1200,7 +1200,7 @@ function DashboardContent() {
       setSelectedCourseToShare(null)
     } catch (error: any) {
       hapticError()
-      toast.error(`Failed to share course: ${error.message}`)
+      toast.error(`Failed to share subject: ${error.message}`)
     } finally {
       setIsSharingCourse(false)
     }
@@ -1306,7 +1306,7 @@ function DashboardContent() {
     }
 
     if (!selectedCourse) {
-      alert('Please select a course to save the lecture to')
+      alert('Please select a subject to save the lecture to')
       return
     }
 
@@ -1844,7 +1844,7 @@ function DashboardContent() {
 
   const handleSaveLecture = async () => {
     if (!selectedCourseForRecording) {
-      alert('Please select a course')
+      alert('Please select a subject')
       return
     }
     setIsSavingRecording(true)
@@ -2735,7 +2735,7 @@ function DashboardContent() {
                           className="w-full flex items-center justify-center gap-2 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 active:scale-[0.98] transition-all"
                         >
                           <Trash2 size={20} />
-                          Delete Course
+                          Delete Subject
                         </button>
                       </div>
                     </>
@@ -3042,7 +3042,7 @@ function DashboardContent() {
                   }}
                   className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
                 >
-                  Share Course to Class
+                  Share Subject to Class
                 </button>
               </div>
             )}
@@ -3099,7 +3099,7 @@ function DashboardContent() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Share Course</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Share Subject</h2>
               <button
                 onClick={() => {
                   hapticButton()
@@ -3114,7 +3114,7 @@ function DashboardContent() {
             </div>
 
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Select a course to share all its lectures with this class
+              Select a subject to share all its lectures with this class
             </p>
 
             {/* Course List */}
@@ -3144,7 +3144,7 @@ function DashboardContent() {
                 })
               ) : (
                 <div className="text-center py-6">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">No courses available</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No subjects available</p>
                 </div>
               )}
             </div>
@@ -3167,7 +3167,7 @@ function DashboardContent() {
                 disabled={isSharingCourse || !selectedCourseToShare}
                 className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
               >
-                {isSharingCourse ? 'Sharing...' : 'Share Course'}
+                {isSharingCourse ? 'Sharing...' : 'Share Subject'}
               </button>
             </div>
           </div>
@@ -3480,7 +3480,7 @@ function DashboardContent() {
               .eq('user_id', user.id)
             if (courseError) throw courseError
             hapticSuccess()
-            toast.success('Course deleted successfully')
+            toast.success('Subject deleted successfully')
             setShowDeleteCourseModal(false)
             setSelectedCourse(null)
             fetchCourses()
@@ -3488,7 +3488,7 @@ function DashboardContent() {
           } catch (error) {
             console.error('Error deleting course:', error)
             hapticError()
-            toast.error('Failed to delete course')
+            toast.error('Failed to delete subject')
           } finally {
             setIsDeletingCourse(false)
           }

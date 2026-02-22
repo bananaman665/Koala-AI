@@ -301,7 +301,7 @@ export function DashboardHomeScreen({
         {/* Courses Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Your Courses</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Your Subjects</h2>
             <button
               onClick={onCreateCourse}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-full transition-colors"
@@ -314,7 +314,7 @@ export function DashboardHomeScreen({
           {isLoadingCourses ? (
             <div className="text-center py-12">
               <Loader size={24} className="text-gray-400 animate-spin mx-auto mb-2" />
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Loading courses...</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Loading subjects...</p>
             </div>
           ) : courses.length === 0 ? (
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-8 text-center">
@@ -322,16 +322,16 @@ export function DashboardHomeScreen({
                 <BookOpen size={28} className="text-blue-600 dark:text-blue-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                No courses yet
+                No subjects yet
               </h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
-                Create your first course to organize your lectures
+                Create your first subject to organize your lectures
               </p>
               <button
                 onClick={onCreateCourse}
                 className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 active:scale-[0.98] transition-all"
               >
-                Create Course
+                Create Subject
               </button>
             </div>
           ) : (
@@ -400,7 +400,7 @@ export function DashboardHomeScreen({
                   onClick={() => {}}
                   className="w-full py-3 text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline"
                 >
-                  View all {courses.length} courses
+                  View all {courses.length} subjects
                 </button>
               )}
             </div>

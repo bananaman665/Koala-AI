@@ -67,7 +67,7 @@ export default function SearchPage() {
         {/* Search Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Search</h1>
-          <p className="text-gray-600">Find your lectures, notes, and courses</p>
+          <p className="text-gray-600">Find your lectures, notes, and subjects</p>
         </div>
 
         {/* Search Bar */}
@@ -92,14 +92,14 @@ export default function SearchPage() {
               <option value="all">All Results</option>
               <option value="lectures">Lectures Only</option>
               <option value="notes">Notes Only</option>
-              <option value="courses">Courses Only</option>
+              <option value="courses">Subjects Only</option>
             </select>
           </div>
 
           {/* Quick Filters */}
           <div className="flex flex-wrap gap-2 mt-4">
             <span className="text-sm text-gray-600">Quick filters:</span>
-            {['This Week', 'Last Month', 'Favorites', 'CS Courses'].map((tag) => (
+            {['This Week', 'Last Month', 'Favorites', 'CS Subjects'].map((tag) => (
               <button
                 key={tag}
                 className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 transition-colors"

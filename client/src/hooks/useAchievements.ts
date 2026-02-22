@@ -155,7 +155,7 @@ export const ACHIEVEMENTS = [
   {
     id: 'courses_3',
     name: 'Multi-Tasker',
-    description: 'Create 3 courses',
+    description: 'Create 3 subjects',
     icon: "GraduationCap",
     category: 'courses',
     condition: (stats: UserStats) => stats.totalCourses >= 3,
@@ -163,8 +163,8 @@ export const ACHIEVEMENTS = [
   },
   {
     id: 'courses_5',
-    name: 'Course Collector',
-    description: 'Create 5 courses',
+    name: 'Subject Collector',
+    description: 'Create 5 subjects',
     icon: "GraduationCap",
     category: 'courses',
     condition: (stats: UserStats) => stats.totalCourses >= 5,

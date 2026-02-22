@@ -81,7 +81,7 @@ export default function CommunityPage() {
               </div>
               <div className="ml-3 flex-1">
                 <p className="font-medium text-gray-900 dark:text-white">Study Groups</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Find study partners in your courses</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Find study partners in your subjects</p>
               </div>
             </div>
           </div>

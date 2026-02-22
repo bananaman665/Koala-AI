@@ -36,7 +36,7 @@ export function DeleteConfirmModal({
 
         {/* Title */}
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-          Delete {itemType === 'lecture' ? 'Lecture' : 'Course'}?
+          Delete {itemType === 'lecture' ? 'Lecture' : 'Subject'}?
         </h3>
 
         {/* Description */}
@@ -48,7 +48,7 @@ export function DeleteConfirmModal({
           )}
           This action cannot be undone.
           {itemType === 'course' &&
-            ' All lectures in this course will also be deleted.'}
+            ' All lectures in this subject will also be deleted.'}
         </p>
 
         {/* Action Buttons */}

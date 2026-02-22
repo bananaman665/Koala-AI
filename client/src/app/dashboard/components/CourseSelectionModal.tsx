@@ -44,7 +44,7 @@ export function CourseSelectionModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Ready to Record"
-      description="Select a course and give your lecture a title"
+      description="Select a subject and give your lecture a title"
       size="md"
     >
       <div className="space-y-4">
@@ -69,7 +69,7 @@ export function CourseSelectionModal({
         {/* Course Selection */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Select Course
+            Select Subject
           </label>
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {courses.map((course) => {
@@ -103,13 +103,13 @@ export function CourseSelectionModal({
             })}
           </div>
 
-          {/* Create New Course Button */}
+          {/* Create New Subject Button */}
           <button
             onClick={onCreateCourse}
             className="w-full mt-3 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-violet-500 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-500/10 transition-all flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400"
           >
             <Plus size={20} />
-            <span className="font-medium">Create New Course</span>
+            <span className="font-medium">Create New Subject</span>
           </button>
         </div>
 

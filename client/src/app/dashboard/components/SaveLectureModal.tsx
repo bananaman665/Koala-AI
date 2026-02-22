@@ -35,7 +35,7 @@ export function SaveLectureModal({
       <div className="w-full bg-white dark:bg-gray-800 rounded-t-2xl p-6 pb-8 space-y-4 animate-slide-in-up">
         <div className="space-y-2">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">Save Lecture</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Name your lecture and select a course</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Name your lecture and select a subject</p>
         </div>
 
         {/* Lecture Title Input */}
@@ -53,13 +53,13 @@ export function SaveLectureModal({
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {courses.length === 0 ? (
             <div className="text-center py-6">
-              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">No courses yet. Create one to save your lecture.</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">No subjects yet. Create one to save your lecture.</p>
               <button
                 onClick={onCreateCourse}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 <Plus size={16} />
-                Create Your First Course
+                Create Your First Subject
               </button>
             </div>
           ) : (
@@ -95,7 +95,7 @@ export function SaveLectureModal({
                 className="w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
               >
                 <Plus size={18} />
-                <span className="font-medium">Create New Course</span>
+                <span className="font-medium">Create New Subject</span>
               </button>
             </>
           )}

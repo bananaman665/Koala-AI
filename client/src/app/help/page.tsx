@@ -110,7 +110,7 @@ export default function HelpPage() {
     },
     {
       question: 'Can I share notes with classmates?',
-      answer: 'Yes! You can generate shareable links for individual notes or entire courses. Control who can view or edit with granular permissions.'
+      answer: 'Yes! You can generate shareable links for individual notes or entire subjects. Control who can view or edit with granular permissions.'
     }
   ]
 

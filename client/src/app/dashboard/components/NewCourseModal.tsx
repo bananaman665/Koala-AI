@@ -53,8 +53,8 @@ export function NewCourseModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Create New Course"
-      description="Add a new course to your library"
+      title="Create New Subject"
+      description="Add a new subject to your library"
       size="md"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -64,7 +64,7 @@ export function NewCourseModal({
             htmlFor="course-name"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
-            Course Name *
+            Subject Name *
           </label>
           <input
             id="course-name"
@@ -83,7 +83,7 @@ export function NewCourseModal({
             htmlFor="course-code"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
-            Course Code *
+            Subject Code *
           </label>
           <input
             id="course-code"
@@ -155,7 +155,7 @@ export function NewCourseModal({
             loading={isCreating}
             fullWidth
           >
-            Create Course
+            Create Subject
           </Button>
         </div>
       </form>

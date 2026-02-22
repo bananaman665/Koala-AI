@@ -79,7 +79,7 @@ export function useCreateCourse() {
 
       if (count !== null && count >= MAX_COURSES) {
         throw new Error(
-          `Course limit reached! You can only create ${MAX_COURSES} courses on the free plan.`
+          `Subject limit reached! You can only create ${MAX_COURSES} subjects on the free plan.`
         )
       }
 
@@ -104,7 +104,7 @@ export function useCreateCourse() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] })
       hapticSuccess()
-      toast.success('Course created successfully')
+      toast.success('Subject created successfully')
     },
     onError: (error: Error) => {
       hapticError()
@@ -140,11 +140,11 @@ export function useDeleteCourse() {
       queryClient.invalidateQueries({ queryKey: ['courses'] })
       queryClient.invalidateQueries({ queryKey: ['lectures'] })
       hapticSuccess()
-      toast.success('Course deleted successfully')
+      toast.success('Subject deleted successfully')
     },
     onError: (error: Error) => {
       hapticError()
-      toast.error(`Failed to delete course: ${error.message}`)
+      toast.error(`Failed to delete subject: ${error.message}`)
     },
   })
 }

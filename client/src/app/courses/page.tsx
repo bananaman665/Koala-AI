@@ -108,7 +108,7 @@ export default function CoursesPage() {
   const handleAddCourse = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) {
-      alert('Please sign up or log in to add courses!')
+      alert('Please sign up or log in to add subjects!')
       return
     }
 
@@ -171,7 +171,7 @@ export default function CoursesPage() {
       })
       setShowAddModal(false)
     } catch (error) {
-      alert('Failed to add course. Check console for details.')
+      alert('Failed to add subject. Check console for details.')
     } finally {
       setSubmitting(false)
     }
@@ -183,7 +183,7 @@ export default function CoursesPage() {
 
     // Check if trying to delete default "My Course"
     if (courseToDelete.name === 'My Course' && courseToDelete.code === '100') {
-      toast.error('Cannot delete your default course')
+      toast.error('Cannot delete your default subject')
       setShowDeleteModal(false)
       setCourseToDelete(null)
       return
@@ -207,9 +207,9 @@ export default function CoursesPage() {
 
         setCourses(courses.filter(c => c.id !== courseToDelete.id))
       }
-      toast.success('Course deleted')
+      toast.success('Subject deleted')
     } catch (error) {
-      toast.error('Failed to delete course')
+      toast.error('Failed to delete subject')
     } finally {
       setIsDeleting(false)
       setShowDeleteModal(false)
@@ -235,7 +235,7 @@ export default function CoursesPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading courses...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading subjects...</p>
         </div>
       </div>
     )
@@ -280,8 +280,8 @@ export default function CoursesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-12">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Courses</h1>
-          <p className="text-gray-600 dark:text-gray-400">Organize and manage your course recordings</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Subjects</h1>
+          <p className="text-gray-600 dark:text-gray-400">Organize and manage your subject recordings</p>
         </div>
 
         {/* Search & Filter */}
@@ -294,7 +294,7 @@ export default function CoursesPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search courses..."
+                placeholder="Search subjects..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400"
               />
             </div>
@@ -313,13 +313,13 @@ export default function CoursesPage() {
               <option value="science">Science</option>
             </select>
 
-            {/* Add Course Button */}
+            {/* Add Subject Button */}
             <button
               onClick={() => setShowAddModal(true)}
               className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-shadow whitespace-nowrap flex items-center space-x-2"
             >
               <Plus size={20} />
-              <span>Add Course</span>
+              <span>Add Subject</span>
             </button>
           </div>
         </div>
@@ -330,7 +330,7 @@ export default function CoursesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-3xl font-bold text-gray-900 dark:text-white">{courses.length}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Total Courses</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Total Subjects</div>
               </div>
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                 <BookOpen size={24} className="text-blue-600 dark:text-blue-400" />
@@ -372,7 +372,7 @@ export default function CoursesPage() {
                 <div className="text-3xl font-bold text-gray-900 dark:text-white">
                   {courses.filter(c => (c.lectures || 0) > 0).length}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Active Courses</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Active Subjects</div>
               </div>
               <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
                 <TrendingUp size={24} className="text-orange-600 dark:text-orange-400" />
@@ -403,7 +403,7 @@ export default function CoursesPage() {
                     ? 'opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-500'
                     : 'hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600'
                 }`}
-                title={course.name === 'My Course' && course.code === '100' ? 'Cannot delete your default course' : 'Delete course'}
+                title={course.name === 'My Course' && course.code === '100' ? 'Cannot delete your default subject' : 'Delete subject'}
               >
                 <Trash2 size={20} />
               </button>
@@ -451,16 +451,16 @@ export default function CoursesPage() {
             <div className="flex justify-center mb-4">
               <BookOpen size={64} className="text-gray-300 dark:text-gray-700" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No courses found</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No subjects found</h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {courses.length === 0 ? 'Get started by adding your first course' : 'Try adjusting your search or filters'}
+              {courses.length === 0 ? 'Get started by adding your first subject' : 'Try adjusting your search or filters'}
             </p>
             {courses.length === 0 ? (
               <button
                 onClick={() => setShowAddModal(true)}
                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-shadow"
               >
-                Add Your First Course
+                Add Your First Subject
               </button>
             ) : (
               <button
@@ -482,7 +482,7 @@ export default function CoursesPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Course</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Subject</h2>
               <button
                 onClick={() => setShowAddModal(false)}
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
@@ -492,10 +492,10 @@ export default function CoursesPage() {
             </div>
 
             <form onSubmit={handleAddCourse} className="space-y-4">
-              {/* Course Name */}
+              {/* Subject Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Course Name *
+                  Subject Name *
                 </label>
                 <input
                   type="text"
@@ -508,10 +508,10 @@ export default function CoursesPage() {
                 />
               </div>
 
-              {/* Course Code */}
+              {/* Subject Code */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Course Code *
+                  Subject Code *
                 </label>
                 <input
                   type="text"
@@ -603,7 +603,7 @@ export default function CoursesPage() {
                   disabled={submitting}
                   className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
                 >
-                  {submitting ? 'Adding...' : 'Add Course'}
+                  {submitting ? 'Adding...' : 'Add Subject'}
                 </button>
               </div>
             </form>
@@ -619,7 +619,7 @@ export default function CoursesPage() {
               <div className="flex justify-center">
                 <Trash2 size={32} className="text-red-600 dark:text-red-400" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Course?</h3>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Subject?</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 Are you sure you want to delete <strong>{courseToDelete.name}</strong>? This will also delete all associated lectures and notes.
               </p>
