@@ -272,6 +272,7 @@ function DashboardContent() {
   const [lectureTitle, setLectureTitle] = useState('')
   const [isSavingRecording, setIsSavingRecording] = useState(false)
   const [showReadyToRecordModal, setShowReadyToRecordModal] = useState(false)
+  const [returnToRecordingAfterCreate, setReturnToRecordingAfterCreate] = useState(false)
   const [isStoppingRecording, setIsStoppingRecording] = useState(false)
   const [showStreakModal, setShowStreakModal] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
@@ -874,6 +875,10 @@ function DashboardContent() {
         category: 'Computer Science'
       })
       setShowNewCourseModal(false)
+      if (returnToRecordingAfterCreate) {
+        setReturnToRecordingAfterCreate(false)
+        setShowReadyToRecordModal(true)
+      }
     } catch (error: any) {
       alert(`Failed to create subject: ${error.message}`)
     } finally {
@@ -3453,7 +3458,11 @@ function DashboardContent() {
         lectureTitle={lectureTitle}
         onCourseSelect={setSelectedCourseForRecording}
         onTitleChange={setLectureTitle}
-        onCreateCourse={() => setShowNewCourseModal(true)}
+        onCreateCourse={() => {
+          setShowReadyToRecordModal(false)
+          setReturnToRecordingAfterCreate(true)
+          setShowNewCourseModal(true)
+        }}
         onStartRecording={() => {
           setShowReadyToRecordModal(false)
           startRecording()

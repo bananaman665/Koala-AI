@@ -57,7 +57,7 @@ export function CreateCourseModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Create New Subject</h2>
         <div className="space-y-4">
