@@ -1920,7 +1920,7 @@ function DashboardContent() {
   // Show loading screen while checking authentication
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <Loader size={32} className="text-gray-400 animate-spin mx-auto mb-3" />
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
@@ -1935,8 +1935,8 @@ function DashboardContent() {
   }
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><Loader size={32} className="text-gray-400 animate-spin mx-auto mb-3" /><p className="text-gray-600 dark:text-gray-400">Loading...</p></div></div>}>
-      <div className="h-screen-safe bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <Suspense fallback={<div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><Loader size={32} className="text-gray-400 animate-spin mx-auto mb-3" /><p className="text-gray-600 dark:text-gray-400">Loading...</p></div></div>}>
+      <div className="h-screen-safe bg-gray-100 dark:bg-gray-900 flex flex-col">
         {/* Onboarding Carousel for first-time users */}
         {showOnboarding && (
           <OnboardingCarousel
@@ -2116,7 +2116,7 @@ function DashboardContent() {
             </div>
 
             {/* Course Info Card */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-200 dark:border-white/[0.06] mb-6">
+            <div className="bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-200 dark:border-white/[0.06] mb-6">
               <div className="flex items-center gap-4">
                 {/* Subject Icon */}
                 {(() => {
@@ -2173,7 +2173,7 @@ function DashboardContent() {
 
             {/* Recording Interface (when recording) */}
             {isRecording && (
-              <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-white/[0.06] p-6 mb-6">
+              <div className="bg-gray-50 dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-white/[0.06] p-6 mb-6">
                 <div className="text-center">
                   <div className="mb-6">
                     <div className={`w-32 h-32 mx-auto bg-red-500 rounded-full flex items-center justify-center mb-4 ${!isPaused && 'recording-indicator'}`}>
@@ -2237,7 +2237,7 @@ function DashboardContent() {
 
             {/* Study Mode Tabs */}
             {notes && !isRecording && (flashcards.length > 0 || learnModeQuestions.length > 0) && (
-              <div className="bg-white dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-white/[0.06] mb-6 overflow-hidden">
+              <div className="bg-gray-50 dark:bg-[#1E293B] rounded-xl shadow-sm border border-gray-200 dark:border-white/[0.06] mb-6 overflow-hidden">
                 {/* Tab Navigation */}
                 <div className="flex border-b border-gray-200 dark:border-gray-700">
                   <button
@@ -2336,14 +2336,14 @@ function DashboardContent() {
                               flippedCards.has(index) ? 'rotate-y-180' : ''
                             }`}>
                               {/* Front of card */}
-                              <div className="absolute w-full h-full backface-hidden bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 flex items-center justify-center text-center">
+                              <div className="absolute w-full h-full backface-hidden bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 flex items-center justify-center text-center">
                                 <div>
                                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1 sm:mb-2">Question {index + 1}</p>
                                   <p className="text-black dark:text-white font-medium text-sm sm:text-base">{card.question}</p>
                                 </div>
                               </div>
                               {/* Back of card */}
-                              <div className="absolute w-full h-full backface-hidden bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 flex items-center justify-center text-center rotate-y-180">
+                              <div className="absolute w-full h-full backface-hidden bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 flex items-center justify-center text-center rotate-y-180">
                                 <div>
                                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1 sm:mb-2">Answer</p>
                                   <p className="text-black dark:text-white text-sm sm:text-base">{card.answer}</p>
@@ -2388,7 +2388,7 @@ function DashboardContent() {
                           </div>
 
                           {/* Question Card */}
-                          <div className="bg-white dark:bg-[#151E2F] rounded-xl p-4 sm:p-6 shadow-md dark:shadow-xl dark:border dark:border-[#1E293B] mb-4 sm:mb-6">
+                          <div className="bg-gray-50 dark:bg-[#151E2F] rounded-xl p-4 sm:p-6 shadow-md dark:shadow-xl dark:border dark:border-[#1E293B] mb-4 sm:mb-6">
                             <div className="mb-3 sm:mb-4">
                               <span className={`px-2.5 py-1 sm:px-3 text-xs font-semibold rounded-full border border-transparent ${
                                 learnModeQuestions[currentQuestionIndex].type === 'multiple_choice'
@@ -2774,7 +2774,7 @@ function DashboardContent() {
                               setSelectedCourse(null)
                               setActiveScreen('library')
                             }}
-                            className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-blue-300 dark:hover:border-blue-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] group"
+                            className="w-full bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-blue-300 dark:hover:border-blue-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] group"
                           >
                             <div className="flex items-center gap-4">
                               {(() => {
@@ -2994,7 +2994,7 @@ function DashboardContent() {
       {/* Class Detail View Modal */}
       {selectedClass && selectedClassData && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-2xl w-full p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl shadow-xl max-w-2xl w-full p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -3102,7 +3102,7 @@ function DashboardContent() {
       {/* Share Course to Class Modal */}
       {showShareCourseModal && selectedClass && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Share Subject</h2>
               <button
@@ -3201,7 +3201,7 @@ function DashboardContent() {
       {/* Edit Profile Modal */}
       {showEditProfileModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Edit Profile</h2>
             <div className="space-y-4">
               <div>
@@ -3249,7 +3249,7 @@ function DashboardContent() {
       {/* Change Password Modal */}
       {showChangePasswordModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Change Password</h2>
             <div className="space-y-4">
               <div>
@@ -3304,7 +3304,7 @@ function DashboardContent() {
       {/* Audio Quality Modal */}
       {showAudioQualityModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Audio Quality</h2>
             <div className="space-y-3">
               {(['low', 'medium', 'high'] as const).map((quality) => (
@@ -3349,7 +3349,7 @@ function DashboardContent() {
       {/* Notes Detail Level Modal */}
       {showNotesDetailModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Notes Detail Level</h2>
             <div className="space-y-3">
               {(['brief', 'detailed', 'comprehensive'] as const).map((level) => (
@@ -3605,7 +3605,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-900"><Loader size={32} className="text-gray-400 animate-spin" /></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900"><Loader size={32} className="text-gray-400 animate-spin" /></div>}>
       <DashboardContent />
     </Suspense>
   )

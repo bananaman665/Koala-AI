@@ -18,7 +18,7 @@ export function StreakDetailModal({ isOpen, streak, isActiveToday, onClose }: St
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-white dark:bg-gray-800 rounded-t-3xl p-6 pb-10 animate-slide-in-up"
+        className="w-full max-w-lg bg-gray-50 dark:bg-gray-800 rounded-t-3xl p-6 pb-10 animate-slide-in-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle bar */}

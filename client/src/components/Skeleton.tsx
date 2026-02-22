@@ -15,7 +15,7 @@ export function Skeleton({ className }: SkeletonProps) {
 // Pre-built skeleton variants
 export function SkeletonCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
       <div className="flex items-start space-x-3">
         <Skeleton className="w-10 h-10 rounded-lg flex-shrink-0" />
         <div className="flex-1 space-y-2">
@@ -29,7 +29,7 @@ export function SkeletonCard() {
 
 export function SkeletonLectureCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <Skeleton className="h-5 w-2/3" />
@@ -47,7 +47,7 @@ export function SkeletonLectureCard() {
 
 export function SkeletonCourseCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
       <div className="flex items-center space-x-3">
         <Skeleton className="w-12 h-12 rounded-xl flex-shrink-0" />
         <div className="flex-1 space-y-2">
@@ -64,7 +64,7 @@ export function SkeletonStats() {
   return (
     <div className="grid grid-cols-2 gap-3">
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+        <div key={i} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
           <Skeleton className="w-8 h-8 rounded mb-2" />
           <Skeleton className="h-6 w-16 mb-1" />
           <Skeleton className="h-3 w-20" />

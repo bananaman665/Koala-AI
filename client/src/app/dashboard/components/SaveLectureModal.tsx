@@ -32,7 +32,7 @@ export function SaveLectureModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
-      <div className="w-full bg-white dark:bg-gray-800 rounded-t-2xl p-6 pb-8 space-y-4 animate-slide-in-up">
+      <div className="w-full bg-gray-50 dark:bg-gray-800 rounded-t-2xl p-6 pb-8 space-y-4 animate-slide-in-up">
         <div className="space-y-2">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">Save Lecture</h3>
           <p className="text-sm text-gray-600 dark:text-gray-300">Name your lecture and select a subject</p>

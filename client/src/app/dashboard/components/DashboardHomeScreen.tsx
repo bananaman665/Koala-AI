@@ -171,12 +171,12 @@ export function DashboardHomeScreen({
   ]
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 min-h-full">
+    <div className="bg-gray-100 dark:bg-gray-900 min-h-full">
       <div className="px-4 sm:px-6 lg:px-8 xl:px-12 pt-36 sm:pt-40 lg:pt-8 pb-32">
 
         {/* Hero Section - Daily Progress + Continue Learning */}
         <div className="mb-8">
-          <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-5 sm:p-6 relative overflow-hidden border border-gray-200 dark:border-white/[0.06]">
+          <div className="bg-gray-50 dark:bg-[#1E293B] rounded-3xl p-5 sm:p-6 relative overflow-hidden border border-gray-200 dark:border-white/[0.06]">
             <div className="flex flex-col lg:flex-row lg:items-stretch lg:gap-6">
               {/* Left: Today's Goal */}
               <div className="flex-1">
@@ -317,7 +317,7 @@ export function DashboardHomeScreen({
               <p className="text-gray-500 dark:text-gray-400 text-sm">Loading subjects...</p>
             </div>
           ) : courses.length === 0 ? (
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-white/[0.06] p-8 text-center">
+            <div className="bg-gray-50 dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-white/[0.06] p-8 text-center">
               <div className="w-14 h-14 mx-auto mb-4 bg-blue-50 dark:bg-blue-500/10 rounded-2xl flex items-center justify-center">
                 <BookOpen size={28} className="text-blue-600 dark:text-blue-400" />
               </div>
@@ -347,7 +347,7 @@ export function DashboardHomeScreen({
                   >
                     <div
                       onClick={() => onSelectCourse(course.id)}
-                      className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-white/[0.06] p-4 shadow-sm hover:shadow-md active:scale-[0.99] transition-all cursor-pointer"
+                      className="bg-gray-50 dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-white/[0.06] p-4 shadow-sm hover:shadow-md active:scale-[0.99] transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-4">
                         <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -408,7 +408,7 @@ export function DashboardHomeScreen({
         </div>
 
         {/* Daily Quests */}
-        <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-white/[0.06]">
+        <div className="bg-gray-50 dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-white/[0.06]">
           {/* Header */}
           <div className="flex items-center justify-between p-5 pb-3">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">Daily Quests</h3>

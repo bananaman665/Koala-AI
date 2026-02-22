@@ -142,7 +142,7 @@ export function StreakDisplay({
 
       {/* Detailed view */}
       {showDetails && (
-        <div className="mt-3 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div className="mt-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-semibold text-gray-900 dark:text-white">Study Streak</h4>
             <div className="flex items-center gap-1 text-orange-500">

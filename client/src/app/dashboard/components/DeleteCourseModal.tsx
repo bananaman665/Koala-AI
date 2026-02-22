@@ -13,7 +13,7 @@ export function DeleteCourseModal({ isOpen, onClose, onDelete, isDeleting }: Del
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 space-y-6 w-80 animate-fade-in">
         <div className="text-center space-y-2">
           <div className="flex justify-center">
             <Trash2 size={32} className="text-red-600 dark:text-red-400" />

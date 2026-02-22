@@ -215,7 +215,7 @@ export function LibraryScreen({
   // Lecture Detail View
   if (selectedLecture && selectedLectureData) {
     return (
-      <div className="h-full overflow-y-auto bg-gray-50 dark:bg-gray-900">
+      <div className="h-full overflow-y-auto bg-gray-100 dark:bg-gray-900">
         <div className={`px-4 sm:px-6 py-6 pt-36 sm:pt-40 lg:pt-6 pb-32 lg:pb-8 ${isExitingLecture ? 'animate-zoom-out' : 'animate-zoom-in'}`}>
           {/* Inline Header */}
           <div className="flex items-center justify-between mb-6">
@@ -242,7 +242,7 @@ export function LibraryScreen({
                   onStartEditNotes()
                 }
               }}
-              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-blue-300 dark:hover:border-blue-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] group"
+              className="w-full bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-blue-300 dark:hover:border-blue-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center flex-shrink-0">
@@ -271,7 +271,7 @@ export function LibraryScreen({
                 }
               }}
               disabled={!selectedLectureNotes && !hasGeneratedQuiz}
-              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-purple-300 dark:hover:border-purple-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="w-full bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-purple-300 dark:hover:border-purple-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center flex-shrink-0">
@@ -301,7 +301,7 @@ export function LibraryScreen({
                 }
               }}
               disabled={!selectedLectureNotes && !hasGeneratedFlashcards}
-              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-emerald-300 dark:hover:border-emerald-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="w-full bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-emerald-300 dark:hover:border-emerald-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
@@ -322,7 +322,7 @@ export function LibraryScreen({
 
           {/* Edit Notes Section (shown when editing) */}
           {isEditingNotes && (
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-200 dark:border-white/[0.06]">
+            <div className="bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-200 dark:border-white/[0.06]">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                 Edit Notes
               </h3>
@@ -382,7 +382,7 @@ export function LibraryScreen({
 
   // Library List View
   return (
-    <div className="h-full overflow-y-auto bg-gray-50 dark:bg-gray-900">
+    <div className="h-full overflow-y-auto bg-gray-100 dark:bg-gray-900">
       <div className="px-4 sm:px-6 py-6 pt-36 sm:pt-40 lg:pt-6 pb-32 lg:pb-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -399,7 +399,7 @@ export function LibraryScreen({
             placeholder="Search lectures..."
             value={librarySearchQuery}
             onChange={(e) => onLibrarySearchQueryChange(e.target.value)}
-            className="w-full px-4 py-3 pl-11 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-white/[0.06] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white"
+            className="w-full px-4 py-3 pl-11 bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-white/[0.06] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white"
           />
           <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           {librarySearchQuery && (
@@ -428,7 +428,7 @@ export function LibraryScreen({
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 statusFilter === filter.id
                   ? 'bg-blue-600 text-white'
-                  : 'bg-white dark:bg-[#1E293B] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/[0.06]'
+                  : 'bg-gray-50 dark:bg-[#1E293B] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/[0.06]'
               }`}
             >
               <filter.icon size={16} />
@@ -460,7 +460,7 @@ export function LibraryScreen({
               </>
             ) : librarySearchQuery ? (
               <>
-                <div className="w-16 h-16 bg-white dark:bg-[#1E293B] rounded-2xl flex items-center justify-center mb-4">
+                <div className="w-16 h-16 bg-gray-50 dark:bg-[#1E293B] rounded-2xl flex items-center justify-center mb-4">
                   <Search size={32} className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No results</h3>
@@ -503,7 +503,7 @@ export function LibraryScreen({
                       <div
                         key={lecture.id}
                         onClick={() => onSelectLecture(lecture.id)}
-                        className="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
+                        className="bg-gray-50 dark:bg-[#1E293B] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -581,7 +581,7 @@ export function LibraryScreen({
                           >
                             <div
                               onClick={() => onSelectLecture(lecture.id)}
-                              className="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
+                              className="bg-gray-50 dark:bg-[#1E293B] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
                             >
                               <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>

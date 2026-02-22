@@ -112,7 +112,7 @@ export function Modal({
       <div
         ref={modalRef}
         className={cn(
-          'relative w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl animate-scale-in',
+          'relative w-full bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-2xl animate-scale-in',
           sizeClasses[size],
           className
         )}
