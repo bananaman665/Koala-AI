@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Volume2, Moon, Sun, Bell, Shield, HelpCircle, Mail, ChevronRight, Lock, ChevronLeft, LogOut } from 'lucide-react'
+import { Volume2, Moon, Sun, Bell, Shield, HelpCircle, Mail, ChevronRight, Lock, ChevronLeft, LogOut, Play } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { hapticButton, hapticSelection, hapticSuccess } from '@/lib/haptics'
