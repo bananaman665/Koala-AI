@@ -1,12 +1,12 @@
 import { hapticButton, hapticSelection } from '@/lib/haptics'
 
 const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
-  blue: { bg: 'bg-gray-100 dark:bg-blue-900/30', text: 'text-gray-600 dark:text-blue-400', bar: 'bg-blue-500' },
-  purple: { bg: 'bg-gray-100 dark:bg-purple-900/30', text: 'text-gray-600 dark:text-purple-400', bar: 'bg-purple-500' },
-  green: { bg: 'bg-gray-100 dark:bg-green-900/30', text: 'text-gray-600 dark:text-green-400', bar: 'bg-green-500' },
-  orange: { bg: 'bg-gray-100 dark:bg-orange-900/30', text: 'text-gray-600 dark:text-orange-400', bar: 'bg-orange-500' },
-  pink: { bg: 'bg-gray-100 dark:bg-pink-900/30', text: 'text-gray-600 dark:text-pink-400', bar: 'bg-pink-500' },
-  yellow: { bg: 'bg-gray-100 dark:bg-yellow-900/30', text: 'text-gray-600 dark:text-yellow-400', bar: 'bg-yellow-500' },
+  blue: { bg: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', bar: 'bg-blue-500' },
+  purple: { bg: 'bg-violet-50 dark:bg-purple-900/30', text: 'text-violet-600 dark:text-purple-400', bar: 'bg-purple-500' },
+  green: { bg: 'bg-emerald-50 dark:bg-green-900/30', text: 'text-emerald-600 dark:text-green-400', bar: 'bg-green-500' },
+  orange: { bg: 'bg-orange-50 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', bar: 'bg-orange-500' },
+  pink: { bg: 'bg-pink-50 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-400', bar: 'bg-pink-500' },
+  yellow: { bg: 'bg-amber-50 dark:bg-yellow-900/30', text: 'text-amber-600 dark:text-yellow-400', bar: 'bg-yellow-500' },
 }
 
 interface NewClassData {

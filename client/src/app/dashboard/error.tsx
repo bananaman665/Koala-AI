@@ -12,9 +12,9 @@ export default function DashboardError({
   const friendlyError = getFriendlyError(error)
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-100 dark:bg-gray-900">
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full text-center shadow-lg">
-        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-slate-50 dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full text-center shadow-lg border border-slate-200 dark:border-gray-700">
+        <div className="w-16 h-16 bg-red-50 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
           <span className="text-3xl">⚠️</span>
         </div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">

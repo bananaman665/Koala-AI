@@ -137,8 +137,8 @@ export function DashboardHomeScreen({
       title: 'Record a lecture',
       current: Math.min(todayStats.lecturesRecorded, 1),
       target: 1,
-      iconBgClass: 'bg-gray-100 dark:bg-amber-500/20',
-      iconClass: 'text-gray-600 dark:text-amber-500',
+      iconBgClass: 'bg-amber-50 dark:bg-amber-500/20',
+      iconClass: 'text-amber-600 dark:text-amber-500',
       progressClass: 'bg-amber-400',
       borderClass: 'border-l-amber-500',
       completed: todayStats.lecturesRecorded >= 1,
@@ -149,8 +149,8 @@ export function DashboardHomeScreen({
       title: 'Study for 10 minutes',
       current: Math.min(todayStats.minutesStudied, 10),
       target: 10,
-      iconBgClass: 'bg-gray-100 dark:bg-blue-500/20',
-      iconClass: 'text-gray-600 dark:text-blue-500',
+      iconBgClass: 'bg-blue-50 dark:bg-blue-500/20',
+      iconClass: 'text-blue-600 dark:text-blue-500',
       progressClass: 'bg-blue-400',
       borderClass: 'border-l-blue-500',
       completed: todayStats.minutesStudied >= 10,
@@ -161,8 +161,8 @@ export function DashboardHomeScreen({
       title: 'Maintain your streak',
       current: streak > 0 ? 1 : 0,
       target: 1,
-      iconBgClass: 'bg-gray-100 dark:bg-orange-500/20',
-      iconClass: 'text-gray-600 dark:text-orange-500',
+      iconBgClass: 'bg-orange-50 dark:bg-orange-500/20',
+      iconClass: 'text-orange-600 dark:text-orange-500',
       progressClass: 'bg-orange-400',
       borderClass: 'border-l-orange-500',
       completed: streak > 0,
@@ -171,12 +171,12 @@ export function DashboardHomeScreen({
   ]
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 min-h-full">
+    <div className="bg-slate-50 dark:bg-gray-900 min-h-full">
       <div className="px-4 sm:px-6 lg:px-8 xl:px-12 pt-36 sm:pt-40 lg:pt-8 pb-32">
 
         {/* Hero Section - Daily Progress + Continue Learning */}
         <div className="mb-8">
-          <div className="bg-gray-50 dark:bg-[#1E293B] rounded-3xl p-5 sm:p-6 relative overflow-hidden border border-gray-200 dark:border-white/[0.06]">
+          <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-5 sm:p-6 relative overflow-hidden border border-slate-200 dark:border-white/[0.06] shadow-sm">
             <div className="flex flex-col lg:flex-row lg:items-stretch lg:gap-6">
               {/* Left: Today's Goal */}
               <div className="flex-1">

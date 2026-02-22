@@ -53,20 +53,22 @@ import { LeftSidebar } from '@/components/LeftSidebar'
 import { GeneratingScreen } from '@/components/GeneratingScreen'
 
 // Color classes for course icons (full class names for Tailwind to detect)
+// Light mode: subtle tinted backgrounds for visual interest
+// Dark mode: transparent colored backgrounds
 const courseColorClasses: Record<string, { bg: string; text: string; bar: string }> = {
-  blue: { bg: 'bg-gray-100 dark:bg-blue-900/30', text: 'text-gray-600 dark:text-blue-400', bar: 'bg-blue-500' },
-  purple: { bg: 'bg-gray-100 dark:bg-purple-900/30', text: 'text-gray-600 dark:text-purple-400', bar: 'bg-purple-500' },
-  green: { bg: 'bg-gray-100 dark:bg-green-900/30', text: 'text-gray-600 dark:text-green-400', bar: 'bg-green-500' },
-  orange: { bg: 'bg-gray-100 dark:bg-orange-900/30', text: 'text-gray-600 dark:text-orange-400', bar: 'bg-orange-500' },
-  pink: { bg: 'bg-gray-100 dark:bg-pink-900/30', text: 'text-gray-600 dark:text-pink-400', bar: 'bg-pink-500' },
-  yellow: { bg: 'bg-gray-100 dark:bg-yellow-900/30', text: 'text-gray-600 dark:text-yellow-400', bar: 'bg-yellow-500' },
+  blue: { bg: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', bar: 'bg-blue-500' },
+  purple: { bg: 'bg-violet-50 dark:bg-purple-900/30', text: 'text-violet-600 dark:text-purple-400', bar: 'bg-purple-500' },
+  green: { bg: 'bg-emerald-50 dark:bg-green-900/30', text: 'text-emerald-600 dark:text-green-400', bar: 'bg-green-500' },
+  orange: { bg: 'bg-orange-50 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', bar: 'bg-orange-500' },
+  pink: { bg: 'bg-pink-50 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-400', bar: 'bg-pink-500' },
+  yellow: { bg: 'bg-amber-50 dark:bg-yellow-900/30', text: 'text-amber-600 dark:text-yellow-400', bar: 'bg-yellow-500' },
 }
 
 // Color classes for lecture icons
 const lectureColorClasses: Record<string, { bg: string; text: string; bgOpacity: string }> = {
-  blue: { bg: 'bg-gray-100 dark:bg-blue-500/15', text: 'text-gray-600 dark:text-blue-400', bgOpacity: 'dark:bg-blue-500/15' },
-  purple: { bg: 'bg-gray-100 dark:bg-purple-500/15', text: 'text-gray-600 dark:text-purple-400', bgOpacity: 'dark:bg-purple-500/15' },
-  orange: { bg: 'bg-gray-100 dark:bg-orange-500/15', text: 'text-gray-600 dark:text-orange-400', bgOpacity: 'dark:bg-orange-500/15' },
+  blue: { bg: 'bg-blue-50 dark:bg-blue-500/15', text: 'text-blue-600 dark:text-blue-400', bgOpacity: 'dark:bg-blue-500/15' },
+  purple: { bg: 'bg-violet-50 dark:bg-purple-500/15', text: 'text-violet-600 dark:text-purple-400', bgOpacity: 'dark:bg-purple-500/15' },
+  orange: { bg: 'bg-orange-50 dark:bg-orange-500/15', text: 'text-orange-600 dark:text-orange-400', bgOpacity: 'dark:bg-orange-500/15' },
 }
 
 const lectureColorKeys = Object.keys(lectureColorClasses)
@@ -1920,7 +1922,7 @@ function DashboardContent() {
   // Show loading screen while checking authentication
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <Loader size={32} className="text-gray-400 animate-spin mx-auto mb-3" />
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
@@ -1935,8 +1937,8 @@ function DashboardContent() {
   }
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><Loader size={32} className="text-gray-400 animate-spin mx-auto mb-3" /><p className="text-gray-600 dark:text-gray-400">Loading...</p></div></div>}>
-      <div className="h-screen-safe bg-gray-100 dark:bg-gray-900 flex flex-col">
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 dark:bg-gray-900 flex items-center justify-center"><div className="text-center"><Loader size={32} className="text-gray-400 animate-spin mx-auto mb-3" /><p className="text-gray-600 dark:text-gray-400">Loading...</p></div></div>}>
+      <div className="h-screen-safe bg-slate-50 dark:bg-gray-900 flex flex-col">
         {/* Onboarding Carousel for first-time users */}
         {showOnboarding && (
           <OnboardingCarousel
@@ -2134,15 +2136,15 @@ function DashboardContent() {
                     }
                   }
                   const subjectColors: Record<string, { bg: string; text: string }> = {
-                    math: { bg: 'bg-gray-100 dark:bg-blue-500/20', text: 'text-gray-600 dark:text-blue-400' },
-                    science: { bg: 'bg-gray-100 dark:bg-purple-500/20', text: 'text-gray-600 dark:text-purple-400' },
-                    chemistry: { bg: 'bg-gray-100 dark:bg-orange-500/20', text: 'text-gray-600 dark:text-orange-400' },
-                    biology: { bg: 'bg-gray-100 dark:bg-green-500/20', text: 'text-gray-600 dark:text-green-400' },
-                    physics: { bg: 'bg-gray-100 dark:bg-pink-500/20', text: 'text-gray-600 dark:text-pink-400' },
-                    genetics: { bg: 'bg-gray-100 dark:bg-indigo-500/20', text: 'text-gray-600 dark:text-indigo-400' },
-                    engineering: { bg: 'bg-gray-100 dark:bg-yellow-500/20', text: 'text-gray-600 dark:text-yellow-400' },
-                    literature: { bg: 'bg-gray-100 dark:bg-red-500/20', text: 'text-gray-600 dark:text-red-400' },
-                    other: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-600 dark:text-gray-400' },
+                    math: { bg: 'bg-blue-50 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400' },
+                    science: { bg: 'bg-violet-50 dark:bg-purple-500/20', text: 'text-violet-600 dark:text-purple-400' },
+                    chemistry: { bg: 'bg-orange-50 dark:bg-orange-500/20', text: 'text-orange-600 dark:text-orange-400' },
+                    biology: { bg: 'bg-emerald-50 dark:bg-green-500/20', text: 'text-emerald-600 dark:text-green-400' },
+                    physics: { bg: 'bg-pink-50 dark:bg-pink-500/20', text: 'text-pink-600 dark:text-pink-400' },
+                    genetics: { bg: 'bg-indigo-50 dark:bg-indigo-500/20', text: 'text-indigo-600 dark:text-indigo-400' },
+                    engineering: { bg: 'bg-amber-50 dark:bg-yellow-500/20', text: 'text-amber-600 dark:text-yellow-400' },
+                    literature: { bg: 'bg-red-50 dark:bg-red-500/20', text: 'text-red-600 dark:text-red-400' },
+                    other: { bg: 'bg-slate-100 dark:bg-gray-700', text: 'text-slate-600 dark:text-gray-400' },
                   }
                   const subject = (course as any).subject?.toLowerCase() || 'other'
                   const colors = subjectColors[subject] || subjectColors.other
@@ -2392,12 +2394,12 @@ function DashboardContent() {
                             <div className="mb-3 sm:mb-4">
                               <span className={`px-2.5 py-1 sm:px-3 text-xs font-semibold rounded-full border border-transparent ${
                                 learnModeQuestions[currentQuestionIndex].type === 'multiple_choice'
-                                  ? 'bg-gray-100 dark:bg-purple-500/20 text-gray-700 dark:text-purple-300 dark:border-purple-500/30'
+                                  ? 'bg-violet-50 dark:bg-purple-500/20 text-violet-700 dark:text-purple-300 dark:border-purple-500/30'
                                   : learnModeQuestions[currentQuestionIndex].type === 'true_false'
-                                  ? 'bg-gray-100 dark:bg-blue-500/20 text-gray-700 dark:text-blue-300 dark:border-blue-500/30'
+                                  ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 dark:border-blue-500/30'
                                   : learnModeQuestions[currentQuestionIndex].type === 'written'
-                                  ? 'bg-gray-100 dark:bg-amber-500/20 text-gray-700 dark:text-amber-300 dark:border-amber-500/30'
-                                  : 'bg-gray-100 dark:bg-teal-500/20 text-gray-700 dark:text-teal-300 dark:border-teal-500/30'
+                                  ? 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 dark:border-amber-500/30'
+                                  : 'bg-teal-50 dark:bg-teal-500/20 text-teal-700 dark:text-teal-300 dark:border-teal-500/30'
                               }`}>
                                 {learnModeQuestions[currentQuestionIndex].type === 'multiple_choice' ? 'Multiple Choice'
                                   : learnModeQuestions[currentQuestionIndex].type === 'true_false' ? 'True / False'
@@ -2470,7 +2472,7 @@ function DashboardContent() {
                                     <span className="text-xs text-gray-500 dark:text-gray-400">Key concepts found:</span>
                                     {writtenAnswerFeedback.matchedKeywords.length > 0 ? (
                                       writtenAnswerFeedback.matchedKeywords.map((kw, i) => (
-                                        <span key={i} className="px-2 py-0.5 bg-gray-100 dark:bg-green-500/20 text-gray-700 dark:text-green-300 text-xs rounded-full">
+                                        <span key={i} className="px-2 py-0.5 bg-emerald-50 dark:bg-green-500/20 text-emerald-700 dark:text-green-300 text-xs rounded-full">
                                           {kw}
                                         </span>
                                       ))
@@ -2712,8 +2714,8 @@ function DashboardContent() {
                     <>
                       {/* Empty State */}
                       <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <div className="w-16 h-16 bg-gray-100 dark:bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4">
-                          <Mic size={24} className="text-gray-600 dark:text-blue-400" />
+                        <div className="w-16 h-16 bg-blue-50 dark:bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4">
+                          <Mic size={24} className="text-blue-600 dark:text-blue-400" />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No lectures yet</h3>
                         <p className="text-gray-500 dark:text-gray-400 max-w-xs mb-6">
@@ -3605,7 +3607,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900"><Loader size={32} className="text-gray-400 animate-spin" /></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-gray-900"><Loader size={32} className="text-gray-400 animate-spin" /></div>}>
       <DashboardContent />
     </Suspense>
   )

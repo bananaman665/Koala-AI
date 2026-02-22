@@ -51,11 +51,11 @@ export class ErrorBoundary extends Component<Props, State> {
 
       // Default error UI
       return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-gray-50 dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <div className="min-h-screen bg-slate-50 dark:bg-gray-900 flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-gray-700">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gray-100 dark:bg-red-500/20 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-red-50 dark:bg-red-500/20 rounded-full flex items-center justify-center">
                   <span className="text-lg">AlertTriangle</span>
                 </div>
               </div>
@@ -74,7 +74,7 @@ export class ErrorBoundary extends Component<Props, State> {
                     <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
                       Error details
                     </summary>
-                    <div className="mt-2 p-3 bg-gray-100 dark:bg-gray-900 rounded text-xs text-red-600 dark:text-red-400 font-mono overflow-auto max-h-32">
+                    <div className="mt-2 p-3 bg-slate-100 dark:bg-gray-900 rounded text-xs text-red-600 dark:text-red-400 font-mono overflow-auto max-h-32">
                       <p className="font-semibold mb-1">{this.state.error.message}</p>
                       {this.state.errorInfo && (
                         <pre className="text-xs whitespace-pre-wrap">{this.state.errorInfo}</pre>

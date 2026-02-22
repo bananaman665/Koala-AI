@@ -3,29 +3,71 @@
 @tailwind utilities;
 
 /* ============================================
-   LIGHT MODE COLOR FIXES
-   - Tones down neon colors that are too harsh on white backgrounds
-   - Increases contrast for better readability
-   - DOES NOT affect dark mode at all
+   PROFESSIONAL LIGHT MODE COLOR SYSTEM
+   Based on Radix UI's 12-step color scale principles:
+   
+   Steps 1-2: App backgrounds (subtle)
+   Steps 3-5: Component backgrounds (normal/hover/active)
+   Steps 6-8: Borders (subtle/normal/strong)
+   Steps 9-10: Solid backgrounds (primary/hover)
+   Steps 11-12: Text (low/high contrast)
    ============================================ */
 @layer base {
-  /* Light mode: softer backgrounds instead of pure white */
   :root {
-    --light-bg: 249 250 251; /* gray-50 */
-    --light-card: 255 255 255; /* white */
-    --light-border: 229 231 235; /* gray-200 */
-  }
-
-  /* Override vibrant blues in light mode only */
-  html:not(.dark) {
-    /* Softer primary blues for light mode */
-    --color-primary-500: 37 99 235; /* blue-600 instead of neon #0066FF */
-    --color-primary-600: 29 78 216; /* blue-700 */
-    --color-primary-700: 30 64 175; /* blue-800 */
-
-    /* Softer purple for light mode */
-    --color-vivid-purple: 99 102 241; /* indigo-500 (less neon) */
-    --color-vivid-purple-dark: 79 70 229; /* indigo-600 */
+    /* ===== LIGHT MODE SEMANTIC TOKENS ===== */
+    
+    /* Backgrounds - Clean, professional hierarchy */
+    --app-bg: #ffffff;           /* Pure white - main app background */
+    --subtle-bg: #f8fafc;        /* slate-50 - subtle sections */
+    --card-bg: #ffffff;          /* Cards on subtle bg */
+    --card-bg-elevated: #ffffff; /* Elevated cards with shadow */
+    
+    /* Component backgrounds - for interactive elements */
+    --component-bg: #f1f5f9;       /* slate-100 - buttons, inputs */
+    --component-bg-hover: #e2e8f0; /* slate-200 - hover state */
+    --component-bg-active: #cbd5e1;/* slate-300 - pressed/selected */
+    
+    /* Borders - subtle but visible */
+    --border-subtle: #e2e8f0;    /* slate-200 - cards, dividers */
+    --border-default: #cbd5e1;   /* slate-300 - inputs, interactive */
+    --border-strong: #94a3b8;    /* slate-400 - focus rings */
+    
+    /* Text - high contrast for readability */
+    --text-primary: #0f172a;     /* slate-900 - headings */
+    --text-secondary: #334155;   /* slate-700 - body text */
+    --text-tertiary: #64748b;    /* slate-500 - muted/helper */
+    --text-quaternary: #94a3b8;  /* slate-400 - disabled/placeholder */
+    
+    /* Accent colors - softer for light mode */
+    --accent-blue: #2563eb;      /* blue-600 */
+    --accent-blue-hover: #1d4ed8;/* blue-700 */
+    --accent-blue-bg: #eff6ff;   /* blue-50 - subtle bg */
+    --accent-blue-text: #1e40af; /* blue-800 - text on light */
+    
+    --accent-purple: #7c3aed;    /* violet-600 */
+    --accent-purple-hover: #6d28d9;
+    --accent-purple-bg: #f5f3ff; /* violet-50 */
+    --accent-purple-text: #5b21b6;
+    
+    --accent-green: #16a34a;     /* green-600 */
+    --accent-green-hover: #15803d;
+    --accent-green-bg: #f0fdf4;  /* green-50 */
+    --accent-green-text: #166534;
+    
+    --accent-orange: #ea580c;    /* orange-600 */
+    --accent-orange-hover: #c2410c;
+    --accent-orange-bg: #fff7ed; /* orange-50 */
+    --accent-orange-text: #9a3412;
+    
+    --accent-red: #dc2626;       /* red-600 */
+    --accent-red-hover: #b91c1c;
+    --accent-red-bg: #fef2f2;    /* red-50 */
+    --accent-red-text: #991b1b;
+    
+    --accent-amber: #d97706;     /* amber-600 */
+    --accent-amber-hover: #b45309;
+    --accent-amber-bg: #fffbeb;  /* amber-50 */
+    --accent-amber-text: #92400e;
   }
 }
 
@@ -33,7 +75,117 @@
    AUTO-ADAPTIVE COLORS (Light/Dark aware)
    ============================================ */
 @layer utilities {
-  /* Primary button - auto-adapts to mode */
+  /* === BACKGROUND UTILITIES === */
+  
+  /* App backgrounds */
+  .bg-app {
+    @apply bg-white dark:bg-gray-900;
+  }
+  
+  .bg-app-subtle {
+    @apply bg-slate-50 dark:bg-gray-900;
+  }
+  
+  /* Card backgrounds */
+  .bg-card {
+    @apply bg-white dark:bg-[#1E293B];
+  }
+  
+  .bg-card-elevated {
+    @apply bg-white dark:bg-gray-800 shadow-sm;
+  }
+  
+  /* Component backgrounds */
+  .bg-component {
+    @apply bg-slate-100 dark:bg-white/10;
+  }
+  
+  .bg-component-hover {
+    @apply bg-slate-200 dark:bg-white/15;
+  }
+  
+  /* === BORDER UTILITIES === */
+  
+  .border-subtle {
+    @apply border-slate-200 dark:border-white/[0.06];
+  }
+  
+  .border-default {
+    @apply border-slate-300 dark:border-white/10;
+  }
+  
+  .border-strong {
+    @apply border-slate-400 dark:border-white/20;
+  }
+  
+  /* === TEXT UTILITIES === */
+  
+  .text-heading {
+    @apply text-slate-900 dark:text-white;
+  }
+  
+  .text-body {
+    @apply text-slate-700 dark:text-gray-300;
+  }
+  
+  .text-muted {
+    @apply text-slate-500 dark:text-gray-400;
+  }
+  
+  .text-faint {
+    @apply text-slate-400 dark:text-gray-500;
+  }
+  
+  /* === ACCENT COLOR BACKGROUNDS (Light mode: tinted, Dark mode: transparent) === */
+  
+  .bg-accent-blue {
+    @apply bg-blue-50 dark:bg-blue-500/15;
+  }
+  
+  .bg-accent-purple {
+    @apply bg-violet-50 dark:bg-violet-500/15;
+  }
+  
+  .bg-accent-green {
+    @apply bg-green-50 dark:bg-green-500/15;
+  }
+  
+  .bg-accent-orange {
+    @apply bg-orange-50 dark:bg-orange-500/15;
+  }
+  
+  .bg-accent-amber {
+    @apply bg-amber-50 dark:bg-amber-500/15;
+  }
+  
+  .bg-accent-red {
+    @apply bg-red-50 dark:bg-red-500/15;
+  }
+  
+  /* === ACCENT TEXT COLORS === */
+  
+  .text-accent-blue {
+    @apply text-blue-600 dark:text-blue-400;
+  }
+  
+  .text-accent-purple {
+    @apply text-violet-600 dark:text-violet-400;
+  }
+  
+  .text-accent-green {
+    @apply text-green-600 dark:text-green-400;
+  }
+  
+  .text-accent-orange {
+    @apply text-orange-600 dark:text-orange-400;
+  }
+  
+  .text-accent-amber {
+    @apply text-amber-600 dark:text-amber-400;
+  }
+  
+  /* === PRIMARY BUTTON COLORS === */
+  
   .bg-primary-adaptive {
     @apply bg-blue-600 dark:bg-[#0066FF];
   }
@@ -42,19 +194,17 @@
     @apply hover:bg-blue-700 dark:hover:bg-[#0052CC];
   }
 
-  /* Text colors that adapt */
   .text-primary-adaptive {
     @apply text-blue-600 dark:text-[#0066FF];
   }
 
-  /* Border colors */
   .border-primary-adaptive {
     @apply border-blue-600 dark:border-[#0066FF];
   }
 
-  /* Softer backgrounds for light mode */
+  /* Legacy aliases - keeping for backwards compatibility */
   .bg-app-light {
-    @apply bg-gray-50 dark:bg-gray-900;
+    @apply bg-slate-50 dark:bg-gray-900;
   }
 
   .bg-card-light {
@@ -62,20 +212,7 @@
   }
 
   .border-card-light {
-    @apply border-gray-200 dark:border-white/[0.06];
-  }
-
-  /* Text with proper contrast in both modes */
-  .text-body {
-    @apply text-gray-700 dark:text-gray-300;
-  }
-
-  .text-heading {
-    @apply text-gray-900 dark:text-white;
-  }
-
-  .text-muted {
-    @apply text-gray-500 dark:text-gray-400;
+    @apply border-slate-200 dark:border-white/[0.06];
   }
 }
 

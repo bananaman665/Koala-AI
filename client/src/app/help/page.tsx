@@ -116,12 +116,12 @@ export default function HelpPage() {
 
   const getColorClasses = (color: string) => {
     const colors: Record<string, { bg: string; icon: string }> = {
-      blue: { bg: 'bg-gray-100 dark:bg-blue-900/30', icon: 'text-gray-600 dark:text-blue-400' },
-      purple: { bg: 'bg-gray-100 dark:bg-purple-900/30', icon: 'text-gray-600 dark:text-purple-400' },
-      green: { bg: 'bg-gray-100 dark:bg-green-900/30', icon: 'text-gray-600 dark:text-green-400' },
-      orange: { bg: 'bg-gray-100 dark:bg-orange-900/30', icon: 'text-gray-600 dark:text-orange-400' },
-      red: { bg: 'bg-gray-100 dark:bg-red-900/30', icon: 'text-gray-600 dark:text-red-400' },
-      gray: { bg: 'bg-gray-100 dark:bg-gray-700', icon: 'text-gray-600 dark:text-gray-400' }
+      blue: { bg: 'bg-blue-50 dark:bg-blue-900/30', icon: 'text-blue-600 dark:text-blue-400' },
+      purple: { bg: 'bg-violet-50 dark:bg-purple-900/30', icon: 'text-violet-600 dark:text-purple-400' },
+      green: { bg: 'bg-emerald-50 dark:bg-green-900/30', icon: 'text-emerald-600 dark:text-green-400' },
+      orange: { bg: 'bg-orange-50 dark:bg-orange-900/30', icon: 'text-orange-600 dark:text-orange-400' },
+      red: { bg: 'bg-red-50 dark:bg-red-900/30', icon: 'text-red-600 dark:text-red-400' },
+      gray: { bg: 'bg-slate-100 dark:bg-gray-700', icon: 'text-slate-600 dark:text-gray-400' }
     }
     return colors[color] || colors.blue
   }
@@ -174,8 +174,8 @@ export default function HelpPage() {
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 pb-24">
         {/* Icon Header */}
         <div className="flex flex-col items-center py-4">
-          <div className="w-20 h-20 bg-gray-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4">
-            <HelpCircle size={32} className="text-gray-600 dark:text-blue-400" />
+          <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4">
+            <HelpCircle size={32} className="text-blue-600 dark:text-blue-400" />
           </div>
           <p className="text-gray-500 dark:text-gray-400 text-center">
             Find answers and get support
@@ -300,9 +300,9 @@ export default function HelpPage() {
         )}
 
         {/* Contact Support */}
-        <div className="bg-gray-50 dark:bg-blue-900/20 rounded-xl p-6 text-center border border-gray-200 dark:border-blue-900/30">
-          <div className="w-12 h-12 bg-gray-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
-            <Mail size={24} className="text-gray-600 dark:text-blue-400" />
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 text-center border border-blue-100 dark:border-blue-900/30">
+          <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Mail size={24} className="text-blue-600 dark:text-blue-400" />
           </div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Still need help?</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Our support team is here to assist you</p>

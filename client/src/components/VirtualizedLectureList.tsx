@@ -96,10 +96,10 @@ export function VirtualizedLectureList({
                   <span
                     className={`text-xs px-3 py-1 rounded-full flex-shrink-0 ml-2 ${
                       lecture.transcription_status === 'completed'
-                        ? 'bg-gray-100 dark:bg-teal-500/15 text-gray-700 dark:text-teal-400'
+                        ? 'bg-teal-50 dark:bg-teal-500/15 text-teal-700 dark:text-teal-400'
                         : lecture.transcription_status === 'failed'
-                        ? 'bg-gray-100 dark:bg-red-500/15 text-gray-700 dark:text-red-400'
-                        : 'bg-gray-100 dark:bg-yellow-500/15 text-gray-700 dark:text-yellow-400'
+                        ? 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-400'
+                        : 'bg-amber-50 dark:bg-yellow-500/15 text-amber-700 dark:text-yellow-400'
                     }`}
                   >
                     {lecture.transcription_status === 'completed'

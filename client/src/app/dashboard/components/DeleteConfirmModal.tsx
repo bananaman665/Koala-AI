@@ -30,8 +30,8 @@ export function DeleteConfirmModal({
     >
       <div className="text-center">
         {/* Warning Icon */}
-        <div className="w-16 h-16 bg-gray-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <AlertTriangle size={32} className="text-gray-600 dark:text-red-400" />
+        <div className="w-16 h-16 bg-red-50 dark:bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle size={32} className="text-red-600 dark:text-red-400" />
         </div>
 
         {/* Title */}

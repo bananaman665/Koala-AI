@@ -6,13 +6,14 @@ import { hapticButton, hapticSelection, hapticSuccess } from '@/lib/haptics'
 import { SwipeToDelete } from '@/components/SwipeToDelete'
 
 // Color classes for class icons
+// Light mode: subtle tinted backgrounds | Dark mode: transparent colored
 const classColorClasses: Record<string, { bg: string; text: string; border: string }> = {
-  blue: { bg: 'bg-gray-100 dark:bg-blue-500/20', text: 'text-gray-600 dark:text-blue-400', border: 'border-gray-200 dark:border-blue-500/30' },
-  purple: { bg: 'bg-gray-100 dark:bg-purple-500/20', text: 'text-gray-600 dark:text-purple-400', border: 'border-gray-200 dark:border-purple-500/30' },
-  green: { bg: 'bg-gray-100 dark:bg-green-500/20', text: 'text-gray-600 dark:text-green-400', border: 'border-gray-200 dark:border-green-500/30' },
-  orange: { bg: 'bg-gray-100 dark:bg-orange-500/20', text: 'text-gray-600 dark:text-orange-400', border: 'border-gray-200 dark:border-orange-500/30' },
-  pink: { bg: 'bg-gray-100 dark:bg-pink-500/20', text: 'text-gray-600 dark:text-pink-400', border: 'border-gray-200 dark:border-pink-500/30' },
-  yellow: { bg: 'bg-gray-100 dark:bg-yellow-500/20', text: 'text-gray-600 dark:text-yellow-400', border: 'border-gray-200 dark:border-yellow-500/30' },
+  blue: { bg: 'bg-blue-50 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-200 dark:border-blue-500/30' },
+  purple: { bg: 'bg-violet-50 dark:bg-purple-500/20', text: 'text-violet-600 dark:text-purple-400', border: 'border-violet-200 dark:border-purple-500/30' },
+  green: { bg: 'bg-emerald-50 dark:bg-green-500/20', text: 'text-emerald-600 dark:text-green-400', border: 'border-emerald-200 dark:border-green-500/30' },
+  orange: { bg: 'bg-orange-50 dark:bg-orange-500/20', text: 'text-orange-600 dark:text-orange-400', border: 'border-orange-200 dark:border-orange-500/30' },
+  pink: { bg: 'bg-pink-50 dark:bg-pink-500/20', text: 'text-pink-600 dark:text-pink-400', border: 'border-pink-200 dark:border-pink-500/30' },
+  yellow: { bg: 'bg-amber-50 dark:bg-yellow-500/20', text: 'text-amber-600 dark:text-yellow-400', border: 'border-amber-200 dark:border-yellow-500/30' },
 }
 
 interface FeedScreenProps {
@@ -67,7 +68,7 @@ export function FeedScreen({
     : userClasses
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-100 dark:bg-gray-900">
+    <div className="h-full overflow-y-auto bg-slate-50 dark:bg-gray-900">
       <div className="px-4 sm:px-6 py-6 pt-36 lg:pt-6 pb-32 lg:pb-8">
 
         {/* Title + Actions */}
@@ -135,7 +136,7 @@ export function FeedScreen({
 
         {/* Filter Tabs */}
         {userClasses.length > 0 && (
-          <div className="flex space-x-1 bg-gray-100 dark:bg-white/[0.06] rounded-lg p-1 w-fit mb-4">
+          <div className="flex space-x-1 bg-slate-100 dark:bg-white/[0.06] rounded-lg p-1 w-fit mb-4">
             {(['all', 'favorites'] as const).map((f) => (
               <button
                 key={f}
@@ -232,8 +233,8 @@ export function FeedScreen({
           <div className="flex flex-col items-center justify-center py-16 text-center">
             {filter === 'favorites' ? (
               <>
-                <div className="w-16 h-16 bg-gray-100 dark:bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-4">
-                  <Star size={32} className="text-gray-600 dark:fill-yellow-400 dark:text-yellow-400" />
+                <div className="w-16 h-16 bg-amber-50 dark:bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-4">
+                  <Star size={32} className="text-amber-500 dark:fill-yellow-400 dark:text-yellow-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-xs">
@@ -242,8 +243,8 @@ export function FeedScreen({
               </>
             ) : (
               <>
-                <div className="w-16 h-16 bg-gray-100 dark:bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4">
-                  <Users size={32} className="text-gray-600 dark:text-blue-500" />
+                <div className="w-16 h-16 bg-blue-50 dark:bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4">
+                  <Users size={32} className="text-blue-600 dark:text-blue-500" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No classes yet</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-xs mb-6">
@@ -266,10 +267,10 @@ export function FeedScreen({
 
         {/* Tip Card */}
         {userClasses.length > 0 && (
-          <div className="mt-6 bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-6 border border-gray-200 dark:border-white/[0.06]">
+          <div className="mt-6 bg-white dark:bg-[#1E293B] rounded-2xl p-6 border border-slate-200 dark:border-white/[0.06] shadow-sm">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-gray-100 dark:bg-amber-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Sparkles size={24} className="text-gray-600 dark:text-amber-400" />
+              <div className="w-12 h-12 bg-amber-50 dark:bg-amber-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Sparkles size={24} className="text-amber-600 dark:text-amber-400" />
               </div>
               <div>
                 <p className="text-base font-semibold text-gray-900 dark:text-white">Pro Tip</p>
@@ -284,10 +285,10 @@ export function FeedScreen({
         {/* Desktop Class Overview - only shown on lg+ */}
         {userClasses.length > 0 && (
           <div className="hidden lg:grid grid-cols-3 gap-4 mt-6">
-            <div className="bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-200 dark:border-white/[0.06]">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200 dark:border-white/[0.06] shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center">
-                  <Users size={20} className="text-gray-600 dark:text-blue-400" />
+                <div className="w-10 h-10 bg-blue-50 dark:bg-blue-500/20 rounded-xl flex items-center justify-center">
+                  <Users size={20} className="text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">{userClasses.length}</p>
@@ -295,10 +296,10 @@ export function FeedScreen({
                 </div>
               </div>
             </div>
-            <div className="bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-200 dark:border-white/[0.06]">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200 dark:border-white/[0.06] shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 dark:bg-purple-500/20 rounded-xl flex items-center justify-center">
-                  <BookOpen size={20} className="text-gray-600 dark:text-purple-400" />
+                <div className="w-10 h-10 bg-violet-50 dark:bg-purple-500/20 rounded-xl flex items-center justify-center">
+                  <BookOpen size={20} className="text-violet-600 dark:text-purple-400" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -308,10 +309,10 @@ export function FeedScreen({
                 </div>
               </div>
             </div>
-            <div className="bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-200 dark:border-white/[0.06]">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200 dark:border-white/[0.06] shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 dark:bg-green-500/20 rounded-xl flex items-center justify-center">
-                  <Mic size={20} className="text-gray-600 dark:text-green-400" />
+                <div className="w-10 h-10 bg-emerald-50 dark:bg-green-500/20 rounded-xl flex items-center justify-center">
+                  <Mic size={20} className="text-emerald-600 dark:text-green-400" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
