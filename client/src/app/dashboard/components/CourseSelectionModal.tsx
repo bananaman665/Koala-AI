@@ -71,6 +71,11 @@ export function CourseSelectionModal({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Select Subject
           </label>
+          {courses.length === 0 && (
+            <p className="text-center text-sm text-gray-500 dark:text-gray-400 py-4">
+              Create a subject before recording
+            </p>
+          )}
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {courses.map((course) => {
               const colorClass = courseColorClasses[course.color] || courseColorClasses.blue

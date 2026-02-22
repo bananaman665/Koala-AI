@@ -36,12 +36,11 @@ import { LearnMode } from './components/LearnMode'
 import { DashboardHomeScreen } from './components/DashboardHomeScreen'
 import { LibraryScreen } from './components/LibraryScreen'
 import { ShareLectureToClassModal } from './components/ShareLectureToClassModal'
-import { ReadyToRecordModal } from './components/ReadyToRecordModal'
+import { CourseSelectionModal } from './components/CourseSelectionModal'
 import { MicPermissionModal } from './components/MicPermissionModal'
 import { DeleteLectureModal } from './components/DeleteLectureModal'
 import { DeleteCourseModal } from './components/DeleteCourseModal'
 import { FullScreenNotesModal } from './components/FullScreenNotesModal'
-import { SaveLectureModal } from './components/SaveLectureModal'
 import { StreakDetailModal } from './components/StreakDetailModal'
 import { MobileTopNav } from './components/MobileTopNav'
 import { MobileBottomNav } from './components/MobileBottomNav'
@@ -269,7 +268,6 @@ function DashboardContent() {
   const { animationType, animationKey, isTransitioning, previousScreen } = useScreenTransition(activeScreen as any)
 
   // Course selection modal state for floating record button
-  const [showCourseSelectionModal, setShowCourseSelectionModal] = useState(false)
   const [selectedCourseForRecording, setSelectedCourseForRecording] = useState<string | null>(null)
   const [lectureTitle, setLectureTitle] = useState('')
   const [isSavingRecording, setIsSavingRecording] = useState(false)
@@ -1809,44 +1807,13 @@ function DashboardContent() {
     setWrittenAnswerFeedback(null)
   }
 
-  const handleStopRecording = async () => {
-    hapticImpact('medium')
-    setIsStoppingRecording(true)
-    try {
-      const result = await stopAndGenerateNotes()
-      if (result?.notes) {
-        capturedNotesRef.current = result.notes
-      } else if (result?.transcript) {
-        toast.error('Notes generation failed. Check your XAI_API_KEY in Vercel.')
-      }
-      if (result && result.transcript) {
-        hapticSuccess()
-        setShowCourseSelectionModal(true)
-      } else {
-        if (transcript && transcript.trim().length > 0) {
-          setShowCourseSelectionModal(true)
-        } else {
-          hapticError()
-          alert('No audio was recorded. Please ensure microphone permissions are granted and try again.')
-        }
-      }
-    } catch (error) {
-      console.error('Recording error:', error)
-      hapticError()
-      if (transcript && transcript.trim().length > 0) {
-        setShowCourseSelectionModal(true)
-      } else {
-        alert('Recording failed. Please try again.')
-      }
-    }
-    setIsStoppingRecording(false)
+  const handleRecordPress = () => {
+    if (isLoadingCourses) return
+    setShowReadyToRecordModal(true)
   }
 
-  const handleSaveLecture = async () => {
-    if (!selectedCourseForRecording) {
-      alert('Please select a subject')
-      return
-    }
+  const handleAutoSaveLecture = async () => {
+    if (!selectedCourseForRecording || !user?.id) return
     setIsSavingRecording(true)
     try {
       const { count: lectureCount } = await (supabase as any)
@@ -1876,7 +1843,6 @@ function DashboardContent() {
 
       if (lectureError) throw lectureError
 
-
       const notesToSave = capturedNotesRef.current || notes
       if (notesToSave) {
         await (supabase as any).from('notes').insert({
@@ -1900,16 +1866,50 @@ function DashboardContent() {
       hapticSuccess()
       soundSuccess()
 
-      setShowCourseSelectionModal(false)
+      const savedSubject = courses.find(c => c.id === selectedCourseForRecording)
+      toast.success(`Lecture saved to ${savedSubject?.name || 'your subject'}!`)
       setSelectedCourseForRecording(null)
       setLectureTitle('')
       capturedNotesRef.current = null
       reset()
     } catch (error) {
-      alert('Failed to save recording. Please try again.')
+      toast.error('Failed to save recording. Please try again.')
     } finally {
       setIsSavingRecording(false)
     }
+  }
+
+  const handleStopRecording = async () => {
+    hapticImpact('medium')
+    setIsStoppingRecording(true)
+    try {
+      const result = await stopAndGenerateNotes()
+      if (result?.notes) {
+        capturedNotesRef.current = result.notes
+      } else if (result?.transcript) {
+        toast.error('Notes generation failed. Check your XAI_API_KEY in Vercel.')
+      }
+      if (result && result.transcript) {
+        hapticSuccess()
+        await handleAutoSaveLecture()
+      } else {
+        if (transcript && transcript.trim().length > 0) {
+          await handleAutoSaveLecture()
+        } else {
+          hapticError()
+          alert('No audio was recorded. Please ensure microphone permissions are granted and try again.')
+        }
+      }
+    } catch (error) {
+      console.error('Recording error:', error)
+      hapticError()
+      if (transcript && transcript.trim().length > 0) {
+        await handleAutoSaveLecture()
+      } else {
+        alert('Recording failed. Please try again.')
+      }
+    }
+    setIsStoppingRecording(false)
   }
 
   // Show loading screen while checking authentication
@@ -1955,7 +1955,7 @@ function DashboardContent() {
       {/* Desktop Top Navigation Bar - Hidden in flashcard/quiz mode */}
       {!isFlashcardModeActive && !isLearnModeActive && (
         <TopNavigationBar
-          onStartRecording={() => setShowReadyToRecordModal(true)}
+          onStartRecording={handleRecordPress}
           levelInfo={levelInfo}
           streak={streak}
           userEmail={user?.email}
@@ -2018,7 +2018,7 @@ function DashboardContent() {
       {/* Desktop Floating Action Button - Record - Hidden in flashcard/quiz mode */}
       {!isFlashcardModeActive && !isLearnModeActive && (
         <button
-          onClick={() => setShowReadyToRecordModal(true)}
+          onClick={handleRecordPress}
           disabled={isRecording || isStoppingRecording || isGeneratingNotes || isTranscribing}
           className="hidden lg:flex fixed bottom-8 right-8 w-16 h-16 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-full items-center justify-center shadow-2xl shadow-purple-500/30 z-50 transition-all hover:scale-110"
           style={{
@@ -2047,7 +2047,7 @@ function DashboardContent() {
                 isLoadingCourses={isLoadingCourses}
                 courseFilter={courseFilter}
                 onCourseFilterChange={handleCourseFilterChange}
-                onStartRecording={() => setShowReadyToRecordModal(true)}
+                onStartRecording={handleRecordPress}
                 onCreateCourse={() => setShowNewCourseModal(true)}
                 onSelectCourse={(courseId) => setSelectedCourse(courseId)}
                 onDeleteCourse={deleteCourse}
@@ -2715,7 +2715,7 @@ function DashboardContent() {
                           Record your first lecture and let AI generate smart notes for you.
                         </p>
                         <button
-                          onClick={() => setShowReadyToRecordModal(true)}
+                          onClick={handleRecordPress}
                           disabled={isRecording || isStoppingRecording || isGeneratingNotes || isTranscribing}
                           className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 active:scale-[0.98]"
                         >
@@ -2746,7 +2746,7 @@ function DashboardContent() {
                   <>
                     {/* Record New Lecture Button */}
                     <button
-                      onClick={() => setShowReadyToRecordModal(true)}
+                      onClick={handleRecordPress}
                       disabled={isRecording || isStoppingRecording || isGeneratingNotes || isTranscribing}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl p-4 mb-6 flex items-center justify-center gap-2 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
                     >
@@ -3421,7 +3421,7 @@ function DashboardContent() {
           isGeneratingNotes={isGeneratingNotes}
           isTranscribing={isTranscribing}
           onNavigate={setActiveScreen}
-          onRecordPress={() => setShowReadyToRecordModal(true)}
+          onRecordPress={handleRecordPress}
           onStopRecording={handleStopRecording}
         />
       )}
@@ -3441,10 +3441,23 @@ function DashboardContent() {
         onStop={handleStopRecording}
       />
 
-      <ReadyToRecordModal
+      <CourseSelectionModal
         isOpen={showReadyToRecordModal}
-        onClose={() => setShowReadyToRecordModal(false)}
-        onConfirm={startRecording}
+        onClose={() => {
+          setShowReadyToRecordModal(false)
+          setSelectedCourseForRecording(null)
+          setLectureTitle('')
+        }}
+        courses={courses}
+        selectedCourseId={selectedCourseForRecording}
+        lectureTitle={lectureTitle}
+        onCourseSelect={setSelectedCourseForRecording}
+        onTitleChange={setLectureTitle}
+        onCreateCourse={() => setShowNewCourseModal(true)}
+        onStartRecording={() => {
+          setShowReadyToRecordModal(false)
+          startRecording()
+        }}
       />
 
       <MicPermissionModal
@@ -3494,24 +3507,6 @@ function DashboardContent() {
           }
         }}
         isDeleting={isDeletingCourse}
-      />
-
-      <SaveLectureModal
-        isOpen={showCourseSelectionModal}
-        courses={courses}
-        lectureTitle={lectureTitle}
-        selectedCourseForRecording={selectedCourseForRecording}
-        isSavingRecording={isSavingRecording}
-        onLectureTitleChange={setLectureTitle}
-        onSelectCourse={setSelectedCourseForRecording}
-        onCancel={() => {
-          setShowCourseSelectionModal(false)
-          setSelectedCourseForRecording(null)
-          setLectureTitle('')
-          reset()
-        }}
-        onSave={handleSaveLecture}
-        onCreateCourse={() => setShowNewCourseModal(true)}
       />
 
       <StreakDetailModal
