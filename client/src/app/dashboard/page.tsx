@@ -3511,6 +3511,7 @@ function DashboardContent() {
           reset()
         }}
         onSave={handleSaveLecture}
+        onCreateCourse={() => setShowNewCourseModal(true)}
       />
 
       <StreakDetailModal
