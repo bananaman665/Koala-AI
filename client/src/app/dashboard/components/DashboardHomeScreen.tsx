@@ -137,8 +137,8 @@ export function DashboardHomeScreen({
       title: 'Record a lecture',
       current: Math.min(todayStats.lecturesRecorded, 1),
       target: 1,
-      iconBgClass: 'bg-amber-100 dark:bg-amber-500/20',
-      iconClass: 'text-amber-500',
+      iconBgClass: 'bg-gray-100 dark:bg-amber-500/20',
+      iconClass: 'text-gray-600 dark:text-amber-500',
       progressClass: 'bg-amber-400',
       borderClass: 'border-l-amber-500',
       completed: todayStats.lecturesRecorded >= 1,
@@ -149,8 +149,8 @@ export function DashboardHomeScreen({
       title: 'Study for 10 minutes',
       current: Math.min(todayStats.minutesStudied, 10),
       target: 10,
-      iconBgClass: 'bg-blue-100 dark:bg-blue-500/20',
-      iconClass: 'text-blue-500',
+      iconBgClass: 'bg-gray-100 dark:bg-blue-500/20',
+      iconClass: 'text-gray-600 dark:text-blue-500',
       progressClass: 'bg-blue-400',
       borderClass: 'border-l-blue-500',
       completed: todayStats.minutesStudied >= 10,
@@ -161,8 +161,8 @@ export function DashboardHomeScreen({
       title: 'Maintain your streak',
       current: streak > 0 ? 1 : 0,
       target: 1,
-      iconBgClass: 'bg-orange-100 dark:bg-orange-500/20',
-      iconClass: 'text-orange-500',
+      iconBgClass: 'bg-gray-100 dark:bg-orange-500/20',
+      iconClass: 'text-gray-600 dark:text-orange-500',
       progressClass: 'bg-orange-400',
       borderClass: 'border-l-orange-500',
       completed: streak > 0,
@@ -453,9 +453,9 @@ export function DashboardHomeScreen({
                     </div>
 
                     {/* Reward Icon */}
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${quest.completed ? 'bg-green-100 dark:bg-green-500/20' : 'bg-gray-200 dark:bg-gray-800'}`}>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${quest.completed ? 'bg-gray-100 dark:bg-green-500/20' : 'bg-gray-200 dark:bg-gray-800'}`}>
                       {quest.completed ? (
-                        <CheckCircle size={20} className="text-green-600 dark:text-green-400" />
+                        <CheckCircle size={20} className="text-gray-600 dark:text-green-400" />
                       ) : (
                         <Gift size={20} className="text-gray-600 dark:text-gray-400" />
                       )}

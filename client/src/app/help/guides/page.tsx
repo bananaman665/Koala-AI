@@ -35,9 +35,9 @@ export default function GuidesPage() {
 
   const getColorClasses = (color: string) => {
     const colors: Record<string, { bg: string }> = {
-      orange: { bg: 'bg-orange-100 dark:bg-orange-900/30' },
-      red: { bg: 'bg-red-100 dark:bg-red-900/30' },
-      blue: { bg: 'bg-blue-100 dark:bg-blue-900/30' }
+      orange: { bg: 'bg-gray-100 dark:bg-orange-900/30' },
+      red: { bg: 'bg-gray-100 dark:bg-red-900/30' },
+      blue: { bg: 'bg-gray-100 dark:bg-blue-900/30' }
     }
     return colors[color] || colors.blue
   }

@@ -93,7 +93,7 @@ export function Sidebar({
         {/* Level Badge */}
         <button
           onClick={onShowLevelModal}
-          className="flex items-center gap-2 hover:bg-purple-100 dark:hover:bg-purple-500/20 px-2 py-1 rounded-lg w-full transition-colors"
+          className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-purple-500/20 px-2 py-1 rounded-lg w-full transition-colors"
         >
           <div className="w-7 h-7 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
             <span className="text-white text-xs font-bold">{levelInfo.level}</span>
@@ -106,7 +106,7 @@ export function Sidebar({
         {/* Streak */}
         <button
           onClick={onShowStreakModal}
-          className="flex items-center gap-2 hover:bg-orange-100 dark:hover:bg-orange-500/20 px-2 py-1 rounded-lg w-full transition-colors"
+          className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-orange-500/20 px-2 py-1 rounded-lg w-full transition-colors"
         >
           <Flame size={20} className="text-orange-600 dark:text-orange-400" />
           <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">

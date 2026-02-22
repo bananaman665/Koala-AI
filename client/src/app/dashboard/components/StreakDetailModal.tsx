@@ -65,7 +65,7 @@ export function StreakDetailModal({ isOpen, streak, isActiveToday, onClose }: St
                     isActive
                       ? 'bg-orange-500'
                       : isToday
-                      ? 'bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-400 dark:border-blue-500'
+                      ? 'bg-gray-100 dark:bg-blue-900/40 border-2 border-gray-300 dark:border-blue-500'
                       : 'bg-gray-200 dark:bg-gray-600'
                   }`}>
                     {isActive ? (
@@ -98,7 +98,7 @@ export function StreakDetailModal({ isOpen, streak, isActiveToday, onClose }: St
                 key={days}
                 className={`flex-shrink-0 px-4 py-3 rounded-xl text-center ${
                   streak >= days
-                    ? 'bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800'
+                    ? 'bg-gray-100 dark:bg-orange-900/30 border border-gray-200 dark:border-orange-800'
                     : 'bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600'
                 }`}
               >

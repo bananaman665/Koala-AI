@@ -170,7 +170,7 @@ export function ResumeLectureCarousel({
             }}
           >
             {/* Green Play Icon */}
-            <div className="w-11 h-11 bg-green-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-11 h-11 bg-gray-100 dark:bg-green-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
               <span className="text-lg">Play</span>
             </div>
 
