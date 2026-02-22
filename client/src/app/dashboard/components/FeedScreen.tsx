@@ -80,7 +80,7 @@ export function FeedScreen({
                 const input = document.getElementById('join-class-input')
                 input?.focus()
               }}
-              className="flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-[#1E293B] rounded-lg border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98]"
+              className="flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-[#1E293B] rounded-lg border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98]"
             >
               <Users size={16} className="text-blue-600 dark:text-blue-400" />
               <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Join</span>
@@ -91,7 +91,7 @@ export function FeedScreen({
                 hapticButton()
                 onCreateNewClass()
               }}
-              className="flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-[#1E293B] rounded-lg border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98]"
+              className="flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-[#1E293B] rounded-lg border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98]"
             >
               <Plus size={16} className="text-blue-600 dark:text-blue-400" />
               <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Create</span>
@@ -100,7 +100,7 @@ export function FeedScreen({
         </div>
 
         {/* Join Class Input - Clean inline design */}
-        <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] mb-6">
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-200 dark:border-white/[0.06] mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Join with Code
           </label>
@@ -175,7 +175,7 @@ export function FeedScreen({
                       hapticButton()
                       onViewClass(cls.id)
                     }}
-                    className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
+                    className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
                   >
                     <div className="flex items-center gap-4">
                       {/* Class Icon */}
@@ -266,7 +266,7 @@ export function FeedScreen({
 
         {/* Tip Card */}
         {userClasses.length > 0 && (
-          <div className="mt-6 bg-white dark:bg-[#1E293B] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
+          <div className="mt-6 bg-white dark:bg-[#1E293B] rounded-2xl p-6 border border-gray-200 dark:border-white/[0.06]">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-amber-100 dark:bg-amber-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Sparkles size={24} className="text-amber-600 dark:text-amber-400" />
@@ -284,7 +284,7 @@ export function FeedScreen({
         {/* Desktop Class Overview - only shown on lg+ */}
         {userClasses.length > 0 && (
           <div className="hidden lg:grid grid-cols-3 gap-4 mt-6">
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06]">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-200 dark:border-white/[0.06]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center">
                   <Users size={20} className="text-blue-600 dark:text-blue-400" />
@@ -295,7 +295,7 @@ export function FeedScreen({
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06]">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-200 dark:border-white/[0.06]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-purple-100 dark:bg-purple-500/20 rounded-xl flex items-center justify-center">
                   <BookOpen size={20} className="text-purple-600 dark:text-purple-400" />
@@ -308,7 +308,7 @@ export function FeedScreen({
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06]">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-gray-200 dark:border-white/[0.06]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-100 dark:bg-green-500/20 rounded-xl flex items-center justify-center">
                   <Mic size={20} className="text-green-600 dark:text-green-400" />

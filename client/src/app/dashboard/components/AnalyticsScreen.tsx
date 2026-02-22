@@ -80,7 +80,7 @@ export function AnalyticsScreen({
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Study Streak */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 sm:p-6 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200 flex flex-col relative overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-4 sm:p-6 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200 flex flex-col relative overflow-hidden">
             <div className="absolute top-5 sm:top-0 right-4 w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
               <TrendingUp size={28} className="text-orange-600 dark:text-orange-400" />
             </div>
@@ -116,11 +116,11 @@ export function AnalyticsScreen({
           </div>
 
           {/* Top Courses */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 pt-2">Top Courses</h3>
             <div className="space-y-4">
               {courses.length === 0 ? (
-                <p className="text-sm text-gray-300 dark:text-gray-600 text-center py-4">No courses yet</p>
+                <p className="text-sm text-gray-500 dark:text-gray-600 text-center py-4">No courses yet</p>
               ) : (
                 courses.slice(0, 3).map((course) => {
                   const courseLectures = lectures.filter(l => l.course_id === course.id)
@@ -153,11 +153,11 @@ export function AnalyticsScreen({
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-white/[0.06] p-5 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-200">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4 pt-2">Recent Activity</h3>
             <div className="divide-y divide-gray-100 dark:divide-gray-700">
               {lectures.length === 0 ? (
-                <p className="text-sm text-gray-300 dark:text-gray-600 text-center py-4">No activity yet</p>
+                <p className="text-sm text-gray-500 dark:text-gray-600 text-center py-4">No activity yet</p>
               ) : (
                 lectures.slice(0, 5).map((lecture) => {
                   const createdDate = new Date(lecture.created_at)

@@ -242,7 +242,7 @@ export function LibraryScreen({
                   onStartEditNotes()
                 }
               }}
-              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-blue-300 dark:hover:border-blue-500/50 active:scale-[0.98] transition-all border border-gray-100 dark:border-white/[0.06] group"
+              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-blue-300 dark:hover:border-blue-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center flex-shrink-0">
@@ -271,7 +271,7 @@ export function LibraryScreen({
                 }
               }}
               disabled={!selectedLectureNotes && !hasGeneratedQuiz}
-              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-purple-300 dark:hover:border-purple-500/50 active:scale-[0.98] transition-all border border-gray-100 dark:border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-purple-300 dark:hover:border-purple-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center flex-shrink-0">
@@ -301,7 +301,7 @@ export function LibraryScreen({
                 }
               }}
               disabled={!selectedLectureNotes && !hasGeneratedFlashcards}
-              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-emerald-300 dark:hover:border-emerald-500/50 active:scale-[0.98] transition-all border border-gray-100 dark:border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-emerald-300 dark:hover:border-emerald-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
@@ -322,7 +322,7 @@ export function LibraryScreen({
 
           {/* Edit Notes Section (shown when editing) */}
           {isEditingNotes && (
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-white/[0.06]">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-200 dark:border-white/[0.06]">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                 Edit Notes
               </h3>
@@ -503,7 +503,7 @@ export function LibraryScreen({
                       <div
                         key={lecture.id}
                         onClick={() => onSelectLecture(lecture.id)}
-                        className="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
+                        className="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -581,7 +581,7 @@ export function LibraryScreen({
                           >
                             <div
                               onClick={() => onSelectLecture(lecture.id)}
-                              className="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-gray-100 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
+                              className="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all active:scale-[0.98] group"
                             >
                               <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>

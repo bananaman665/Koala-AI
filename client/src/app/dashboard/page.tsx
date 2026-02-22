@@ -2116,7 +2116,7 @@ function DashboardContent() {
             </div>
 
             {/* Course Info Card */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-white/[0.06] mb-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 shadow-sm border border-gray-200 dark:border-white/[0.06] mb-6">
               <div className="flex items-center gap-4">
                 {/* Subject Icon */}
                 {(() => {
@@ -2774,7 +2774,7 @@ function DashboardContent() {
                               setSelectedCourse(null)
                               setActiveScreen('library')
                             }}
-                            className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-blue-300 dark:hover:border-blue-500/50 active:scale-[0.98] transition-all border border-gray-100 dark:border-white/[0.06] group"
+                            className="w-full bg-white dark:bg-[#1E293B] rounded-2xl p-4 text-left hover:border-blue-300 dark:hover:border-blue-500/50 active:scale-[0.98] transition-all border border-gray-200 dark:border-white/[0.06] group"
                           >
                             <div className="flex items-center gap-4">
                               {(() => {
