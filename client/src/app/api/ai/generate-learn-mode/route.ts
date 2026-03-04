@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateLearnModeQuestions, QuestionType, DifficultyLevel } from '@/lib/gemini'
+import { generateLearnModeQuestions, QuestionType, DifficultyLevel } from '@/lib/grok'
 
 export const maxDuration = 60
 

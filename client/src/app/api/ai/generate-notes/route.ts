@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateNotesFromTranscript } from '@/lib/gemini'
+import { generateNotesFromTranscript } from '@/lib/grok'
 
 export const maxDuration = 60
 
