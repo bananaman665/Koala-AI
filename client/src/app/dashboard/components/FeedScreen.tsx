@@ -18,10 +18,6 @@ const classColorClasses: Record<string, { bg: string; text: string; border: stri
 
 interface FeedScreenProps {
   userClasses: any[]
-  joinClassCode: string
-  isJoiningClass: boolean
-  onJoinClassCodeChange: (code: string) => void
-  onJoinClass: () => void
   onCreateNewClass: () => void
   onViewClass: (classId: string) => void
   onDeleteClass: (classId: string) => void
@@ -29,10 +25,6 @@ interface FeedScreenProps {
 
 export function FeedScreen({
   userClasses,
-  joinClassCode,
-  isJoiningClass,
-  onJoinClassCodeChange,
-  onJoinClass,
   onCreateNewClass,
   onViewClass,
   onDeleteClass,
@@ -73,26 +65,21 @@ export function FeedScreen({
 
         {/* Title + Actions */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Classes</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Classes</h2>
+            <span className="px-2 py-0.5 text-xs font-bold bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 rounded-full">v2</span>
+          </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => {
-                hapticButton()
-                const input = document.getElementById('join-class-input')
-                input?.focus()
-              }}
-              className="flex items-center gap-2 px-3.5 py-2 bg-gray-50 dark:bg-[#1E293B] rounded-lg border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98]"
+              disabled
+              className="flex items-center gap-2 px-3.5 py-2 bg-gray-50 dark:bg-[#1E293B] rounded-lg border border-gray-200 dark:border-white/[0.06] opacity-40 cursor-not-allowed"
             >
               <Users size={16} className="text-blue-600 dark:text-blue-400" />
               <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Join</span>
             </button>
-
             <button
-              onClick={() => {
-                hapticButton()
-                onCreateNewClass()
-              }}
-              className="flex items-center gap-2 px-3.5 py-2 bg-gray-50 dark:bg-[#1E293B] rounded-lg border border-gray-200 dark:border-white/[0.06] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all active:scale-[0.98]"
+              disabled
+              className="flex items-center gap-2 px-3.5 py-2 bg-gray-50 dark:bg-[#1E293B] rounded-lg border border-gray-200 dark:border-white/[0.06] opacity-40 cursor-not-allowed"
             >
               <Plus size={16} className="text-blue-600 dark:text-blue-400" />
               <span className="font-medium text-sm text-gray-700 dark:text-gray-300">Create</span>
@@ -100,36 +87,33 @@ export function FeedScreen({
           </div>
         </div>
 
-        {/* Join Class Input - Clean inline design */}
-        <div className="bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-200 dark:border-white/[0.06] mb-6">
+        {/* v2 Coming Soon Banner */}
+        <div className="bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 rounded-2xl p-4 mb-6 flex items-start gap-3">
+          <div className="w-8 h-8 bg-violet-100 dark:bg-violet-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+            <Sparkles size={16} className="text-violet-600 dark:text-violet-400" />
+          </div>
+          <div>
+            <p className="font-semibold text-violet-900 dark:text-violet-300 text-sm">Coming in v2</p>
+            <p className="text-violet-700 dark:text-violet-400 text-sm mt-0.5">
+              Study groups, shared lectures, and class collaboration are on the way.
+            </p>
+          </div>
+        </div>
+
+        {/* Join Class Input - Ghosted */}
+        <div className="bg-gray-50 dark:bg-[#1E293B] rounded-2xl p-4 border border-gray-200 dark:border-white/[0.06] mb-6 opacity-40 pointer-events-none select-none">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Join with Code
           </label>
           <div className="flex gap-2">
             <input
-              id="join-class-input"
               type="text"
               placeholder="Enter class code (e.g., ABC123)"
-              value={joinClassCode}
-              onChange={(e) => onJoinClassCodeChange(e.target.value.toUpperCase())}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && joinClassCode.trim() && !isJoiningClass) {
-                  onJoinClass()
-                }
-              }}
-              className="flex-1 px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled
+              className="flex-1 px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white"
             />
-            <button
-              onClick={() => {
-                if (joinClassCode.trim() && !isJoiningClass) {
-                  hapticButton()
-                  onJoinClass()
-                }
-              }}
-              disabled={!joinClassCode.trim() || isJoiningClass}
-              className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isJoiningClass ? 'Joining...' : 'Join'}
+            <button disabled className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold">
+              Join
             </button>
           </div>
         </div>

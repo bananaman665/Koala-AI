@@ -65,6 +65,9 @@ export function LeftSidebar({
               >
                 <Icon size={16} />
                 <span>{item.label}</span>
+                {item.id === 'feed' && (
+                  <span className="ml-auto text-[10px] font-bold bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 px-1.5 py-0.5 rounded-full">v2</span>
+                )}
               </button>
             )
           })}

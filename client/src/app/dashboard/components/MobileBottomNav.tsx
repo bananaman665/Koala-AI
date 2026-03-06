@@ -107,12 +107,13 @@ export function MobileBottomNav({
               onNavigate('feed')
             }
           }}
-          className={`flex flex-col items-center justify-center gap-0.5 min-w-[48px] ${
+          className={`relative flex flex-col items-center justify-center gap-0.5 min-w-[48px] ${
             activeScreen === 'feed' ? 'text-blue-600 dark:text-white' : 'text-gray-400 dark:text-white/50'
           }`}
         >
           <Users size={20} />
           <span className="text-[10px] font-medium dark:opacity-60">Classes</span>
+          <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-violet-500 text-white px-1 rounded-full leading-3 py-0.5">v2</span>
         </button>
       </div>
     </nav>
